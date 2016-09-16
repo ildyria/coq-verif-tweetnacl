@@ -5,6 +5,53 @@ Require Import Coq.Classes.RelationClasses.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype seq.
 Import ListNotations.
 
+(* Some definitions relating to the functional spec of this particular program.  *)
+Fixpoint sum_list_Z (a b : list Z) : list Z := match a,b with
+| [], q => q
+| q,[] => q
+| h1::q1,h2::q2 => (Z.add h1 h2) :: sum_list_Z q1 q2
+end.
+
+Fixpoint sum_list_Z_n (n:nat) (a b : list Z) : list Z := match n, a, b with 
+  | 0, _, _ => []
+  | S p, [], []  => []
+  | S p, [], h::q  => h :: (sum_list_Z_n p [] q)
+  | S p, h::q, []  => h :: (sum_list_Z_n p [] q)
+  | S p, h1::q1, h2::q2 => (Z.add h1 h2) :: (sum_list_Z_n p q1 q2)
+end.
+
+Lemma sum_list_Z_empty1: forall h q, sum_list_Z (h :: q) [] = h :: sum_list_Z q [].
+Proof.
+induction q ; go.
+Qed.
+
+Lemma sum_list_Z_empty2: forall h q, sum_list_Z [] (h :: q) = h :: sum_list_Z [] q.
+Proof.
+induction q ; go.
+Qed.
+
+Lemma sum_list_Z_empty3: forall h q, sum_list_Z (h :: q) [] = h :: sum_list_Z [] q.
+Proof.
+induction q ; go.
+Qed.
+
+Lemma sum_list_eq: forall n a b, length a <= n -> length b <= n -> sum_list_Z a b = sum_list_Z_n n a b.
+Proof.
+induction n.
+destruct a, b ; go.
+intros a b Hla Hlb.
+destruct a, b ; go.
+rewrite sum_list_Z_empty2 ; unfold sum_list_Z_n ; fold sum_list_Z_n; f_equal ; apply IHn ; go.
+simpl in Hla ; apply le_S_n in Hla.
+rewrite sum_list_Z_empty3 ; unfold sum_list_Z_n ; fold sum_list_Z_n; f_equal ; apply IHn; go.
+simpl in Hla, Hlb ; apply le_S_n in Hla ; apply le_S_n in Hlb.
+simpl ; f_equal ; apply IHn ; go.
+Qed.
+
+Lemma sum_sliced: forall n a b, slice n (sum_list_Z a b) = sum_list_Z_n n a b.
+Proof.
+induction n ; intros a b ; simpl ; flatten ; try inv Eq ; rewrite <- IHn ; go.
+Qed.
 
 Open Scope Z.
 
@@ -129,13 +176,6 @@ rewrite Z.mul_comm.
 apply Zmult_gt_0_le_0_compat ; omega.
 Qed.
 
-(* Some definitions relating to the functional spec of this particular program.  *)
-Fixpoint sum_list_Z (a b : list Z) : list Z := match a,b with
-| [], q => q
-| q,[] => q
-| h1::q1,h2::q2 => (h1 + h2) :: sum_list_Z q1 q2
-end.
-
 Lemma sumListToFF : forall a b o, sum_list_Z a b = o -> ToFF a + ToFF b = ToFF o.
 Proof.
 induction a , b.
@@ -237,15 +277,20 @@ Qed.
 
 End FiniteFied.
 
+Compute Z.pow 2 256 mod (Z.pow 2 255 - 19).
 Lemma t2256is38 : Z.pow 2 256 mod (Z.pow 2 255 - 19) = 38 mod (Z.pow 2 255 - 19).
 Proof.
+compute.
+go.
+(*
 change 38 with (2 * 19).
 change 256 with (Z.succ 255).
 rewrite Z.pow_succ_r ; try omega.
 rewrite <- Zmult_mod_idemp_r.
 symmetry.
 rewrite <- Zmult_mod_idemp_r.
-f_equal.
+f_equal.*)
+
 Qed.
 
 Definition reduce n := 
@@ -270,3 +315,7 @@ rewrite <- Zplus_0_r_reverse.
 rewrite Zmod_mod.
 reflexivity.
 Qed.
+
+
+
+

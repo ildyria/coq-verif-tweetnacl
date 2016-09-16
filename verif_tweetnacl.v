@@ -15,7 +15,9 @@ Definition A_spec n :=
   PRE [ _o OF (tptr tlong), _a OF (tptr tlong), _b OF (tptr tlong) ]
         PROP  (readable_share sh;
                 Forall (fun x => 0 <= x <= Z.pow 2 n) contents_a;
-                Forall (fun x => 0 <= x <= Z.pow 2 n) contents_b)
+                Forall (fun x => 0 <= x <= Z.pow 2 n) contents_b;
+                length contents_a = 16;
+                length contents_b = 16)
         LOCAL (temp _i i)
         SEP   (data_at sh (tarray tlong 16) (map Vlong (map Int64.repr contents_a)) a;
               data_at sh (tarray tlong 16) (map Vlong (map Int64.repr contents_b)) b;
