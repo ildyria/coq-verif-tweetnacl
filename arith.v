@@ -1,5 +1,5 @@
 Require Import Coq.ZArith.BinInt.
-Require Import Tools.
+Require Export Tools.
 Require Import List.
 Require Import Coq.Classes.RelationClasses.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype seq.
@@ -216,7 +216,6 @@ Lemma withinBounds16 : forall m, getResidute m < Z.pow 2 n.
 Proof.
 intro m.
 unfold getResidute.
-SearchAbout Z.modulo.
 apply Z_mod_lt.
 apply pown0.
 Qed.
@@ -277,7 +276,6 @@ Qed.
 
 End FiniteFied.
 
-Compute Z.pow 2 256 mod (Z.pow 2 255 - 19).
 Lemma t2256is38 : Z.pow 2 256 mod (Z.pow 2 255 - 19) = 38 mod (Z.pow 2 255 - 19).
 Proof.
 compute.
@@ -289,8 +287,8 @@ rewrite Z.pow_succ_r ; try omega.
 rewrite <- Zmult_mod_idemp_r.
 symmetry.
 rewrite <- Zmult_mod_idemp_r.
-f_equal.*)
-
+f_equal.
+*)
 Qed.
 
 Definition reduce n := 
