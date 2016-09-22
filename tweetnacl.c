@@ -341,8 +341,13 @@ sv unpack25519(gf o, const u8 *n)
 
 sv A(gf o,const gf a,const gf b)
 {
-  int i;
-  FOR(i,16) o[i]=a[i]+b[i];
+  int i, aux1, aux2;
+  FOR(i,16){
+    //o[i]=a[i]+b[i];
+    aux1 = a[i];
+    aux2 = b[i];
+    o[i]=aux1+aux2;
+  }
 }
 
 sv Z(gf o,const gf a,const gf b)

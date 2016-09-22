@@ -1,6 +1,7 @@
 Require Export Libs.
 
 Set Implicit Arguments.
+Import ListNotations.
 
 (* Iterative tools *)
 Section All.
@@ -67,8 +68,8 @@ Proof. go. Qed.
 Lemma consApp2 : forall A l1 l2 (a:A), (a :: l1) ++ l2 = a :: l1 ++ l2.
 Proof. go. Qed.
 
-Lemma consApp3 : forall A l1 l2 (a:A), l1 ++ a :: l2 = (l1 ++ [a]) ++ l2.
-Proof. go. Qed.
+Lemma consApp3 : forall A l1 l2 (a:A), l1 ++ a :: l2 = (l1 ++ a :: nil) ++ l2.
+Proof. induction l1 ; intros ; go. Qed.
 
 Lemma app_assoc2 : forall (A:Type) (l1 l2 l3:list A), l1 ++ l2 ++ l3 = l1 ++ (l2 ++ l3).
 Proof. go. Qed.
@@ -344,6 +345,9 @@ Fixpoint tail A (n:nat) (l:list A) : list A := match n,l with
 | 0, l => l
 | S p, h :: q => tail p q
 end.
+
+Lemma tail_length_eq : forall A (l:list A)  n, length l = n -> tail n l = [].
+Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
 
 Lemma slice_tail_app : forall A (l:list A) n, slice n l ++ tail n l = l.
 Proof. induction l ; intros ; destruct n ; go. Qed.

@@ -17,7 +17,7 @@ Ltac autoinjection :=
            | h: ?f _ _ = ?f _  _ |- _ => injection h; intros; clear h; subst
            | h: ?f _ _ _ = ?f _ _ _ |- _ => injection h; intros; clear h; subst
            | h: ?f _ _ _ _ = ?f _ _ _ _ |- _ => injection h; intros; clear h; subst
-           | h: ?f _ _ _ _ _ = ?f _ |- _ _ _ _ _ => injection h; intros; clear h; subst
+           | h: ?f _ _ _ _ _ = ?f _ _ _ _ _ |- _ => injection h; intros; clear h; subst
          end.
 
 Ltac go := 
