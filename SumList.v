@@ -52,3 +52,21 @@ Proof.
 induction n ; intros a b ; simpl ; flatten ; try inv Eq ; rewrite <- IHn ; go.
 Qed.
 
+Lemma sum_list_comm: forall a b, sum_list_Z a b = sum_list_Z b a.
+Proof.
+induction a, b ; go.
+unfold sum_list_Z ; fold sum_list_Z.
+rewrite Z.add_comm.
+f_equal.
+go.
+Qed.
+
+Lemma sum_list_nil_r: forall a, sum_list_Z a [] = a.
+Proof.
+induction a; go.
+Qed.
+
+Lemma sum_list_nil_l: forall a, sum_list_Z [] a = a.
+Proof.
+go.
+Qed.
