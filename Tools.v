@@ -85,6 +85,7 @@ eapply IHl.
 eauto.
 Qed.
 
+
 Lemma app_inv : forall A (l1 l2 l3 l4:list A), l1 = l2 -> l3 = l4 -> l1 ++ l3 = l2 ++ l4.
 Proof.
 induction l1 ; destruct l2 ; intros ; go.

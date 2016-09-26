@@ -70,3 +70,14 @@ Lemma sum_list_nil_l: forall a, sum_list_Z [] a = a.
 Proof.
 go.
 Qed.
+
+Lemma sum_list_assoc : forall a b c, sum_list_Z (sum_list_Z a b) c = sum_list_Z a (sum_list_Z b c).
+Proof.
+induction a, b; go.
+intro c.
+simpl.
+flatten.
+rewrite Zplus_assoc_reverse.
+f_equal.
+apply IHa.
+Qed.

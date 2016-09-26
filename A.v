@@ -5,11 +5,9 @@ Import ListNotations.
 
 Open Scope Z.
 
-Let ToFF := ToFF 16.
-
-Lemma sumListToFF : forall a b o, sum_list_Z a b = o -> ToFF a + ToFF b = ToFF o.
+Lemma sumListToFF : forall n a b o, sum_list_Z a b = o -> ToFF n a + ToFF n b = ToFF n o.
 Proof.
-induction a , b.
+intro n ; induction a , b.
 - intros o HSum ; go.
 - intros o HSum ; go.
 - intros o HSum ; go.
@@ -31,9 +29,9 @@ induction a , b.
   apply HSum.
 Qed.
 
-Corollary sumListToFF2: forall a b, ToFF (sum_list_Z a b) = ToFF a + ToFF b.
+Corollary sumListToFF2: forall n a b, ToFF n (sum_list_Z a b) = ToFF n a + ToFF n b.
 Proof.
-intros a b.
+intros n a b.
 assert(exists o, o = sum_list_Z a b) by (exists (sum_list_Z a b) ; go) ; destruct H.
 symmetry; subst x ; apply sumListToFF ; go.
 Qed.

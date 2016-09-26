@@ -56,7 +56,7 @@ assert(Hp:= pown).
 omega.
 Qed.
 
-Lemma ToFFeq : forall l i, i >= 0 -> ToFFi l i = Z.pow 2 (n * i) * ToFF l.
+Lemma ToFF_eq : forall l i, i >= 0 -> ToFFi l i = Z.pow 2 (n * i) * ToFF l.
 Proof.
 dependent induction l; go.
 intros i Hi.
@@ -80,7 +80,7 @@ apply Zmult_gt_0_le_0_compat ; omega.
 Qed.
 
 
-Corollary ToFFeqD : forall l, ToFFi l 0 = ToFF l.
+Corollary ToFF_eq_D : forall l, ToFFi l 0 = ToFF l.
 Proof.
 intro l.
 assert (Z.pow 2 (n * 0) = 1) by (rewrite <- Zmult_0_r_reverse ; go).
@@ -88,27 +88,26 @@ assert (ToFF l = Z.pow 2 (n * 0) * ToFF l).
 rewrite H.
 rewrite Z.mul_comm ; go.
 rewrite H0.
-apply ToFFeq.
+apply ToFF_eq.
 omega.
 Qed.
 
-Lemma ToFFnil : ToFF nil = 0.
+Lemma ToFF_nil : ToFF nil = 0.
 Proof.
 go.
 Qed.
 
-Lemma ToFFCons : forall a b, ToFF (a :: b) = a + Z.pow 2 n * ToFF b.
+Lemma ToFF_cons : forall a b, ToFF (a :: b) = a + Z.pow 2 n * ToFF b.
 Proof.
-intros a b.
-go.
+intros a b ; go.
 Qed.
 
 
-Lemma ToFFApp : forall a b, ToFF (a ++ b) = ToFF a + Z.pow 2 (n * Z.of_nat (length a)) * ToFF b.
+Lemma ToFF_app : forall a b, ToFF (a ++ b) = ToFF a + Z.pow 2 (n * Z.of_nat (length a)) * ToFF b.
 Proof.
 induction a as [| h a Hl].
 - intro b.
-rewrite ToFFnil.
+rewrite ToFF_nil.
 assert ([] ++ b = b) by apply app_nill_l. rewrite H ; go ; clear H.
 assert (Z.of_nat (length (nil:(list Z))) = 0) by go. rewrite H ; go ; clear H.
 rewrite <- Zmult_0_r_reverse.
