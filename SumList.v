@@ -34,7 +34,10 @@ Proof.
 induction q ; go.
 Qed.
 
-Lemma sum_list_eq: forall n a b, length a <= n -> length b <= n -> sum_list_Z a b = sum_list_Z_n n a b.
+Lemma sum_list_eq: forall n a b,
+  length a <= n ->
+  length b <= n ->
+    sum_list_Z a b = sum_list_Z_n n a b.
 Proof.
 induction n.
 destruct a, b ; go.

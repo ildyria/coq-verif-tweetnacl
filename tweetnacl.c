@@ -358,11 +358,31 @@ sv Z(gf o,const gf a,const gf b)
 
 sv M(gf o,const gf a,const gf b)
 {
-  i64 i,j,t[31];
+  i64 i,j,t[31], aux1, aux2, aux3, auxi;
   FOR(i,31) t[i]=0;
-  FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
-  FOR(i,15) t[i]+=38*t[i+16];
-  FOR(i,16) o[i]=t[i];
+  FOR(i,16) FOR(j,16)
+    {
+      // t[i+j] = a[i]*b[j];
+      aux1 = a[i];
+      aux2 = b[j];
+      auxi = i + j;
+      aux3 = t[auxi];
+      t[i+j] = aux3 + aux1 * aux2;
+    }
+  FOR(i,15)
+    {
+      //t[i]+=38*t[i+16];
+      auxi = i+16;
+      aux1 = t[auxi];
+      aux2 = t[i];
+      t[i] = aux2 + 38 * aux1;
+    }
+  FOR(i,16)
+    {
+    //o[i]=t[i];
+    aux1 = t[i];
+    o[i] = aux1;
+    }
   car25519(o);
   car25519(o);
 }

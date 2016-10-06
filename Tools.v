@@ -350,6 +350,12 @@ end.
 Lemma tail_length_eq : forall A (l:list A)  n, length l = n -> tail n l = [].
 Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
 
+Lemma tail_length_lt : forall A (l:list A)  n, length l < n -> tail n l = [].
+Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
+
+Lemma tail_length_le : forall A (l:list A)  n, length l <= n -> tail n l = [].
+Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
+
 Lemma slice_tail_app : forall A (l:list A) n, slice n l ++ tail n l = l.
 Proof. induction l ; intros ; destruct n ; go. Qed.
 

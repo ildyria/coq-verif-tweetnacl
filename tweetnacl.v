@@ -2,19 +2,19 @@
 Require Import Clightdefs.
 Local Open Scope Z_scope.
 Definition _A : ident := 115%positive.
-Definition _Ch : ident := 132%positive.
+Definition _Ch : ident := 134%positive.
 Definition _D : ident := 55%positive.
 Definition _D2 : ident := 56%positive.
 Definition _I : ident := 59%positive.
-Definition _K : ident := 138%positive.
-Definition _L : ident := 153%positive.
+Definition _K : ident := 140%positive.
+Definition _L : ident := 155%positive.
 Definition _L32 : ident := 62%positive.
-Definition _M : ident := 117%positive.
-Definition _Maj : ident := 133%positive.
-Definition _R : ident := 131%positive.
-Definition _S : ident := 118%positive.
-Definition _Sigma0 : ident := 134%positive.
-Definition _Sigma1 : ident := 135%positive.
+Definition _M : ident := 119%positive.
+Definition _Maj : ident := 135%positive.
+Definition _R : ident := 133%positive.
+Definition _S : ident := 120%positive.
+Definition _Sigma0 : ident := 136%positive.
+Definition _Sigma1 : ident := 137%positive.
 Definition _X : ident := 57%positive.
 Definition _Y : ident := 58%positive.
 Definition _Z : ident := 116%positive.
@@ -70,116 +70,118 @@ Definition ___i64_umod : ident := 23%positive.
 Definition ___i64_utod : ident := 17%positive.
 Definition ___i64_utof : ident := 19%positive.
 Definition _a : ident := 102%positive.
-Definition _add : ident := 142%positive.
+Definition _add : ident := 144%positive.
 Definition _add1305 : ident := 94%positive.
 Definition _aux1 : ident := 113%positive.
 Definition _aux2 : ident := 114%positive.
+Definition _aux3 : ident := 117%positive.
+Definition _auxi : ident := 118%positive.
 Definition _b : ident := 87%positive.
 Definition _c : ident := 61%positive.
 Definition _car25519 : ident := 105%positive.
-Definition _carry : ident := 154%positive.
-Definition _chk : ident := 160%positive.
+Definition _carry : ident := 156%positive.
+Definition _chk : ident := 162%positive.
 Definition _core : ident := 83%positive.
-Definition _crypto_box_curve25519xsalsa20poly1305_tweet : ident := 129%positive.
-Definition _crypto_box_curve25519xsalsa20poly1305_tweet_afternm : ident := 127%positive.
-Definition _crypto_box_curve25519xsalsa20poly1305_tweet_beforenm : ident := 126%positive.
-Definition _crypto_box_curve25519xsalsa20poly1305_tweet_keypair : ident := 125%positive.
-Definition _crypto_box_curve25519xsalsa20poly1305_tweet_open : ident := 130%positive.
-Definition _crypto_box_curve25519xsalsa20poly1305_tweet_open_afternm : ident := 128%positive.
+Definition _crypto_box_curve25519xsalsa20poly1305_tweet : ident := 131%positive.
+Definition _crypto_box_curve25519xsalsa20poly1305_tweet_afternm : ident := 129%positive.
+Definition _crypto_box_curve25519xsalsa20poly1305_tweet_beforenm : ident := 128%positive.
+Definition _crypto_box_curve25519xsalsa20poly1305_tweet_keypair : ident := 127%positive.
+Definition _crypto_box_curve25519xsalsa20poly1305_tweet_open : ident := 132%positive.
+Definition _crypto_box_curve25519xsalsa20poly1305_tweet_open_afternm : ident := 130%positive.
 Definition _crypto_core_hsalsa20_tweet : ident := 85%positive.
 Definition _crypto_core_salsa20_tweet : ident := 84%positive.
-Definition _crypto_hash_sha512_tweet : ident := 141%positive.
-Definition _crypto_hashblocks_sha512_tweet : ident := 139%positive.
+Definition _crypto_hash_sha512_tweet : ident := 143%positive.
+Definition _crypto_hashblocks_sha512_tweet : ident := 141%positive.
 Definition _crypto_onetimeauth_poly1305_tweet : ident := 98%positive.
 Definition _crypto_onetimeauth_poly1305_tweet_verify : ident := 99%positive.
-Definition _crypto_scalarmult_curve25519_tweet : ident := 123%positive.
-Definition _crypto_scalarmult_curve25519_tweet_base : ident := 124%positive.
+Definition _crypto_scalarmult_curve25519_tweet : ident := 125%positive.
+Definition _crypto_scalarmult_curve25519_tweet_base : ident := 126%positive.
 Definition _crypto_secretbox_xsalsa20poly1305_tweet : ident := 100%positive.
 Definition _crypto_secretbox_xsalsa20poly1305_tweet_open : ident := 101%positive.
-Definition _crypto_sign_ed25519_tweet : ident := 159%positive.
-Definition _crypto_sign_ed25519_tweet_keypair : ident := 152%positive.
-Definition _crypto_sign_ed25519_tweet_open : ident := 168%positive.
+Definition _crypto_sign_ed25519_tweet : ident := 161%positive.
+Definition _crypto_sign_ed25519_tweet_keypair : ident := 154%positive.
+Definition _crypto_sign_ed25519_tweet_open : ident := 170%positive.
 Definition _crypto_stream_salsa20_tweet : ident := 90%positive.
 Definition _crypto_stream_salsa20_tweet_xor : ident := 89%positive.
 Definition _crypto_stream_xsalsa20_tweet : ident := 92%positive.
 Definition _crypto_stream_xsalsa20_tweet_xor : ident := 93%positive.
 Definition _crypto_verify_16_tweet : ident := 73%positive.
 Definition _crypto_verify_32_tweet : ident := 74%positive.
-Definition _cswap : ident := 143%positive.
+Definition _cswap : ident := 145%positive.
 Definition _d : ident := 71%positive.
-Definition _den : ident := 162%positive.
-Definition _den2 : ident := 163%positive.
-Definition _den4 : ident := 164%positive.
-Definition _den6 : ident := 165%positive.
+Definition _den : ident := 164%positive.
+Definition _den2 : ident := 165%positive.
+Definition _den4 : ident := 166%positive.
+Definition _den6 : ident := 167%positive.
 Definition _dl64 : ident := 66%positive.
-Definition _e : ident := 121%positive.
-Definition _f : ident := 122%positive.
+Definition _e : ident := 123%positive.
+Definition _f : ident := 124%positive.
 Definition _g : ident := 97%positive.
 Definition _gf0 : ident := 52%positive.
 Definition _gf1 : ident := 53%positive.
 Definition _h : ident := 78%positive.
 Definition _i : ident := 65%positive.
 Definition _in : ident := 76%positive.
-Definition _inv25519 : ident := 119%positive.
-Definition _iv : ident := 140%positive.
+Definition _inv25519 : ident := 121%positive.
+Definition _iv : ident := 142%positive.
 Definition _j : ident := 81%positive.
 Definition _k : ident := 77%positive.
 Definition _ld32 : ident := 64%positive.
 Definition _m : ident := 82%positive.
-Definition _main : ident := 169%positive.
+Definition _main : ident := 171%positive.
 Definition _minusp : ident := 95%positive.
-Definition _mlen : ident := 167%positive.
-Definition _modL : ident := 155%positive.
+Definition _mlen : ident := 169%positive.
+Definition _modL : ident := 157%positive.
 Definition _n : ident := 70%positive.
 Definition _neq25519 : ident := 110%positive.
-Definition _num : ident := 161%positive.
+Definition _num : ident := 163%positive.
 Definition _o : ident := 104%positive.
 Definition _out : ident := 75%positive.
 Definition _p : ident := 106%positive.
-Definition _pack : ident := 147%positive.
+Definition _pack : ident := 149%positive.
 Definition _pack25519 : ident := 109%positive.
 Definition _par25519 : ident := 111%positive.
-Definition _pk : ident := 150%positive.
-Definition _pow2523 : ident := 120%positive.
+Definition _pk : ident := 152%positive.
+Definition _pow2523 : ident := 122%positive.
 Definition _q : ident := 107%positive.
 Definition _r : ident := 96%positive.
 Definition _randombytes : ident := 49%positive.
-Definition _reduce : ident := 156%positive.
+Definition _reduce : ident := 158%positive.
 Definition _s : ident := 91%positive.
-Definition _scalarbase : ident := 149%positive.
-Definition _scalarmult : ident := 148%positive.
+Definition _scalarbase : ident := 151%positive.
+Definition _scalarmult : ident := 150%positive.
 Definition _sel25519 : ident := 108%positive.
 Definition _set25519 : ident := 103%positive.
 Definition _sigma : ident := 86%positive.
-Definition _sigma0 : ident := 136%positive.
-Definition _sigma1 : ident := 137%positive.
-Definition _sk : ident := 151%positive.
-Definition _sm : ident := 157%positive.
-Definition _smlen : ident := 158%positive.
+Definition _sigma0 : ident := 138%positive.
+Definition _sigma1 : ident := 139%positive.
+Definition _sk : ident := 153%positive.
+Definition _sm : ident := 159%positive.
+Definition _smlen : ident := 160%positive.
 Definition _st32 : ident := 67%positive.
 Definition _t : ident := 80%positive.
 Definition _ts64 : ident := 68%positive.
-Definition _tx : ident := 144%positive.
-Definition _ty : ident := 145%positive.
+Definition _tx : ident := 146%positive.
+Definition _ty : ident := 147%positive.
 Definition _u : ident := 63%positive.
 Definition _unpack25519 : ident := 112%positive.
-Definition _unpackneg : ident := 166%positive.
+Definition _unpackneg : ident := 168%positive.
 Definition _vn : ident := 72%positive.
 Definition _w : ident := 79%positive.
 Definition _x : ident := 60%positive.
 Definition _y : ident := 69%positive.
 Definition _z : ident := 88%positive.
-Definition _zi : ident := 146%positive.
-Definition _t'1 : ident := 170%positive.
-Definition _t'10 : ident := 179%positive.
-Definition _t'2 : ident := 171%positive.
-Definition _t'3 : ident := 172%positive.
-Definition _t'4 : ident := 173%positive.
-Definition _t'5 : ident := 174%positive.
-Definition _t'6 : ident := 175%positive.
-Definition _t'7 : ident := 176%positive.
-Definition _t'8 : ident := 177%positive.
-Definition _t'9 : ident := 178%positive.
+Definition _zi : ident := 148%positive.
+Definition _t'1 : ident := 172%positive.
+Definition _t'10 : ident := 181%positive.
+Definition _t'2 : ident := 173%positive.
+Definition _t'3 : ident := 174%positive.
+Definition _t'4 : ident := 175%positive.
+Definition _t'5 : ident := 176%positive.
+Definition _t'6 : ident := 177%positive.
+Definition _t'7 : ident := 178%positive.
+Definition _t'8 : ident := 179%positive.
+Definition _t'9 : ident := 180%positive.
 
 Definition v__0 := {|
   gvar_info := (tarray tuchar 16);
@@ -2690,7 +2692,8 @@ Definition f_M := {|
   fn_params := ((_o, (tptr tlong)) :: (_a, (tptr tlong)) ::
                 (_b, (tptr tlong)) :: nil);
   fn_vars := ((_t, (tarray tlong 31)) :: nil);
-  fn_temps := ((_i, tlong) :: (_j, tlong) :: nil);
+  fn_temps := ((_i, tlong) :: (_j, tlong) :: (_aux1, tlong) ::
+               (_aux2, tlong) :: (_aux3, tlong) :: (_auxi, tlong) :: nil);
   fn_body :=
 (Ssequence
   (Ssequence
@@ -2725,24 +2728,34 @@ Definition f_M := {|
                                (Econst_int (Int.repr 16) tint) tint)
                   Sskip
                   Sbreak)
-                (Sassign
-                  (Ederef
-                    (Ebinop Oadd (Evar _t (tarray tlong 31))
-                      (Ebinop Oadd (Etempvar _i tlong) (Etempvar _j tlong)
-                        tlong) (tptr tlong)) tlong)
-                  (Ebinop Oadd
+                (Ssequence
+                  (Sset _aux1
                     (Ederef
-                      (Ebinop Oadd (Evar _t (tarray tlong 31))
-                        (Ebinop Oadd (Etempvar _i tlong) (Etempvar _j tlong)
-                          tlong) (tptr tlong)) tlong)
-                    (Ebinop Omul
-                      (Ederef
-                        (Ebinop Oadd (Etempvar _a (tptr tlong))
-                          (Etempvar _i tlong) (tptr tlong)) tlong)
+                      (Ebinop Oadd (Etempvar _a (tptr tlong))
+                        (Etempvar _i tlong) (tptr tlong)) tlong))
+                  (Ssequence
+                    (Sset _aux2
                       (Ederef
                         (Ebinop Oadd (Etempvar _b (tptr tlong))
-                          (Etempvar _j tlong) (tptr tlong)) tlong) tlong)
-                    tlong)))
+                          (Etempvar _j tlong) (tptr tlong)) tlong))
+                    (Ssequence
+                      (Sset _auxi
+                        (Ebinop Oadd (Etempvar _i tlong) (Etempvar _j tlong)
+                          tlong))
+                      (Ssequence
+                        (Sset _aux3
+                          (Ederef
+                            (Ebinop Oadd (Evar _t (tarray tlong 31))
+                              (Etempvar _auxi tlong) (tptr tlong)) tlong))
+                        (Sassign
+                          (Ederef
+                            (Ebinop Oadd (Evar _t (tarray tlong 31))
+                              (Ebinop Oadd (Etempvar _i tlong)
+                                (Etempvar _j tlong) tlong) (tptr tlong))
+                            tlong)
+                          (Ebinop Oadd (Etempvar _aux3 tlong)
+                            (Ebinop Omul (Etempvar _aux1 tlong)
+                              (Etempvar _aux2 tlong) tlong) tlong)))))))
               (Sset _j
                 (Ebinop Oadd (Etempvar _j tlong)
                   (Econst_int (Int.repr 1) tint) tlong)))))
@@ -2758,20 +2771,27 @@ Definition f_M := {|
                            (Econst_int (Int.repr 15) tint) tint)
               Sskip
               Sbreak)
-            (Sassign
-              (Ederef
-                (Ebinop Oadd (Evar _t (tarray tlong 31)) (Etempvar _i tlong)
-                  (tptr tlong)) tlong)
-              (Ebinop Oadd
-                (Ederef
-                  (Ebinop Oadd (Evar _t (tarray tlong 31))
-                    (Etempvar _i tlong) (tptr tlong)) tlong)
-                (Ebinop Omul (Econst_int (Int.repr 38) tint)
+            (Ssequence
+              (Sset _auxi
+                (Ebinop Oadd (Etempvar _i tlong)
+                  (Econst_int (Int.repr 16) tint) tlong))
+              (Ssequence
+                (Sset _aux1
                   (Ederef
                     (Ebinop Oadd (Evar _t (tarray tlong 31))
-                      (Ebinop Oadd (Etempvar _i tlong)
-                        (Econst_int (Int.repr 16) tint) tlong) (tptr tlong))
-                    tlong) tlong) tlong)))
+                      (Etempvar _auxi tlong) (tptr tlong)) tlong))
+                (Ssequence
+                  (Sset _aux2
+                    (Ederef
+                      (Ebinop Oadd (Evar _t (tarray tlong 31))
+                        (Etempvar _i tlong) (tptr tlong)) tlong))
+                  (Sassign
+                    (Ederef
+                      (Ebinop Oadd (Evar _t (tarray tlong 31))
+                        (Etempvar _i tlong) (tptr tlong)) tlong)
+                    (Ebinop Oadd (Etempvar _aux2 tlong)
+                      (Ebinop Omul (Econst_int (Int.repr 38) tint)
+                        (Etempvar _aux1 tlong) tlong) tlong))))))
           (Sset _i
             (Ebinop Oadd (Etempvar _i tlong) (Econst_int (Int.repr 1) tint)
               tlong))))
@@ -2784,13 +2804,16 @@ Definition f_M := {|
                              (Econst_int (Int.repr 16) tint) tint)
                 Sskip
                 Sbreak)
-              (Sassign
-                (Ederef
-                  (Ebinop Oadd (Etempvar _o (tptr tlong)) (Etempvar _i tlong)
-                    (tptr tlong)) tlong)
-                (Ederef
-                  (Ebinop Oadd (Evar _t (tarray tlong 31))
-                    (Etempvar _i tlong) (tptr tlong)) tlong)))
+              (Ssequence
+                (Sset _aux1
+                  (Ederef
+                    (Ebinop Oadd (Evar _t (tarray tlong 31))
+                      (Etempvar _i tlong) (tptr tlong)) tlong))
+                (Sassign
+                  (Ederef
+                    (Ebinop Oadd (Etempvar _o (tptr tlong))
+                      (Etempvar _i tlong) (tptr tlong)) tlong)
+                  (Etempvar _aux1 tlong))))
             (Sset _i
               (Ebinop Oadd (Etempvar _i tlong) (Econst_int (Int.repr 1) tint)
                 tlong))))

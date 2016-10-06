@@ -1,9 +1,9 @@
 Require Export SumList.
 Require Export ToFF.
 Require Export A.
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype seq.
 Import ListNotations.
 
+Require Export Tools.
 Open Scope Z.
 
 Fixpoint scalarMult a b := match b with
@@ -17,14 +17,8 @@ intros n a.
 induction b ; go.
 unfold scalarMult ; fold scalarMult.
 rewrite! ToFF_cons.
-rewrite <- Zred_factor4.
-f_equal.
 rewrite IHb.
-rewrite <- Zmult_assoc_reverse.
-rewrite <- Zmult_assoc_reverse.
-f_equal.
-rewrite Z.mul_comm.
-omega.
+ring.
 Qed.
 
 Fixpoint mult_1 a b := match a, b with 
@@ -63,9 +57,10 @@ end.
 Compute List_is_eq (mult_1' [1;1;1;1;1;1;1;1;1] []) (mult_1 [1;1;1;1;1;1;1;1;1] []).
 Compute List_is_eq (mult_1' [0] [0]) (mult_1 [0] [0]).
 *)
+
 Fixpoint mult_2 a := match a with 
 | [] => []
-| h :: q => h + 38 * (nth 15 q 0) :: mult_2 q
+| h :: q => h + 38 * (nth 3 q 0) :: mult_2 q
 end.
 
 Fixpoint mult_3 (a:list Z) : list Z := slice 16 a.
@@ -85,21 +80,28 @@ intro n ; induction a, b ; intros c Hc.
   go.
 - rewrite! ToFF_cons.
   unfold mult_1 in Hc; fold mult_1 in Hc.
-  SearchAbout Z.mul.
-  rewrite <- Zred_factor4.
-  rewrite Z.mul_comm.
-  rewrite <- Zred_factor4.
   rewrite <- Hc.
   rewrite ToFF_cons.
   rewrite sumListToFF2.
-  assert(IHC:mult_1 a0 (z::b) = mult_1 a0 (z::b)) by go.
-  apply IHa in IHC.
-  rewrite <- IHC.
+  rewrite <- (IHa (z :: b) (mult_1 a0 (z :: b))) by go.
   rewrite ToFF_cons.
-  rewrite Z.mul_comm.
-  rewrite Zplus_assoc_reverse.
-  f_equal.
   rewrite scalarMultToFF.
   ring.
 Qed.
 
+Lemma SumListTail : forall l, mult_2 l = sum_list_Z l (scalarMult 38 (tail 3 l)).
+Proof.
+intro l.
+Admitted.
+
+Lemma mult_2_ToFF : forall n l, ToFF n (mult_2 l) = ToFF n l + 38 * ToFF n (tail (16%nat) l).
+Proof.
+intro n.
+induction l ; go.
+unfold mult_2; fold mult_2.
+simpl ; flatten ; flatten Eq0 ; simpl.
+
+
+
+Lemma reduce_slice_ToFF: forall l, Z.of_nat (length l) < 30 -> (ToFF 16 (mult_3 (mult_2 l))) mod (Z.pow 2 255 - 19) = (ToFF 16 l) mod (Z.pow 2 255 - 19).
+Proof.
