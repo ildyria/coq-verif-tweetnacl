@@ -1,11 +1,10 @@
 Require Export SumList.
 Require Export ToFF.
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype seq.
 Import ListNotations.
 
 Open Scope Z.
 
-Lemma sumListToFF : forall n a b o, sum_list_Z a b = o -> ToFF n a + ToFF n b = ToFF n o.
+Lemma ZsumListToFF : forall n a b o, ZsumList a b = o -> ToFF n a + ToFF n b = ToFF n o.
 Proof.
 intro n ; induction a , b.
 - intros o HSum ; go.
@@ -29,11 +28,11 @@ intro n ; induction a , b.
   apply HSum.
 Qed.
 
-Corollary sumListToFF2: forall n a b, ToFF n (sum_list_Z a b) = ToFF n a + ToFF n b.
+Corollary ZsumListToFF2: forall n a b, ToFF n (ZsumList a b) = ToFF n a + ToFF n b.
 Proof.
 intros n a b.
-assert(exists o, o = sum_list_Z a b) by (exists (sum_list_Z a b) ; go) ; destruct H.
-symmetry; subst x ; apply sumListToFF ; go.
+assert(exists o, o = ZsumList a b) by (exists (ZsumList a b) ; go) ; destruct H.
+symmetry; subst x ; apply ZsumListToFF ; go.
 Qed.
 
 

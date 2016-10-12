@@ -59,8 +59,7 @@ Definition A_spec :=
               data_at sh (tarray tlong 16) (map Vlong (map Int64.repr contents_b)) b;
               data_at sh (tarray tlong 16) (map Vlong (map Int64.repr contents_o)) o)
   POST [ tvoid ]
-        PROP (writable_share sh;
-                Forall (fun x => 0 <= x < Z.pow 2 (Z.succ 63)) contents_o)
+        PROP (writable_share sh)
         LOCAL()
         SEP (data_at sh (tarray tlong 16) (map Vlong (map Int64.repr contents_a)) a;
               data_at sh (tarray tlong 16) (map Vlong (map Int64.repr contents_b)) b;

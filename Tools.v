@@ -359,6 +359,9 @@ Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
 Lemma slice_tail_app : forall A (l:list A) n, slice n l ++ tail n l = l.
 Proof. induction l ; intros ; destruct n ; go. Qed.
 
+Lemma tail_length_eq_minus : forall A (l:list A)  n, n <= length l -> length (tail n l) = length l - n.
+Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
+
 Lemma slice_sliced : forall n k A (l:list A), n < k -> slice n l = slice k (slice n l).
 Proof.
 induction n; intros.

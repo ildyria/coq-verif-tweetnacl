@@ -164,7 +164,7 @@ rewrite Z.shiftr_div_pow2 ; try omega.
 induction m ; go.
 - apply Z_div_lt ; go.
 assert(2 = 2 ^ 1) by go.
-rewrite{2} H ; clear H.
+rewrite H at 2; clear H.
 rewrite Z.ge_le_iff.
 apply Z.pow_le_mono_r_iff ; omega.
 - assert (Z.neg p < 0) by apply Zlt_neg_0 ; go.
@@ -200,19 +200,22 @@ rewrite H ; clear H.
 apply CarryPreserveConst.
 Qed.
 
-End FiniteFied.
-
-
-
-Lemma ToFF_tail : forall n l (m:nat),
-  n > 0 ->
-  Z.pow 2 (n * Z.of_nat (length (slice m l))) * ToFF n (tail m l) = ToFF n l - ToFF n (slice m l).
+Theorem ToFF_transitive: forall (f g:list Z -> list Z) f' g' l,
+  (forall l, ToFF (g l) = g' (ToFF l)) ->
+  (forall l, ToFF (f l) = f' (ToFF l)) -> 
+  ToFF (f (g l)) = f' (g' (ToFF l)).
 Proof.
-intros n; destruct l; intros m Hn.
+go.
+Qed.
+
+Lemma ToFF_tail : forall l (m:nat),
+  Z.pow 2 (n * Z.of_nat (length (slice m l))) * ToFF (tail m l) = ToFF l - ToFF (slice m l).
+Proof.
+intros l; destruct l; intros m.
 simpl.
 rewrite slice_length_le ; go.
 rewrite tail_length_le ; go.
-assert(HS: Z.pow 2 (n * Z.of_nat (length (slice m (z::l)))) * ToFF n (tail m (z :: l)) = Z.pow 2 (n * Z.of_nat (length (slice m (z::l)))) * ToFF n (tail m (z :: l)) - ToFF n (slice m (z :: l)) + ToFF n (slice m (z :: l))) by omega.
+assert(HS: Z.pow 2 (n * Z.of_nat (length (slice m (z::l)))) * ToFF (tail m (z :: l)) = Z.pow 2 (n * Z.of_nat (length (slice m (z::l)))) * ToFF (tail m (z :: l)) - ToFF (slice m (z :: l)) + ToFF (slice m (z :: l))) by omega.
 rewrite HS ; clear HS.
 rewrite <- Z.add_sub_swap.
 f_equal.
@@ -223,3 +226,21 @@ apply slice_tail_app.
 rewrite HS ; clear HS.
 go.
 Qed.
+
+Lemma ToFF_slice : forall l (m:nat),
+  ToFF (slice m l) = ToFF l - Z.pow 2 (n * Z.of_nat (length (slice m l))) * ToFF (tail m l).
+Proof.
+intros l m.
+rewrite ToFF_tail.
+omega.
+Qed.
+
+Lemma ToFF_slice_tail : forall l (m:nat),
+  ToFF (slice m l) + Z.pow 2 (n * Z.of_nat (length (slice m l))) * ToFF (tail m l) = ToFF l.
+Proof.
+intros l m.
+rewrite ToFF_tail.
+go.
+Qed.
+
+End FiniteFied.
