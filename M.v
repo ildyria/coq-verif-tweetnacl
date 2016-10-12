@@ -6,7 +6,7 @@ Import ListNotations.
 Require Export Tools.
 Open Scope Z.
 
-Fixpoint mult_1 a b := match a, b with 
+Fixpoint mult_1 (a b:list Z) :list Z := match a, b with 
 | [],_ => []
 | _,[] => []
 | ha :: qa, hb :: qb => ha * hb :: ZsumList (ZscalarMult ha qb) (mult_1 qa (hb::qb))
@@ -43,7 +43,7 @@ Compute List_is_eq (mult_1' [1;1;1;1;1;1;1;1;1] []) (mult_1 [1;1;1;1;1;1;1;1;1] 
 Compute List_is_eq (mult_1' [0] [0]) (mult_1 [0] [0]).
 *)
 
-Definition mult_2 a := ZsumList a (ZscalarMult 38 (tail 16 a)).
+Definition mult_2 (a:list Z) : list Z := ZsumList a (ZscalarMult 38 (tail 16 a)).
 
 Definition mult_3 (a:list Z) : list Z := slice 16 a.
 

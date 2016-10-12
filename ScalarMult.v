@@ -4,7 +4,7 @@ Require Export Tools.
 Import ListNotations.
 Require Export ToFF.
 
-Fixpoint ZscalarMult a b := match b with
+Fixpoint ZscalarMult (a:Z) (b:list Z) : list Z := match b with
 | [] => []
 | h :: q => a * h :: ZscalarMult a q
 end.

@@ -33,12 +33,12 @@ change (2 ^ 64) with (2 ^ 63 * 2).
 intros; omega.
 Qed.
 
-Fixpoint ToFFi (a: list Z) (i:Z) := match a with 
+Fixpoint ToFFi (a: list Z) (i:Z) : Z := match a with 
 | [] => 0
 | h :: q => h * Z.pow 2 (n * i) + ToFFi q (Z.succ i)
 end.
 
-Fixpoint ToFF (a : list Z) := match a with 
+Fixpoint ToFF (a : list Z) : Z := match a with 
 | [] => 0
 | h :: q => h + Z.pow 2 n * ToFF q
 end.
@@ -132,11 +132,11 @@ rewrite Z.mul_comm.
 apply Zmult_gt_0_le_0_compat ; omega.
 Qed.
 
-Definition getCarry m :=  Z.shiftr m n.
+Definition getCarry (m:Z) : Z :=  Z.shiftr m n.
 
 (* Compute (getCarry (Z.pow 2 18)). *)
 
-Definition getResidute m := m mod (Z.pow 2 n).
+Definition getResidute (m:Z) : Z := m mod (Z.pow 2 n).
 
 Lemma withinBounds16 : forall m, getResidute m < Z.pow 2 n.
 Proof.
@@ -171,7 +171,7 @@ apply Z.pow_le_mono_r_iff ; omega.
 Qed.
 
 
-Fixpoint Carrying a (l:list Z) := match a,l with 
+Fixpoint Carrying (a:Z) (l:list Z) : list Z := match a,l with 
 | 0,[] => []
 | a,[] => [a]
 | a,h :: q => getResidute (a + h) :: Carrying (getCarry (a + h)) q

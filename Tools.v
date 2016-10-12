@@ -203,7 +203,7 @@ apply in_or_app.
 go.
 Qed.
 
-Fixpoint beq_listnat l1 l2 := match (l1,l2) with
+Fixpoint beq_listnat (l1 l2:list nat) : bool := match (l1,l2) with
 | (nil, nil) => true
 | (h1 :: q1, h2 :: q2) => (beq_nat h1 h2) && (beq_listnat q1 q2) 
 | _ => false
