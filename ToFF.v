@@ -5,6 +5,9 @@ Import ListNotations.
 
 Open Scope Z.
 
+Notation "ℤ.ℕ A" := (Z.of_nat A) (at level 60, right associativity).
+Notation "A :𝓟" := (A mod (2^255 - 19)) (at level 80, right associativity).
+
 Section FiniteFied.
 
 Variable n:Z.
@@ -43,6 +46,8 @@ Fixpoint ToFF (a : list Z) : Z := match a with
 | h :: q => h + Z.pow 2 n * ToFF q
 end.
 
+
+
 Lemma pown: 2 ^ n > 1.
 Proof.
 rewrite Z.gt_lt_iff.
@@ -55,7 +60,7 @@ assert(Hp:= pown).
 omega.
 Qed.
 
-Lemma ToFF_eq : forall l i, i >= 0 -> ToFFi l i = Z.pow 2 (n * i) * ToFF l.
+Lemma ToFF_eq : forall l i, i >= 0 -> ToFFi l i = 2^(n * i) * ToFF l.
 Proof.
 dependent induction l; go.
 intros i Hi.
@@ -82,8 +87,8 @@ Qed.
 Corollary ToFF_eq_D : forall l, ToFFi l 0 = ToFF l.
 Proof.
 intro l.
-assert (Z.pow 2 (n * 0) = 1) by (rewrite <- Zmult_0_r_reverse ; go).
-assert (ToFF l = Z.pow 2 (n * 0) * ToFF l).
+assert (2^(n * 0) = 1) by (rewrite <- Zmult_0_r_reverse ; go).
+assert (ToFF l = 2^(n * 0) * ToFF l).
 rewrite H.
 rewrite Z.mul_comm ; go.
 rewrite H0.
@@ -96,19 +101,19 @@ Proof.
 go.
 Qed.
 
-Lemma ToFF_cons : forall a b, ToFF (a :: b) = a + Z.pow 2 n * ToFF b.
+Lemma ToFF_cons : forall a b, ToFF (a :: b) = a + 2^n * ToFF b.
 Proof.
 intros a b ; go.
 Qed.
 
 
-Lemma ToFF_app : forall a b, ToFF (a ++ b) = ToFF a + Z.pow 2 (n * Z.of_nat (length a)) * ToFF b.
+Lemma ToFF_app : forall a b, ToFF (a ++ b) = ToFF a + 2^(n * ℤ.ℕ (length a)) * ToFF b.
 Proof.
 induction a as [| h a Hl].
 - intro b.
 rewrite ToFF_nil.
 assert ([] ++ b = b) by apply app_nill_l. rewrite H ; go ; clear H.
-assert (Z.of_nat (length (nil:(list Z))) = 0) by go. rewrite H ; go ; clear H.
+assert (ℤ.ℕ (length (nil:(list Z))) = 0) by go. rewrite H ; go ; clear H.
 rewrite <- Zmult_0_r_reverse.
 rewrite Z.pow_0_r.
 omega.
@@ -121,9 +126,9 @@ f_equal.
 rewrite <- Zred_factor4.
 f_equal.
 rewrite <- Zmult_assoc_reverse.
-assert(Z.of_nat (length (h :: a)) = Z.of_nat (1 + length a)) by go ; rewrite H ; clear H.
+assert(ℤ.ℕ (length (h :: a)) = ℤ.ℕ (1 + length a)) by go ; rewrite H ; clear H.
 rewrite Nat2Z.inj_add.
-assert(Z.of_nat 1 = 1) by go ; rewrite H ; clear H.
+assert(ℤ.ℕ 1 = 1) by go ; rewrite H ; clear H.
 rewrite <- Zred_factor4.
 rewrite Z.pow_add_r ; try omega.
 assert(n * 1 = n) by go ; rewrite H ; clear H.
@@ -136,9 +141,9 @@ Definition getCarry (m:Z) : Z :=  Z.shiftr m n.
 
 (* Compute (getCarry (Z.pow 2 18)). *)
 
-Definition getResidute (m:Z) : Z := m mod (Z.pow 2 n).
+Definition getResidute (m:Z) : Z := m mod 2^n.
 
-Lemma withinBounds16 : forall m, getResidute m < Z.pow 2 n.
+Lemma withinBounds16 : forall m:Z, getResidute m < 2^n.
 Proof.
 intro m.
 unfold getResidute.
@@ -146,7 +151,7 @@ apply Z_mod_lt.
 apply pown0.
 Qed.
 
-Lemma residuteCarry : forall m, getResidute m + Z.pow 2 n *getCarry m = m.
+Lemma residuteCarry : forall m:Z, getResidute m + 2^n *getCarry m = m.
 Proof.
 intro m.
 unfold getResidute.
@@ -202,20 +207,20 @@ Qed.
 
 Theorem ToFF_transitive: forall (f g:list Z -> list Z) f' g' l,
   (forall l, ToFF (g l) = g' (ToFF l)) ->
-  (forall l, ToFF (f l) = f' (ToFF l)) -> 
+  (forall l, ToFF (f l) = f' (ToFF l )) -> 
   ToFF (f (g l)) = f' (g' (ToFF l)).
 Proof.
 go.
 Qed.
 
 Lemma ToFF_tail : forall l (m:nat),
-  Z.pow 2 (n * Z.of_nat (length (slice m l))) * ToFF (tail m l) = ToFF l - ToFF (slice m l).
+  2^(n * ℤ.ℕ (length (slice m l))) * ToFF (tail m l) = ToFF l - ToFF (slice m l).
 Proof.
 intros l; destruct l; intros m.
 simpl.
 rewrite slice_length_le ; go.
 rewrite tail_length_le ; go.
-assert(HS: Z.pow 2 (n * Z.of_nat (length (slice m (z::l)))) * ToFF (tail m (z :: l)) = Z.pow 2 (n * Z.of_nat (length (slice m (z::l)))) * ToFF (tail m (z :: l)) - ToFF (slice m (z :: l)) + ToFF (slice m (z :: l))) by omega.
+assert(HS: 2^(n * ℤ.ℕ (length (slice m (z::l)))) * ToFF (tail m (z :: l)) = 2^(n * ℤ.ℕ (length (slice m (z::l)))) * ToFF (tail m (z :: l)) - ToFF (slice m (z :: l)) + ToFF (slice m (z :: l))) by omega.
 rewrite HS ; clear HS.
 rewrite <- Z.add_sub_swap.
 f_equal.
@@ -228,7 +233,7 @@ go.
 Qed.
 
 Lemma ToFF_slice : forall l (m:nat),
-  ToFF (slice m l) = ToFF l - Z.pow 2 (n * Z.of_nat (length (slice m l))) * ToFF (tail m l).
+  ToFF (slice m l) = ToFF l - 2^(n * ℤ.ℕ (length (slice m l))) * ToFF (tail m l).
 Proof.
 intros l m.
 rewrite ToFF_tail.
@@ -236,7 +241,7 @@ omega.
 Qed.
 
 Lemma ToFF_slice_tail : forall l (m:nat),
-  ToFF (slice m l) + Z.pow 2 (n * Z.of_nat (length (slice m l))) * ToFF (tail m l) = ToFF l.
+  ToFF (slice m l) + 2^(n * ℤ.ℕ (length (slice m l))) * ToFF (tail m l) = ToFF l.
 Proof.
 intros l m.
 rewrite ToFF_tail.

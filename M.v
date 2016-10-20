@@ -6,53 +6,22 @@ Import ListNotations.
 Require Export Tools.
 Open Scope Z.
 
-Fixpoint mult_1 (a b:list Z) :list Z := match a, b with 
+Fixpoint mult_1 (a b:list Z) : list Z := match a, b with 
 | [],_ => []
 | _,[] => []
-| ha :: qa, hb :: qb => ha * hb :: ZsumList (ZscalarMult ha qb) (mult_1 qa (hb::qb))
+| ha :: qa, hb :: qb => ha * hb :: (ha ∘ qb) ⊕ (mult_1 qa (hb::qb))
 end.
 
-(*
-Fixpoint mult_1' a b := match a, b with 
-| [],_ => []
-| _,[] => []
-| ha :: qa, hb :: qb => ha * hb :: ZsumList (ZsumList (scalarMult ha qb) (scalarMult hb qa))
- (match mult_1' qa qb with 
-  | [] => []
-  | l => 0 :: l
-  end)
-end.
-
-Lemma mult_1'_comm : forall a b, mult_1' a b = mult_1' b a.
-Proof.
-induction a,b ; go.
-unfold mult_1' ; fold mult_1'.
-f_equal ; go.
-rewrite IHa.
-f_equal.
-rewrite sum_list_comm ; go.
-Qed.
-
-Fixpoint List_is_eq a b : bool := match a, b with
-| [], [] => true
-| h1 :: q1, h2 :: q2 => andb (Zeq_bool h1 h2) (List_is_eq q1 q2)
-| _,_ => false
-end.
-
-Compute List_is_eq (mult_1' [1;1;1;1;1;1;1;1;1] []) (mult_1 [1;1;1;1;1;1;1;1;1] []).
-Compute List_is_eq (mult_1' [0] [0]) (mult_1 [0] [0]).
-*)
-
-Definition mult_2 (a:list Z) : list Z := ZsumList a (ZscalarMult 38 (tail 16 a)).
+Definition mult_2 (a:list Z) : list Z := a  ⊕ (38 ∘ (tail 16 a)).
 
 Definition mult_3 (a:list Z) : list Z := slice 16 a.
 
-Definition M a b :=
+Definition M (a b:list Z) : list Z :=
   let m1 := mult_1 a b in
     let m2 := mult_2 m1 in
       mult_3 m2.
 
-Lemma MultToFF' : forall n a b c, mult_1 a b = c -> ToFF n a * ToFF n b = ToFF n c.
+Lemma MultToFF' : forall (n:Z) (a b c: list Z), mult_1 a b = c -> ToFF n a * ToFF n b = ToFF n c.
 Proof.
 intro n ; induction a, b ; intros c Hc.
 - simpl in *; go.
@@ -71,7 +40,7 @@ intro n ; induction a, b ; intros c Hc.
   ring.
 Qed.
 
-Lemma mult_2_ToFF : forall n l, ToFF n (mult_2 l) = ToFF n l + 38 * ToFF n (tail (16%nat) l).
+Lemma mult_2_ToFF : forall (n:Z) (l: list Z), ToFF n (mult_2 l) = ToFF n l + 38 * ToFF n (tail (16%nat) l).
 Proof.
 intros n l.
 unfold mult_2.
@@ -81,9 +50,9 @@ go.
 Qed.
 
 Lemma reduce_slice_ToFF:
-  forall l,
+  forall (l:list Z),
     Z.of_nat (length l) < 32 ->
-    (ToFF 16 (mult_3 (mult_2 l))) mod (Z.pow 2 255 - 19) = (ToFF 16 l) mod (Z.pow 2 255 - 19).
+    (ToFF 16 (mult_3 (mult_2 l)) :𝓟) = (ToFF 16 l :𝓟).
 Proof.
 intros l Hl.
 unfold mult_3.
