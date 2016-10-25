@@ -106,6 +106,10 @@ Proof.
 intros a b ; go.
 Qed.
 
+Lemma ToFF_add : forall m a b, ToFF (m + a :: b) = m + ToFF (a :: b).
+Proof.
+intros m a b ; go.
+Qed.
 
 Lemma ToFF_app : forall a b, ToFF (a ++ b) = ToFF a + 2^(n * ℤ.ℕ (length a)) * ToFF b.
 Proof.
@@ -182,12 +186,35 @@ Fixpoint Carrying (a:Z) (l:list Z) : list Z := match a,l with
 | a,h :: q => getResidute (a + h) :: Carrying (getCarry (a + h)) q
 end.
 
+Fixpoint Carrying_n (n:nat) (a:Z) (l:list Z) : list Z := match n,a,l with 
+| _,  0,[]     => []
+| _,  a,[]     => [a]
+| 0%nat,  a,h::q   => (a + h) :: q
+| S p,a,h :: q => getResidute (a + h) :: Carrying_n p (getCarry (a + h)) q
+end.
+
+Lemma Carry_n_step: forall m a h q, Carrying_n (S m) a (h :: q) = getResidute (a + h) :: Carrying_n m (getCarry (a + h)) q.
+Proof.
+intros.
+simpl.
+flatten.
+Qed.
+
+Lemma Carrying_n_length: forall l (m:nat) a, m = length l -> Carrying_n m a l = Carrying a l.
+Proof.
+induction l as [|h q IHl]; intros m a Hm; go.
+destruct m.
+inv Hm.
+simpl in *.
+inversion Hm.
+flatten ; f_equal ; go.
+Qed.
+
 Lemma CarryPreserveConst : forall l a , a + ToFF l  = ToFF (Carrying a l).
 Proof.
 induction l as [| h q IHl].
 intro a ; destruct a ; assert(Hn0: 2 ^ n * 0 = 0) by (symmetry ; apply Zmult_0_r_reverse) ; simpl ; try rewrite Hn0 ; go.
-intro a.
-unfold Carrying ; fold Carrying.
+intro a ; unfold Carrying ; fold Carrying.
 flatten ;
 unfold ToFF ; fold ToFF ; rewrite <- IHl ;
 rewrite <- Zplus_assoc_reverse ; 
@@ -197,6 +224,20 @@ rewrite residuteCarry ;
 reflexivity.
 Qed.
 
+Lemma CarrynPreserveConst : forall m l a , a + ToFF l  = ToFF (Carrying_n m a l).
+Proof.
+assert(Hn0: 2 ^ n * 0 = 0) by (symmetry ; apply Zmult_0_r_reverse).
+induction m ; intros l a.
+- simpl ; flatten ; try rewrite <- ToFF_add ; go.
+- simpl ; flatten ; go ;
+  rewrite! ToFF_cons ;
+  rewrite <- IHm ; 
+  rewrite <- Zplus_assoc_reverse ; 
+  rewrite <- Zred_factor4 ;
+  rewrite <- Zplus_assoc_reverse ;
+  rewrite residuteCarry ; go.
+Qed.
+
 Corollary CarryPreserve : forall l, ToFF l = ToFF (Carrying 0 l).
 Proof.
 intros.
@@ -204,6 +245,16 @@ assert(H: ToFF l = 0 + ToFF l) by go.
 rewrite H ; clear H.
 apply CarryPreserveConst.
 Qed.
+
+Corollary CarrynPreserve : forall m l, ToFF l = ToFF (Carrying_n m 0 l).
+Proof.
+intros.
+assert(H: ToFF l = 0 + ToFF l) by go.
+rewrite H ; clear H.
+apply CarrynPreserveConst.
+Qed.
+
+
 
 Theorem ToFF_transitive: forall (f g:list Z -> list Z) f' g' l,
   (forall l, ToFF (g l) = g' (ToFF l)) ->
@@ -248,4 +299,39 @@ rewrite ToFF_tail.
 go.
 Qed.
 
+Lemma ToFF_slice_nth : forall l (m:nat), ToFF (slice m l) + 2^(n * ℤ.ℕ (length (slice m l))) * nth m l 0 = ToFF (slice (S m) l).
+Proof.
+induction l ; destruct m ; flatten ; simpl ; go.
+- destruct l ; flatten ; simpl ; go ;
+  rewrite <-! Zmult_0_r_reverse ; ring.
+- flatten.
+  + simpl ; flatten ; simpl ; rewrite <-! Zmult_0_r_reverse ; try rewrite <- Zred_factor0  ; ring.
+  + rewrite Zplus_assoc_reverse.
+    f_equal.
+    rewrite Zpos_P_of_succ_nat.
+    replace (n * Z.succ (ℤ.ℕ length (slice m (z :: l0)))) with (n + n * ℤ.ℕ length (slice m (z :: l0))) by ring.
+    rewrite Z.pow_add_r ; go.
+    rewrite Zmult_assoc_reverse.
+    rewrite Zred_factor4.
+    f_equal ; go.
+Qed.
+
+Lemma ToFF_slice_nth_tail : forall l (m:nat), ToFF (slice m l) + 2^(n * ℤ.ℕ (length (slice m l))) * nth m l 0 + 2^(n * ℤ.ℕ (length (slice (S m) l))) * ToFF (tail (S m) l) = ToFF l.
+Proof.
+Proof.
+intros l m.
+rewrite ToFF_slice_nth.
+rewrite ToFF_slice_tail.
+go.
+Qed.
+
+Lemma ToFF_app_null: forall l, ToFF l = ToFF (l ++ [0]).
+Proof.
+intro l.
+rewrite ToFF_app.
+simpl ; ring.
+Qed.
+
 End FiniteFied.
+
+
