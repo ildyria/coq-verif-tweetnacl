@@ -1,6 +1,5 @@
-Require Export Coq.ZArith.BinInt.
-Require Export List.
 Require Export Tools.
+Require Export notations.
 Import ListNotations.
 
 (* Some definitions relating to the functional spec of this particular program.  *)

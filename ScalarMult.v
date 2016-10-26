@@ -1,8 +1,8 @@
-Require Export Coq.ZArith.BinInt.
-Require Export List.
-Require Export Tools.
-Import ListNotations.
 Require Export ToFF.
+Import ListNotations.
+Require Import Tools.
+
+Open Scope Z.
 
 Fixpoint ZscalarMult (a:Z) (b:list Z) : list Z := match b with
 | [] => []
@@ -41,3 +41,4 @@ Proof.
 induction l ; intros [] m; go.
 Qed.
 
+Close Scope Z.

@@ -6,6 +6,8 @@ all:
 	${COQ} Libs.v
 	@echo generating tools and libs
 	${COQ} Tools.v
+	${COQ} notations.v
+	${COQ} reduce.v
 	${COQ} ToFF.v
 	${COQ} SumList.v
 	${COQ} ScalarMult.v
