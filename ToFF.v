@@ -145,9 +145,10 @@ rewrite ToFF_app.
 simpl ; ring.
 Qed.
 
-Theorem ToFF_transitive: forall (f g:list Z -> list Z) f' g' l,
-  (forall l, ToFF (g l) = g' (ToFF l)) ->
-  (forall l, ToFF (f l) = f' (ToFF l )) -> 
+Theorem ToFF_transitive: forall (f g:list Z -> list Z) f' g' l l',
+  ToFF (g l) = g' (ToFF l) ->
+  ToFF (f l') = f' (ToFF l') -> 
+  g l = l' ->
   ToFF (f (g l)) = f' (g' (ToFF l)).
 Proof.
 go.

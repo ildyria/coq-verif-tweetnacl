@@ -1,6 +1,7 @@
 Require Export A.
 Require Export Reduce.
 Import ListNotations.
+Require Import Coq.Init.Datatypes.
 
 Section FiniteFied.
 
@@ -78,7 +79,7 @@ simpl.
 flatten.
 Qed.
 
-Lemma Carrying_n_length: forall l (m:nat) a, m = length l -> Carrying_n m a l = Carrying a l.
+Lemma Carrying_n_eq: forall l (m:nat) a, m = length l -> Carrying_n m a l = Carrying a l.
 Proof.
 induction l as [|h q IHl]; intros m a Hm; go.
 destruct m.
@@ -87,6 +88,12 @@ simpl in *.
 inversion Hm.
 flatten ; f_equal ; go.
 Qed.
+
+Lemma Carrying_n_length: forall l (m:nat) a, (m < length l)%nat -> length (Carrying_n m a l) = length l.
+Proof.
+induction l as [|h q IHl]; intros [] a Hm; simpl ; flatten ; go.
+Qed.
+
 
 Lemma CarryPreserveConst : forall l a , a + ToFF n l  = ToFF n (Carrying a l).
 Proof.
@@ -139,7 +146,7 @@ Definition backCarry (l:list Z) : (list Z) :=
               (h + 38 * getCarry 16 v) :: slice 14 q ++ [getResidute 16 v]
   end.
 
-Lemma backCarry_ToFF : forall l, (length l <= 16)%nat -> ToFF 16 l :𝓟  = (ToFF 16 (backCarry l) :𝓟).
+Lemma backCarry_ToFF_25519 : forall l, (length l <= 16)%nat -> ToFF 16 l :𝓟  = (ToFF 16 (backCarry l) :𝓟).
 Proof.
 destruct l as [| h l]; intro Hlength.
 - go.
@@ -236,4 +243,21 @@ destruct l as [| h l]; intro Hlength.
     }
     inversion H.
 Qed.
+
+Definition car25519 (l:list Z) : list Z := backCarry (Carrying_n 16 14 0 l).
+
+
+Lemma car25519_ToFF_25519 : forall l, (length l = 16)%nat -> ToFF 16 l :𝓟  = (ToFF 16 (car25519 l) :𝓟).
+Proof.
+intros l Hlength.
+unfold car25519.
+erewrite <- backCarry_ToFF_25519.
+rewrite <- CarrynPreserve.
+go.
+go.
+rewrite Carrying_n_length ; go.
+Qed.
+
+(* Yes I'm kinda cheating by fixing the length to 16 ! but it is still correct if
+you were to compare to the tweetnacl implementation*)
 
