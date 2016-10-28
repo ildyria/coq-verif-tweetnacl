@@ -1,12 +1,19 @@
 Require Export SumList.
-Require Export ToFF.
+Require Export ZofList.
 Import ListNotations.
 
 Open Scope Z.
 
-Lemma ZsumListToFF : forall n a b o, a ⊕ b = o -> ToFF n a + ToFF n b = ToFF n o.
+Section Integer.
+
+Variable n:Z.
+Hypothesis Hn: n > 0.
+
+Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
+
+Lemma ZsumList_correct_impl : forall a b o, a ⊕ b = o -> (ℤ.lst a) + (ℤ.lst b) = ℤ.lst o.
 Proof.
-intro n ; induction a , b.
+induction a , b.
 - intros o HSum ; go.
 - intros o HSum ; go.
 - intros o HSum ; go.
@@ -17,8 +24,7 @@ intro n ; induction a , b.
   apply headSame in Hh.
   apply tailSame in HSum.
   apply IHa in HSum.
-  unfold ToFF.
-  unfold ToFF.ToFF.
+  unfold ZofList.
   rewrite <- Z.add_shuffle2.
   rewrite Zred_factor4.
   apply Zplus_eq_compat.
@@ -28,9 +34,11 @@ intro n ; induction a , b.
   apply HSum.
 Qed.
 
-Corollary ZsumListToFF2: forall n a b, ToFF n (a ⊕ b) = ToFF n a + ToFF n b.
+Corollary ZsumList_correct: forall a b, (ℤ.lst a ⊕ b) = (ℤ.lst a) + (ℤ.lst b).
 Proof.
-intros n a b.
+intros a b.
 assert(exists o, o = a ⊕ b) by (exists (a ⊕ b) ; go) ; destruct H.
-symmetry; subst x ; apply ZsumListToFF ; go.
+symmetry; subst x ; apply ZsumList_correct_impl ; go.
 Qed.
+
+End Integer.

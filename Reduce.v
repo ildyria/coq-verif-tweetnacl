@@ -3,9 +3,9 @@ Require Export notations.
 
 Open Scope Z.
 
-Notation "A :𝓟" := (A mod (2^255 - 19)) (at level 80, right associativity).
+(*Notation "A :𝓖𝓕" := (A mod (2^255 - 19)) (at level 80, right associativity).*)
 
-Lemma t2256is38 : (2^256 :𝓟 ) = (38 :𝓟).
+Lemma t2256is38 : (2^256 :𝓖𝓕 ) = (38 :𝓖𝓕).
 Proof.
 compute.
 reflexivity.
@@ -24,7 +24,7 @@ Definition reduce n :=
   let c := n / 2^(256) in
   n + 38 * c - 2^(256) * c.
 
-Lemma reduceFF : forall m, (reduce m :𝓟) = (m :𝓟).
+Lemma reduceFF : forall m, (reduce m :𝓖𝓕) = (m :𝓖𝓕).
 Proof.
 intro m.
 unfold reduce.

@@ -1,5 +1,3 @@
-Require Export SumList.
-Require Export ToFF.
 Require Export ScalarMult.
 Require Export A.
 Import ListNotations.
@@ -21,45 +19,61 @@ Definition M (a b:list Z) : list Z :=
     let m2 := mult_2 m1 in
       mult_3 m2.
 
-Lemma MultToFF' : forall (n:Z) (a b c: list Z), mult_1 a b = c -> ToFF n a * ToFF n b = ToFF n c.
+Section Integer.
+
+Variable n:Z.
+Hypothesis Hn: n > 0.
+
+Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
+
+Lemma mult1_correct_impl : forall (a b c: list Z), mult_1 a b = c -> (ℤ.lst a) * (ℤ.lst b) = ℤ.lst c.
 Proof.
-intro n ; induction a, b ; intros c Hc.
+induction a, b ; intros c Hc.
 - simpl in *; go.
 - simpl in *; go.
 - simpl in Hc.
   rewrite Z.mul_comm.
   go.
-- rewrite! ToFF_cons.
+- rewrite! ZofList_cons.
   unfold mult_1 in Hc; fold mult_1 in Hc.
   rewrite <- Hc.
-  rewrite ToFF_cons.
-  rewrite ZsumListToFF2.
+  rewrite ZofList_cons.
+  rewrite ZsumList_correct.
   rewrite <- (IHa (z :: b) (mult_1 a0 (z :: b))) by go.
-  rewrite ToFF_cons.
-  rewrite ZscalarMultToFF.
+  rewrite ZofList_cons.
+  rewrite ZscalarMult_correct.
   ring.
 Qed.
 
-Lemma mult_2_ToFF : forall (n:Z) (l: list Z), ToFF n (mult_2 l) = ToFF n l + 38 * ToFF n (tail (16%nat) l).
+Corollary mult1_correct : forall (a b: list Z), ℤ.lst mult_1 a b =  (ℤ.lst a) * (ℤ.lst b).
 Proof.
-intros n l.
+intros a b.
+symmetry.
+erewrite mult1_correct_impl ; go.
+Qed.
+
+Lemma mult_2_correct : forall (l: list Z), (ℤ.lst mult_2 l) = (ℤ.lst l) + 38 * ℤ.lst tail 16 l.
+Proof.
+intros l.
 unfold mult_2.
-rewrite ZsumListToFF2.
-rewrite ZscalarMultToFF.
+rewrite ZsumList_correct.
+rewrite ZscalarMult_correct.
 go.
 Qed.
 
-Lemma reduce_slice_ToFF:
+End Integer.
+
+Lemma reduce_slice_GF:
   forall (l:list Z),
-    Z.of_nat (length l) < 32 ->
-    (ToFF 16 (mult_3 (mult_2 l)) :𝓟) = (ToFF 16 l :𝓟).
+    ℤ.ℕ length l < 32 ->
+    (ℤ16.lst mult_3 (mult_2 l)) :𝓖𝓕 = (ℤ16.lst l) :𝓖𝓕.
 Proof.
 intros l Hl.
 unfold mult_3.
 unfold mult_2.
-rewrite ToFF_slice ; try omega.
-rewrite ZsumListToFF2.
-rewrite ZscalarMultToFF.
+rewrite ZofList_slice ; try omega.
+rewrite ZsumList_correct.
+rewrite ZscalarMult_correct.
 assert(Hlength: (length l <= 16 \/ length l > 16)%nat) by omega.
 destruct Hlength.
 {
@@ -72,12 +86,12 @@ destruct Hlength.
   rewrite ZsumList_nil_r.
   rewrite Ht.
   rewrite Hs.
-  rewrite ToFF_nil.
+  rewrite ZofList_nil.
   f_equal.
   ring.
 }
 {
-  assert(Hlength: length (slice 16 (ZsumList l (ZscalarMult 38 (tail 16 l)))) = 16%nat).
+  assert(Hlength: length (slice 16 (l ⊕ 38 ∘ tail 16 l)) = 16%nat).
     rewrite slice_length_min.
     rewrite ZsumList_length_max.
     rewrite ZscalarMult_length.
@@ -93,8 +107,8 @@ destruct Hlength.
   rewrite Htailtail; clear Htailtail.
   rewrite ZscalarMultnil.
   rewrite ZsumList_nil_r.
-  replace (16 * Z.of_nat 16) with 256 by go.
-  assert(Hnul: (38 * ToFF 16 (tail 16 l) - 2 ^ 256 * ToFF 16 (tail 16 l)) mod (2 ^ 255 - 19) = 0).
+  replace (16 * ℤ.ℕ 16) with 256 by go.
+  assert(Hnul: (38 * (ℤ16.lst tail 16 l) - 2 ^ 256 * (ℤ16.lst tail 16 l)) :𝓖𝓕  = 0).
     rewrite <- Zmult_minus_distr_r.
     rewrite Zmult_mod.
     replace ((38 - 2 ^ 256) mod (2 ^ 255 - 19)) with 0; compute ; reflexivity.
@@ -105,3 +119,77 @@ destruct Hlength.
   reflexivity.
 }
 Qed.
+
+Lemma Zsucc16 : Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ 0))))))))))))))) = 16.
+Proof.
+compute ; reflexivity.
+Qed.
+
+Corollary mult_GF: forall a b, ℤ.ℕ length a = 16 -> ℤ.ℕ length b = 16 ->  (ℤ16.lst M a b) :𝓖𝓕 = (ℤ16.lst a) * (ℤ16.lst b) :𝓖𝓕.
+Proof.
+intros a b Hla Hlb.
+unfold M.
+rewrite reduce_slice_GF.
+f_equal.
+rewrite mult1_correct.
+go.
+rewrite <- Zlength_correct in *.
+destruct a ; [inversion Hla|]. (* 0 *)
+destruct a ; [inversion Hla|]. (* 1 *)
+destruct a ; [inversion Hla|]. (* 2 *)
+destruct a ; [inversion Hla|]. (* 3 *)
+destruct a ; [inversion Hla|]. (* 4 *)
+destruct a ; [inversion Hla|]. (* 5 *)
+destruct a ; [inversion Hla|]. (* 6 *)
+destruct a ; [inversion Hla|]. (* 7 *)
+destruct a ; [inversion Hla|]. (* 8 *)
+destruct a ; [inversion Hla|]. (* 9 *)
+destruct a ; [inversion Hla|]. (* 10 *)
+destruct a ; [inversion Hla|]. (* 11 *)
+destruct a ; [inversion Hla|]. (* 12 *)
+destruct a ; [inversion Hla|]. (* 13 *)
+destruct a ; [inversion Hla|]. (* 14 *)
+destruct a ; [inversion Hla|]. (* 15 *)
+destruct a ; [inversion Hla|]. (* 16 *)
+- destruct b ; [inversion Hlb|]. (* 0 *)
+destruct b ; [inversion Hlb|]. (* 1 *)
+destruct b ; [inversion Hlb|]. (* 2 *)
+destruct b ; [inversion Hlb|]. (* 3 *)
+destruct b ; [inversion Hlb|]. (* 4 *)
+destruct b ; [inversion Hlb|]. (* 5 *)
+destruct b ; [inversion Hlb|]. (* 6 *)
+destruct b ; [inversion Hlb|]. (* 7 *)
+destruct b ; [inversion Hlb|]. (* 8 *)
+destruct b ; [inversion Hlb|]. (* 9 *)
+destruct b ; [inversion Hlb|]. (* 10 *)
+destruct b ; [inversion Hlb|]. (* 11 *)
+destruct b ; [inversion Hlb|]. (* 12 *)
+destruct b ; [inversion Hlb|]. (* 13 *)
+destruct b ; [inversion Hlb|]. (* 14 *)
+destruct b ; [inversion Hlb|]. (* 15 *)
+destruct b. (* 16 *)
++ simpl.
+  rewrite! Zlength_cons.
+  rewrite Zlength_nil.
+  compute. (* LOL ! Thx God ! *)
+  reflexivity.
++ clear Hla. exfalso. (* lets get a bit of visibility *)
+  rewrite! Zlength_cons in Hlb.
+  rewrite <- Zsucc16 in Hlb ; 
+  repeat (rewrite Z.succ_inj_wd in Hlb).
+  rewrite Zlength_correct in Hlb.
+  rewrite <- Nat2Z.inj_succ in Hlb.
+  rewrite <- Nat2Z.inj_0 in Hlb.
+  rewrite Nat2Z.inj_iff in Hlb.
+  inversion Hlb.
+- clear Hlb. exfalso. (* lets get a bit of visibility *)
+  rewrite! Zlength_cons in Hla.
+  rewrite <- Zsucc16 in Hla ;
+  repeat (rewrite Z.succ_inj_wd in Hla).
+  rewrite Zlength_correct in Hla.
+  rewrite <- Nat2Z.inj_succ in Hla.
+  rewrite <- Nat2Z.inj_0 in Hla.
+  rewrite Nat2Z.inj_iff in Hla.
+  inversion Hla.
+Qed.
+

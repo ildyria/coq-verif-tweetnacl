@@ -8,7 +8,8 @@ all:
 	${COQ} Tools.v
 	${COQ} notations.v
 	${COQ} Reduce.v
-	${COQ} ToFF.v
+	${COQ} ZofList.v
+	${COQ} Carry.v
 	${COQ} SumList.v
 	${COQ} ScalarMult.v
 	@echo generating libs for iterator

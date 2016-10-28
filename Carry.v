@@ -1,12 +1,13 @@
-Require Export A.
+Require Export ZofList.
 Require Export Reduce.
 Import ListNotations.
-Require Import Coq.Init.Datatypes.
 
-Section FiniteFied.
+Section Integer.
 
 Variable n:Z.
 Hypothesis Hn: n > 0.
+
+Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
 Definition getCarry (m:Z) : Z :=  Z.shiftr m n.
 
@@ -95,13 +96,13 @@ induction l as [|h q IHl]; intros [] a Hm; simpl ; flatten ; go.
 Qed.
 
 
-Lemma CarryPreserveConst : forall l a , a + ToFF n l  = ToFF n (Carrying a l).
+Lemma CarryPreserveConst : forall l a , a + (ℤ.lst l) = ℤ.lst Carrying a l.
 Proof.
 induction l as [| h q IHl].
 intro a ; destruct a ; assert(Hn0: 2 ^ n * 0 = 0) by (symmetry ; apply Zmult_0_r_reverse) ; simpl ; try rewrite Hn0 ; go.
 intro a ; unfold Carrying ; fold Carrying.
 flatten ;
-unfold ToFF ; fold ToFF ; rewrite <- IHl ;
+unfold ZofList ; fold ZofList ; rewrite <- IHl ;
 rewrite <- Zplus_assoc_reverse ; 
 rewrite <- Zred_factor4 ;
 rewrite <- Zplus_assoc_reverse ;
@@ -109,13 +110,13 @@ rewrite residuteCarry ;
 reflexivity.
 Qed.
 
-Lemma CarrynPreserveConst : forall m l a , a + ToFF n l  = ToFF n (Carrying_n m a l).
+Lemma CarrynPreserveConst : forall m l a , a + (ℤ.lst l)  = ℤ.lst Carrying_n m a l.
 Proof.
 assert(Hn0: 2 ^ n * 0 = 0) by (symmetry ; apply Zmult_0_r_reverse).
 induction m ; intros l a.
-- simpl ; flatten ; try rewrite <- ToFF_add ; go.
+- simpl ; flatten ; try rewrite <- ZofList_add ; go.
 - simpl ; flatten ; go ;
-  rewrite! ToFF_cons ;
+  rewrite! ZofList_cons ;
   rewrite <- IHm ; 
   rewrite <- Zplus_assoc_reverse ; 
   rewrite <- Zred_factor4 ;
@@ -123,21 +124,21 @@ induction m ; intros l a.
   rewrite residuteCarry ; go.
 Qed.
 
-Corollary CarryPreserve : forall l, ToFF n l = ToFF n (Carrying 0 l).
+Corollary CarryPreserve : forall l, ℤ.lst l = ℤ.lst Carrying 0 l.
 Proof.
 intros.
-replace (ToFF n l) with (0 + ToFF n l) by go.
+replace (ℤ.lst l) with (0 + ℤ.lst l) by go.
 apply CarryPreserveConst.
 Qed.
 
-Corollary CarrynPreserve : forall m l, ToFF n l = ToFF n (Carrying_n m 0 l).
+Corollary CarrynPreserve : forall m l, ℤ.lst l = ℤ.lst Carrying_n m 0 l.
 Proof.
 intros.
-replace (ToFF n l) with (0 + ToFF n l) by go.
+replace (ℤ.lst l) with (0 + ℤ.lst l) by go.
 apply CarrynPreserveConst.
 Qed.
 
-End FiniteFied.
+End Integer.
 
 Definition backCarry (l:list Z) : (list Z) := 
   match l with
@@ -146,14 +147,14 @@ Definition backCarry (l:list Z) : (list Z) :=
               (h + 38 * getCarry 16 v) :: slice 14 q ++ [getResidute 16 v]
   end.
 
-Lemma backCarry_ToFF_25519 : forall l, (length l <= 16)%nat -> ToFF 16 l :𝓟  = (ToFF 16 (backCarry l) :𝓟).
+Lemma backCarry_ToFF_25519 : forall l, (length l <= 16)%nat -> (ℤ16.lst l) :𝓖𝓕  = ((ℤ16.lst backCarry l) :𝓖𝓕).
 Proof.
 destruct l as [| h l]; intro Hlength.
 - go.
 - unfold backCarry.
-  rewrite ToFF_cons.
-  rewrite ToFF_cons.
-  rewrite ToFF_app ; try omega.
+  rewrite ZofList_cons.
+  rewrite ZofList_cons.
+  rewrite ZofList_app ; try omega.
   apply le_lt_eq_dec in Hlength.
   destruct Hlength.
   + rename l0 into H.
@@ -163,7 +164,7 @@ destruct l as [| h l]; intro Hlength.
     replace (slice 14 l) with l.
     rewrite getResidute_0.
     rewrite getCarry_0.
-    replace (ToFF 16 [0]) with 0.
+    replace (ℤ16.lst [0]) with 0.
     f_equal.
     ring.
     go.
@@ -196,10 +197,10 @@ destruct l as [| h l]; intro Hlength.
       replace (slice 14 [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13]) with 
       [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12] by go.
       replace ([z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13]) with ([z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12] ++ [ z13]) by go.
-      rewrite ToFF_app ; try omega.
+      rewrite ZofList_app ; try omega.
       replace (length [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12]) with 14%nat by go.
-      replace (ToFF 16 [getResidute 16 z13]) with (getResidute 16 z13) by go.
-      replace (ToFF 16 [z13]) with z13 by go.
+      replace (ℤ16.lst [getResidute 16 z13]) with (getResidute 16 z13) by go.
+      replace (ℤ16.lst [z13]) with z13 by go.
       rewrite <- Zred_factor4.
       rewrite <- Zred_factor4.
       rewrite Zplus_assoc_reverse.
@@ -247,7 +248,7 @@ Qed.
 Definition car25519 (l:list Z) : list Z := backCarry (Carrying_n 16 14 0 l).
 
 
-Lemma car25519_ToFF_25519 : forall l, (length l = 16)%nat -> ToFF 16 l :𝓟  = (ToFF 16 (car25519 l) :𝓟).
+Lemma car25519_ToFF_25519 : forall l, (length l = 16)%nat -> (ℤ16.lst l) :𝓖𝓕  = (ℤ16.lst car25519 l) :𝓖𝓕.
 Proof.
 intros l Hlength.
 unfold car25519.

@@ -1,4 +1,4 @@
-Require Export ToFF.
+Require Export ZofList.
 Import ListNotations.
 Require Import Tools.
 
@@ -10,16 +10,6 @@ Fixpoint ZscalarMult (a:Z) (b:list Z) : list Z := match b with
 end.
 
 Notation "A ∘ B" := (ZscalarMult A B) (at level 60, right associativity).
-
-Lemma ZscalarMultToFF: forall n a b, ToFF n (a ∘ b) = a * ToFF n b.
-Proof.
-intros n a.
-induction b ; go.
-unfold ZscalarMult ; fold ZscalarMult.
-rewrite! ToFF_cons.
-rewrite IHb.
-ring.
-Qed.
 
 Lemma ZscalarMultnil : forall n, n ∘ [] = [].
 Proof.
@@ -40,5 +30,23 @@ Lemma ZscalarMult_tail: forall l n m, tail n (m ∘ l) = m ∘ (tail n l).
 Proof.
 induction l ; intros [] m; go.
 Qed.
+
+Section Integer.
+
+Variable n:Z.
+Hypothesis Hn: n > 0.
+
+Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
+
+Lemma ZscalarMult_correct: forall a b, ℤ.lst a ∘ b = a * ℤ.lst b.
+Proof.
+intros a ; induction b ; go.
+unfold ZscalarMult ; fold ZscalarMult.
+rewrite! ZofList_cons.
+rewrite IHb.
+ring.
+Qed.
+
+End Integer.
 
 Close Scope Z.
