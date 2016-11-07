@@ -59,6 +59,11 @@ Proof. go. Qed.
 Lemma tailSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 -> q1 = q2.
 Proof. go. Qed.
 
+Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
+Proof.
+split ; intro; [|destruct H] ; go.
+Qed.
+
 Lemma lengthNil : forall (A:Type) (l:list A), l = nil <-> length l = 0.
 Proof. intros. split ; intro ; induction l ; go. Qed.
 
@@ -325,6 +330,9 @@ destruct n.
 Qed.
 
 Lemma slice_cons : forall A (q:list A) h n, slice (S (S n)) (h::q) = h :: slice (S n) q.
+Proof. go. Qed.
+
+Lemma slice_cons' : forall A (q:list A) h n, slice (S n) (h::q) = h :: slice n q.
 Proof. go. Qed.
 
 Lemma slice_cons_rev : forall A (l q:list A) h n, length q = n -> slice (S n) (q ++ h :: l) = slice n q ++ h :: nil.
