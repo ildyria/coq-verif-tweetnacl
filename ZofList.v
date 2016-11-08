@@ -33,12 +33,11 @@ change (2 ^ 64) with (2 ^ 63 * 2).
 intros; omega.
 Qed.
 
-(*
+
 Fixpoint ZofListi (a: list Z) (i:Z) : Z := match a with 
 | [] => 0
 | h :: q => h * Z.pow 2 (n * i) + ZofListi q (Z.succ i)
 end.
-*)
 
 Fixpoint ZofList (a : list Z) : Z := match a with 
 | [] => 0
@@ -57,7 +56,7 @@ Proof.
 assert(Hp:= pown).
 omega.
 Qed.
-(*
+
 Lemma ZofList_eq : forall l i, i >= 0 -> ZofListi l i = 2^(n * i) * ZofList l.
 Proof.
 dependent induction l; go.
@@ -82,7 +81,7 @@ apply Zmult_gt_0_le_0_compat ; omega.
 Qed.
 
 
-ZofListllary ZofList_eq_D : forall l, ZofListi l 0 = ZofList l.
+Corollary ZofList_equiv : forall l, ZofListi l 0 = ZofList l.
 Proof.
 intro l.
 assert (2^(n * 0) = 1) by (rewrite <- Zmult_0_r_reverse ; go).
@@ -93,11 +92,15 @@ rewrite H0.
 apply ZofList_eq.
 omega.
 Qed.
-*)
 
 Lemma ZofList_nil : ℤ.lst nil = 0.
 Proof.
 go.
+Qed.
+
+Lemma ZofList_cons_0 : forall a, ℤ.lst [a] = a.
+Proof.
+intros a ; go.
 Qed.
 
 Lemma ZofList_cons : forall a b, ℤ.lst a :: b = a + 2^n * ℤ.lst b.

@@ -79,6 +79,9 @@ Proof. induction l1 ; intros ; go. Qed.
 Lemma app_assoc2 : forall (A:Type) (l1 l2 l3:list A), l1 ++ l2 ++ l3 = l1 ++ (l2 ++ l3).
 Proof. go. Qed.
 
+Lemma list_to_length: forall A (l1 l2:list A), l1 = l2 -> length l1 = length l2.
+Proof. go. Qed.
+
 Lemma list_eq_False : forall (A:Type) (l:list A) (a:A), a :: l = l -> False.
 Proof.
 dependent induction l.
@@ -271,6 +274,12 @@ Proof. go. Qed.
 Lemma nth_error_Some_Eq : forall A (l:list A) n, n < length l -> exists st, nth_error l n = Some st.
 Proof. induction l ; intros ; go ; destruct n ; [exists a|apply IHl] ; go. Qed.
 
+Lemma nth_cons: forall A (h d:A) (n:nat) (q:list A), nth (S n) (h :: q) d = nth n q d.
+Proof. intros ; go. Qed.
+
+Lemma nth_cons_0: forall A (h d:A) (q:list A), nth 0 (h :: q) d = h.
+Proof. intros ; go. Qed.
+
 Fixpoint slice A (n:nat) (l:list A) : list A := match n,l with
 | _,nil => nil
 | 0, _ => nil
@@ -344,16 +353,20 @@ assert(SQ : slice n q = q) by (apply slice_length_eq ; go) ; rewrite SQ ; simpl 
 Qed.
 
 Lemma slice_nil : forall A (l:list A), slice 0 l = nil.
-Proof.
-intros.
-induction l ; go.
-Qed.
+Proof. intros ; induction l ; go. Qed.
 
 Fixpoint tail A (n:nat) (l:list A) : list A := match n,l with
 | _,nil => nil
 | 0, l => l
 | S p, h :: q => tail p q
 end.
+
+Lemma tail_cons_0 : forall A (l:list A), tail 0 l = l.
+Proof. intros ; induction l ; go. Qed.
+
+Lemma tail_cons : forall A (h:A) (q:list A) n, tail (S n) (h :: q) = tail n q.
+Proof. intros ; go. Qed.
+
 
 Lemma tail_length_eq : forall A (l:list A)  n, length l = n -> tail n l = [].
 Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
