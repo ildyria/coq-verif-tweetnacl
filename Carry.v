@@ -293,7 +293,6 @@ Qed.
 
 Definition car25519 (l:list Z) : list Z := backCarry (Carrying_n 16 15 0 l).
 
-
 Lemma car25519_ToFF_25519 : forall l, (length l = 16)%nat -> (ℤ16.lst l) :𝓖𝓕  = (ℤ16.lst car25519 l) :𝓖𝓕.
 Proof.
 intros l Hlength.
@@ -308,87 +307,87 @@ Qed.
 Lemma car25519_bound : forall i l, (length l = 16)%nat -> (i <> 0)%nat -> nth i (car25519 l) 0 < 2 ^ 16.
 Proof.
 destruct i ; intros l H Hi ; [false|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
-destruct l ; [inversion H|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
 destruct l ; [|false].
 unfold car25519.
 unfold backCarry.
 flatten. symmetry ; reflexivity.
-change (nth (S i)
-  (z15 + 38 * getCarry 16 (nth 15 (z15 :: l) 0)
-   :: slice 14 l ++ [getResidute 16 (nth 15 (z15 :: l) 0)]) 0) with (nth i
-  (slice 14 l ++ [getResidute 16 (nth 15 (z15 :: l) 0)]) 0).
-  rewrite! Carry_n_step in Eq.
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  destruct l ; [false|].
-  rewrite! ListSame in Eq.
-  repeat destruct Eq as [? Eq].
-  assert(Hii: (i < 14 \/ i = 14 \/ i > 14)%nat) by omega.
-  destruct Hii.
-  + rewrite app_nth1.
-    * replace (slice 14
-     (z16:: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: Carrying_n 16 0 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (0 + z) + z0) + z1) + z2) + z3) + z4) + z5) + z6) + z7) + z8) + z9) + z10) + z11) + z12) + z13)) [z14])) with 
-     (z16 :: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: []).
-     simpl.
-     flatten ; subst ; try (apply withinBounds16 ; omega) ; symmetry ; reflexivity.
-      rewrite! slice_cons'.
-      rewrite slice_nil.
-      reflexivity.
-    * rewrite slice_length_min.
-      simpl.
-      omega.
-  + destruct H15.
-  * subst i.
-  rewrite app_nth2.
+change
+    (nth (S i) (z15 + 38 * getCarry 16 (nth 15 (z15 :: l) 0)
+      :: slice 14 l ++ [getResidute 16 (nth 15 (z15 :: l) 0)]) 0)
+  with 
+   (nth i (slice 14 l ++ [getResidute 16 (nth 15 (z15 :: l) 0)]) 0).
+rewrite! Carry_n_step in Eq.
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+destruct l ; [false|].
+rewrite! ListSame in Eq.
+jauto_set.
+clear Hi.
+(* destruct the big /\ construction *)
+assert(Hi: (i < 14 \/ i = 14 \/ i > 14)%nat) by omega.
+(* case analisys on i: in slice, last elem or outside *)
+case Hi ; intro Hi_temp ; clear Hi ; rename Hi_temp into Hi.
+(* IN *)
+{
+  rewrite app_nth1.
+  - replace (slice 14
+      (z16:: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: Carrying_n 16 0 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (0 + z) + z0) + z1) + z2) + z3) + z4) + z5) + z6) + z7) + z8) + z9) + z10) + z11) + z12) + z13)) [z14])) with 
+      (z16 :: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: []).
+    + simpl ; flatten ; subst ; try (apply withinBounds16 ; omega) ; simpl ; flatten ; symmetry ; reflexivity.
+    + rewrite! slice_cons' ; rewrite slice_nil ; reflexivity.
+  - rewrite slice_length_min ; auto.
+}
+case Hi ; intro Hi_temp ; clear Hi ; rename Hi_temp into Hi.
+{
+  subst i.
   replace (slice 14
-     (z16:: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: Carrying_n 16 0 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (0 + z) + z0) + z1) + z2) + z3) + z4) + z5) + z6) + z7) + z8) + z9) + z10) + z11) + z12) + z13)) [z14])) with 
+     (z16:: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: l)) with 
      (z16 :: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: []).
+  (* main goal *)
+  - rewrite app_nth2.
   change (length [z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29]) with 14%nat.
   rewrite NPeano.Nat.sub_diag.
   unfold nth.
   apply withinBounds16 ; omega.
-  rewrite! slice_cons'.
-  rewrite slice_nil.
-  reflexivity.
-  replace (slice 14
-     (z16:: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: Carrying_n 16 0 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (0 + z) + z0) + z1) + z2) + z3) + z4) + z5) + z6) + z7) + z8) + z9) + z10) + z11) + z12) + z13)) [z14])) with 
-     (z16 :: z17 :: z18 :: z19 :: z20 :: z21 :: z22 :: z23 :: z24 :: z25 :: z26 :: z27 :: z28 :: z29 :: []).
-     compute ; omega.
-  rewrite! slice_cons'.
-  rewrite slice_nil.
-  reflexivity.
-  * rewrite nth_overflow.
+  (* goals generated by change *)
+  compute ; omega.
+  (* goals generated by replace *)
+  - rewrite! slice_cons' ; rewrite slice_nil ; reflexivity.
+}
+{ rewrite nth_overflow.
   symmetry ; reflexivity.
   rewrite app_length.
   rewrite slice_length_min.
   compute.
   omega.
+}
 Qed.
 (*
     Proof could be smaller but due to the kernel verification it is better to split go into detail.
@@ -399,11 +398,6 @@ Qed.
     simpl ; flatten ; simpl ; try reflexivity.
     simpl ; flatten ; try apply withinBounds16 ; simpl ; try reflexivity.
 Qed.*)
-
-
-
-
-
 
 (* Yes I'm kinda cheating by fixing the length to 16 ! but it is still correct if
 you were to compare to the tweetnacl implementation*)
