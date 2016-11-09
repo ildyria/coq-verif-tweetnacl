@@ -338,10 +338,10 @@ destruct n.
   go.
 Qed.
 
-Lemma slice_cons : forall A (q:list A) h n, slice (S (S n)) (h::q) = h :: slice (S n) q.
+Lemma slice_cons : forall A (q:list A) h n, slice (S n) (h::q) = h :: slice n q.
 Proof. go. Qed.
 
-Lemma slice_cons' : forall A (q:list A) h n, slice (S n) (h::q) = h :: slice n q.
+Lemma slice_cons' : forall A (q:list A) h n, slice (S (S n)) (h::q) = h :: slice (S n) q.
 Proof. go. Qed.
 
 Lemma slice_cons_rev : forall A (l q:list A) h n, length q = n -> slice (S n) (q ++ h :: l) = slice n q ++ h :: nil.
@@ -354,6 +354,9 @@ Qed.
 
 Lemma slice_nil : forall A (l:list A), slice 0 l = nil.
 Proof. intros ; induction l ; go. Qed.
+
+Lemma slice_cons_0 : forall A (l:list A), slice 0 l = nil.
+Proof. apply slice_nil. Qed.
 
 Fixpoint tail A (n:nat) (l:list A) : list A := match n,l with
 | _,nil => nil
