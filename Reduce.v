@@ -163,5 +163,22 @@ Proof.
   assumption.
 Qed.
 
+Lemma getCarry_1: forall m,
+  2^n <= m < 2^(n+1) ->
+  getCarry m = 1.
+Proof.
+  intros m Hm.
+  unfold getCarry.
+  rewrite Z.shiftr_div_pow2 ; try omega.
+  SearchAbout Z.div Z.mul.
+  apply Z.div_pos.
+  assumption.
+  rewrite <- Z.gt_lt_iff.
+  apply pown0.
+  assumption.
+Qed.
+
+
+
 
 End Integer.
