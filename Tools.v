@@ -60,9 +60,7 @@ Lemma tailSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 -> q1 =
 Proof. go. Qed.
 
 Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
-Proof.
-split ; intro; [|destruct H] ; go.
-Qed.
+Proof. split ; intro; [|destruct H] ; go. Qed.
 
 Lemma lengthNil : forall (A:Type) (l:list A), l = nil <-> length l = 0.
 Proof. intros. split ; intro ; induction l ; go. Qed.
@@ -83,132 +81,122 @@ Lemma list_to_length: forall A (l1 l2:list A), l1 = l2 -> length l1 = length l2.
 Proof. go. Qed.
 
 Lemma list_eq_False : forall (A:Type) (l:list A) (a:A), a :: l = l -> False.
-Proof.
-dependent induction l.
-intros.
-inversion H.
-intros.
-inversion H.
-eapply IHl.
-eauto.
-Qed.
+Proof. dependent induction l ;  intros ; inversion H ; eapply IHl ; eauto. Qed.
 
 
 Lemma app_inv : forall A (l1 l2 l3 l4:list A), l1 = l2 -> l3 = l4 -> l1 ++ l3 = l2 ++ l4.
-Proof.
-induction l1 ; destruct l2 ; intros ; go.
-Qed.
+Proof. induction l1 ; destruct l2 ; intros ; go. Qed.
 
 Lemma orderedCon : forall l a, orderedList (a :: l) -> orderedList l.
 Proof. intros ; dependent induction H ; go. Qed.
 
 Lemma orderedConcat : forall l1 l2, orderedList (l1 ++ l2) -> orderedList l1 /\ orderedList l2.
 Proof.
-intros.
-split.
-- dependent induction l1.
-  + go.
-  + dependent induction l1.
-  * go.
-  * apply ConOrdered.
-      inv H ; go.
-      apply IHl0 with l2.
+  intros.
+  split.
+  - dependent induction l1.
+    + go.
+    + dependent induction l1.
+    * go.
+    * apply ConOrdered.
+        inv H ; go.
+        apply IHl0 with l2.
+        apply orderedCon with a.
+        go.
+  - induction l1.
+    + go.
+    + apply IHl1.
       apply orderedCon with a.
       go.
-- induction l1.
-  + go.
-  + apply IHl1.
-    apply orderedCon with a.
-    go.
 Qed.
 
 Lemma rev_nth_error : forall A (l:list A) n, n < length l ->
     nth_error (rev l) n = nth_error l (length l - S n).
 Proof.
-induction l.
-- intros.
-  inversion H.
-- intros.
-  simpl in H.
-  simpl (rev (a::l)).
-  simpl (length (a :: l) - S n).
-  inversion H.
-  rewrite <- minus_n_n; simpl.
-  rewrite <- rev_length.
-  rewrite nth_error_app2 ; go.
-  rewrite <- minus_n_n; auto.
-  rewrite nth_error_app1 ; go.
-  rewrite (minus_plus_simpl_l_reverse (length l) n 1).
-  replace (1 + length l) with (S (length l)); auto with arith.
-  rewrite <- minus_Sn_m; auto with arith.
-  apply IHl ; auto with arith.
-  rewrite rev_length; auto.
+  induction l.
+  - intros.
+    inversion H.
+  - intros.
+    simpl in H.
+    simpl (rev (a::l)).
+    simpl (length (a :: l) - S n).
+    inversion H.
+    rewrite <- minus_n_n; simpl.
+    rewrite <- rev_length.
+    rewrite nth_error_app2 ; go.
+    rewrite <- minus_n_n; auto.
+    rewrite nth_error_app1 ; go.
+    rewrite (minus_plus_simpl_l_reverse (length l) n 1).
+    replace (1 + length l) with (S (length l)); auto with arith.
+    rewrite <- minus_Sn_m; auto with arith.
+    apply IHl ; auto with arith.
+    rewrite rev_length; auto.
 Qed.
 
 Lemma NoDup_rev: forall A (l:list A), NoDup l <-> NoDup (rev l).
 Proof.
-intros A l.
-destruct l as [ | d l ] ; [intuition | ] ; generalize (d :: l) ; clear l.
-split ; intro.
-- rewrite NoDup_nth.
-  intros i j IL IJ Nths.
-  rewrite rev_length in IL.
-  rewrite rev_length in IJ.
-  rewrite NoDup_nth in H.
-  specialize H with (length l - S i) (length l - S j).
-  assert(HI: length l - S i < length l) by omega.
-  assert(HJ: length l - S j < length l) by omega.
-  apply H in HI ; go.
-  rewrite !rev_nth in Nths ; eauto.
-- rewrite NoDup_nth.
-  intros i j IL IJ Nths.
-  rewrite NoDup_nth in H.
-  rewrite !rev_length in H.
-  specialize H with (length l - S i) (length l - S j).
-  assert(HI: length l - S i < length l) by omega.
-  assert(HJ: length l - S j < length l) by omega.
-  apply H in HI.
-  omega.
-  omega.
-  rewrite !rev_nth ; go.
-  assert(HI' : length l - S (length l - S i) = i) by omega.
-  assert(HJ' : length l - S (length l - S j) = j) by omega.
-  rewrite HI'.
-  rewrite HJ'.
-  apply Nths.
-  Unshelve.
-  apply d.
-  Unshelve.
-  apply d.
+  intros A l.
+  destruct l as [ | d l ] ; [intuition | ] ; generalize (d :: l) ; clear l.
+  split ; intro.
+  - rewrite NoDup_nth.
+    intros i j IL IJ Nths.
+    rewrite rev_length in IL.
+    rewrite rev_length in IJ.
+    rewrite NoDup_nth in H.
+    specialize H with (length l - S i) (length l - S j).
+    assert(HI: length l - S i < length l) by omega.
+    assert(HJ: length l - S j < length l) by omega.
+    apply H in HI ; go.
+    rewrite !rev_nth in Nths ; eauto.
+  - rewrite NoDup_nth.
+    intros i j IL IJ Nths.
+    rewrite NoDup_nth in H.
+    rewrite !rev_length in H.
+    specialize H with (length l - S i) (length l - S j).
+    assert(HI: length l - S i < length l) by omega.
+    assert(HJ: length l - S j < length l) by omega.
+    apply H in HI.
+    omega.
+    omega.
+    rewrite !rev_nth ; go.
+    assert(HI' : length l - S (length l - S i) = i) by omega.
+    assert(HJ' : length l - S (length l - S j) = j) by omega.
+    rewrite HI'.
+    rewrite HJ'.
+    apply Nths.
+    Unshelve.
+    apply d.
+    Unshelve.
+    apply d.
 Qed.
 
 Lemma NoDup_cons_end: forall A (l:list A) x, NoDup (l ++ x::nil) -> NoDup l.
 Proof.
-intros.
-apply NoDup_rev in H.
-rewrite rev_app_distr in H.
-simpl in *.
-apply NoDup_cons_iff in H.
-destruct H as [_ H].
-apply NoDup_rev in H.
-go.
+  intros.
+  apply NoDup_rev in H.
+  rewrite rev_app_distr in H.
+  simpl in *.
+  apply NoDup_cons_iff in H.
+  destruct H as [_ H].
+  apply NoDup_rev in H.
+  go.
 Qed.
 
 Lemma NoDup_app : forall A (l1 l2:list A), NoDup (l1 ++ l2) -> NoDup l1 /\ NoDup l2.
 Proof.
-induction l1 ; intros ; simpl in *.
-split ; go.
-apply NoDup_cons_iff in H.
-destruct H.
-apply IHl1 in H0.
-destruct H0.
-split ; go.
-apply NoDup_cons_iff.
-split ; go.
-intros H'.
-apply H.
-apply in_or_app.
-go.
+  induction l1 ; intros ; simpl in *.
+  split ; go.
+  apply NoDup_cons_iff in H.
+  destruct H.
+  apply IHl1 in H0.
+  destruct H0.
+  split ; go.
+  apply NoDup_cons_iff.
+  split ; go.
+  intros H'.
+  apply H.
+  apply in_or_app.
+  go.
 Qed.
 
 Fixpoint beq_listnat (l1 l2:list nat) : bool := match (l1,l2) with
@@ -219,8 +207,8 @@ end.
 
 Fact listEqRefl : forall l, beq_listnat l l = true.
 Proof.
-induction l ; go.
-apply andb_true_iff ; split ; go ; rewrite beq_nat_refl with a; go.
+  induction l ; go.
+  apply andb_true_iff ; split ; go ; rewrite beq_nat_refl with a; go.
 Qed.
 
 (* props*)
@@ -287,16 +275,13 @@ Fixpoint slice A (n:nat) (l:list A) : list A := match n,l with
 end.
 
 Lemma slice_length_or : forall A (l:list A) n, length (slice n l) = n \/ length (slice n l) = length l.
-Proof.
-induction l ; intros ; destruct n ; go ; simpl ; rewrite !Nat.succ_inj_wd ; go.
-(*  Search(S _ = S _ <-> _ = _).*)
-Qed.
+Proof. induction l ; intros ; destruct n ; go ; simpl ; rewrite !Nat.succ_inj_wd ; go. Qed.
 
 Lemma slice_length_nil : forall A (l:list A) n, length (slice n l) = 0 <-> l = nil \/ n = 0.
 Proof.
-intros ; split.
-- induction l ; intro ; go ; destruct n ; go.
-- intro ; destruct H ; subst ; [destruct n | destruct l] ; go.
+  intros ; split.
+  - induction l ; intro ; go ; destruct n ; go.
+  - intro ; destruct H ; subst ; [destruct n | destruct l] ; go.
 Qed.
 
 Lemma slice_length_min : forall A (l:list A) n, length (slice n l) = min n (length l).
@@ -312,30 +297,26 @@ Lemma slice_length_le : forall A (l:list A)  n, length l <= n -> slice n l = l.
 Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
 
 Lemma slice_app : forall A (l1 l2:list A)  n m, length l1 = n -> slice (n + m) (l1 ++ l2) = l1 ++ slice m (l2).
-Proof.
-induction l1 ; intros ; go ; destruct n.
-- inv H.
-- simpl ; f_equal ; go.
-Qed.
+Proof. induction l1 ; intros ; go ; destruct n ;[inv H|] ; simpl ; f_equal ; go. Qed.
 
 Lemma slice_app_simpl_eq : forall A (l1 l2:list A)  n, length l1 = n -> slice n (l1 ++ l2) = l1.
 Proof.
-intros ; assert (L1: l1 = l1 ++ slice 0 l2) by (destruct l2 ;  go).
-assert (N: n = n + 0) by go ; rewrite N.
-rewrite L1 at 2.
-apply slice_app ; go.
+  intros ; assert (L1: l1 = l1 ++ slice 0 l2) by (destruct l2 ;  go).
+  assert (N: n = n + 0) by go ; rewrite N ; clear N.
+  rewrite L1 at 2.
+  apply slice_app ; go.
 Qed.
 
 Lemma slice_app_simpl_lt : forall A (l1 l2: list A) n, length l1 > n -> slice n (l1 ++ l2) = slice n l1.
 Proof.
-induction l1 ; intros.
-inversion H.
-destruct n.
-- go.
-- simpl.
-  f_equal.
-  apply IHl1.
-  go.
+  induction l1 ; intros.
+  inversion H.
+  destruct n.
+  - go.
+  - simpl.
+    f_equal.
+    apply IHl1.
+    go.
 Qed.
 
 Lemma slice_cons : forall A (q:list A) h n, slice (S n) (h::q) = h :: slice n q.
@@ -346,10 +327,10 @@ Proof. go. Qed.
 
 Lemma slice_cons_rev : forall A (l q:list A) h n, length q = n -> slice (S n) (q ++ h :: l) = slice n q ++ h :: nil.
 Proof.
-intros.
-assert(SN : S n = n + 1) by go ; rewrite SN.
-rewrite slice_app ; go.
-assert(SQ : slice n q = q) by (apply slice_length_eq ; go) ; rewrite SQ ; simpl ; flatten.
+  intros.
+  assert(SN : S n = n + 1) by go ; rewrite SN ; clear SN.
+  rewrite slice_app ; go.
+  assert(SQ : slice n q = q) by (apply slice_length_eq ; go) ; rewrite SQ ; simpl ; flatten.
 Qed.
 
 Lemma slice_nil : forall A (l:list A), slice 0 l = nil.
@@ -388,132 +369,130 @@ Proof. induction l ; intros ; destruct n ; simpl ; f_equal ; go. Qed.
 
 Lemma slice_sliced : forall n k A (l:list A), n < k -> slice n l = slice k (slice n l).
 Proof.
-induction n; intros.
-destruct l ; destruct k ; go.
-symmetry.
-apply slice_length_le.
-rewrite slice_length_min.
-assert(SN : (S n) < (length l) \/ (S n)  = (length l) \/ (S n) > (length l)) by go.
-destruct SN ; [|destruct H0].
-rewrite min_l ; go.
-rewrite min_l ; go.
-rewrite min_r ; go.
+  induction n; intros.
+  destruct l ; destruct k ; go.
+  symmetry.
+  apply slice_length_le.
+  rewrite slice_length_min.
+  assert(SN : (S n) < (length l) \/ (S n)  = (length l) \/ (S n) > (length l)) by go.
+  destruct SN ; [|destruct H0].
+  rewrite min_l ; go.
+  rewrite min_l ; go.
+  rewrite min_r ; go.
 Qed.
 
 Definition oList A (o:A -> A -> Prop) (m:A) (l:list A) := In m l -> forall m', In m' l -> o m m'.
 
 Lemma map_slice : forall A B (f: A -> B) n (l:list A), map f (slice n l) = slice n (map f l).
 Proof.
-intros A B f n l.
-induction l using rev_ind.
-- destruct n ; go.
-- assert(HnL: length l < n \/ length l = n \/ length l > n) by go.
-destruct HnL ; [|destruct H].
-  + rewrite map_app.
-    assert(LM : length (map f l) = length l) by apply map_length.
-    assert(length l + 1 = n \/ length l + 1 < n).
-    omega.
-    destruct H0.
-    assert(HLEFT : slice n (l ++ x :: nil) = l ++ slice 1 (x :: nil)).
-    {
-    rewrite <- H0.
-    apply slice_app; go.
-    }
-    assert(HRIGHT : slice n (map f l ++ map f (x :: nil)) = map f l ++ slice 1 (map f (x :: nil))).
-    {
-    rewrite <- H0.
-    apply slice_app ; go.
-    }
-    rewrite HLEFT.
-    rewrite HRIGHT.
-    rewrite map_app.
-    go.
-    assert(Hm : exists m, n = (length l + m + 1)) by (exists (n - (length l + 1)) ; go).
-    destruct Hm as [m Hm].
-    assert(HLEFT : slice n (l ++ x :: nil) = l ++ slice (m + 1) (x :: nil)).
-    {
-    rewrite Hm.
-    rewrite plus_assoc_reverse.
-    apply slice_app ; go.
-    }
-    assert(HRIGHT : slice n (map f l ++ map f (x :: nil)) = map f l ++ slice (m + 1) (map f (x :: nil))).
-    {
-    rewrite Hm.
-    rewrite plus_assoc_reverse.
-    apply slice_app ; go.
-    }
-    rewrite HLEFT.
-    rewrite HRIGHT.
-    rewrite map_app.
-    simpl.
-    destruct m ; go.
-    assert(SSM : S m + 1 = S (S m)) by go.
-    rewrite SSM.
-    rewrite !slice_cons.
-    go.
-  + rewrite map_app.
-    assert(LM : length (map f l) = length l) by apply map_length.
-    assert(LLM: length l = n) by go.
-    eapply slice_app_simpl_eq in H.
-    rewrite LLM in LM.
-    eapply slice_app_simpl_eq in LM.
-    rewrite H.
-    rewrite LM.
-    go.
-  + assert(exists l1 l2, l ++ x:: nil = l1 ++ l2 /\ length l1 = n /\ l1 = slice n l).
-    {
-    exists (slice n (l ++ x :: nil)).
-    exists (tail n (l ++ x :: nil)).
-    split.
-    symmetry.
-    apply slice_tail_app.
-    split.
-    rewrite slice_length_min.
-    apply Min.min_l.
-    rewrite app_length.
-    go.
-    apply slice_app_simpl_lt.
-    go.
-    }
-    destruct H0 as [l1 H0].
-    destruct H0 as [l2 H0].
-    destruct H0 as [Hl2 H0].
-    destruct H0 as [Hln1 Hl1]. 
-    assert(exists l1 l2, map f (l ++ x:: nil) = l1 ++ l2 /\ length l1 = n /\ l1 = slice n (map f l)).
-    {
-    exists (slice n (map f (l ++ x:: nil))).
-    exists (tail n (map f (l ++ x:: nil))).
-    split.
-    symmetry.
-    apply slice_tail_app.
-    rewrite slice_length_min.
-    split.
-    apply Min.min_l.
-    rewrite map_length.
-    rewrite app_length.
-    go.
-    rewrite map_app.
-    apply slice_app_simpl_lt.
-    assert(MAPEQ: length (map f l) = length l) by apply map_length.
-    rewrite <- MAPEQ in H.
-    go.
-    }
-    destruct H0 as [l3 H0].
-    destruct H0 as [l4 H0].
-    destruct H0 as [Hl4 H0].
-    destruct H0 as [Hln3 Hl3].
-    rewrite Hl2 at 1. rewrite Hl4.
-    rewrite (plus_n_O n).
-    rewrite slice_app ; go.
-    rewrite slice_app ; go.
-    rewrite !slice_nil.
-    rewrite !app_nil_r.
-    subst l3.
-    subst l1.
-    apply IHl.
+  intros A B f n l.
+  induction l using rev_ind.
+  - destruct n ; go.
+  - assert(HnL: length l < n \/ length l = n \/ length l > n) by go.
+  destruct HnL ; [|destruct H].
+    + rewrite map_app.
+      assert(LM : length (map f l) = length l) by apply map_length.
+      assert(length l + 1 = n \/ length l + 1 < n).
+      omega.
+      destruct H0.
+      assert(HLEFT : slice n (l ++ x :: nil) = l ++ slice 1 (x :: nil)).
+      {
+        rewrite <- H0.
+        apply slice_app; go.
+      }
+      assert(HRIGHT : slice n (map f l ++ map f (x :: nil)) = map f l ++ slice 1 (map f (x :: nil))).
+      {
+        rewrite <- H0.
+        apply slice_app ; go.
+      }
+      rewrite HLEFT.
+      rewrite HRIGHT.
+      rewrite map_app.
+      go.
+      assert(Hm : exists m, n = (length l + m + 1)) by (exists (n - (length l + 1)) ; go).
+      destruct Hm as [m Hm].
+      assert(HLEFT : slice n (l ++ x :: nil) = l ++ slice (m + 1) (x :: nil)).
+      {
+        rewrite Hm.
+        rewrite plus_assoc_reverse.
+        apply slice_app ; go.
+      }
+      assert(HRIGHT : slice n (map f l ++ map f (x :: nil)) = map f l ++ slice (m + 1) (map f (x :: nil))).
+      {
+        rewrite Hm.
+        rewrite plus_assoc_reverse.
+        apply slice_app ; go.
+      }
+      rewrite HLEFT.
+      rewrite HRIGHT.
+      rewrite map_app.
+      simpl.
+      destruct m ; go.
+      assert(SSM : S m + 1 = S (S m)) by go.
+      rewrite SSM.
+      rewrite !slice_cons.
+      go.
+    + rewrite map_app.
+      assert(LM : length (map f l) = length l) by apply map_length.
+      assert(LLM: length l = n) by go.
+      eapply slice_app_simpl_eq in H.
+      rewrite LLM in LM.
+      eapply slice_app_simpl_eq in LM.
+      rewrite H.
+      rewrite LM.
+      go.
+    + assert(exists l1 l2, l ++ x:: nil = l1 ++ l2 /\ length l1 = n /\ l1 = slice n l).
+      {
+        exists (slice n (l ++ x :: nil)).
+        exists (tail n (l ++ x :: nil)).
+        split.
+        symmetry.
+        apply slice_tail_app.
+        split.
+        rewrite slice_length_min.
+        apply Min.min_l.
+        rewrite app_length.
+        go.
+        apply slice_app_simpl_lt.
+        go.
+      }
+      destruct H0 as [l1 H0].
+      destruct H0 as [l2 H0].
+      destruct H0 as [Hl2 H0].
+      destruct H0 as [Hln1 Hl1]. 
+      assert(exists l1 l2, map f (l ++ x:: nil) = l1 ++ l2 /\ length l1 = n /\ l1 = slice n (map f l)).
+      {
+        exists (slice n (map f (l ++ x:: nil))).
+        exists (tail n (map f (l ++ x:: nil))).
+        split.
+        symmetry.
+        apply slice_tail_app.
+        rewrite slice_length_min.
+        split.
+        apply Min.min_l.
+        rewrite map_length.
+        rewrite app_length.
+        go.
+        rewrite map_app.
+        apply slice_app_simpl_lt.
+        assert(MAPEQ: length (map f l) = length l) by apply map_length.
+        rewrite <- MAPEQ in H.
+        go.
+      }
+      destruct H0 as [l3 H0].
+      destruct H0 as [l4 H0].
+      destruct H0 as [Hl4 H0].
+      destruct H0 as [Hln3 Hl3].
+      rewrite Hl2 at 1. rewrite Hl4.
+      rewrite (plus_n_O n).
+      rewrite slice_app ; go.
+      rewrite slice_app ; go.
+      rewrite !slice_nil.
+      rewrite !app_nil_r.
+      subst l3.
+      subst l1.
+      apply IHl.
 Qed.
 
 Lemma truefalseImplFalse : false = true <-> False.
-Proof.
-split; go.
-Qed.
+Proof. split; go. Qed.

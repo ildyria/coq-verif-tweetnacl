@@ -12,24 +12,16 @@ end.
 Notation "A ∘ B" := (ZscalarMult A B) (at level 60, right associativity).
 
 Lemma ZscalarMultnil : forall n, n ∘ [] = [].
-Proof.
-go.
-Qed.
+Proof. go. Qed.
 
 Lemma ZscalarMult_length: forall n l, length (n ∘ l) = length l.
-Proof.
-intro n ; induction l ; go.
-Qed.
+Proof. intro n ; induction l ; go. Qed.
 
 Lemma ZscalarMult_slice: forall l n m, slice n (m ∘ l) = m ∘ (slice n l).
-Proof.
-induction l ; intros [] m; go.
-Qed.
+Proof. induction l ; intros [] m; go. Qed.
 
 Lemma ZscalarMult_tail: forall l n m, tail n (m ∘ l) = m ∘ (tail n l).
-Proof.
-induction l ; intros [] m; go.
-Qed.
+Proof. induction l ; intros [] m; go. Qed.
 
 Section Integer.
 
@@ -40,11 +32,11 @@ Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
 Lemma ZscalarMult_correct: forall a b, ℤ.lst a ∘ b = a * ℤ.lst b.
 Proof.
-intros a ; induction b ; go.
-unfold ZscalarMult ; fold ZscalarMult.
-rewrite! ZofList_cons.
-rewrite IHb.
-ring.
+  intros a ; induction b ; go.
+  unfold ZscalarMult ; fold ZscalarMult.
+  rewrite! ZofList_cons.
+  rewrite IHb.
+  ring.
 Qed.
 
 End Integer.
