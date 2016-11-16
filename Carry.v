@@ -38,7 +38,7 @@ Proof.
 Qed.
 
 Lemma Carry_n_step_0 : forall h q a, Carrying_n 0 a (h :: q) = (a + h) :: q.
-Proof. intros ; simpl ; flatten ; reflexivity. Qed.
+Proof. intros ; simpl; flatten. Qed.
 
 Lemma Carrying_n_length: forall l (m:nat) a, (m < length l)%nat -> length (Carrying_n m a l) = length l.
 Proof. induction l as [|h q IHl]; intros [] a Hm; simpl ; flatten ; go. Qed.
@@ -275,7 +275,7 @@ thus we split it.
 Fact factors_256: (2 ^ 256) = (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 *
 (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16)))))))))))))))).
 Proof. compute ; reflexivity. Qed.
- 
+
 Fact pre_compute_equality_factor: forall (z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14:Z),
 (((((((((((((((z / 2 ^ 16 + z0) / 2 ^ 16 + z1) / 2 ^ 16 + z2) / 2 ^ 16 + z3) / 2 ^ 16 + z4) / 2 ^ 16 + z5) / 2 ^ 16 + z6) / 2 ^ 16 + z7) / 2 ^ 16 + z8) / 2 ^ 16 + z9) / 2 ^ 16 + z10) / 2 ^ 16 + z11) / 2 ^ 16 + z12) / 2 ^ 16 + z13) / 2 ^ 16 + z14) / 2 ^ 16 =
 (z + 2 ^ 16 * (z0 + 2 ^ 16 * (z1 + 2 ^ 16 * (z2 + 2 ^ 16 * (z3 + 2 ^ 16 * (z4 + 2 ^ 16 * (z5 + 2 ^ 16 * (z6 + 2 ^ 16 * (z7 + 2 ^ 16 * (z8 + 2 ^ 16 * (z9 + 2 ^ 16 * (z10 + 2 ^ 16 * (z11 + 2 ^ 16 * (z12 + 2 ^ 16 * (z13 + 2 ^ 16 * z14)))))))))))))))
@@ -406,3 +406,39 @@ Proof.
   symmetry.
   reflexivity.
 Qed.
+
+Lemma BackCarry_fix: forall l, (length l = 16)%nat -> ℤ16.lst l < 2^256 -> car25519 l = Carrying_n 16 15 0 l.
+Proof.
+  intros l H Hl.
+  unfold car25519.
+  unfold backCarry.
+  flatten.
+  repeat (destruct l ; tryfalse).
+  repeat rewrite Carry_n_step in Eq.
+  rewrite Carry_n_step_0 in Eq.
+  change (0 + z0) with z0.
+  repeat (destruct l0; tryfalse).
+  repeat rewrite ListSame in Eq ; jauto_set.
+  unfold nth.
+  unfold slice.
+  f_equal.
+  admit.
+  change ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30]) with
+  ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29] ++ [z30]).
+  f_equal.
+  clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H16.
+  unfold getResidute.
+
+
+
+
+
+
+Lemma car25519_bound_0 : forall l, (length l = 16)%nat -> nth 0 (car25519 l) 0 < 2 ^ 16.
+
+Lemma car25519_bound_0 : forall l, (length l = 16)%nat -> nth 0 (car25519 l) 0 < 2 ^ 16.
+Proof.
+  destruct i ; intros l H Hi ; [false|].
+  repeat (destruct l ; tryfalse).
+  unfold car25519.
+  unfold backCarry.

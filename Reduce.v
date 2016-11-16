@@ -170,15 +170,21 @@ Proof.
   intros m Hm.
   unfold getCarry.
   rewrite Z.shiftr_div_pow2 ; try omega.
-  SearchAbout Z.div Z.mul.
-  apply Z.div_pos.
+  assert(1<= m / 2 ^ n).
+  replace 1 with (2 ^ n/2 ^ n) by (apply Z_div_same_full; intro ; assert(Ht:= pown0 n Hn) ; omega).
+  apply Z_div_le.
+  apply pown0 ; auto.
+  omega.
+  assert(m / 2 ^ n < 2).
+  apply Z.div_lt_upper_bound.
+  assert(Hnn := pown0 n Hn) ; omega.
+  rewrite Z.mul_comm.
+  rewrite <- Z.pow_succ_r.
+  destruct Hm.
+  rewrite <- Z.add_1_r.
   assumption.
-  rewrite <- Z.gt_lt_iff.
-  apply pown0.
-  assumption.
+  omega.
+  omega.
 Qed.
-
-
-
 
 End Integer.

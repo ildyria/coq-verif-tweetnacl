@@ -1,4 +1,5 @@
 Require Export Tools.
+Require Export Forall.
 Require Export notations.
 
 Open Scope Z.
@@ -46,7 +47,7 @@ Proof. rewrite Z.gt_lt_iff ; apply Z.pow_gt_1 ; try omega. Qed.
 Lemma pown0: 2 ^ n > 0.
 Proof. assert(Hp:= pown) ; omega. Qed.
 
-Lemma ZofList_eq : forall l i, i >= 0 -> ZofListi l i = 2^(n * i) * ZofList l.
+Lemma ZofList_eq : forall l i, 0 <= i -> ZofListi l i = 2^(n * i) * ZofList l.
 Proof.
   dependent induction l; go.
   intros i Hi.
@@ -179,6 +180,98 @@ Proof.
   rewrite ZofList_slice_nth.
   rewrite ZofList_slice_tail.
   go.
+Qed.
+
+Lemma ZofList_le_0 : forall l, Forall (Zle 0) l -> 0 <= ℤ.lst l.
+Proof.
+intros l Hl.
+dependent induction Hl.
+- go.
+- rewrite ZofList_cons.
+  apply OMEGA2.
+  assumption.
+  rewrite Z.mul_comm.
+  apply Zmult_gt_0_le_0_compat.
+  apply pown0.
+  auto.
+Qed.
+
+Lemma ZofList_null : forall l, Forall (Zle 0) l -> ℤ.lst l = 0 -> Forall (Z.eq 0) l.
+Proof.
+intros l HFl HSl.
+induction HFl.
+- go.
+- assert(Hx: {x < 0} + {x = 0} + {x > 0}) by apply Ztrichotomy_inf.
+  assert(Hl: {ℤ.lst l < 0} + {ℤ.lst l = 0} + {ℤ.lst l > 0}) by apply Ztrichotomy_inf.
+  rewrite ZofList_cons in HSl.
+  assert(Hlpos:= ZofList_le_0 l HFl).
+  case Hl ; intro Hl'.
+  case Hl' ; intro Hl''.
+  apply Zle_not_lt in Hlpos.
+  false.
+  + clear Hl' Hl Hlpos.
+    case Hx ; intro Hx'.
+    case Hx' ; intro Hx''.
+    apply Zle_not_lt in H.
+    false.
+    * clear Hx' Hx.
+    apply Forall_cons ; go.
+    * assert(2 ^ n * (ℤ.lst l) = 0).
+      rewrite Z.eq_mul_0 ; auto.
+      rewrite H0 in HSl.
+      omega.
+  + clear Hlpos Hl.
+    case Hx ; intro Hx'.
+    case Hx' ; intro Hx''.
+    apply Zle_not_lt in H.
+    false.
+    * clear Hx' Hx.
+      subst x.
+      rewrite Z.add_0_l in HSl.
+      rewrite Z.eq_mul_0 in HSl.
+      destruct HSl.
+        assert(H0' := pown0) ; omega.
+        omega.
+    * assert(0 < x + 2 ^ n * (ℤ.lst l)).
+      apply Z.add_pos_pos.
+      omega.
+      rewrite Z.lt_0_mul.
+      left.
+      split ; rewrite <- Z.gt_lt_iff.
+      apply pown0.
+      assumption.
+      omega.
+Qed.
+
+Lemma ZofList_bound : forall (m:Z) l , 0 <= m < 2 ^ n -> Forall (Zle 0) l -> ℤ.lst l = m -> nth 0 l 0 = m.
+Proof.
+  intros m l Hm HFl HSlm.
+  destruct l.
+  - go.
+  - rewrite ZofList_cons in HSlm.
+    unfold nth.
+    subst m.
+    replace (2 ^ n * (ℤ.lst l)) with 0.
+    apply Zplus_0_r_reverse.
+    rewrite Forall_cons' in HFl.
+    destruct HFl as [Hz Hpos].
+    apply ZofList_le_0 in Hpos.
+    assert(Hl: {ℤ.lst l < 0} + {ℤ.lst l = 0} + {ℤ.lst l > 0}) by apply Ztrichotomy_inf.
+    case Hl ; intro Hl'.
+    case Hl' ; intro Hl''.
+    apply Zle_not_lt in Hpos.
+    false.
+    + symmetry. rewrite Z.eq_mul_0 ; auto.
+    + exfalso.
+      clear Hl Hpos.
+      assert(1 <= ℤ.lst l).
+      omega.
+      assert(2 ^ n * 1 <= 2 ^ n * (ℤ.lst l)).
+      apply Zmult_le_compat_l ; auto.
+      rewrite <- Z.ge_le_iff.
+      assert(Ht:= pown0).
+      omega.
+      omega.
 Qed.
 
 End Integer.

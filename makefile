@@ -7,8 +7,9 @@ all:
 	@echo generating tools and libs
 	${COQ} Tools.v
 	${COQ} notations.v
-	${COQ} Reduce.v
+	${COQ} Forall.v
 	${COQ} ZofList.v
+	${COQ} Reduce.v
 	${COQ} Carry.v
 	${COQ} SumList.v
 	${COQ} ScalarMult.v
