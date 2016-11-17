@@ -187,17 +187,19 @@ Qed.
 Lemma car25519_bound : forall i l, (length l = 16)%nat -> (i <> 0)%nat -> nth i (car25519 l) 0 < 2 ^ 16.
 Proof.
   destruct i ; intros l H Hi ; [false|].
-  repeat (destruct l ; tryfalse).
+  apply destruct_length_16 in H.
+  do 16 destruct H.
   unfold car25519.
   unfold backCarry.
   flatten. symmetry ; reflexivity.
   rewrite nth_cons.
+  subst l.
   repeat rewrite Carry_n_step in Eq.
   rewrite Carry_n_step_0 in Eq.
-  repeat (destruct l ; tryfalse).
+  repeat (destruct l0 ; tryfalse).
   repeat rewrite ListSame in Eq.
   jauto_set.
-  clear Hi H16.
+  clear Hi H15.
   (* destruct the big /\ construction *)
   assert(Hi: (i < 14 \/ i = 14 \/ i > 14)%nat) by omega.
   (* case analisys on i: in slice, last elem or outside *)
@@ -286,6 +288,25 @@ Proof.
   rewrite Z.mul_comm ; rewrite Z_div_plus ; [|compute] ; reflexivity.
 Qed.
 
+Fact getCarry16_256: forall (z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14:Z),
+getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (0 + z) + z0) + z1) + z2) + z3) + z4) + z5) + z6) + z7) + z8) + z9) + z10) + z11) + z12) + z13) + z14) =
+getCarry 256 (ℤ16.lst [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14]).
+Proof.
+  intros.
+  unfold getCarry in *.
+  unfold getResidute in *.
+  repeat rewrite Zshiftr_div_pow2_16.
+  rewrite Z.shiftr_div_pow2 by omega.
+  unfold ZofList.
+  rewrite <- Zmult_0_r_reverse.
+  rewrite <- Zplus_0_r_reverse.
+  change (0 + z) with z.
+  rewrite factors_256.
+  repeat (rewrite <- Z.div_div ; [|intro ; false | symmetry ; auto]).
+  apply pre_compute_equality_factor.
+Qed.
+
+
 Lemma getCarry_16_eq_256 :
 forall (z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15:Z) (l:list Z),
 Carrying_n 16 15 0 [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14] =  z15 :: l ->
@@ -300,17 +321,7 @@ Proof.
   clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H15.
   unfold nth.
   subst z30.
-  unfold getCarry in *.
-  unfold getResidute in *.
-  repeat rewrite Zshiftr_div_pow2_16.
-  rewrite Z.shiftr_div_pow2 by omega.
-  unfold ZofList.
-  rewrite <- Zmult_0_r_reverse.
-  rewrite <- Zplus_0_r_reverse.
-  change (0 + z) with z.
-  rewrite factors_256.
-  repeat (rewrite <- Z.div_div ; [|intro ; false | symmetry ; auto]).
-  apply pre_compute_equality_factor.
+  apply getCarry16_256.
 Qed.
 
 Fact pre_compute_rewrite: forall (z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 : ℤ),
@@ -325,10 +336,12 @@ Qed.
 
 Lemma ℤcar25519_eq_car25519: forall (l : list ℤ), (length l = 16)%nat -> ℤcar25519 (ℤ16.lst l) = ℤ16.lst (car25519 l).
 Proof.
-  intros l Hlength.
+  intros l H.
   unfold ℤcar25519.
   unfold car25519.
-  repeat (destruct l ; tryfalse).
+  apply destruct_length_16 in H.
+  do 16 destruct H.
+  subst l.
   unfold backCarry.
   flatten ; tryfalse.
   symmetry.
@@ -341,14 +354,14 @@ Proof.
     assumption.
   - rewrite Carry_n_step in Eq.
   repeat rewrite ListSame in Eq ; jauto_set.
-  subst l z15.
+  subst l z.
   rewrite ZofList_cons.
   rewrite ZofList_app by omega.
   rewrite ZofList_slice by omega.
   rewrite <- CarrynPreserveConst by omega.
-  change (0 + z) with z.
+  change (0 + x) with x.
   repeat rewrite Carry_n_step ; rewrite Carry_n_step_0.
-  remember (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 z + z0) + z1) + z2) + z3) + z4) + z5) + z6) + z7) + z8) + z9) + z10) + z11) + z12) + z13) + z14) as t.
+  remember (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 x + x0) + x1) + x2) + x3) + x4) + x5) + x6) + x7) + x8) + x9) + x10) + x11) + x12) + x13) + x14) as t.
   unfold length.
   unfold nth.
   unfold slice.
@@ -422,12 +435,26 @@ Proof.
   unfold nth.
   unfold slice.
   f_equal.
+  - clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H16.
+    subst z30.
+    rewrite getCarry16_256.
+    assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
+    unfold getCarry.
+    rewrite Z.shiftr_div_pow2 by omega.
+(*    SearchAbout Z.div 0.*)
+    apply Zdiv_small.
   admit.
-  change ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30]) with
+  admit.
+  - change ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30]) with
   ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29] ++ [z30]).
   f_equal.
   clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H16.
+  f_equal.
+  rewrite pre_compute_rewrite in H15.
+Admitted.
+(*
   unfold getResidute.
+  subst z30.
 
 
 
@@ -442,3 +469,4 @@ Proof.
   repeat (destruct l ; tryfalse).
   unfold car25519.
   unfold backCarry.
+*)

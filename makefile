@@ -8,6 +8,7 @@ all:
 	${COQ} Tools.v
 	${COQ} notations.v
 	${COQ} Forall.v
+	${COQ} Forall_extended.v
 	${COQ} ZofList.v
 	${COQ} Reduce.v
 	${COQ} Carry.v

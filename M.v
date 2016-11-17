@@ -4,13 +4,61 @@ Import ListNotations.
 Require Export Tools.
 Open Scope Z.
 
+Lemma ZscalarMult_pos: forall a b, 0 <= a -> ZList_pos b -> ZList_pos (a ∘ b).
+Proof.
+  induction b ; intros.
+  - auto.
+  - simpl.
+    unfold ZList_pos.
+    unfold ZList_pos in H0.
+    rewrite Forall_cons' in H0.
+    rewrite Forall_cons'.
+    destruct H0.
+    split.
+    + apply Z.mul_nonneg_nonneg ; auto.
+    + apply IHb ; auto.
+Qed.
+
 Fixpoint mult_1 (a b:list Z) : list Z := match a, b with 
 | [],_ => []
 | _,[] => []
 | ha :: qa, hb :: qb => ha * hb :: (ha ∘ qb) ⊕ (mult_1 qa (hb::qb))
 end.
 
+Lemma mult_1_pos : forall a b, ZList_pos a -> ZList_pos b -> ZList_pos (mult_1 a b).
+Proof.
+  induction a, b ; intros.
+  - auto.
+  - auto.
+  - auto.
+  - simpl.
+    unfold ZList_pos in *.
+    rewrite Forall_cons' in H.
+    rewrite Forall_cons' in H0.
+    destruct H, H0.
+    rewrite Forall_cons'.
+    split.
+    + apply Z.mul_nonneg_nonneg ; auto.
+    + apply ZsumList_pos.
+      * apply ZscalarMult_pos ; auto.
+      * apply IHa; auto.
+Qed.
+
 Definition mult_2 (a:list Z) : list Z := a  ⊕ (38 ∘ (tail 16 a)).
+
+Lemma mult_2_pos : forall a, ZList_pos a -> ZList_pos (mult_2 a).
+Proof.
+  intros.
+  unfold mult_2.
+  apply ZsumList_pos ; auto.
+  apply ZscalarMult_pos ; try omega.
+  
+    
+    
+    
+    
+  
+
 
 Definition mult_3 (a:list Z) : list Z := slice 16 a.
 
@@ -18,6 +66,8 @@ Definition M (a b:list Z) : list Z :=
   let m1 := mult_1 a b in
     let m2 := mult_2 m1 in
       mult_3 m2.
+
+
 
 Section Integer.
 
