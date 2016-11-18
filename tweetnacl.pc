@@ -337,12 +337,18 @@ static void car25519(gf o)
 {
   int i;
   i64 c;
-  for (i = 0;i < 16;++i) {
-    o[i]+=(1LL<<16);
+  for (i = 0;i < 15;++i) {
+    // o[i]+=(1LL<<16);
     c=o[i]>>16;
-    o[(i+1)*(i<15)]+=c-1+37*(c-1)*(i==15);
+    // o[(i+1)*(i<15)]+=c-1+37*(c-1)*(i==15);
+    // o[i+1]+=c-1;
+    o[i+1]+=c;
     o[i]-=c<<16;
   }
+  o[15]+=(1LL<<16);
+  // c=o[15]>>16;
+  o[0]+=38*(c);
+  o[15]-=c<<16;
 }
 
 static void sel25519(gf p,gf q,int b)
@@ -360,7 +366,9 @@ static void pack25519(u8 *o,const gf n)
   int i,j,b;
   gf m,t;
   for (i = 0;i < 16;++i) t[i]=n[i];
+  // forall i, -2^16 <= t[i] < 2^302
   car25519(t);
+  // forall i, 0 <= t[i] < 2^16
   car25519(t);
   car25519(t);
   for (j = 0;j < 2;++j) {
@@ -473,7 +481,9 @@ int crypto_scalarmult_curve25519_tweet(u8 *q,const u8 *n,const u8 *p)
     sel25519(a,b,r);
     sel25519(c,d,r);
     A(e,a,c);
+    // e < 2^17
     Z(a,a,c);
+    // a < 2^17
     A(c,b,d);
     Z(b,b,d);
     S(d,e);

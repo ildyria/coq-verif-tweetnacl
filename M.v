@@ -52,22 +52,33 @@ Proof.
   unfold mult_2.
   apply ZsumList_pos ; auto.
   apply ZscalarMult_pos ; try omega.
-  
-    
-    
-    
-    
-  
-
+  apply Forall_tail.
+  assumption.
+Qed.
 
 Definition mult_3 (a:list Z) : list Z := slice 16 a.
+
+Lemma mult_3_pos : forall a, ZList_pos a -> ZList_pos (mult_3 a).
+Proof.
+  intros.
+  unfold mult_3.
+  apply Forall_slice.
+  assumption.
+Qed.
 
 Definition M (a b:list Z) : list Z :=
   let m1 := mult_1 a b in
     let m2 := mult_2 m1 in
       mult_3 m2.
 
-
+Lemma mult_pos: forall a b, ZList_pos a -> ZList_pos b -> ZList_pos (M a b).
+Proof.
+  intros a b Ha Hb.
+  unfold M.
+  apply mult_3_pos.
+  apply mult_2_pos.
+  apply mult_1_pos ; assumption.
+Qed.
 
 Section Integer.
 
@@ -171,75 +182,39 @@ destruct Hlength.
 Qed.
 
 Lemma Zsucc16 : Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ 0))))))))))))))) = 16.
-Proof.
-compute ; reflexivity.
-Qed.
+Proof. compute ; reflexivity. Qed.
 
 Corollary mult_GF: forall a b, ℤ.ℕ length a = 16 -> ℤ.ℕ length b = 16 ->  (ℤ16.lst M a b) :𝓖𝓕 = (ℤ16.lst a) * (ℤ16.lst b) :𝓖𝓕.
 Proof.
-intros a b Hla Hlb.
-unfold M.
-rewrite reduce_slice_GF.
-f_equal.
-rewrite mult1_correct.
-go.
-rewrite <- Zlength_correct in *.
-destruct a ; [inversion Hla|]. (* 0 *)
-destruct a ; [inversion Hla|]. (* 1 *)
-destruct a ; [inversion Hla|]. (* 2 *)
-destruct a ; [inversion Hla|]. (* 3 *)
-destruct a ; [inversion Hla|]. (* 4 *)
-destruct a ; [inversion Hla|]. (* 5 *)
-destruct a ; [inversion Hla|]. (* 6 *)
-destruct a ; [inversion Hla|]. (* 7 *)
-destruct a ; [inversion Hla|]. (* 8 *)
-destruct a ; [inversion Hla|]. (* 9 *)
-destruct a ; [inversion Hla|]. (* 10 *)
-destruct a ; [inversion Hla|]. (* 11 *)
-destruct a ; [inversion Hla|]. (* 12 *)
-destruct a ; [inversion Hla|]. (* 13 *)
-destruct a ; [inversion Hla|]. (* 14 *)
-destruct a ; [inversion Hla|]. (* 15 *)
-destruct a ; [inversion Hla|]. (* 16 *)
-- destruct b ; [inversion Hlb|]. (* 0 *)
-destruct b ; [inversion Hlb|]. (* 1 *)
-destruct b ; [inversion Hlb|]. (* 2 *)
-destruct b ; [inversion Hlb|]. (* 3 *)
-destruct b ; [inversion Hlb|]. (* 4 *)
-destruct b ; [inversion Hlb|]. (* 5 *)
-destruct b ; [inversion Hlb|]. (* 6 *)
-destruct b ; [inversion Hlb|]. (* 7 *)
-destruct b ; [inversion Hlb|]. (* 8 *)
-destruct b ; [inversion Hlb|]. (* 9 *)
-destruct b ; [inversion Hlb|]. (* 10 *)
-destruct b ; [inversion Hlb|]. (* 11 *)
-destruct b ; [inversion Hlb|]. (* 12 *)
-destruct b ; [inversion Hlb|]. (* 13 *)
-destruct b ; [inversion Hlb|]. (* 14 *)
-destruct b ; [inversion Hlb|]. (* 15 *)
-destruct b. (* 16 *)
-+ simpl.
-  rewrite! Zlength_cons.
-  rewrite Zlength_nil.
-  compute. (* LOL ! Thx God ! *)
-  reflexivity.
-+ clear Hla. exfalso. (* lets get a bit of visibility *)
-  rewrite! Zlength_cons in Hlb.
-  rewrite <- Zsucc16 in Hlb ; 
-  repeat (rewrite Z.succ_inj_wd in Hlb).
-  rewrite Zlength_correct in Hlb.
-  rewrite <- Nat2Z.inj_succ in Hlb.
-  rewrite <- Nat2Z.inj_0 in Hlb.
-  rewrite Nat2Z.inj_iff in Hlb.
-  inversion Hlb.
-- clear Hlb. exfalso. (* lets get a bit of visibility *)
-  rewrite! Zlength_cons in Hla.
-  rewrite <- Zsucc16 in Hla ;
-  repeat (rewrite Z.succ_inj_wd in Hla).
-  rewrite Zlength_correct in Hla.
-  rewrite <- Nat2Z.inj_succ in Hla.
-  rewrite <- Nat2Z.inj_0 in Hla.
-  rewrite Nat2Z.inj_iff in Hla.
-  inversion Hla.
+  intros a b Hla Hlb.
+  unfold M.
+  rewrite reduce_slice_GF.
+  f_equal.
+  rewrite mult1_correct.
+  go.
+  rewrite <- Zlength_correct in *.
+  do 16 (destruct a ; tryfalse).
+  destruct a.
+  - do 16 (destruct b ; tryfalse).
+    destruct b.
+    + go.
+    + clear Hla. exfalso. (* lets get a bit of visibility *)
+      repeat rewrite Zlength_cons in Hlb.
+      rewrite <- Zsucc16 in Hlb ; 
+      repeat (rewrite Z.succ_inj_wd in Hlb).
+      rewrite Zlength_correct in Hlb.
+      rewrite <- Nat2Z.inj_succ in Hlb.
+      rewrite <- Nat2Z.inj_0 in Hlb.
+      rewrite Nat2Z.inj_iff in Hlb.
+      inversion Hlb.
+  - clear Hlb. exfalso. (* lets get a bit of visibility *)
+    repeat rewrite Zlength_cons in Hla.
+    rewrite <- Zsucc16 in Hla ;
+    repeat (rewrite Z.succ_inj_wd in Hla).
+    rewrite Zlength_correct in Hla.
+    rewrite <- Nat2Z.inj_succ in Hla.
+    rewrite <- Nat2Z.inj_0 in Hla.
+    rewrite Nat2Z.inj_iff in Hla.
+    inversion Hla.
 Qed.
 

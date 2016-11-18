@@ -1,5 +1,4 @@
 Require Export Tools.
-Require Export Forall_extended.
 Require Export notations.
 
 Open Scope Z.
