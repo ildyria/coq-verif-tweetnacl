@@ -1,5 +1,5 @@
 Require Export SumList.
-Require Export Forall_extended.
+Require Export Forall_ZofList.
 Import ListNotations.
 
 Open Scope Z.
