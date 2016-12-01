@@ -1,5 +1,6 @@
 Require Export SumList.
 Require Export Forall_ZofList.
+Require Export Forall_ZopList.
 Import ListNotations.
 
 Open Scope Z.
@@ -41,6 +42,17 @@ Proof.
   symmetry; subst x ; apply ZsumList_correct_impl ; go.
 Qed.
 
+Lemma ZsumList_bound: forall m1 n1 m2 n2 a b, 
+  length a = length b ->
+  Forall (fun x => m1 < x < n1) a -> 
+  Forall (fun x => m2 < x < n2) b -> 
+  Forall (fun x => m1 + m2 < x < n1 + n2) (a ⊕ b).
+Proof.
+  introv Hl Ha Hb.
+  rewrite ZsumList_ZopList_eq.
+  eapply (Forall_opList _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
+Qed.
+(*
 Lemma ZsumList_pos: forall a b, ZList_pos a -> ZList_pos b -> ZList_pos (a ⊕ b).
 Proof.
   induction a , b ; intros.
@@ -54,5 +66,5 @@ Proof.
     rewrite Forall_cons' in H0.
     destruct H, H0. go.
 Qed.
-
+*)
 End Integer.

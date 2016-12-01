@@ -112,6 +112,7 @@ VFILES:=Carry.v\
   MinusList.v\
   SubList.v\
   Forall_ZofList.v\
+  Forall_ZopList.v\
   M.v\
   ZCarry.v
 

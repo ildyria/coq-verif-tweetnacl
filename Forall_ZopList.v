@@ -2,9 +2,14 @@ Require Export Forall_extended.
 Require Export notations.
 Require Export OpList.
 
-Lemma Forall_opList: forall (f:Z -> Z -> Z) (P Q: Z -> Prop) (a b: list Z), (forall x y, P x -> P y -> Q (f x y)) -> length a = length b -> Forall P a -> Forall P b -> Forall Q (ZopList f a b).
+Lemma Forall_opList: forall (f:Z -> Z -> Z) (P Q R: Z -> Prop) (a b: list Z),
+  (forall x y, P x -> Q y -> R (f x y)) ->
+  length a = length b ->
+  Forall P a -> 
+  Forall Q b -> 
+  Forall R (ZopList f a b).
 Proof.
-  intros f P Q.
+  intros f P Q R.
   induction a ; intros b Hf Hl Ha Hb.
   - simpl in Hl.
     symmetry in Hl.
@@ -18,3 +23,4 @@ Proof.
     apply Hf ; go.
     apply IHa ; go.
 Qed.
+
