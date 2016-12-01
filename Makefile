@@ -99,8 +99,9 @@ endif
 VFILES:=Carry.v\
   ZofList.v\
   Libs.v\
-  ScalarMult.v\
   Tools.v\
+  ScalarMult.v\
+  OpList.v\
   Forall_extended.v\
   notations.v\
   Reduce.v\
@@ -108,6 +109,8 @@ VFILES:=Carry.v\
   Forall.v\
   LibTactics.v\
   SumList.v\
+  MinusList.v\
+  SubList.v\
   Forall_ZofList.v\
   M.v\
   ZCarry.v

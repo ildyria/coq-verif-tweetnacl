@@ -1,5 +1,6 @@
 Require Export Tools.
 Require Export notations.
+Require Export OpList.
 Import ListNotations.
 
 (* Some definitions relating to the functional spec of this particular program.  *)
@@ -19,29 +20,14 @@ Fixpoint ZsumList_n (n:nat) (a b : list Z) : list Z := match n, a, b with
   | S p, h1::q1, h2::q2 => (Z.add h1 h2) :: (ZsumList_n p q1 q2)
 end.
 
-Lemma ZsumList_empty1: forall h q, (h :: q) ⊕ [] = h :: q ⊕ [].
-Proof. induction q ; go. Qed.
-
-Lemma ZsumList_empty2: forall h q, [] ⊕ (h :: q) = h :: [] ⊕ q.
-Proof. induction q ; go. Qed.
-
-Lemma ZsumList_empty3: forall h q, (h :: q) ⊕ [] = h :: [] ⊕ q.
-Proof. induction q ; go. Qed.
-
-Lemma ZsumList_eq: forall n a b,
-  length a <= n ->
-  length b <= n ->
-    a ⊕ b = ZsumList_n n a b.
+Lemma ZsumList_ZopList_eq: forall  (a b : list Z), ZsumList a b = ZopList Z.add a b.
 Proof.
-  induction n.
-  destruct a, b ; go.
-  intros a b Hla Hlb.
-  destruct a, b ; go.
-  rewrite ZsumList_empty2 ; unfold ZsumList_n ; fold ZsumList_n; f_equal ; apply IHn ; go.
-  simpl in Hla ; apply le_S_n in Hla.
-  rewrite ZsumList_empty3 ; unfold ZsumList_n ; fold ZsumList_n; f_equal ; apply IHn; go.
-  simpl in Hla, Hlb ; apply le_S_n in Hla ; apply le_S_n in Hlb.
-  simpl ; f_equal ; apply IHn ; go.
+  induction a ; intros b ; go.
+  destruct b ; go.
+  rewrite ZopList_nil_l ; go.
+  destruct b ; go.
+  rewrite ZopList_nil_r ; go.
+  intro x ; go.
 Qed.
 
 Lemma ZsumList_sliced: forall n a b, slice n (a ⊕ b) = ZsumList_n n a b.
@@ -49,48 +35,48 @@ Proof. induction n ; intros a b ; simpl ; flatten ; try inv Eq ; rewrite <- IHn 
 
 Lemma ZsumList_comm: forall a b, a ⊕ b = b ⊕ a.
 Proof.
-  induction a, b ; go.
-  unfold ZsumList ; fold ZsumList.
-  rewrite Z.add_comm.
-  f_equal.
+  intros a b.
+  repeat rewrite ZsumList_ZopList_eq.
+  apply ZopList_comm.
   go.
+  intros x y ; omega.
 Qed.
 
 Lemma ZsumList_nil_r: forall a, a ⊕ [] = a.
-Proof. induction a; go. Qed.
+Proof.
+  intros a.
+  rewrite ZsumList_ZopList_eq.
+  apply ZopList_nil_r.
+  go.
+  intros x ; omega.
+Qed.
 
 Lemma ZsumList_nil_l: forall a, [] ⊕ a = a.
 Proof. go. Qed.
 
 Lemma ZsumList_assoc : forall a b c, (a ⊕ b) ⊕ c = a ⊕ (b ⊕ c).
 Proof.
-  induction a, b; go.
-  intro c.
-  simpl.
-  flatten.
-  rewrite Zplus_assoc_reverse.
-  f_equal.
-  apply IHa.
+  intros a b c.
+  repeat rewrite ZsumList_ZopList_eq.
+  apply ZopList_assoc.
+  go.
+  intros x y z ; omega.
+  intros x ; omega.
+  intros x ; omega.
 Qed.
 
 Lemma ZsumList_slice : forall n a b, slice n (a ⊕ b) = (slice n a) ⊕ (slice n b).
-Proof. induction n ; intros a b ; destruct a; destruct b ; go. Qed.
+Proof. intros n a b ; repeat rewrite ZsumList_ZopList_eq ;  apply ZopList_slice. Qed.
 
 Lemma ZsumList_tail : forall n a b, tail n (a ⊕ b) = (tail n a) ⊕ (tail n b).
-Proof.
-  induction n ; intros a b ; destruct a; destruct b ; go.
-  simpl; rewrite ZsumList_nil_r; go.
+Proof. intros n a b ; repeat rewrite ZsumList_ZopList_eq ;  apply ZopList_tail ; go.
 Qed.
 
 Lemma ZsumList_length : forall a b, length (a ⊕ b) = length a \/ length (a ⊕ b) = length b.
 Proof.
-  induction a ; destruct b ; go.
-  simpl.
-  assert(fklemma: forall x y, S x = S y <-> x = y) by go.
-  repeat rewrite fklemma.
-  go.
+  intros a b ; repeat rewrite ZsumList_ZopList_eq; apply ZopList_length.
 Qed.
 
 Lemma ZsumList_length_max : forall a b, length (a ⊕ b) = max (length a) (length b).
-Proof. induction a; destruct b ; go. Qed.
+Proof. intros a b ; repeat rewrite ZsumList_ZopList_eq; apply ZopList_length_max. Qed.
 
