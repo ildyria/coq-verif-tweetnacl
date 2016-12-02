@@ -1,6 +1,6 @@
 Require Export Tools.
 Require Export notations.
-Require Import OpList.
+Require Import ZbinopList.
 Require Import MinusList.
 Import ListNotations.
 
@@ -22,7 +22,7 @@ Fixpoint ZsubList_n (n:nat) (a b : list Z) : list Z := match n, a, b with
   | S p, h1::q1, h2::q2 => (Z.sub h1 h2) :: (ZsubList_n p q1 q2)
 end.
 
-Lemma ZsubList_ZopList_eq: forall  (a b : list Z), ZsubList a b = ZopList Z.sub a b.
+Lemma ZsubList_ZbinopList_eq: forall  (a b : list Z), ZsubList a b = ZbinopList Z.sub a b.
 Proof.
   induction a ; intros b ; go.
   destruct b ; go.
@@ -43,18 +43,18 @@ Lemma ZsubList_nil_r: forall a, a ⊖ [] = a.
 Proof. induction a ; go. Qed.
 
 Lemma ZsubList_slice : forall n a b, slice n (a ⊖ b) = (slice n a) ⊖ (slice n b).
-Proof. intros n a b ; repeat rewrite ZsubList_ZopList_eq ;  apply ZopList_slice. Qed.
+Proof. intros n a b ; repeat rewrite ZsubList_ZbinopList_eq ;  apply ZbinopList_slice. Qed.
 
 Lemma ZsubList_tail : forall n a b, tail n (a ⊖ b) = (tail n a) ⊖ (tail n b).
-Proof. intros n a b ; repeat rewrite ZsubList_ZopList_eq.
-rewrite ZopList_tail ; go.
+Proof. intros n a b ; repeat rewrite ZsubList_ZbinopList_eq.
+rewrite ZbinopList_tail ; go.
 Qed.
 
 Lemma ZsubList_length : forall a b, length (a ⊖ b) = length a \/ length (a ⊖ b) = length b.
 Proof.
-  intros a b ; repeat rewrite ZsubList_ZopList_eq; apply ZopList_length.
+  intros a b ; repeat rewrite ZsubList_ZbinopList_eq; apply ZbinopList_length.
 Qed.
 
 Lemma ZsubList_length_max : forall a b, length (a ⊖ b) = max (length a) (length b).
-Proof. intros a b ; repeat rewrite ZsubList_ZopList_eq; apply ZopList_length_max. Qed.
+Proof. intros a b ; repeat rewrite ZsubList_ZbinopList_eq; apply ZbinopList_length_max. Qed.
 

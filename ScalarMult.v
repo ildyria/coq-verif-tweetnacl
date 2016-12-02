@@ -1,4 +1,5 @@
 Require Export ZofList.
+Require Export ZunopList.
 Import ListNotations.
 Require Import Tools.
 
@@ -13,6 +14,9 @@ Notation "A ∘ B" := (ZscalarMult A B) (at level 60, right associativity).
 
 Lemma ZscalarMultnil : forall n, n ∘ [] = [].
 Proof. go. Qed.
+
+Lemma ZscalarMult_eq_ZunopList : forall a (b : list Z), ZscalarMult a b = ZunopList Z.mul a b.
+Proof. induction b ; go. Qed.
 
 Lemma ZscalarMult_length: forall n l, length (n ∘ l) = length l.
 Proof. intro n ; induction l ; go. Qed.

@@ -1,6 +1,6 @@
 Require Export Tools.
 Require Export notations.
-Require Export OpList.
+Require Export ZbinopList.
 Import ListNotations.
 
 (* Some definitions relating to the functional spec of this particular program.  *)
@@ -20,13 +20,13 @@ Fixpoint ZsumList_n (n:nat) (a b : list Z) : list Z := match n, a, b with
   | S p, h1::q1, h2::q2 => (Z.add h1 h2) :: (ZsumList_n p q1 q2)
 end.
 
-Lemma ZsumList_ZopList_eq: forall  (a b : list Z), ZsumList a b = ZopList Z.add a b.
+Lemma ZsumList_ZbinopList_eq: forall  (a b : list Z), ZsumList a b = ZbinopList Z.add a b.
 Proof.
   induction a ; intros b ; go.
   destruct b ; go.
-  rewrite ZopList_nil_l ; go.
+  rewrite ZbinopList_nil_l ; go.
   destruct b ; go.
-  rewrite ZopList_nil_r ; go.
+  rewrite ZbinopList_nil_r ; go.
   intro x ; go.
 Qed.
 
@@ -36,8 +36,8 @@ Proof. induction n ; intros a b ; simpl ; flatten ; try inv Eq ; rewrite <- IHn 
 Lemma ZsumList_comm: forall a b, a ⊕ b = b ⊕ a.
 Proof.
   intros a b.
-  repeat rewrite ZsumList_ZopList_eq.
-  apply ZopList_comm.
+  repeat rewrite ZsumList_ZbinopList_eq.
+  apply ZbinopList_comm.
   go.
   intros x y ; omega.
 Qed.
@@ -45,8 +45,8 @@ Qed.
 Lemma ZsumList_nil_r: forall a, a ⊕ [] = a.
 Proof.
   intros a.
-  rewrite ZsumList_ZopList_eq.
-  apply ZopList_nil_r.
+  rewrite ZsumList_ZbinopList_eq.
+  apply ZbinopList_nil_r.
   go.
   intros x ; omega.
 Qed.
@@ -57,8 +57,8 @@ Proof. go. Qed.
 Lemma ZsumList_assoc : forall a b c, (a ⊕ b) ⊕ c = a ⊕ (b ⊕ c).
 Proof.
   intros a b c.
-  repeat rewrite ZsumList_ZopList_eq.
-  apply ZopList_assoc.
+  repeat rewrite ZsumList_ZbinopList_eq.
+  apply ZbinopList_assoc.
   go.
   intros x y z ; omega.
   intros x ; omega.
@@ -66,17 +66,17 @@ Proof.
 Qed.
 
 Lemma ZsumList_slice : forall n a b, slice n (a ⊕ b) = (slice n a) ⊕ (slice n b).
-Proof. intros n a b ; repeat rewrite ZsumList_ZopList_eq ;  apply ZopList_slice. Qed.
+Proof. intros n a b ; repeat rewrite ZsumList_ZbinopList_eq ;  apply ZbinopList_slice. Qed.
 
 Lemma ZsumList_tail : forall n a b, tail n (a ⊕ b) = (tail n a) ⊕ (tail n b).
-Proof. intros n a b ; repeat rewrite ZsumList_ZopList_eq ;  apply ZopList_tail ; go.
+Proof. intros n a b ; repeat rewrite ZsumList_ZbinopList_eq ;  apply ZbinopList_tail ; go.
 Qed.
 
 Lemma ZsumList_length : forall a b, length (a ⊕ b) = length a \/ length (a ⊕ b) = length b.
 Proof.
-  intros a b ; repeat rewrite ZsumList_ZopList_eq; apply ZopList_length.
+  intros a b ; repeat rewrite ZsumList_ZbinopList_eq; apply ZbinopList_length.
 Qed.
 
 Lemma ZsumList_length_max : forall a b, length (a ⊕ b) = max (length a) (length b).
-Proof. intros a b ; repeat rewrite ZsumList_ZopList_eq; apply ZopList_length_max. Qed.
+Proof. intros a b ; repeat rewrite ZsumList_ZbinopList_eq; apply ZbinopList_length_max. Qed.
 
