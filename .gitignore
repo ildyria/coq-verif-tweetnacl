@@ -84,6 +84,7 @@ Doc
 *.v.d
 *.vio
 *.crashcoqide
+*.cache
 
 ### C ###
 # Object files
