@@ -86,7 +86,9 @@ destruct H.
 apply Forall_cons ; auto.
 Qed.
 
-
+(*
+Notation "[[ m2 < b < n2 ]]" := (Forall (fun x => m2 < x < n2) b)  (at level 65, right associativity).
+*)
 (*
 Lemma Zcompare_refl: forall n, Z.compare n n = Eq.
 Proof.

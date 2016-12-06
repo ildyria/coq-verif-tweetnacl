@@ -110,7 +110,7 @@ VFILES:=Carry.v\
   SumList.v\
   MinusList.v\
   SubList.v\
-  QuadnaryComp.v\
+  MultBounds.v\
   Forall.v\
   Forall_extended.v\
   Forall_ZofList.v\

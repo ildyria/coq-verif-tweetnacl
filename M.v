@@ -1,55 +1,34 @@
 Require Export ScalarMult.
 Require Export Forall_ZopList.
-Require Export QuadnaryComp.
+Require Export MultBounds.
 Require Export A.
 Import ListNotations.
 Require Export Tools.
 Open Scope Z.
 
-Definition min_bound4 (min1 min2 max1 max2: Z) : Z:=
-  let c1 := min1*min2 in
-  let c2 := min1*max2 in
-  let c3 := min2*max1 in
-  let c4 := max1*max2 in
-    Zmin_quad c1 c2 c3 c4.
+Definition min_prod (min1 max1 min2 max2: Z) : Z:=
+  Zmin (Zmin (min1*min2) (max1*max2)) (Zmin (max1*min2) (min1*max2)).
 
-Definition max_bound4 (min1 min2 max1 max2: Z) : Z:=
-  let c1 := min1*min2 in
-  let c2 := min1*max2 in
-  let c3 := min2*max1 in
-  let c4 := max1*max2 in
-    Zmax_quad c1 c2 c3 c4.
+Definition max_prod (min1 max1 min2 max2: Z) : Z:=
+  Zmax (Zmax (min1*min2) (max1*max2)) (Zmax (max1*min2) (min1*max2)).
 
-Lemma ZscalarMult_bound: forall (m1 n1 m2 n2 o p a: Z) b,
-  m1 < a < n1 -> 
+Lemma ZscalarMult_bound_pos: forall (m2 n2 o p a: Z) b,
+  0 < a ->
   Forall (fun x => m2 < x < n2) b -> 
-  o = min_bound4 n1 n2 m1 m2 ->
-  p = max_bound4 n1 n2 m1 m2 ->
+  o = a * m2 ->
+  p = a * n2 ->
   Forall (fun x => o < x < p) (a ∘ b).
 Proof.
   introv Ha Hb Ho Hp.
   rewrite ZscalarMult_eq_ZunopList.
-  eapply (Forall_ZunopList _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
+  eapply (Forall_ZunopList _ (fun x : ℤ => a = x) (fun x : ℤ => m2 < x < n2)) ; go.
   intros x y Hx Hy.
   subst o.
   subst p.
-  unfold min_bound4.
-  unfold max_bound4.
-Admitted.
-
-Lemma ZscalarMult_pos: forall a b, 0 <= a -> ZList_pos b -> ZList_pos (a ∘ b).
-Proof.
-  induction b ; intros.
-  - auto.
-  - simpl.
-    unfold ZList_pos.
-    unfold ZList_pos in H0.
-    rewrite Forall_cons' in H0.
-    rewrite Forall_cons'.
-    destruct H0.
-    split.
-    + apply Z.mul_nonneg_nonneg ; auto.
-    + apply IHb ; auto.
+  subst x.
+  apply Mult_interval_correct_pos.
+  auto.
+  auto.
 Qed.
 
 Fixpoint mult_1 (a b:list Z) : list Z := match a, b with 
@@ -58,43 +37,35 @@ Fixpoint mult_1 (a b:list Z) : list Z := match a, b with
 | ha :: qa, hb :: qb => ha * hb :: (ha ∘ qb) ⊕ (mult_1 qa (hb::qb))
 end.
 
-Lemma mult_1_pos : forall a b, ZList_pos a -> ZList_pos b -> ZList_pos (mult_1 a b).
+Lemma mult_1_bound : forall a b m1 n1 m2 n2 m3 n3,
+  Forall (fun x => m1 < x < n1) a ->
+  Forall (fun x => m2 < x < n2) b ->
+  Forall (fun x => m3 < x < n3) (mult_1 a b).
 Proof.
-  induction a, b ; intros.
-  - auto.
-  - auto.
-  - auto.
-  - simpl.
-    unfold ZList_pos in *.
-    rewrite Forall_cons' in H.
-    rewrite Forall_cons' in H0.
-    destruct H, H0.
-    rewrite Forall_cons'.
-    split.
-    + apply Z.mul_nonneg_nonneg ; auto.
+ intros.
 Admitted.
-(*    + apply ZsumList_pos.
-      * apply ZscalarMult_pos ; auto.
-      * apply IHa; auto.
-Qed.*)
 
 Definition mult_2 (a:list Z) : list Z := a  ⊕ (38 ∘ (tail 16 a)).
 
-Lemma mult_2_pos : forall a, ZList_pos a -> ZList_pos (mult_2 a).
+Lemma mult_2_bound: forall a m1 n1 m2 n2,
+  Forall (fun x => m1 < x < n1) a ->
+  (fun x => m1 < x < n1) 0 ->
+  m2 = m1 + 38 * m1 ->
+  n2 = n1 + 38 * n1 ->
+  Forall (fun x => m2 < x < n2) (mult_2 a).
 Proof.
-  intros.
+  intros a m1 n1 m2 n2 Ha H0 Hm2 Hn2.
   unfold mult_2.
-Admitted.
-(*  apply ZsumList_pos ; auto.
-  apply ZscalarMult_pos ; try omega.
-  apply Forall_tail.
-  assumption.
+  subst m2 n2.
+  eapply ZsumList_bound_lt ; go.
+  simpl in H0 ; omega.
+  eapply ZscalarMult_bound_pos ; go.
+  apply Forall_tail ; eauto.
 Qed.
-*)
 
 Definition mult_3 (a:list Z) : list Z := slice 16 a.
 
-Lemma mult_3_pos : forall a, ZList_pos a -> ZList_pos (mult_3 a).
+Lemma mult_3_bound : forall m1 n1 a, Forall (fun x => m1 < x < n1) a -> Forall (fun x => m1 < x < n1) (mult_3 a).
 Proof.
   intros.
   unfold mult_3.
@@ -107,14 +78,19 @@ Definition M (a b:list Z) : list Z :=
     let m2 := mult_2 m1 in
       mult_3 m2.
 
-Lemma mult_pos: forall a b, ZList_pos a -> ZList_pos b -> ZList_pos (M a b).
+Lemma mult_pos: forall m1 n1 m2 n2 m3 n3 a b,
+  Forall (fun x => m1 < x < n1) a ->
+  Forall (fun x => m2 < x < n2) b ->
+  Forall (fun x => m3 < x < n3) (M a b).
 Proof.
-  intros a b Ha Hb.
+  introv Ha Hb.
   unfold M.
-  apply mult_3_pos.
-  apply mult_2_pos.
-  apply mult_1_pos ; assumption.
-Qed.
+  apply mult_3_bound.
+  eapply mult_2_bound.
+  eapply mult_1_bound.
+  eauto.
+  eauto.
+Admitted.
 
 Section Integer.
 
