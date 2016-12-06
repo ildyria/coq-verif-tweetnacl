@@ -6,13 +6,7 @@ Import ListNotations.
 Require Export Tools.
 Open Scope Z.
 
-Definition min_prod (min1 max1 min2 max2: Z) : Z:=
-  Zmin (Zmin (min1*min2) (max1*max2)) (Zmin (max1*min2) (min1*max2)).
-
-Definition max_prod (min1 max1 min2 max2: Z) : Z:=
-  Zmax (Zmax (min1*min2) (max1*max2)) (Zmax (max1*min2) (min1*max2)).
-
-Lemma ZscalarMult_bound_pos: forall (m2 n2 o p a: Z) b,
+Lemma ZscalarMult_bound_const: forall (m2 n2 o p a: Z) b,
   0 < a ->
   Forall (fun x => m2 < x < n2) b -> 
   o = a * m2 ->
@@ -31,35 +25,150 @@ Proof.
   auto.
 Qed.
 
+Lemma ZscalarMult_bound_inter: forall (m1 n1 m2 n2 o p a: Z) b,
+  (fun x => m1 < x < n1) a ->
+  Forall (fun x => m2 < x < n2) b -> 
+  o = min_prod m1 n1 m2 n2 ->
+  p = max_prod m1 n1 m2 n2 ->
+  Forall (fun x => o < x < p) (a ∘ b).
+Proof.
+  introv Ha Hb Ho Hp.
+  rewrite ZscalarMult_eq_ZunopList.
+  eapply (Forall_ZunopList _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
+  intros x y Hx Hy.
+  subst o.
+  subst p.
+  apply Mult_interval_correct_min_max_lt.
+  auto.
+  auto.
+Qed.
+
+
+
 Fixpoint mult_1 (a b:list Z) : list Z := match a, b with 
 | [],_ => []
 | _,[] => []
 | ha :: qa, hb :: qb => ha * hb :: (ha ∘ qb) ⊕ (mult_1 qa (hb::qb))
 end.
 
-Lemma mult_1_bound : forall a b m1 n1 m2 n2 m3 n3,
+Fact Zlength_pos: forall A (l:list A), 0 <= Zlength l.
+Proof.
+intros.
+rewrite Zlength_correct.
+go.
+Qed.
+
+Fact le_mul_neg : forall m n,
+  m < 0 ->
+  1 <= n ->
+  n * m <= m.
+Proof.
+  intros m n Hm Hn.
+  Psatz.nia.
+Qed.
+
+Fact le_mul_pos : forall m n,
+  0 < m ->
+  1 <= n ->
+  m <= n * m.
+Proof.
+  intros m n Hm Hn.
+  Psatz.nia.
+Qed.
+
+Fact lt_lt_trans: forall a b c d x,
+  b < x < c ->
+  a <= b ->
+  c <= d ->
+  a < x < d.
+Proof.
+  intros a b c d x Hbxc Hab Hcd.
+  destruct Hbxc.
+  split ; omega.
+Qed.
+
+Lemma mult_1_bound : forall m1 n1 m2 n2 a b m3 n3,
+  (fun x => m1 < x < n1) 0 ->
+  (fun x => m2 < x < n2) 0 ->
   Forall (fun x => m1 < x < n1) a ->
   Forall (fun x => m2 < x < n2) b ->
+  m3 = Zmin (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2 -> 
+  n3 = Zmin (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2 ->
   Forall (fun x => m3 < x < n3) (mult_1 a b).
 Proof.
- intros.
+  induction a ; introv Hmn1 Hmn2 Ha Hb Hm3 Hn3.
+  - go.
+  - induction b; go.
+    simpl.
+    apply Forall_cons.
+    + inv Ha.
+      inv Hb.
+      assert(Hstrict: min_prod m1 n1 m2 n2 < a * a1 < max_prod m1 n1 m2 n2).
+        apply Mult_interval_correct_min_max_lt ; auto.
+      assert( 1 <= Z.min (Zlength (a :: a0)) (Zlength (a1 :: b))).
+        apply Z.min_glb ; rewrite Zlength_cons.
+        assert(0 <= Zlength a0) by apply Zlength_pos ;  omega.
+        assert(0 <= Zlength b) by apply Zlength_pos ;  omega.
+      eapply lt_lt_trans.
+      eauto.
+      apply le_mul_neg ; auto.
+      apply min_prod_neg_lt ; auto.
+      apply le_mul_pos ; auto.
+      apply max_prod_pos_lt ; auto.
+    + subst m3 n3.
+      repeat rewrite Zlength_cons.
+      rewrite <- Z.succ_min_distr.
+      replace (Z.succ (Z.min (Zlength a0) (Zlength b))) with (1 + Z.min (Zlength a0) (Zlength b)) by omega.
+      replace (Z.succ (Z.min (Zlength a0) (Zlength b))) with (1 + Z.min (Zlength a0) (Zlength b)) by omega.
+      assert(Htemp: 
+      (1 + Z.min (Zlength a0) (Zlength b)) * min_prod m1 n1 m2 n2 = min_prod m1 n1 m2 n2 + min_prod m1 n1 m2 n2 * Z.min (Zlength a0) (Zlength b)).
+      rewrite Z.mul_comm ; rewrite <- Zred_factor2 ; auto.
+      rewrite Htemp ; clear Htemp.
+      assert(Htemp: 
+      (1 + Z.min (Zlength a0) (Zlength b)) * max_prod m1 n1 m2 n2 = max_prod m1 n1 m2 n2 + max_prod m1 n1 m2 n2 * Z.min (Zlength a0) (Zlength b)).
+      rewrite Z.mul_comm ; rewrite <- Zred_factor2 ; auto.
+      rewrite Htemp ; clear Htemp.
+      eapply ZsumList_bound_lt.
+      split.
+      apply min_prod_neg_lt ; auto.
+      apply max_prod_pos_lt ; auto.
+      admit.
+      inv Ha.
+      inv Hb.
+      eapply ZscalarMult_bound_inter; eauto.
+      apply IHa ; auto.
+      inv Ha ; auto.
+      rewrite Z.mul_comm.
+      f_equal.
+      rewrite Z.min_l.
+      rewrite Z.min_l.
+      reflexivity.
+      admit.
+      admit.
+      rewrite Z.mul_comm.
+      f_equal.
+      rewrite Z.min_l.
+      rewrite Z.min_l.
+      reflexivity.
+      admit.
+      admit.
 Admitted.
 
 Definition mult_2 (a:list Z) : list Z := a  ⊕ (38 ∘ (tail 16 a)).
 
 Lemma mult_2_bound: forall a m1 n1 m2 n2,
-  Forall (fun x => m1 < x < n1) a ->
-  (fun x => m1 < x < n1) 0 ->
   m2 = m1 + 38 * m1 ->
   n2 = n1 + 38 * n1 ->
+  (fun x => m1 < x < n1) 0 ->
+  Forall (fun x => m1 < x < n1) a ->
   Forall (fun x => m2 < x < n2) (mult_2 a).
 Proof.
   intros a m1 n1 m2 n2 Ha H0 Hm2 Hn2.
   unfold mult_2.
   subst m2 n2.
   eapply ZsumList_bound_lt ; go.
-  simpl in H0 ; omega.
-  eapply ZscalarMult_bound_pos ; go.
+  simpl in Hm2 ; omega.
+  eapply ZscalarMult_bound_const ; go.
   apply Forall_tail ; eauto.
 Qed.
 
@@ -78,18 +187,35 @@ Definition M (a b:list Z) : list Z :=
     let m2 := mult_2 m1 in
       mult_3 m2.
 
-Lemma mult_pos: forall m1 n1 m2 n2 m3 n3 a b,
+Lemma mult_pos: forall m1 n1 m2 n2 a b,
+  (fun x => m1 < x < n1) 0 ->
+  (fun x => m2 < x < n2) 0 ->
   Forall (fun x => m1 < x < n1) a ->
   Forall (fun x => m2 < x < n2) b ->
-  Forall (fun x => m3 < x < n3) (M a b).
+  Forall (fun x => 39 * Z.min (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2 < x < 39 * Z.min (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2) (M a b).
 Proof.
-  introv Ha Hb.
+  introv Hmn1 Hmn2 Ha Hb.
   unfold M.
   apply mult_3_bound.
-  eapply mult_2_bound.
+  eapply (mult_2_bound _ (Z.min (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2)  (Z.min (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2)).
+  change 39 with (1 + 38).
+  assert(forall a b, (1 + a) * b = b + a * b).
+    intros ; Psatz.nia.
+    rewrite Zmult_assoc_reverse.
+  apply H.
+  change 39 with (1 + 38).
+  assert(forall a b, (1 + a) * b = b + a * b).
+    intros ; Psatz.nia.
+    rewrite Zmult_assoc_reverse.
+  apply H.
+  admit.
   eapply mult_1_bound.
+  eapply Hmn1.
+  eapply Hmn2.
   eauto.
   eauto.
+  reflexivity.
+  reflexivity.
 Admitted.
 
 Section Integer.

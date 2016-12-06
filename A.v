@@ -43,7 +43,6 @@ Proof.
 Qed.
 
 Lemma ZsumList_bound_lt: forall m1 n1 m2 n2 a b, 
-(*  length a = length b -> *)
   (fun x => m1 < x < n1) 0 ->
   (fun x => m2 < x < n2) 0 ->
   Forall (fun x => m1 < x < n1) a -> 
