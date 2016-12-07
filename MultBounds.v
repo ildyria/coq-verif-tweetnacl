@@ -3,7 +3,6 @@ Require Import Psatz.
 
 Open Scope Z.
 
-
 Definition min_prod (min1 max1 min2 max2: Z) : Z:=
   Zmin (Zmin (min1*min2) (max1*max2)) (Zmin (max1*min2) (min1*max2)).
 
@@ -126,6 +125,24 @@ Proof.
     destruct (Z.nonpos_pos_cases x), (Z.nonpos_pos_cases y);
     destruct (Z.nonpos_pos_cases c), (Z.nonpos_pos_cases c);
     Psatz.nia.
+Qed.
+
+Fact le_mul_neg : forall m n,
+  m < 0 ->
+  1 <= n ->
+  n * m <= m.
+Proof.
+  intros m n Hm Hn.
+  Psatz.nia.
+Qed.
+
+Fact le_mul_pos : forall m n,
+  0 < m ->
+  1 <= n ->
+  m <= n * m.
+Proof.
+  intros m n Hm Hn.
+  Psatz.nia.
 Qed.
 
 Close Scope Z.

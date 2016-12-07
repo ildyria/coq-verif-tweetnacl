@@ -1,7 +1,5 @@
 Require Export Coq.ZArith.BinInt.
 Require Export Coq.ZArith.Zdiv.
-Require Export Coq.Lists.List.
-Require Export Coq.Init.Datatypes.
 
 Open Scope Z.
 

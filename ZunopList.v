@@ -1,5 +1,5 @@
 Require Export Tools.
-Require Export notations.
+Require Import notations.
 Import ListNotations.
 
 (* Some definitions relating to the functional spec of this particular program.  *)

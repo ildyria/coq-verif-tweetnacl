@@ -4,6 +4,9 @@ Require Export MultBounds.
 Require Export A.
 Import ListNotations.
 Require Export Tools.
+Require Export Zlength.
+Require Export Calc_lib.
+Require Export TrippleRel.
 Open Scope Z.
 
 Lemma ZscalarMult_bound_const: forall (m2 n2 o p a: Z) b,
@@ -17,12 +20,8 @@ Proof.
   rewrite ZscalarMult_eq_ZunopList.
   eapply (Forall_ZunopList _ (fun x : ℤ => a = x) (fun x : ℤ => m2 < x < n2)) ; go.
   intros x y Hx Hy.
-  subst o.
-  subst p.
-  subst x.
-  apply Mult_interval_correct_pos.
-  auto.
-  auto.
+  subst o p x.
+  apply Mult_interval_correct_pos ; auto.
 Qed.
 
 Lemma ZscalarMult_bound_inter: forall (m1 n1 m2 n2 o p a: Z) b,
@@ -36,56 +35,15 @@ Proof.
   rewrite ZscalarMult_eq_ZunopList.
   eapply (Forall_ZunopList _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
   intros x y Hx Hy.
-  subst o.
-  subst p.
-  apply Mult_interval_correct_min_max_lt.
-  auto.
-  auto.
+  subst o p.
+  apply Mult_interval_correct_min_max_lt ; auto.
 Qed.
-
-
 
 Fixpoint mult_1 (a b:list Z) : list Z := match a, b with 
 | [],_ => []
 | _,[] => []
 | ha :: qa, hb :: qb => ha * hb :: (ha ∘ qb) ⊕ (mult_1 qa (hb::qb))
 end.
-
-Fact Zlength_pos: forall A (l:list A), 0 <= Zlength l.
-Proof.
-intros.
-rewrite Zlength_correct.
-go.
-Qed.
-
-Fact le_mul_neg : forall m n,
-  m < 0 ->
-  1 <= n ->
-  n * m <= m.
-Proof.
-  intros m n Hm Hn.
-  Psatz.nia.
-Qed.
-
-Fact le_mul_pos : forall m n,
-  0 < m ->
-  1 <= n ->
-  m <= n * m.
-Proof.
-  intros m n Hm Hn.
-  Psatz.nia.
-Qed.
-
-Fact lt_lt_trans: forall a b c d x,
-  b < x < c ->
-  a <= b ->
-  c <= d ->
-  a < x < d.
-Proof.
-  intros a b c d x Hbxc Hab Hcd.
-  destruct Hbxc.
-  split ; omega.
-Qed.
 
 Lemma mult_1_bound : forall m1 n1 m2 n2 a b m3 n3,
   (fun x => m1 < x < n1) 0 ->

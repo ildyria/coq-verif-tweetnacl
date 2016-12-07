@@ -116,7 +116,10 @@ VFILES:=Carry.v\
   Forall_ZofList.v\
   Forall_ZopList.v\
   M.v\
-  ZCarry.v
+  ZCarry.v\
+  Zlength.v\
+  TrippleRel.v\
+  Calc_lib.v
 
 ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(VFILES))
