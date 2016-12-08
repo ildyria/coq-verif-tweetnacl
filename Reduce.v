@@ -25,7 +25,7 @@ Definition reduce n :=
   let c := n / 2^(256) in
   n + 38 * c - 2^(256) * c.
 
-Lemma reduceFF : forall m, (reduce m :𝓖𝓕) = (m :𝓖𝓕).
+Lemma reduceGF : forall m, (reduce m :𝓖𝓕) = (m :𝓖𝓕).
 Proof.
   intro m.
   unfold reduce.

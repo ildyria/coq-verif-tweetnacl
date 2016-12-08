@@ -443,7 +443,6 @@ Proof.
     rewrite Z.shiftr_div_pow2 by omega.
 (*    SearchAbout Z.div 0.*)
     apply Zdiv_small.
-    Check Zdiv_small.
   admit.
   admit.
   - change ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30]) with

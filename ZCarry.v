@@ -332,6 +332,103 @@ Proof.
 Qed.
 
 
+Lemma doubleCar:
+  forall x y,
+   0 <= x < 2 ^ 302 ->
+   y = Zcar25519 x ->
+   Zcar25519 y < 2 ^ 256.
+Proof.
+  intros x y Hx Hy.
+  assert(Hx_dec: x = 0 \/ 0 < x < 2^256 \/ 2 ^ 256 <= x) by omega.
+  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
+    {
+      (* case x = 0 *)
+      go.
+    }
+  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
+    {
+      (* case  0 < x < 2^256 *)
+      rewrite Zcarry25519_fixpoint in Hy by omega.
+      subst y.
+      rewrite Zcarry25519_fixpoint ; omega.
+    }
+    {
+      (* case  2^256 <= x *)
+      assert(Hy_min: 0 < y).
+        subst y.
+        apply ZCarry25519_min.
+        eapply (Z.lt_le_trans _ (2^256) _) ; go.
 
+      assert(Hy_max: y < 2 ^ 257).
+        subst y.
+        apply ZCarry25519_sup_bounds ; go.
+        apply Z_le_lt_eq_dec in Hx_dec.
+        destruct Hx_dec.
+        eapply Z.lt_trans.
+        apply Z.gt_lt_iff.
+        apply (pown0 256). 
+        omega.
+        assumption.
+        subst x.
+        apply Z.gt_lt_iff.
+        apply (pown0 256).
+        omega.
 
-
+    assert(Hy_dec: 0 < y < 2^256 \/ 2 ^ 256 <= y) by omega.
+    case Hy_dec ; clear Hy_dec ; intro Hy_dec.
+      {
+        rewrite Zcarry25519_fixpoint ; omega.
+      }
+      {
+        unfold Zcar25519.
+        unfold Zcar25519 in Hy.
+        unfold getCarry in Hy.
+        unfold getCarry.
+        unfold getResidute in Hy.
+        unfold getResidute.
+        rewrite Z.shiftr_div_pow2 in Hy by omega.
+        rename y into t.
+        assert(Hy_t: exists y, t = 2^256 + y) by (exists (t - 2^256) ; omega).
+        destruct Hy_t as [y Hy_t].
+        rewrite Hy_t.
+        rewrite Z.shiftr_div_pow2; [|omega].
+        assert(Hcarry: ((2^256 + y) / 2 ^ 256) = 1).
+          apply eq_1_div256 ; omega.
+        rewrite Hcarry.
+        change (38 * 1) with 38.
+        clear Hcarry.
+        rewrite Hy_t in Hy.
+        subst t.
+        change(2 ^ 257) with (2 ^ 256 + 2 ^ 256) in Hy_max.
+        apply Zplus_lt_reg_l in Hy_max.
+        assert(Hy_tempval: (1 * 2 ^ 256 + y) mod 2 ^ 256 = y).
+          rewrite Z.add_comm.
+          rewrite Z_mod_plus_full.
+          rewrite Zmod_small ; try reflexivity ; omega.
+          change (1 * 2 ^256) with (2 ^256) in Hy_tempval.
+        rewrite Hy_tempval.
+        clear Hy_min.
+        assert(Hy_min: 0 <= y) by omega.
+        clear Hy_dec.
+        clear Hy_tempval.
+        symmetry in Hy.
+        apply Zplus_minus_eq in Hy.
+        subst.
+        assert(x mod 2 ^ 256 < 2 ^ 256).
+        apply Z_mod_lt ; omega.
+        rewrite <- Z.lt_sub_0 in H.
+        assert(x / 2 ^ 256 < 2^46).
+        SearchAbout Z.lt Z.div.
+        apply Z.div_lt_upper_bound ; try omega.
+        change (2 ^ 256 * 2 ^ 46) with (2 ^ 302).
+        omega.
+        assert(38 * (x / 2 ^ 256) + x mod 2 ^ 256 - 2 ^ 256 < 38 * 2^46).
+        omega.
+        assert(38 + (38 * (x / 2 ^ 256) + x mod 2 ^ 256 - 2 ^ 256) < 38 + 38 * 2^46).
+        omega.
+        assert(38 + 38 * 2 ^ 46 < 2^256).
+        compute ; reflexivity.
+        omega.
+        }
+        }
+Qed.

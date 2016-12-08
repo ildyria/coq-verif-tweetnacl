@@ -9,7 +9,7 @@ Require Export Calc_lib.
 Require Export TrippleRel.
 Open Scope Z.
 
-Lemma ZscalarMult_bound_const: forall (m2 n2 o p a: Z) b,
+Lemma ZscalarMult_bound_const: forall (m2 n2 o p a: Z) (b: list Z),
   0 < a ->
   Forall (fun x => m2 < x < n2) b -> 
   o = a * m2 ->
@@ -24,7 +24,7 @@ Proof.
   apply Mult_interval_correct_pos ; auto.
 Qed.
 
-Lemma ZscalarMult_bound_inter: forall (m1 n1 m2 n2 o p a: Z) b,
+Lemma ZscalarMult_bound_inter: forall (m1 n1 m2 n2 o p a: Z) (b: list Z),
   (fun x => m1 < x < n1) a ->
   Forall (fun x => m2 < x < n2) b -> 
   o = min_prod m1 n1 m2 n2 ->
@@ -45,7 +45,7 @@ Fixpoint mult_1 (a b:list Z) : list Z := match a, b with
 | ha :: qa, hb :: qb => ha * hb :: (ha ∘ qb) ⊕ (mult_1 qa (hb::qb))
 end.
 
-Lemma mult_1_bound : forall m1 n1 m2 n2 a b m3 n3,
+Lemma mult_1_bound : forall (m1 n1 m2 n2 m3 n3: Z) (a b: list Z),
   (fun x => m1 < x < n1) 0 ->
   (fun x => m2 < x < n2) 0 ->
   Forall (fun x => m1 < x < n1) a ->
@@ -54,6 +54,7 @@ Lemma mult_1_bound : forall m1 n1 m2 n2 a b m3 n3,
   n3 = Zmin (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2 ->
   Forall (fun x => m3 < x < n3) (mult_1 a b).
 Proof.
+(*
   induction a ; introv Hmn1 Hmn2 Ha Hb Hm3 Hn3.
   - go.
   - induction b; go.
@@ -109,19 +110,19 @@ Proof.
       rewrite Z.min_l.
       reflexivity.
       admit.
-      admit.
+      admit.*)
 Admitted.
 
 Definition mult_2 (a:list Z) : list Z := a  ⊕ (38 ∘ (tail 16 a)).
 
-Lemma mult_2_bound: forall a m1 n1 m2 n2,
+Lemma mult_2_bound: forall (m1 n1 m2 n2: Z) (a: list Z),
   m2 = m1 + 38 * m1 ->
   n2 = n1 + 38 * n1 ->
   (fun x => m1 < x < n1) 0 ->
   Forall (fun x => m1 < x < n1) a ->
   Forall (fun x => m2 < x < n2) (mult_2 a).
 Proof.
-  intros a m1 n1 m2 n2 Ha H0 Hm2 Hn2.
+  intros m1 n1 m2 n2 a Ha H0 Hm2 Hn2.
   unfold mult_2.
   subst m2 n2.
   eapply ZsumList_bound_lt ; go.
@@ -132,7 +133,9 @@ Qed.
 
 Definition mult_3 (a:list Z) : list Z := slice 16 a.
 
-Lemma mult_3_bound : forall m1 n1 a, Forall (fun x => m1 < x < n1) a -> Forall (fun x => m1 < x < n1) (mult_3 a).
+Lemma mult_3_bound : forall m1 n1 a,
+  Forall (fun x => m1 < x < n1) a ->
+    Forall (fun x => m1 < x < n1) (mult_3 a).
 Proof.
   intros.
   unfold mult_3.
@@ -145,7 +148,7 @@ Definition M (a b:list Z) : list Z :=
     let m2 := mult_2 m1 in
       mult_3 m2.
 
-Lemma mult_pos: forall m1 n1 m2 n2 a b,
+Lemma mult_bound: forall (m1 n1 m2 n2: Z) (a b: list Z),
   (fun x => m1 < x < n1) 0 ->
   (fun x => m2 < x < n2) 0 ->
   Forall (fun x => m1 < x < n1) a ->
@@ -155,17 +158,13 @@ Proof.
   introv Hmn1 Hmn2 Ha Hb.
   unfold M.
   apply mult_3_bound.
-  eapply (mult_2_bound _ (Z.min (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2)  (Z.min (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2)).
+  eapply (mult_2_bound (Z.min (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2)  (Z.min (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2)).
   change 39 with (1 + 38).
-  assert(forall a b, (1 + a) * b = b + a * b).
-    intros ; Psatz.nia.
-    rewrite Zmult_assoc_reverse.
-  apply H.
+  rewrite Zmult_assoc_reverse.
+  apply Zred_factor7.
   change 39 with (1 + 38).
-  assert(forall a b, (1 + a) * b = b + a * b).
-    intros ; Psatz.nia.
-    rewrite Zmult_assoc_reverse.
-  apply H.
+  rewrite Zmult_assoc_reverse.
+  apply Zred_factor7.
   admit.
   eapply mult_1_bound.
   eapply Hmn1.
@@ -183,39 +182,41 @@ Hypothesis Hn: n > 0.
 
 Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
-Lemma mult1_correct_impl : forall (a b c: list Z), mult_1 a b = c -> (ℤ.lst a) * (ℤ.lst b) = ℤ.lst c.
+Lemma mult1_correct_impl : forall (a b c: list Z),
+  mult_1 a b = c -> (ℤ.lst a) * (ℤ.lst b) = ℤ.lst c.
 Proof.
-induction a, b ; intros c Hc.
-- simpl in *; go.
-- simpl in *; go.
-- simpl in Hc.
-  rewrite Z.mul_comm.
-  go.
-- rewrite! ZofList_cons.
-  unfold mult_1 in Hc; fold mult_1 in Hc.
-  rewrite <- Hc.
-  rewrite ZofList_cons.
-  rewrite ZsumList_correct.
-  rewrite <- (IHa (z :: b) (mult_1 a0 (z :: b))) by go.
-  rewrite ZofList_cons.
-  rewrite ZscalarMult_correct.
-  ring.
+  induction a, b ; intros c Hc.
+  - simpl in *; go.
+  - simpl in *; go.
+  - simpl in Hc.
+    rewrite Z.mul_comm.
+    go.
+  - rewrite! ZofList_cons.
+    unfold mult_1 in Hc; fold mult_1 in Hc.
+    rewrite <- Hc.
+    rewrite ZofList_cons.
+    rewrite ZsumList_correct.
+    rewrite <- (IHa (z :: b) (mult_1 a0 (z :: b))) by go.
+    rewrite ZofList_cons.
+    rewrite ZscalarMult_correct.
+    ring.
 Qed.
 
-Corollary mult1_correct : forall (a b: list Z), ℤ.lst mult_1 a b =  (ℤ.lst a) * (ℤ.lst b).
+Corollary mult1_correct : forall (a b: list Z),
+  ℤ.lst mult_1 a b =  (ℤ.lst a) * (ℤ.lst b).
 Proof.
-intros a b.
-symmetry.
-erewrite mult1_correct_impl ; go.
+  intros a b.
+  symmetry.
+  erewrite mult1_correct_impl ; go.
 Qed.
 
 Lemma mult_2_correct : forall (l: list Z), (ℤ.lst mult_2 l) = (ℤ.lst l) + 38 * ℤ.lst tail 16 l.
 Proof.
-intros l.
-unfold mult_2.
-rewrite ZsumList_correct.
-rewrite ZscalarMult_correct.
-go.
+  intros l.
+  unfold mult_2.
+  rewrite ZsumList_correct.
+  rewrite ZscalarMult_correct.
+  go.
 Qed.
 
 End Integer.
@@ -225,56 +226,56 @@ Lemma reduce_slice_GF:
     ℤ.ℕ length l < 32 ->
     (ℤ16.lst mult_3 (mult_2 l)) :𝓖𝓕 = (ℤ16.lst l) :𝓖𝓕.
 Proof.
-intros l Hl.
-unfold mult_3.
-unfold mult_2.
-rewrite ZofList_slice ; try omega.
-rewrite ZsumList_correct.
-rewrite ZscalarMult_correct.
-assert(Hlength: (length l <= 16 \/ length l > 16)%nat) by omega.
-destruct Hlength.
-{
-  assert(Ht: tail 16 l = []).
-    apply tail_length_le ; go.
-  assert(Hs: slice 16 l = l).
-    apply slice_length_le ; go.
-  rewrite! Ht.
-  rewrite! ZscalarMultnil.
-  rewrite ZsumList_nil_r.
-  rewrite Ht.
-  rewrite Hs.
-  rewrite ZofList_nil.
-  f_equal.
-  ring.
-}
-{
-  assert(Hlength: length (slice 16 (l ⊕ 38 ∘ tail 16 l)) = 16%nat).
-    rewrite slice_length_min.
-    rewrite ZsumList_length_max.
-    rewrite ZscalarMult_length.
-    rewrite tail_length_eq_minus ; go.
-    rewrite Max.max_l ; go.
-    rewrite Min.min_l ; go.
-  rewrite Hlength ; clear Hlength.
-  rewrite ZsumList_tail.
-  rewrite ZscalarMult_tail.
-  assert(Htailtail: tail 16 (tail 16 l) = []).
-    apply tail_length_le.
-    rewrite tail_length_eq_minus ; go.
-  rewrite Htailtail; clear Htailtail.
-  rewrite ZscalarMultnil.
-  rewrite ZsumList_nil_r.
-  replace (16 * ℤ.ℕ 16) with 256 by go.
-  assert(Hnul: (38 * (ℤ16.lst tail 16 l) - 2 ^ 256 * (ℤ16.lst tail 16 l)) :𝓖𝓕  = 0).
-    rewrite <- Zmult_minus_distr_r.
-    rewrite Zmult_mod.
-    replace ((38 - 2 ^ 256) mod (2 ^ 255 - 19)) with 0; compute ; reflexivity.
-  rewrite <- Z.add_sub_assoc.
-  rewrite <- Zplus_mod_idemp_r.
-  rewrite Hnul ; clear Hnul.
-  rewrite <- Zplus_0_r_reverse.
-  reflexivity.
-}
+  intros l Hl.
+  unfold mult_3.
+  unfold mult_2.
+  rewrite ZofList_slice ; try omega.
+  rewrite ZsumList_correct.
+  rewrite ZscalarMult_correct.
+  assert(Hlength: (length l <= 16 \/ length l > 16)%nat) by omega.
+  destruct Hlength.
+  {
+    assert(Ht: tail 16 l = []).
+      apply tail_length_le ; go.
+    assert(Hs: slice 16 l = l).
+      apply slice_length_le ; go.
+    rewrite! Ht.
+    rewrite! ZscalarMultnil.
+    rewrite ZsumList_nil_r.
+    rewrite Ht.
+    rewrite Hs.
+    rewrite ZofList_nil.
+    f_equal.
+    ring.
+  }
+  {
+    assert(Hlength: length (slice 16 (l ⊕ 38 ∘ tail 16 l)) = 16%nat).
+      rewrite slice_length_min.
+      rewrite ZsumList_length_max.
+      rewrite ZscalarMult_length.
+      rewrite tail_length_eq_minus ; go.
+      rewrite Max.max_l ; go.
+      rewrite Min.min_l ; go.
+    rewrite Hlength ; clear Hlength.
+    rewrite ZsumList_tail.
+    rewrite ZscalarMult_tail.
+    assert(Htailtail: tail 16 (tail 16 l) = []).
+      apply tail_length_le.
+      rewrite tail_length_eq_minus ; go.
+    rewrite Htailtail; clear Htailtail.
+    rewrite ZscalarMultnil.
+    rewrite ZsumList_nil_r.
+    replace (16 * ℤ.ℕ 16) with 256 by go.
+    assert(Hnul: (38 * (ℤ16.lst tail 16 l) - 2 ^ 256 * (ℤ16.lst tail 16 l)) :𝓖𝓕  = 0).
+      rewrite <- Zmult_minus_distr_r.
+      rewrite Zmult_mod.
+      replace ((38 - 2 ^ 256) mod (2 ^ 255 - 19)) with 0; compute ; reflexivity.
+    rewrite <- Z.add_sub_assoc.
+    rewrite <- Zplus_mod_idemp_r.
+    rewrite Hnul ; clear Hnul.
+    rewrite <- Zplus_0_r_reverse.
+    reflexivity.
+  }
 Qed.
 
 Lemma Zsucc16 : Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ (Z.succ 0))))))))))))))) = 16.
