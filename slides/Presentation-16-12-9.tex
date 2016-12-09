@@ -546,6 +546,30 @@ Admitted.
   \end{center}
 \end{frame}
 
+\begin{frame}[fragile]{Multiplication - bounds}
+  What can we deduce from this ?
+  \begin{center}
+  \begin{align*}
+    39 \times 16 \times (2^x)^2 &< 64 \times 16 \times (2^x)^2\\
+    64 \times 16 \times (2^x)^2 &< 2^{62}\\
+    2^6 \times 2^4 \times (2^x)^2 &< 2^{62}\\
+    x &< 26
+  \end{align*}
+  Thus we will avoid any over/underflows if the inputs are within the $]-2^{26},2^{26}[$ ranges:
+ \begin{lstlisting}[language=Coq, caption=M | Proofs of bounds, label=cod:languageC141]
+Lemma mult_bound_strong:
+  forall (a b: list Z),
+    (length a = 16)%\N ->
+    (length b = 16)%\N ->
+    Forall (fun x => -2^26 < x < 2^26) a ->
+    Forall (fun x => -2^26 < x < 2^26) b ->
+      Forall (fun x => -2^62 < x < 2^62) (M a b).
+Admitted.
+\end{lstlisting}
+
+  \end{center}
+\end{frame}
+
 \section{car25519}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -731,7 +755,7 @@ Qed.
     \begin{itemize}
       \item finish the proofs on the bounds for the Multiplication.
       \item redo all the proofs on the carrying including the addition of $2^{16}$.
-      \item Prove that the model matches the semantic (code.v) using VST (\#Princeton).
+      \item Prove that the model matches the semantic (\texttt{code.v}) using VST (\#Princeton).
       \item Prove that the steps does not yeld to an over/underflow.
     \end{itemize}
 \end{frame}
