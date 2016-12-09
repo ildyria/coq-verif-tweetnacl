@@ -206,132 +206,6 @@ Proof.
   auto.
 Qed.
 
-Lemma trippleCar:
-  forall x y z,
-   0 <= x < 2 ^ 302 ->
-   y = Zcar25519 x ->
-   z = Zcar25519 y ->
-   Zcar25519 z < 2 ^ 256.
-Proof.
-  intros x y z Hx Hy Hz.
-  assert(Hx_dec: x = 0 \/ 0 < x < 2^256 \/ 2 ^ 256 <= x) by omega.
-  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
-    {
-      (* case x = 0 *)
-      go.
-    }
-  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
-    {
-      (* case  0 < x < 2^256 *)
-      rewrite Zcarry25519_fixpoint in Hy by omega.
-      subst y.
-      rewrite Zcarry25519_fixpoint in Hz by omega.
-      subst z.
-      rewrite Zcarry25519_fixpoint ; omega.
-    }
-    {
-      (* case  2^256 <= x *)
-      assert(Hy_min: 0 < y).
-        subst y.
-        apply ZCarry25519_min.
-        eapply (Z.lt_le_trans _ (2^256) _) ; go.
-
-      assert(Hz_min: 0 < z).
-        subst z.
-        apply ZCarry25519_min. go.
-
-      assert(Hy_max: y < 2 ^ 257).
-        subst y.
-        apply ZCarry25519_sup_bounds ; go.
-        apply Z_le_lt_eq_dec in Hx_dec.
-        destruct Hx_dec.
-        eapply Z.lt_trans.
-        apply Z.gt_lt_iff.
-        apply (pown0 256). 
-        omega.
-        assumption.
-        subst x.
-        apply Z.gt_lt_iff.
-        apply (pown0 256).
-        omega.
-
-      assert(Hz_max: z < 2 ^ 257).
-        subst z.
-        apply ZCarry25519_sup_bounds ; go.
-        apply Z_le_lt_eq_dec in Hx_dec.
-        destruct Hx_dec.
-        eapply Z.lt_trans.
-        eapply Hy_max.
-        compute ; reflexivity.
-        eapply Z.lt_trans.
-        eapply Hy_max.
-        go.
-
-    assert(Hy_dec: 0 < y < 2^256 \/ 2 ^ 256 <= y) by omega.
-    case Hy_dec ; clear Hy_dec ; intro Hy_dec.
-      {
-        (* case y < 2 ^ 256 *)
-        rewrite Zcarry25519_fixpoint in Hz by omega.
-        subst z.
-        rewrite Zcarry25519_fixpoint ; omega.
-      }
-      {
-        (* case 2 ^ 256 <= y *)
-        rename y into t.
-        assert(Hy_t: exists y, t = 2^256 + y) by (exists (t - 2^256) ; omega).
-        destruct Hy_t as [y Hy_t].
-        rewrite Hy_t in Hz.
-        rewrite Hy_t in Hy_max.
-        rewrite Hy_t in Hy_dec.
-        unfold Zcar25519 in Hz.
-        unfold getCarry in Hz.
-        unfold Z.shiftl in Hz.
-        rewrite Z.shiftr_div_pow2 in Hz by omega.
-        assert(Hcarry: ((2^256 + y) / 2 ^ 256) = 1).
-          apply eq_1_div256 ; assumption.
-        assert(Hcarry38: 38 * ((2 ^ 256 + y) / 2 ^ 256) = 38).
-          omega. (* uses Hcarry *)
-        change(2 ^ 257) with (2 ^ 256 + 2 ^ 256) in Hy_max.
-        apply Zplus_lt_reg_l in Hy_max.
-        rewrite Hcarry38 in Hz ; clear Hcarry38 ; clear Hcarry.
-        unfold getResidute in Hz.
-        change (2^256) with (2^256 + 0) in Hy_dec.
-        change (2^256 + 0 + y) with (2^256 + y) in Hy_dec.
-        apply Zplus_le_reg_l in Hy_dec.
-        assert(Hy_tempval: (1 * 2 ^ 256 + y) mod 2 ^ 256 = y).
-          rewrite Z.add_comm.
-          rewrite Z_mod_plus_full.
-          rewrite Zmod_small ; try reflexivity.
-          split ; assumption.
-        rewrite Z.mul_comm in Hy_tempval.
-        rewrite <- Zred_factor0 in Hy_tempval.
-        rewrite Hy_tempval in Hz ; clear Hy_tempval.
-
-        assert(Hz_dec: 0 < z < 2^256 \/ 2 ^ 256 <= z) by omega.
-        case Hz_dec ; clear Hz_dec ; intro Hz_dec.
-          {
-            (* case z < 2 ^ 256 *)
-            rewrite Zcarry25519_fixpoint ; omega.
-          }
-          {
-            rewrite Hz.
-            (* case 2 ^ 256 <= z *)
-            apply Z_le_lt_eq_dec in Hy_dec.
-            destruct Hy_dec.
-            - apply (Z.lt_trans _  (2 ^ 16) _).
-              rewrite Z.add_comm.
-              apply Zcarry25519_third.
-              split ; assumption.
-              omega.
-              compute ; reflexivity.
-            - subst y.
-              go.
-           }
-         }
-      }
-Qed.
-
-
 Lemma doubleCar:
   forall x y,
    0 <= x < 2 ^ 302 ->
@@ -429,6 +303,86 @@ Proof.
         assert(38 + 38 * 2 ^ 46 < 2^256).
         compute ; reflexivity.
         omega.
-        }
-        }
+      }
+    }
+Qed.
+
+Lemma trippleCar:
+  forall x y z,
+   0 <= x < 2 ^ 302 ->
+   y = Zcar25519 x ->
+   z = Zcar25519 y ->
+   Zcar25519 z < 2 ^ 256.
+Proof.
+  intros x y z Hx Hy Hz.
+  assert(Hx_dec: x = 0 \/ 0 < x < 2^256 \/ 2 ^ 256 <= x) by omega.
+  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
+    {
+      (* case x = 0 *)
+      go.
+    }
+  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
+    {
+      (* case  0 < x < 2^256 *)
+      rewrite Zcarry25519_fixpoint in Hy by omega.
+      subst y.
+      rewrite Zcarry25519_fixpoint in Hz by omega.
+      subst z.
+      rewrite Zcarry25519_fixpoint ; omega.
+    }
+    {
+      (* case  2^256 <= x *)
+      assert(Hy_min: 0 < y).
+        subst y.
+        apply ZCarry25519_min.
+        eapply (Z.lt_le_trans _ (2^256) _) ; go.
+
+      assert(Hz_min: 0 < z).
+        subst z.
+        apply ZCarry25519_min. go.
+
+      assert(Hy_max: y < 2 ^ 257).
+        subst y.
+        apply ZCarry25519_sup_bounds ; go.
+        apply Z_le_lt_eq_dec in Hx_dec.
+        destruct Hx_dec.
+        eapply Z.lt_trans.
+        apply Z.gt_lt_iff.
+        apply (pown0 256). 
+        omega.
+        assumption.
+        subst x.
+        apply Z.gt_lt_iff.
+        apply (pown0 256).
+        omega.
+
+      assert(Hz_max: z < 2 ^ 257).
+        subst z.
+        apply ZCarry25519_sup_bounds ; go.
+        apply Z_le_lt_eq_dec in Hx_dec.
+        destruct Hx_dec.
+        eapply Z.lt_trans.
+        eapply Hy_max.
+        compute ; reflexivity.
+        eapply Z.lt_trans.
+        eapply Hy_max.
+        go.
+
+    assert(Hy_dec: 0 < y < 2^256 \/ 2 ^ 256 <= y) by omega.
+    case Hy_dec ; clear Hy_dec ; intro Hy_dec.
+      {
+        (* case y < 2 ^ 256 *)
+        rewrite Zcarry25519_fixpoint in Hz by omega.
+        subst z.
+        rewrite Zcarry25519_fixpoint ; omega.
+      }
+      { 
+        assert(z < 2 ^ 256).
+        subst z.
+        eapply doubleCar.
+        eauto.
+        eauto.
+        rewrite Zcarry25519_fixpoint ; go.
+      }
+    }
 Qed.

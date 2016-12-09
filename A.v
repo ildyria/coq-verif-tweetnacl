@@ -54,7 +54,19 @@ Proof.
   eapply (Forall_ZbinopList_0 _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
 Qed.
 
-Lemma ZsumList_bound_len: forall m1 n1 m2 n2 a b, 
+Lemma ZsumList_bound_le: forall m1 n1 m2 n2 a b, 
+  (fun x => m1 <= x <= n1) 0 ->
+  (fun x => m2 <= x <= n2) 0 ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 + m2 <= x <= n1 + n2) (a ⊕ b).
+Proof.
+  introv Hmn1 Hmn2 Ha Hb.
+  rewrite ZsumList_ZbinopList_eq.
+  eapply (Forall_ZbinopList_0 _ (fun x : ℤ => m1 <= x <= n1) (fun x : ℤ => m2 <= x <= n2)) ; go.
+Qed.
+
+Lemma ZsumList_bound_len_lt: forall m1 n1 m2 n2 a b, 
   length a = length b ->
   Forall (fun x => m1 < x < n1) a -> 
   Forall (fun x => m2 < x < n2) b -> 
@@ -63,6 +75,17 @@ Proof.
   introv Hl Ha Hb.
   rewrite ZsumList_ZbinopList_eq.
   eapply (Forall_ZbinopList_len _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
+Qed.
+
+Lemma ZsumList_bound_len_le: forall m1 n1 m2 n2 a b, 
+  length a = length b ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 + m2 <= x <= n1 + n2) (a ⊕ b).
+Proof.
+  introv Hl Ha Hb.
+  rewrite ZsumList_ZbinopList_eq.
+  eapply (Forall_ZbinopList_len _ (fun x : ℤ => m1 <= x <= n1) (fun x : ℤ => m2 <= x <= n2)) ; go.
 Qed.
 
 (*

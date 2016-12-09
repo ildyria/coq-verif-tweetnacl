@@ -15,10 +15,10 @@ Lemma lt_impl_le: forall (a b x:Z),
 Proof. intros ; split ; omega. Qed.
 
 Lemma le_le_trans: forall (a b c d x:Z),
-  b < x < c ->
+  b <= x <= c ->
   a <= b ->
   c <= d ->
-  a < x < d.
+  a <= x <= d.
 Proof. intros a b c d x [] ; split ; omega. Qed.
 
 Close Scope Z.

@@ -22,14 +22,15 @@ Proof.
 Qed.
 
 Lemma min_prod_neg_le : forall a b c d,
-  a < 0 < b ->
-  c < 0 < d ->
+  a <= 0 <= b ->
+  c <= 0 <= d ->
   min_prod a b c d <= 0.
 Proof.
-    intros.
-    assert(HS: min_prod a b c d < 0).
-    apply min_prod_neg_lt ; auto.
-    omega.
+    intros. unfold min_prod.
+    repeat apply Z.min_case_strong;
+    destruct (Z.nonpos_pos_cases a), (Z.nonpos_pos_cases b);
+    destruct (Z.nonpos_pos_cases c), (Z.nonpos_pos_cases c);
+    Psatz.nia.
 Qed.
 
 Lemma max_prod_pos_lt : forall a b c d,
@@ -45,14 +46,15 @@ Proof.
 Qed.
 
 Lemma max_prod_pos_le : forall a b c d,
-  a < 0 < b ->
-  c < 0 < d ->
+  a <= 0 <= b ->
+  c <= 0 <= d ->
   0 <= max_prod a b c d.
 Proof.
-    intros.
-    assert(HS: 0 < max_prod a b c d).
-    apply max_prod_pos_lt ; auto.
-    omega.
+    intros. unfold max_prod.
+    repeat apply Z.max_case_strong;
+    destruct (Z.nonpos_pos_cases a), (Z.nonpos_pos_cases b);
+    destruct (Z.nonpos_pos_cases c), (Z.nonpos_pos_cases c);
+    Psatz.nia.
 Qed.
 
 Lemma Mult_interval_correct_min_max_lt :
@@ -125,24 +127,6 @@ Proof.
     destruct (Z.nonpos_pos_cases x), (Z.nonpos_pos_cases y);
     destruct (Z.nonpos_pos_cases c), (Z.nonpos_pos_cases c);
     Psatz.nia.
-Qed.
-
-Fact le_mul_neg : forall m n,
-  m < 0 ->
-  1 <= n ->
-  n * m <= m.
-Proof.
-  intros m n Hm Hn.
-  Psatz.nia.
-Qed.
-
-Fact le_mul_pos : forall m n,
-  0 < m ->
-  1 <= n ->
-  m <= n * m.
-Proof.
-  intros m n Hm Hn.
-  Psatz.nia.
 Qed.
 
 Close Scope Z.
