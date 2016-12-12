@@ -97,6 +97,7 @@ endif
 ######################
 
 VFILES:=Carry.v\
+  Carry2.v\
   ZofList.v\
   Libs.v\
   Tools.v\

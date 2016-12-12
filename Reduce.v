@@ -88,15 +88,21 @@ Proof.
   assumption.
 Qed.
 
+Lemma mod_div: forall m:Z, m mod 2 ^ n + 2 ^ n * (m / 2 ^ n) = m.
+Proof.
+  intro.
+  rewrite Z.add_comm ; symmetry ;apply Z_div_mod_eq.
+  apply pown0.
+  assumption.
+Qed.
+
 Lemma residuteCarry : forall m:Z, getResidute m + 2^n *getCarry m = m.
 Proof.
   intro m.
   unfold getResidute.
   unfold getCarry.
   rewrite Z.shiftr_div_pow2 ; try omega.
-  rewrite Z.add_comm ; symmetry ;apply Z_div_mod_eq.
-  apply pown0.
-  assumption.
+  apply mod_div.
 Qed.
 
 Lemma getCarryMonotone : forall m, m > 0 -> getCarry m < m.
