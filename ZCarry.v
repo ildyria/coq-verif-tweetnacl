@@ -76,9 +76,9 @@ Proof.
   destruct Hx_dec; [apply Z.add_nonneg_pos | apply Z.add_pos_nonneg].
   rewrite Z.mul_comm.
   apply Zmult_gt_0_le_0_compat ; [|apply getCarry_pos] ; omega.
-  apply getResidute_pos_str ; omega.
+  apply getResidue_pos_str ; omega.
   apply Z.mul_pos_pos ; [|apply getCarry_pos_str] ; omega.
-  apply getResidute_pos ; omega.
+  apply getResidue_bounds ; omega.
 Qed.
 
 Lemma ZCarry25519_sup_bounds: forall x,
@@ -115,7 +115,7 @@ Proof.
   eapply Z.lt_trans.
   apply Hbound2.
   go.
-  unfold getResidute.
+  unfold getResidue.
   apply Z_mod_lt.
   auto.
 Qed.
@@ -130,7 +130,7 @@ Proof.
   rewrite Z.add_comm.
   rewrite Zplus_0_r_reverse.
   f_equal.
-  - unfold getResidute.
+  - unfold getResidue.
     apply Zmod_small.
     split ; omega.
   - unfold getCarry.
@@ -163,7 +163,7 @@ Lemma Zcarry25519_third :
 Proof.
   intros x Hx Hx38.
   unfold Zcar25519.
-  unfold getResidute.
+  unfold getResidue.
   unfold getCarry.
   rewrite Z.shiftr_div_pow2 by omega.
 
@@ -195,7 +195,7 @@ Proof.
   intros x y Hx Hy.
   unfold Zcar25519 in Hy.
   unfold getCarry in Hy.
-  unfold getResidute in Hy.
+  unfold getResidue in Hy.
   rewrite Z.shiftr_div_pow2 in Hy by omega.
   rewrite eq_1_div256 in Hy by omega.
   rewrite <- Zred_factor0 in Hy.
@@ -258,8 +258,8 @@ Proof.
         unfold Zcar25519 in Hy.
         unfold getCarry in Hy.
         unfold getCarry.
-        unfold getResidute in Hy.
-        unfold getResidute.
+        unfold getResidue in Hy.
+        unfold getResidue.
         rewrite Z.shiftr_div_pow2 in Hy by omega.
         rename y into t.
         assert(Hy_t: exists y, t = 2^256 + y) by (exists (t - 2^256) ; omega).
@@ -292,7 +292,6 @@ Proof.
         apply Z_mod_lt ; omega.
         rewrite <- Z.lt_sub_0 in H.
         assert(x / 2 ^ 256 < 2^46).
-        SearchAbout Z.lt Z.div.
         apply Z.div_lt_upper_bound ; try omega.
         change (2 ^ 256 * 2 ^ 46) with (2 ^ 302).
         omega.

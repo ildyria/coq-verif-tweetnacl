@@ -1,5 +1,6 @@
 Require Export Tools.
 Require Export ZofList.
+Require Export Calc_lib.
 Require Export notations.
 
 Open Scope Z.
@@ -43,23 +44,24 @@ Proof.
   rewrite Zmod_mod.
   reflexivity.
 Qed.
-(*
-Definition reduce_light_top n := 
-  let c := n / 2^(16) in
-  n - 2^(16) * c.
-
-Definition reduce_light_bot n := 
-  let c := n / 2^(16) in
-  38 * c.
-*)
-
-
 
 Section Integer.
 
 Variable n:Z.
 Hypothesis Hn: n > 0.
 
+Lemma res_pos: forall (a:Z), 0 <= a - Z.shiftl (Z.shiftr a n) n.
+Proof.
+  intro a.
+  rewrite Z.shiftr_div_pow2 by omega.
+  rewrite Z.shiftl_mul_pow2 by omega.
+  apply Zle_minus_le_0.
+  rewrite Z.mul_comm.
+  apply Z.mul_div_le.
+  rewrite <- Z.gt_lt_iff.
+  apply pown0.
+  assumption.
+Qed.
 
 Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
@@ -67,9 +69,22 @@ Definition getCarry (m:Z) : Z :=  Z.shiftr m n.
 
 (* Compute (getCarry (Z.pow 2 18)). *)
 
-Definition getResidute (m:Z) : Z := m mod 2^n.
+Definition getResidue (m:Z) : Z := m mod 2^n.
 
-Lemma getResidute_0 : getResidute 0 = 0.
+Lemma getResidue_mod: forall (m:Z), getResidue m = m - Z.shiftl (Z.shiftr m n) n.
+Proof.
+  intro a.
+  unfold getResidue.
+  rewrite Z.shiftr_div_pow2 by omega.
+  rewrite Z.shiftl_mul_pow2 by omega.
+  apply Zplus_minus_eq.
+  rewrite Z.mul_comm.
+  apply Z_div_mod_eq.
+  apply pown0.
+  assumption.
+Qed.
+
+Lemma getResidue_0 : getResidue 0 = 0.
 Proof.
   go.
 Qed.
@@ -79,10 +94,10 @@ Proof.
   apply Z.shiftr_0_l.
 Qed.
 
-Lemma withinBounds16 : forall m:Z, getResidute m < 2^n.
+Lemma getResidue_bounds : forall m:Z, 0 <= getResidue m < 2^n.
 Proof.
   intro m.
-  unfold getResidute.
+  unfold getResidue.
   apply Z_mod_lt.
   apply pown0.
   assumption.
@@ -96,16 +111,16 @@ Proof.
   assumption.
 Qed.
 
-Lemma residuteCarry : forall m:Z, getResidute m + 2^n *getCarry m = m.
+Lemma residuteCarry : forall m:Z, getResidue m + 2^n *getCarry m = m.
 Proof.
   intro m.
-  unfold getResidute.
+  unfold getResidue.
   unfold getCarry.
   rewrite Z.shiftr_div_pow2 ; try omega.
   apply mod_div.
 Qed.
 
-Lemma getCarryMonotone : forall m, m > 0 -> getCarry m < m.
+Lemma getCarryMonotone_pos : forall m, m > 0 -> getCarry m < m.
 Proof.
   intros m Hm.
   unfold getCarry.
@@ -119,24 +134,28 @@ Proof.
   - assert (Z.neg p < 0) by apply Zlt_neg_0 ; go.
 Qed.
 
-Lemma getResidute_pos: forall m,
-  0 <= m ->
-  0 <= getResidute m.
+Lemma getCarryMonotone_neg : forall m, m < 0 -> m <= getCarry m.
 Proof.
   intros m Hm.
-  unfold getResidute.
-  apply Z.mod_pos_bound.
-  rewrite <- Z.gt_lt_iff.
-  apply pown0.
-  assumption.
+  unfold getCarry.
+  rewrite Z.shiftr_div_pow2 ; try omega.
+  induction m.
+  go.
+  - assert (Z.pos p > 0) by apply Zgt_pos_0 ; go.
+  - apply Zdiv_le_lower_bound.
+    rewrite <- Z.gt_lt_iff ; apply pown0 ; assumption.
+    rewrite Z.mul_comm.
+    apply le_mul_neg ; try assumption.
+    assert(Hnn:= pown n Hn).
+    omega.
 Qed.
 
-Lemma getResidute_pos_str: forall m,
+Lemma getResidue_pos_str: forall m,
   0 < m < 2^n ->
-  0 < getResidute m.
+  0 < getResidue m.
 Proof.
   intros m Hm.
-  unfold getResidute.
+  unfold getResidue.
   rewrite Z.mod_small ; omega.
 Qed.
 

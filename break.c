@@ -76,6 +76,7 @@ int main(int argc, char const *argv[])
 	}
 
 
+	printf("#################################################### EXP: 2 carry is not enough\n");
 	printf("carry 1\n");
 	car25519(o,0);
 	printf("result carry 1:__________________________________________\n");
@@ -86,13 +87,13 @@ int main(int argc, char const *argv[])
 	printf("result carry 2:__________________________________________\n");
 	print_o(o);
 
-	printf("####################################################\n");
+	printf("#################################################### EXP: -15, 1 step\n");
 
-	val = -0xFFFFF;
 	for (int i = 0; i < 16; ++i)
 	{
-		o[i] = val;
+		o[i] = 0;
 	}
+	o[0] = -15;
 	print_o(o);
 
 	print_bin64(o[0]);
@@ -116,13 +117,13 @@ int main(int argc, char const *argv[])
 	printf("result carry step 1:_____________________________________\n");
 	print_o(o);
 
-	printf("####################################################\n");
+	printf("#################################################### EXP: -15 all steps\n");
 
-	val = -0xFFFFF; // -2^20 if I'm not mistaken
 	for (int i = 0; i < 16; ++i)
 	{
-		o[i] = val;
+		o[i] = 0;
 	}
+	o[15] = -1;
 	print_o(o);
 
 	car25519(o,0);
@@ -134,6 +135,30 @@ int main(int argc, char const *argv[])
 	car25519(o,0);
 	printf("result carry 3:__________________________________________\n");
 	print_o(o);
+
+	printf("####################################################\n");
+
+	i64 t = -0xFFFFF;
+	printf("%li\n", t);
+	print_bin64(t);
+	t -= (t >> 16) << 16;
+	printf("%li\n", t);
+	print_bin64(t);
+
+	printf("####################################################\n");
+	t = -0xFFFC5;
+	printf("%li\n", t);
+	print_bin64(t);
+	i64 tt = t >> 16;
+	printf("%li\n", tt);
+	print_bin64(tt);
+	tt <<= 16;
+	printf("%li\n", tt);
+	print_bin64(tt);
+	t -= tt;
+	printf("%li\n", t);
+	print_bin64(t);
+
 
 	return 0;
 }
