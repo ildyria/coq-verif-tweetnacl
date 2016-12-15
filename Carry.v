@@ -42,7 +42,6 @@ Proof. intros ; simpl; flatten. Qed.
 Lemma Carrying_n_length: forall l (m:nat) a, (m < length l)%nat -> length (Carrying_n m a l) = length l.
 Proof. induction l as [|h q IHl]; intros [] a Hm; simpl ; flatten ; go. Qed.
 
-
 Lemma CarryPreserveConst : forall l a , a + (ℤ.lst l) = ℤ.lst Carrying a l.
 Proof.
   induction l as [| h q IHl].
