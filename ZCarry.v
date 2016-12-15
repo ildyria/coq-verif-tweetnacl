@@ -13,72 +13,69 @@ Proof. apply (pown0 256) ; omega. Qed.
 Hint Resolve lt_0_256.
 Hint Resolve gt_256_0.
 
-(* sketch of the proof (PoC) *)
-Lemma reduce_by_carry_1 :
-  forall n a b,
-    n > 0 ->
-    a < 2 ^ n ->
-    a + 1 >= 2 ^ n ->
-    b = a + 1 - 2 ^ n ->
-    b = 0.
-Proof.
-  intros n a b Hn Ha1 Ha2 Hb ; omega.
-Qed.
-
-Lemma reduce_by_carry_38 :
-  forall a b,
-    a < 2 ^ 16 ->
-    a + 38 >= 2 ^ 16 ->
-    b = a + 38 - 2 ^ 16 ->
-    b < 2 ^ 16 - 38.
-Proof.
-  intros a b Ha1 Ha2 Hb; go.
-Qed.
-
-Lemma reduce_by_carry_38_256 :
-  forall a b,
-    a < 2 ^ 256 ->
-    a + 38 >= 2 ^ 256 ->
-    b = a + 38 - 2 ^ 256 ->
-    b < 2 ^ 256 - 38.
-Proof.
-  intros a b Ha1 Ha2 Hb; go.
-Qed.
-
-Lemma reduce_last:
-  forall a b,
-    a >= 0 ->
-    b >= 0 ->
-    a < 2 ^ 256 ->
-    a + 38 >= 2 ^ 256 ->
-    a + 38 - 2 ^ 256 = b ->
-    b < 2 ^ 16 - 38.
-Proof.
-  intros a b Ha0 Hb0 Ha1 Ha2 Hb ; go.
-Qed.
-
 (************************************
  * START OF PROOF
  ************************************)
 
-Lemma ZCarry25519_min_0: ℤcar25519 0 = 0.
-Proof.
-  reflexivity.
-Qed.
+Lemma ZCarry25519_of_0: ℤcar25519 0 = 0.
+Proof. reflexivity. Qed.
 
-Lemma ZCarry25519_min: forall x,
-  0 < x -> 
-  0 < ℤcar25519 x.
+Lemma ZCarry25519_pos: forall x,
+  0 <= x -> 
+  0 <= ℤcar25519 x.
 Proof.
   intros x Hx.
   unfold Zcar25519.
-  assert(Hx_dec: {x < 2 ^ 256} + {2 ^ 256 <= x}) by apply Z_lt_le_dec.
-  destruct Hx_dec; [apply Z.add_nonneg_pos | apply Z.add_pos_nonneg].
+  apply OMEGA2.
   rewrite Z.mul_comm.
   apply Zmult_gt_0_le_0_compat ; [|apply getCarry_pos] ; omega.
-  apply getResidue_pos_str ; omega.
-  apply Z.mul_pos_pos ; [|apply getCarry_pos_str] ; omega.
   apply getResidue_bounds ; omega.
+Qed.
+
+Lemma ZCarry25519_neg: forall x,
+  -2^302 < x ->
+  x < 0 ->
+  38*-2^46 <= ℤcar25519 x < 2^256.
+Proof.
+  intros x Hxmin Hxmax.
+  unfold Zcar25519.
+  unfold getResidue.
+  unfold getCarry.
+  rewrite Z.shiftr_div_pow2 by omega.
+  change (38 * - 2 ^ 46) with (38 * - 2 ^ 46 + 0).
+  split.
+  apply Z.add_le_mono.
+  apply Zmult_le_compat_l ; try omega.
+  assert(H46: - 2 ^ 302 / 2 ^ 256 = - 2 ^ 46) by (compute ; reflexivity).
+  rewrite <- H46.
+  apply Z_div_le ; auto ; omega.
+  apply getResidue_bounds.
+  omega.
+  assert(Hs: 38 * (x / 2 ^ 256) + x mod 2 ^ 256 < 38 * (x / 2 ^ 256) + 2 ^ 256).
+    apply Zplus_lt_compat_l.
+    apply Z_mod_lt.
+    compute ; reflexivity.
+  assert(38 * (x / 2 ^ 256) + 2 ^ 256 < 2 ^ 256).
+    clear Hs.
+    apply (Z.le_lt_add_lt (-2^256) (-2^256)).
+    reflexivity.
+    rewrite Zplus_assoc_reverse.
+    change (2 ^ 256 + - 2 ^ 256) with 0.
+    assert(x / 2 ^ 256 <= -1).
+      assert(Hx: x <= -2^256 \/ -2^256 < x) by omega.
+      destruct Hx.
+      apply Zdiv_le_upper_bound.
+      compute ; reflexivity.
+      omega.
+      pose(r := x + 2 ^ 256).
+      rewrite Z.lt_eq_cases.
+      right.
+      symmetry.
+      apply (Zdiv_unique x (2^256) (-1) r).
+      subst r ; omega.
+      subst r ; omega.
+    omega.
+  omega.
 Qed.
 
 Lemma ZCarry25519_sup_bounds: forall x,
@@ -122,7 +119,7 @@ Qed.
 
 Lemma Zcarry25519_fixpoint :
   forall x, 
-  0 < x < 2 ^ 256 ->
+  0 <= x < 2 ^ 256 ->
    ℤcar25519 x = x.
 Proof.
   intros x Hx.
@@ -155,55 +152,47 @@ Proof.
   omega.
 Qed.
 
-Lemma Zcarry25519_third :
+(*Eval compute in (Zcar25519 (-2^257)).*)
+
+Lemma sndCar_neg: 
   forall x,
-   0 < x < 2 ^ 256 -> 
-   2 ^ 256 <= x + 38-> 
-   Zcar25519 (x + 38) < 2 ^ 16.
+   -2^52 < x < 0 ->
+   0 <= Zcar25519 x < 2 ^ 256.
 Proof.
-  intros x Hx Hx38.
+  intros x Hx.
   unfold Zcar25519.
+  assert(Hcarry: getCarry 256 x = -1).
+  {
+    unfold getCarry.
+    rewrite Z.shiftr_div_pow2 by omega.
+    pose(r := x + 2 ^ 256).
+    symmetry.
+    eapply (Z.div_unique_pos x (2^256) (-1) r).
+    - subst r.
+      assert(2^256 - 2 ^ 52 < x + 2 ^ 256).
+      omega.
+      simpl in * ; omega.
+    - subst r.
+      omega.
+  }
+  rewrite Hcarry.
   unfold getResidue.
-  unfold getCarry.
-  rewrite Z.shiftr_div_pow2 by omega.
-
-  assert(Hxmax: x + 38 < 2 ^ 257).
-    change (2 ^ 257) with (2 ^ 256 + 2 ^ 256).
-    apply Z.add_lt_mono ; go.
-
-  assert(Hcarry: ((x + 38) / 2 ^ 256) = 1).
-    apply eq_1_div256 ; assumption.
-
-  assert(Hcarry38: 38 * ((x + 38) / 2 ^ 256) = 38).
+  clear Hcarry.
+  rewrite <- (Z_mod_plus_full x 1 (2^256)).
+  replace ((x + 1 * 2 ^ 256) mod 2 ^ 256) with (x + 1 * 2 ^ 256).
+  replace (38 * -1 + (x + 1 * 2 ^ 256)) with (2 ^ 256 - 38 + x).
+  assert(2 ^ 256 - 38 - 2^52 < 2 ^ 256 - 38 + x) by omega.
+  simpl (2 ^ 256 - 38 - 2 ^ 52 ) in H.
+  omega.
+  omega.
+  symmetry.
+  apply Zmod_small.
+  assert(2^256 - 2 ^ 52 < x + 2 ^ 256).
     omega.
-
-  rewrite eq_1_div256 by assumption.
-  rewrite (Z.sub_lt_mono_r _ _ 38).
-  rewrite <- Z.add_sub_assoc.
-  rewrite Zplus_minus.
-  apply (reduce_last x) ; 
-  try rewrite Zmod_eq_full ; try rewrite Hcarry ; try omega.
-Qed.
-
-
-Lemma Zcarry25519_second : 
-  forall x y,
-    2 ^ 256 <= x < 2 ^ 257 ->
-    y + 38 = Zcar25519 x ->
-    y < 2^256.
-Proof.
-  intros x y Hx Hy.
-  unfold Zcar25519 in Hy.
-  unfold getCarry in Hy.
-  unfold getResidue in Hy.
-  rewrite Z.shiftr_div_pow2 in Hy by omega.
-  rewrite eq_1_div256 in Hy by omega.
-  rewrite <- Zred_factor0 in Hy.
-  rewrite Z.add_comm in Hy.
-  rewrite Z.add_cancel_l in Hy.
-  subst y.
-  apply Z.mod_pos_bound.
-  auto.
+    rewrite Z.mul_comm.
+    rewrite <- Zred_factor0.
+    simpl in *.
+    omega.
 Qed.
 
 Lemma doubleCar:
@@ -228,10 +217,10 @@ Proof.
     }
     {
       (* case  2^256 <= x *)
-      assert(Hy_min: 0 < y).
+      assert(Hy_min: 0 <= y).
         subst y.
-        apply ZCarry25519_min.
-        eapply (Z.lt_le_trans _ (2^256) _) ; go.
+        apply ZCarry25519_pos.
+        omega.
 
       assert(Hy_max: y < 2 ^ 257).
         subst y.
@@ -248,7 +237,7 @@ Proof.
         apply (pown0 256).
         omega.
 
-    assert(Hy_dec: 0 < y < 2^256 \/ 2 ^ 256 <= y) by omega.
+    assert(Hy_dec: 0 <= y < 2^256 \/ 2 ^ 256 <= y) by omega.
     case Hy_dec ; clear Hy_dec ; intro Hy_dec.
       {
         rewrite Zcarry25519_fixpoint ; omega.
@@ -306,6 +295,39 @@ Proof.
     }
 Qed.
 
+Lemma doubleCar_ext:
+  forall x y,
+   -2^302 < x < 2 ^ 302 ->
+   y = Zcar25519 x ->
+   0 <= Zcar25519 y < 2 ^ 256.
+Proof.
+  intros x y Hx Hy.
+  assert(Hx_dec: -2 ^302 < x < 0 \/ 0 <= x < 2^302) by omega.
+  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
+    {
+      assert(38*-2^46 <= ℤcar25519 x < 2^256).
+      apply ZCarry25519_neg ; omega.
+      assert(HZcar_dec: ℤcar25519 x < 0 \/ 0 <= ℤcar25519 x) by omega.
+      destruct HZcar_dec.
+      - apply sndCar_neg.
+        subst y.
+        simpl (38 * - 2 ^ 46) in H.
+        simpl (- 2 ^ 52).
+        omega.
+      - rewrite Zcarry25519_fixpoint ; subst y.
+        omega.
+        omega.
+    }
+  split.
+  apply ZCarry25519_pos.
+  subst y.
+  apply ZCarry25519_pos.
+  omega.
+  eapply doubleCar.
+  eauto.
+  eauto.
+Qed.
+
 Lemma trippleCar:
   forall x y z,
    0 <= x < 2 ^ 302 ->
@@ -314,74 +336,14 @@ Lemma trippleCar:
    Zcar25519 z < 2 ^ 256.
 Proof.
   intros x y z Hx Hy Hz.
-  assert(Hx_dec: x = 0 \/ 0 < x < 2^256 \/ 2 ^ 256 <= x) by omega.
-  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
-    {
-      (* case x = 0 *)
-      go.
-    }
-  case Hx_dec ; clear Hx_dec ; intro Hx_dec.
-    {
-      (* case  0 < x < 2^256 *)
-      rewrite Zcarry25519_fixpoint in Hy by omega.
-      subst y.
-      rewrite Zcarry25519_fixpoint in Hz by omega.
-      subst z.
-      rewrite Zcarry25519_fixpoint ; omega.
-    }
-    {
-      (* case  2^256 <= x *)
-      assert(Hy_min: 0 < y).
-        subst y.
-        apply ZCarry25519_min.
-        eapply (Z.lt_le_trans _ (2^256) _) ; go.
-
-      assert(Hz_min: 0 < z).
-        subst z.
-        apply ZCarry25519_min. go.
-
-      assert(Hy_max: y < 2 ^ 257).
-        subst y.
-        apply ZCarry25519_sup_bounds ; go.
-        apply Z_le_lt_eq_dec in Hx_dec.
-        destruct Hx_dec.
-        eapply Z.lt_trans.
-        apply Z.gt_lt_iff.
-        apply (pown0 256). 
-        omega.
-        assumption.
-        subst x.
-        apply Z.gt_lt_iff.
-        apply (pown0 256).
-        omega.
-
-      assert(Hz_max: z < 2 ^ 257).
-        subst z.
-        apply ZCarry25519_sup_bounds ; go.
-        apply Z_le_lt_eq_dec in Hx_dec.
-        destruct Hx_dec.
-        eapply Z.lt_trans.
-        eapply Hy_max.
-        compute ; reflexivity.
-        eapply Z.lt_trans.
-        eapply Hy_max.
-        go.
-
-    assert(Hy_dec: 0 < y < 2^256 \/ 2 ^ 256 <= y) by omega.
-    case Hy_dec ; clear Hy_dec ; intro Hy_dec.
-      {
-        (* case y < 2 ^ 256 *)
-        rewrite Zcarry25519_fixpoint in Hz by omega.
-        subst z.
-        rewrite Zcarry25519_fixpoint ; omega.
-      }
-      { 
-        assert(z < 2 ^ 256).
-        subst z.
-        eapply doubleCar.
-        eauto.
-        eauto.
-        rewrite Zcarry25519_fixpoint ; go.
-      }
-    }
+  rewrite Zcarry25519_fixpoint.
+  subst z.
+  eapply doubleCar ; eauto.
+  subst z.
+  split.
+  apply ZCarry25519_pos.
+  subst y.
+  apply ZCarry25519_pos.
+  omega.
+  eapply doubleCar ; eauto.
 Qed.

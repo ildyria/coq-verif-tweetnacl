@@ -116,7 +116,6 @@ VFILES:=Carry.v\
   Forall_ZofList.v\
   Forall_ZopList.v\
   M.v\
-  M2.v\
   ZCarry.v\
   Zlength.v\
   TrippleRel.v\

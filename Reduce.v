@@ -188,6 +188,23 @@ Proof.
   assumption.
 Qed.
 
+(*
+Lemma getCarry_neg_str: forall m,
+  - 2 ^ n < m <= 0->
+  0 = getCarry m.
+Proof.
+  intros m Hm.
+  unfold getCarry.
+  rewrite Z.shiftr_div_pow2 ; try omega.
+  SearchAbout Z.div 0.
+  apply Z.div_str_pos.
+  split.
+  rewrite <- Z.gt_lt_iff.
+  apply pown0.
+  assumption.
+  assumption.
+Qed.
+*)
 Lemma getCarry_1: forall m,
   2^n <= m < 2^(n+1) ->
   getCarry m = 1.
