@@ -113,7 +113,7 @@ The A, Z, M operations are defined as of type GF[16] -> GF[16] -> GF[16].
 The car25519 operation is of type GF[16] -> GF[16].
 We can assume the existance of two auxiliary functions:
 - ZofGF of type GF[16] -> ℤ
-- Z25519ofZ of type ℤ -> ℤ defined as λ. x: x mod (2^255-19)
+- Z25519ofZ of type ℤ -> ℤ defined as λ x. x mod (2^255-19)
 
 We need to prove the following theorems:
 

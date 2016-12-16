@@ -22,14 +22,14 @@ f_equal.
 *)
 Qed.
 
-Definition reduce n := 
+Definition reduce256 n := 
   let c := n / 2^(256) in
   n + 38 * c - 2^(256) * c.
 
-Lemma reduceGF : forall m, (reduce m :𝓖𝓕) = (m :𝓖𝓕).
+Lemma reduceGF : forall m, (reduce256 m :𝓖𝓕) = (m :𝓖𝓕).
 Proof.
   intro m.
-  unfold reduce.
+  unfold reduce256.
   rewrite <- Zminus_mod_idemp_r.
   rewrite <- Zminus_mod_idemp_l.
   rewrite <- Zplus_mod_idemp_r.
@@ -69,12 +69,17 @@ Definition getCarry (m:Z) : Z :=  Z.shiftr m n.
 
 (* Compute (getCarry (Z.pow 2 18)). *)
 
-Definition getResidue (m:Z) : Z := m mod 2^n.
+Definition getResidue (m:Z) : Z := m - Z.shiftl (getCarry m) n.
 
-Lemma getResidue_mod: forall (m:Z), getResidue m = m - Z.shiftl (Z.shiftr m n) n.
+Definition getResidue_mod (m:Z) : Z := m mod 2^n.
+
+Lemma getResidue_mod_eq: forall (m:Z), getResidue m = getResidue_mod m.
 Proof.
   intro a.
+  symmetry.
   unfold getResidue.
+  unfold getResidue_mod.
+  unfold getCarry.
   rewrite Z.shiftr_div_pow2 by omega.
   rewrite Z.shiftl_mul_pow2 by omega.
   apply Zplus_minus_eq.
@@ -85,19 +90,16 @@ Proof.
 Qed.
 
 Lemma getResidue_0 : getResidue 0 = 0.
-Proof.
-  go.
-Qed.
+Proof. rewrite getResidue_mod_eq; go. Qed.
 
 Lemma getCarry_0 : getCarry 0 = 0.
-Proof.
-  apply Z.shiftr_0_l.
-Qed.
+Proof. apply Z.shiftr_0_l. Qed.
 
 Lemma getResidue_bounds : forall m:Z, 0 <= getResidue m < 2^n.
 Proof.
   intro m.
-  unfold getResidue.
+  rewrite getResidue_mod_eq.
+  unfold getResidue_mod.
   apply Z_mod_lt.
   apply pown0.
   assumption.
@@ -111,16 +113,20 @@ Proof.
   assumption.
 Qed.
 
-Lemma residuteCarry : forall m:Z, getResidue m + 2^n *getCarry m = m.
+Lemma residuteCarry: forall m:Z, getResidue m + 2^n *getCarry m = m.
 Proof.
   intro m.
   unfold getResidue.
   unfold getCarry.
   rewrite Z.shiftr_div_pow2 ; try omega.
-  apply mod_div.
+  rewrite Z.shiftl_mul_pow2 ; try omega.
+  rewrite Z.mul_comm.
+  omega.
 Qed.
 
-Lemma getCarryMonotone_pos : forall m, m > 0 -> getCarry m < m.
+Lemma getCarryMonotone_pos: forall m,
+  0 < m ->
+    getCarry m < m.
 Proof.
   intros m Hm.
   unfold getCarry.
@@ -134,7 +140,9 @@ Proof.
   - assert (Z.neg p < 0) by apply Zlt_neg_0 ; go.
 Qed.
 
-Lemma getCarryMonotone_neg : forall m, m < 0 -> m <= getCarry m.
+Lemma getCarryMonotone_neg: forall m,
+  m < 0 -> 
+    m <= getCarry m.
 Proof.
   intros m Hm.
   unfold getCarry.
@@ -152,10 +160,11 @@ Qed.
 
 Lemma getResidue_pos_str: forall m,
   0 < m < 2^n ->
-  0 < getResidue m.
+    0 < getResidue m < 2^n.
 Proof.
   intros m Hm.
-  unfold getResidue.
+  rewrite getResidue_mod_eq.
+  unfold getResidue_mod.
   rewrite Z.mod_small ; omega.
 Qed.
 
@@ -186,6 +195,19 @@ Proof.
   apply pown0.
   assumption.
   assumption.
+Qed.
+
+Lemma getCarry_impl_0: forall m,
+  0 <= m < 2^n ->
+    getCarry m = 0.
+Proof.
+  intros m Hm.
+  unfold getCarry.
+  rewrite Z.shiftr_div_pow2 ; try omega.
+  symmetry.
+  eapply Zdiv_unique.
+  eapply Hm.
+  omega.
 Qed.
 
 (*

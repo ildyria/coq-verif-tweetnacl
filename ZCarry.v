@@ -39,7 +39,6 @@ Lemma ZCarry25519_neg: forall x,
 Proof.
   intros x Hxmin Hxmax.
   unfold Zcar25519.
-  unfold getResidue.
   unfold getCarry.
   rewrite Z.shiftr_div_pow2 by omega.
   change (38 * - 2 ^ 46) with (38 * - 2 ^ 46 + 0).
@@ -75,6 +74,8 @@ Proof.
       subst r ; omega.
       subst r ; omega.
     omega.
+    rewrite getResidue_mod_eq by omega.
+    unfold getResidue_mod.
   omega.
 Qed.
 
@@ -112,9 +113,7 @@ Proof.
   eapply Z.lt_trans.
   apply Hbound2.
   go.
-  unfold getResidue.
-  apply Z_mod_lt.
-  auto.
+  apply getResidue_bounds ; omega.
 Qed.
 
 Lemma Zcarry25519_fixpoint :
@@ -127,7 +126,8 @@ Proof.
   rewrite Z.add_comm.
   rewrite Zplus_0_r_reverse.
   f_equal.
-  - unfold getResidue.
+  - rewrite getResidue_mod_eq by omega.
+    unfold getResidue_mod.
     apply Zmod_small.
     split ; omega.
   - unfold getCarry.
@@ -176,7 +176,8 @@ Proof.
       omega.
   }
   rewrite Hcarry.
-  unfold getResidue.
+  rewrite getResidue_mod_eq by omega.
+  unfold getResidue_mod.
   clear Hcarry.
   rewrite <- (Z_mod_plus_full x 1 (2^256)).
   replace ((x + 1 * 2 ^ 256) mod 2 ^ 256) with (x + 1 * 2 ^ 256).
@@ -247,8 +248,10 @@ Proof.
         unfold Zcar25519 in Hy.
         unfold getCarry in Hy.
         unfold getCarry.
-        unfold getResidue in Hy.
-        unfold getResidue.
+        rewrite getResidue_mod_eq by omega.
+        rewrite getResidue_mod_eq in Hy by omega.
+        unfold getResidue_mod.
+        unfold getResidue_mod in Hy.
         rewrite Z.shiftr_div_pow2 in Hy by omega.
         rename y into t.
         assert(Hy_t: exists y, t = 2^256 + y) by (exists (t - 2^256) ; omega).

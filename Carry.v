@@ -118,6 +118,7 @@ Proof.
       rewrite ZofList_cons_0.
       f_equal.
       ring.
+      omega.
     + rename e into H.
       repeat (destruct l ; tryfalse).
       clear H.
@@ -383,7 +384,8 @@ Proof.
   rewrite <- Z.add_assoc.
   rewrite Zred_factor4.
   rewrite pre_compute_rewrite in Heqt.
-  unfold getResidue.
+  repeat rewrite getResidue_mod_eq.
+  unfold getResidue_mod.
   symmetry.
   rewrite Zmod_eq.
   symmetry.
@@ -416,9 +418,11 @@ Proof.
   reflexivity.
   symmetry.
   reflexivity.
+  omega.
+  omega.
 Qed.
 
-Lemma BackCarry_fix: forall l, (length l = 16)%nat -> ℤ16.lst l < 2^256 -> car25519 l = Carrying_n 16 15 0 l.
+Lemma BackCarry_fix: forall l, (length l = 16)%nat -> 0 <= ℤ16.lst l < 2^256 -> car25519 l = Carrying_n 16 15 0 l.
 Proof.
   intros l H Hl.
   unfold car25519.
@@ -433,38 +437,46 @@ Proof.
   unfold nth.
   unfold slice.
   f_equal.
-  - clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H16.
+  - clear H H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H15 H16 H18.
     subst z30.
     rewrite getCarry16_256.
     assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
-    unfold getCarry.
-    rewrite Z.shiftr_div_pow2 by omega.
-(*    SearchAbout Z.div 0.*)
-    apply Zdiv_small.
-  admit.
-  admit.
+    apply getCarry_impl_0.
+    omega.
+    omega.
+    rewrite H.
+    omega.
   - change ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30]) with
   ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29] ++ [z30]).
   f_equal.
-  clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H16.
+  clear H H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H15 H16 H18.
   f_equal.
-  rewrite pre_compute_rewrite in H15.
-Admitted.
-(*
   unfold getResidue.
-  subst z30.
+    subst z30.
+    repeat rewrite getCarry16_256.
+    assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
+    apply getCarry_impl_0.
+    omega.
+    omega.
+  rewrite H.
+  simpl Z.shiftl.
+  rewrite <- Zminus_0_l_reverse.
+  reflexivity.
+Qed.
 
 
-
-
-
-
-Lemma car25519_bound_0 : forall l, (length l = 16)%nat -> nth 0 (car25519 l) 0 < 2 ^ 16.
-
-Lemma car25519_bound_0 : forall l, (length l = 16)%nat -> nth 0 (car25519 l) 0 < 2 ^ 16.
+Lemma bounds_car_: forall i l, (length l = 16)%nat -> 0 <= ℤ16.lst l < 2^256 -> 
+  nth i (car25519 l) 0 < 2 ^ 16.
 Proof.
-  destruct i ; intros l H Hi ; [false|].
-  repeat (destruct l ; tryfalse).
-  unfold car25519.
-  unfold backCarry.
-*)
+  intros i.
+  assert(Hi: i <> 0%nat \/ i = 0%nat) by omega.
+  destruct Hi.
+  intros ; apply car25519_bound ; auto.
+  intros l Hl Hlb.
+  rewrite BackCarry_fix ; auto.
+  subst i.
+  destruct l ; [false|].
+  simpl.
+  apply getResidue_bounds.
+  omega.
+Qed.
