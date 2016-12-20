@@ -34,7 +34,7 @@ Proof.
     auto.
 Qed.
 
-Lemma ZofList_null : forall l, ZList_pos l -> ℤ.lst l = 0 -> Forall (Z.eq 0) l.
+Lemma ZofList_null: forall l, ZList_pos l -> ℤ.lst l = 0 -> Forall (Z.eq 0) l.
 Proof.
   intros l HFl HSl.
   induction HFl.
@@ -81,7 +81,7 @@ Proof.
         omega.
 Qed.
 
-Lemma ZofList_bound : forall (m:Z) l , 0 <= m < 2 ^ n -> ZList_pos l -> ℤ.lst l = m -> nth 0 l 0 = m.
+Lemma ZofList_bound: forall (m:Z) l , 0 <= m < 2 ^ n -> ZList_pos l -> ℤ.lst l = m -> nth 0 l 0 = m.
 Proof.
   intros m l Hm HFl HSlm.
   destruct l.
@@ -113,4 +113,51 @@ Proof.
       omega.
 Qed.
 
+Lemma ZofList_n_nn_bound: forall l (m:nat),
+  (length l = m)%nat -> 
+  Forall (fun x => 0 <= x < 2^n) l -> 
+    ℤ.lst l < 2^(n*ℤ.ℕ m).
+Proof.
+  induction l using rev_ind; intros m Hl Hbounds.
+  simpl in Hl ; subst m.
+  rewrite <- Zmult_0_r_reverse ; go.
+  destruct m;
+  rewrite app_length in Hl; 
+  simpl in Hl;
+  replace (length l + 1)%nat with (S (length l))%nat in Hl by omega;
+  try congruence.
+  rewrite Nat2Z.inj_succ.
+  rewrite <- Zmult_succ_r_reverse.
+  rewrite ZofList_app by omega.
+  inversion Hl; clear Hl.
+  rewrite H0.
+  replace (ℤ.lst [x]) with x by (simpl ZofList ; omega).
+  eapply (Z.lt_le_trans _ (2 ^ (n * (ℤ.ℕ m)) + 2 ^ (n * (ℤ.ℕ m)) * x)).
+  - apply Zplus_lt_compat_r.
+    apply IHl.
+    assumption.
+    clear H0.
+    rewrite Forall_forall in Hbounds.
+    rewrite Forall_forall.
+    intros ; apply Hbounds.
+    rewrite in_app_iff.
+    left ; assumption.
+  - clear H0.
+    rewrite Zred_factor2.
+    eapply (Z.le_trans _ (2 ^ (n * (ℤ.ℕ m)) * (2^n))).
+    + apply Zmult_le_compat_l.
+      rewrite Z.add_1_l.
+      apply Zlt_le_succ.
+      apply Forall_app_inv in Hbounds.
+      destruct Hbounds as [Hl Hx].
+      rewrite Forall_forall in Hx.
+      destruct (Hx x) ; go.
+      apply Z.pow_nonneg ; omega.
+    + apply Z.eq_le_incl.
+      rewrite Z.pow_add_r ; try omega.
+      rewrite Z.mul_comm.
+      apply Zmult_gt_0_le_0_compat ; try omega.
+Qed.
+
 End Integer.
+

@@ -22,6 +22,13 @@ f_equal.
 *)
 Qed.
 
+Lemma Zshiftr_div_pow2_16: forall a : Z, Z.shiftr a 16 = a / 2 ^ 16.
+Proof. intro a ; apply Z.shiftr_div_pow2 ; omega. Qed.
+
+Fact factors_256: (2 ^ 256) = (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 *
+(2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16 * (2 ^ 16)))))))))))))))).
+Proof. compute ; reflexivity. Qed.
+
 Definition reduce256 n := 
   let c := n / 2^(256) in
   n + 38 * c - 2^(256) * c.
