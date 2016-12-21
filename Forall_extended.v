@@ -45,7 +45,6 @@ Proof.
     go.
 Qed.
 
-
 Lemma Forall_tail: forall n A (l:list A) (P:A -> Prop),
   Forall P l ->
     Forall P (tail n l).

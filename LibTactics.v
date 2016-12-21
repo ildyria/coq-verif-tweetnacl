@@ -3183,15 +3183,29 @@ Tactic Notation "destructs" constr(N) constr(T) :=
 
 (** Underlying implementation of [branch]. *)
 
+
 Ltac branch_tactic K N :=
-  match constr:(K,N) with
+  match K with
+  | 0 => fail 1
+  | 1 => match N with
+    | 0 => fail 1
+    | 1 => idtac
+    | _ => left
+    end
+  | S ?K' => match N with
+    | 0 => fail 1
+    | S ?N' => right ; branch_tactic K' N'
+    end
+  end.
+  
+(*  match constr:(K,N) with
   | (_,0) => fail 1
   | (0,_) => fail 1
   | (1,1) => idtac
   | (1,_) => left
   | (S ?K', S ?N') => right; branch_tactic K' N'
   end.
-
+*)
 Ltac unfold_goal_until_disjunction :=
   match goal with
   | |- _ \/ _ => idtac

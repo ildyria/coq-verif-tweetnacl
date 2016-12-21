@@ -2,12 +2,12 @@ Require Export Coq.ZArith.ZArith.
 
 Open Scope Z.
 
-Lemma lt_lt_trans: forall (a b c d x:Z),
+Lemma lt_lt_trans: forall (b c a d x:Z),
   b < x < c ->
   a <= b ->
   c <= d ->
   a < x < d.
-Proof. intros a b c d x [] ; split ; omega. Qed.
+Proof. intros b c a d x [] ; split ; omega. Qed.
 
 Lemma lt_impl_le: forall (a b x:Z),
   a < x < b ->
@@ -20,6 +20,13 @@ Lemma le_le_trans: forall (a b c d x:Z),
   c <= d ->
   a <= x <= d.
 Proof. intros a b c d x [] ; split ; omega. Qed.
+
+Lemma le_lt_trans: forall (b c a d x:Z),
+  b <= x <= c ->
+  a < b ->
+  c < d ->
+  a < x < d.
+Proof. intros b c a d x [] ; split ; omega. Qed.
 
 Close Scope Z.
 

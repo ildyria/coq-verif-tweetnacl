@@ -159,5 +159,89 @@ Proof.
       apply Zmult_gt_0_le_0_compat ; try omega.
 Qed.
 
+Fixpoint ZofList_Bound (p:nat) (m: Z) : Z := match p with 
+| 0%nat => 0
+| S p => m + Z.pow 2 n * ZofList_Bound p m
+end.
+
+Lemma ZofList_bounds: forall l (m:nat) (a b:Z),
+  (length l = m)%nat -> 
+  a < 0 < b ->
+  Forall (fun x => a < x < b) l -> 
+   ZofList_Bound m a <= ℤ.lst l <= ZofList_Bound m b.
+Proof.
+  induction l as [| h q IHl] ; intros m a b Hm Hab Hl.
+  simpl in Hl ; subst m ; go.
+  destruct m.
+  inv Hm.
+  inversion Hm.
+  rewrite H0.
+  apply Forall_cons' in Hl.
+  destruct Hl as [Hh Hl].
+  destruct (IHl m a b H0 Hab Hl) as [Hinf Hsup].
+  simpl.
+  split.
+  apply Z.add_le_mono ; try omega.
+  apply Zmult_le_compat_l ; try apply Z.pow_nonneg ; omega.
+  apply Z.add_le_mono ; try omega.
+  apply Zmult_le_compat_l ; try apply Z.pow_nonneg ; omega.
+Qed.
+
+Lemma ZofList_bounds': forall l (m:nat) a b,
+  (length l = m)%nat -> 
+  a < 0 < b ->
+  Forall (fun x => a < x < b) l -> 
+   2 * a * 2^(n*ℤ.ℕ m) < ℤ.lst l < 2 * b * 2^(n*ℤ.ℕ m).
+Proof.
+  induction l using rev_ind; intros m a b Hl Hab Hbounds.
+  simpl in Hl ; subst m.
+  rewrite <- Zmult_0_r_reverse ; go.
+  repeat rewrite Z.pow_0_r.
+  rewrite ZofList_nil.
+  omega.
+  destruct m;
+  rewrite app_length in Hl; 
+  simpl in Hl;
+  replace (length l + 1)%nat with (S (length l))%nat in Hl by omega;
+  try congruence.
+  rewrite Nat2Z.inj_succ.
+  rewrite <- Zmult_succ_r_reverse.
+  rewrite ZofList_app by omega.
+  inversion Hl; clear Hl.
+  rewrite H0.
+  replace (ℤ.lst [x]) with x by (simpl ZofList ; omega).
+  apply Forall_app_inv in Hbounds.
+  destruct Hbounds as [Hl Hx].
+  destruct (IHl m a b H0 Hab Hl) as [Hinf Hsup].
+  inversion Hx ; subst x0 ; subst l0; clear H3.
+  destruct H2 as [Hxinf Hxsup].
+  split.
+  - rewrite Z.add_comm.
+    eapply (Z.le_lt_trans _ (2 * a * 2 ^ (n * (ℤ.ℕ m)) + 2 ^ (n * (ℤ.ℕ m)) * x))
+    ; [| apply Zplus_lt_compat_r ; omega].
+    rewrite Z.pow_add_r by go.
+    replace (2 * a * 2 ^ (n * (ℤ.ℕ m))) with (2 ^ (n * (ℤ.ℕ m)) * 2 * a) by ring.
+    repeat rewrite <- Z.mul_assoc.
+    rewrite Zred_factor4.
+    replace (2 * (a * (2 ^ n * 2 ^ (n * (ℤ.ℕ m))))) with (2 ^ (n * (ℤ.ℕ m)) * (2 * a * 2 ^ n)) by ring.
+    apply Zmult_le_compat_l ; [| apply Z.pow_nonneg ; omega].
+    apply (Z.le_trans _ (2 * a * 2)) ; try omega.
+    repeat rewrite <- Z.mul_assoc.
+    apply Zmult_le_compat_l ; try omega.
+    apply Z.mul_le_mono_nonpos_l ; try omega.
+    apply pown2 ; omega.
+  - eapply (Z.lt_le_trans _ (2 * b * 2 ^ (n * (ℤ.ℕ m)) + 2 ^ (n * (ℤ.ℕ m)) * x)).
+    apply Zplus_lt_compat_r ; omega.
+    rewrite Z.pow_add_r by go.
+    replace (2 * b * 2 ^ (n * (ℤ.ℕ m))) with (2 ^ (n * (ℤ.ℕ m)) * 2 * b) by ring.
+    repeat rewrite <- Z.mul_assoc.
+    rewrite Zred_factor4.
+    replace (2 * (b * (2 ^ (n * (ℤ.ℕ m))* 2 ^ n))) with (2 ^ (n * (ℤ.ℕ m)) * (2 * b * 2 ^ n)) by ring.
+    apply Zmult_le_compat_l ; [|apply Z.pow_nonneg ; omega].
+    apply (Z.le_trans _ (2 * b * 2)) ; try omega.
+    apply Zmult_le_compat_l ; try omega.
+    apply pown2 ; omega.
+Qed.
+
 End Integer.
 

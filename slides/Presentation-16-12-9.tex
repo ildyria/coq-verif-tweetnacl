@@ -351,11 +351,11 @@ Fixpoint ZsumList (a b : list \Z) : list \Z := match a,b with
 | q,[] => q
 | h1::q1,h2::q2 => (Z.add h1 h2) :: ZsumList q1 q2
 end.
-Notation "A \oplus B" := (ZsumList A B) (at level 60).
+Notation "A \boxplus B" := (ZsumList A B) (at level 60).
 
 Corollary ZsumList_correct:
   forall (a b: list \Z),
-    (\Z.lst a \oplus b) = (\Z.lst a) + (\Z.lst b).
+    (\Z.lst a \boxplus b) = (\Z.lst a) + (\Z.lst b).
 Qed.
 
 Lemma ZsumList_bound_len:
@@ -363,7 +363,7 @@ Lemma ZsumList_bound_len:
     length a = length b ->
     Forall (fun x => m1 < x < n1) a ->
     Forall (fun x => m2 < x < n2) b ->
-      Forall (fun x => m1 + m2 < x < n1 + n2) (a \oplus b).
+      Forall (fun x => m1 + m2 < x < n1 + n2) (a \boxplus b).
 Qed.
 \end{lstlisting}
 
@@ -397,10 +397,10 @@ Notation "A \circ B" := (ZscalarMult A B) (at level 60).
 Fixpoint mult_1 (a b:list \Z) : list \Z := match a, b with
 | [],_ => []
 | _,[] => []
-| ha :: qa, hb :: qb => ha * hb :: (ha \circ qb) \oplus (mult_1 qa (hb::qb))
+| ha :: qa, hb :: qb => ha * hb :: (ha \circ qb) \boxplus (mult_1 qa (hb::qb))
 end.
 
-Definition mult_2 (a:list \Z) : list \Z := a  \oplus (38 \circ (tail 16 a)).
+Definition mult_2 (a:list \Z) : list \Z := a  \boxplus (38 \circ (tail 16 a)).
 (* where "tail n a" drop the n first elements of a *)
 
 Definition mult_3 (a:list \Z) : list \Z := slice 16 a.
