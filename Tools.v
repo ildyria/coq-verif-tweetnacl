@@ -97,8 +97,7 @@ Lemma orderedConcat : forall l1 l2, orderedList (l1 ++ l2) -> orderedList l1 /\ 
 Proof.
   intros.
   split.
-  - dependent induction l1.
-    + go.
+  - dependent induction l1 ;  go.
     + dependent induction l1.
     * go.
     * apply ConOrdered.
@@ -136,41 +135,46 @@ Proof.
     rewrite rev_length; auto.
 Qed.
 
-Lemma NoDup_rev: forall A (l:list A), NoDup l <-> NoDup (rev l).
+Ltac transparent_specialize_one H arg :=
+  first [ let test := eval unfold H in H in idtac;
+          let H' := fresh in rename H into H'; pose (H' arg) as H; subst H'
+         | specialize (H arg) ].
+
+Ltac specialize_by' tac :=
+  idtac;
+  match goal with
+  | [ H : ?A -> ?B |- _ ] =>
+    match type of A with
+      Prop =>
+      let H' := fresh in
+      assert (H' : A) by tac;
+      transparent_specialize_one H H';
+      try clear H' (* if [H] was transparent, [H'] will remain *)
+    end
+  end.
+
+Ltac specialize_by tac := repeat specialize_by' tac.
+
+Lemma NoDup_rev_impl: forall A (l: list A), NoDup l -> NoDup (rev l).
 Proof.
   intros A l.
   destruct l as [ | d l ] ; [intuition | ] ; generalize (d :: l) ; clear l.
-  split ; intro.
-  - rewrite NoDup_nth.
-    intros i j IL IJ Nths.
-    rewrite rev_length in IL.
-    rewrite rev_length in IJ.
-    rewrite NoDup_nth in H.
-    specialize H with (length l - S i) (length l - S j).
-    assert(HI: length l - S i < length l) by omega.
-    assert(HJ: length l - S j < length l) by omega.
-    apply H in HI ; go.
-    rewrite !rev_nth in Nths ; eauto.
-  - rewrite NoDup_nth.
-    intros i j IL IJ Nths.
-    rewrite NoDup_nth in H.
-    rewrite !rev_length in H.
-    specialize H with (length l - S i) (length l - S j).
-    assert(HI: length l - S i < length l) by omega.
-    assert(HJ: length l - S j < length l) by omega.
-    apply H in HI.
-    omega.
-    omega.
-    rewrite !rev_nth ; go.
-    assert(HI' : length l - S (length l - S i) = i) by omega.
-    assert(HJ' : length l - S (length l - S j) = j) by omega.
-    rewrite HI'.
-    rewrite HJ'.
-    apply Nths.
-    Unshelve.
-    apply d.
-    Unshelve.
-    apply d.
+  repeat match goal with
+    | _ => progress omega
+    | _ => progress intros
+    | [ d : ?A |- @NoDup ?A ?ls ] => progress rewrite (NoDup_nth ls d)
+    | [ H : context[length (rev ?l)] |- _ ] => progress rewrite rev_length in H
+    | [ H : NoDup ?l |- _ ] => progress rewrite NoDup_nth in H
+    | [ H : context[nth _ (rev _) _] |- _ ] => rewrite !rev_nth in H by omega
+    | [ H : forall x y, _ -> _ -> nth _ _ _ = nth _ _ _ -> _, H' : nth _ _ _ = nth _ _ _ |- _ ]
+    => specialize (fun pf1 pf2 => H _ _ pf1 pf2 H')
+    | _ => specialize_by omega
+  end.
+Qed.
+
+Lemma NoDup_rev: forall A (l:list A), NoDup l <-> NoDup (rev l).
+Proof.
+  split ; [| rewrite <- (rev_involutive l) at 2] ; apply NoDup_rev_impl.
 Qed.
 
 Lemma NoDup_cons_end: forall A (l:list A) x, NoDup (l ++ x::nil) -> NoDup l.
@@ -187,19 +191,17 @@ Qed.
 
 Lemma NoDup_app : forall A (l1 l2:list A), NoDup (l1 ++ l2) -> NoDup l1 /\ NoDup l2.
 Proof.
-  induction l1 ; intros ; simpl in *.
-  split ; go.
-  apply NoDup_cons_iff in H.
-  destruct H.
-  apply IHl1 in H0.
-  destruct H0.
-  split ; go.
-  apply NoDup_cons_iff.
-  split ; go.
-  intros H'.
-  apply H.
-  apply in_or_app.
-  go.
+  repeat match goal with
+    | _ => progress go
+    | [ |- forall _ l1 l2, _ -> _ /\ _ ] => induction l1 as [|h q IHl]; intros l H ; simpl in *
+    | [ |- _ /\ _ ] => progress split
+    | [ H : _ \/ _ |- _ ] => progress destruct H
+    | [ H : _ /\ _ |- _ ] => progress destruct H
+    | [ H : NoDup ( _ :: _) |- _ ] => progress apply NoDup_cons_iff in H
+    | [ H : NoDup (_ ++ _) |- _ ] => progress apply IHl in H
+    | [ |- NoDup ( _ :: _) ] => progress apply NoDup_cons_iff
+    | [ |- ~_ ] => progress intro
+  end.
 Qed.
 
 Fixpoint beq_listnat (l1 l2:list nat) : bool := match (l1,l2) with

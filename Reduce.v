@@ -9,17 +9,7 @@ Open Scope Z.
 
 Lemma t2256is38 : (2^256 :𝓖𝓕 ) = (38 :𝓖𝓕).
 Proof.
-  compute.
-  reflexivity.
-(*
-change 38 with (2 * 19).
-change 256 with (Z.succ 255).
-rewrite Z.pow_succ_r ; try omega.
-rewrite <- Zmult_mod_idemp_r.
-symmetry.
-rewrite <- Zmult_mod_idemp_r.
-f_equal.
-*)
+  compute ; reflexivity.
 Qed.
 
 Lemma Zshiftr_div_pow2_16: forall a : Z, Z.shiftr a 16 = a / 2 ^ 16.
@@ -37,12 +27,10 @@ Lemma reduceGF : forall m, (reduce256 m :𝓖𝓕) = (m :𝓖𝓕).
 Proof.
   intro m.
   unfold reduce256.
-  rewrite <- Zminus_mod_idemp_r.
-  rewrite <- Zminus_mod_idemp_l.
-  rewrite <- Zplus_mod_idemp_r.
+  rewrite Zminus_mod.
+  rewrite Zplus_mod.
   rewrite <- Zmult_mod_idemp_l.
   rewrite <- t2256is38.
-  rewrite <- Zplus_mod_idemp_l.
   rewrite Zminus_mod_idemp_l.
   rewrite Zmult_mod_idemp_l.
   rewrite <- Z.add_sub_assoc.
@@ -257,5 +245,6 @@ Proof.
   omega.
   omega.
 Qed.
+
 
 End Integer.

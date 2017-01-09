@@ -5,6 +5,7 @@ Require Export TrippleRel.
 Open Scope Z.
 
 (*Eval simpl in (ZofList_Bound 16 16 (2 ^ 62) < 1 * 2^303).*)
+SearchAbout Z.modulo.
 
 Theorem Zcar25519_bounds:
   forall l1 l2 l3,

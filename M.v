@@ -307,6 +307,12 @@ Proof.
       apply tail_length_le ; go.
     assert(Hs: slice 16 l = l).
       apply slice_length_le ; go.
+      Hint Rewrite ZscalarMultnil ZsumList_nil_r ZofList_nil : listdb.
+      repeat match goal with
+             | [ H : _ = _ |- _ ] => rewrite !H
+             | _ => progress autorewrite with listdb
+             end.
+             f_equal; ring.
     rewrite! Ht.
     rewrite! ZscalarMultnil.
     rewrite ZsumList_nil_r.
