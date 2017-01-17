@@ -1,7 +1,8 @@
-Require Export Tools.
-Require Export notations.
-Require Export ZbinopList.
+Require Import Libs.Export.
+Require Import ListsOp.Export.
 Import ListNotations.
+
+Open Scope Z.
 
 (* Some definitions relating to the functional spec of this particular program.  *)
 Fixpoint ZsumList (a b : list Z) : list Z := match a,b with
@@ -13,7 +14,7 @@ end.
 Notation "A ⊕ B" := (ZsumList A B) (at level 60, right associativity).
 
 Fixpoint ZsumList_n (n:nat) (a b : list Z) : list Z := match n, a, b with 
-  | 0, _, _ => []
+  | 0%nat, _, _ => []
   | S p, [], []  => []
   | S p, [], h::q  => h :: (ZsumList_n p [] q)
   | S p, h::q, []  => h :: (ZsumList_n p [] q)
@@ -80,3 +81,4 @@ Qed.
 Lemma ZsumList_length_max : forall a b, length (a ⊕ b) = max (length a) (length b).
 Proof. intros a b ; repeat rewrite ZsumList_ZbinopList_eq; apply ZbinopList_length_max. Qed.
 
+Close Scope Z.

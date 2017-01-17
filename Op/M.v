@@ -1,12 +1,10 @@
-Require Export ScalarMult.
-Require Export Forall_ZopList.
-Require Export MultBounds.
-Require Export A.
+Require Import Libs.Export.
+Require Import ListsOp.Export.
+
+Require Import Op.ScalarMult.
+Require Import Op.A.
 Import ListNotations.
-Require Export Tools.
-Require Export Zlength.
-Require Export Calc_lib.
-Require Export TrippleRel.
+
 Open Scope Z.
 
 Lemma ZscalarMult_bound_const: forall (m2 n2 o p a: Z) (b: list Z),
@@ -99,7 +97,7 @@ Proof.
         apply Z.min_glb ; rewrite Zlength_cons.
         assert(0 <= Zlength a0) by apply Zlength_pos ;  omega.
         assert(0 <= Zlength b) by apply Zlength_pos ;  omega.
-      eapply le_le_trans.
+      eapply bounds.le_le_trans.
       eauto.
       apply le_mul_neg_le ; auto.
       apply min_prod_neg_le ; auto.

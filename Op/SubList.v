@@ -1,7 +1,7 @@
-Require Export Tools.
-Require Export notations.
-Require Import ZbinopList.
-Require Import MinusList.
+Require Import Libs.Export.
+Require Import ListsOp.Export.
+
+Require Import Op.MinusList.
 Import ListNotations.
 
 (* Some definitions relating to the functional spec of this particular program.  *)

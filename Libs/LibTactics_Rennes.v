@@ -2,14 +2,10 @@ Require Export Coq.Bool.Bool.
 Require Export Coq.Arith.Arith.
 Require Export Coq.Arith.EqNat.
 Require Export Coq.omega.Omega.
-Require Export Coq.Lists.List.
 Require Export Coq.ZArith.ZArith.
 Require Export Coq.Numbers.Natural.Peano.NPeano.
 Require Export Coq.Setoids.Setoid.
 Require Export Coq.Program.Equality. (**r Necessary for 'dependent induction'. *)
-
-Require Export LibTactics.
-
 
 Ltac autoinjection :=
   repeat match goal with

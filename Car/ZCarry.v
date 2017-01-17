@@ -1,4 +1,6 @@
-Require Export Carry.
+Require Import Libs.Export.
+Require Import Car.Carry.
+Require Import Car.Reduce.
 Require Import Nsatz.
 Require Import Psatz.
 Import ListNotations.
@@ -358,7 +360,7 @@ Lemma doubleCar_str:
    y = Zcar25519 x ->
    Zcar25519 y < 2 ^ 256.
 Proof.
-Print Zcar25519. Print getCarry.
+(*Print Zcar25519. Print getCarry.*)
   intros x y m Hm Hx Hy.
   assert(Hx_dec: x = 0 \/ 0 < x < 2^256 \/ 2 ^ 256 <= x) by omega.
   assert(Hy_dec: y < 0 \/ 0 <= y < 2^256 \/ 2 ^ 256 <= y) by omega.

@@ -1,9 +1,8 @@
-Require Export Tools.
-Require Export notations.
-
-Open Scope Z.
+Require Import Libs.Export.
 
 Import ListNotations.
+
+Open Scope Z.
 
 Section Integer.
 

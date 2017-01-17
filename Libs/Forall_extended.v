@@ -1,5 +1,5 @@
-Require Export Tools.
-Require Export Forall.
+Require Export Libs.Lists_extended.
+Require Export Libs.Forall.
 
 Lemma Forall_slice: forall n A (l:list A) (P:A -> Prop),
   Forall P l -> 

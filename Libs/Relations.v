@@ -2,6 +2,8 @@ Require Export Coq.ZArith.ZArith.
 
 Open Scope Z.
 
+Module bounds.
+
 Lemma lt_lt_trans: forall (b c a d x:Z),
   b < x < c ->
   a <= b ->
@@ -27,6 +29,8 @@ Lemma le_lt_trans: forall (b c a d x:Z),
   c < d ->
   a < x < d.
 Proof. intros b c a d x [] ; split ; omega. Qed.
+
+End bounds.
 
 Close Scope Z.
 

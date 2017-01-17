@@ -1,7 +1,6 @@
-Require Export Forall_extended.
-Require Export notations.
-Require Export ZbinopList.
-Require Export ZunopList.
+Require Import Libs.Export.
+Require Export ListsOp.ZbinopList.
+Require Export ListsOp.ZunopList.
 
 Lemma Forall_ZbinopList_len: forall (f:Z -> Z -> Z) (P Q R: Z -> Prop) (a b: list Z),
   (forall x y, P x -> Q y -> R (f x y)) ->

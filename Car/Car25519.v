@@ -1,6 +1,8 @@
-Require Export ZCarry.
-Require Export Forall_ZofList.
-Require Export TrippleRel.
+Require Import Libs.Export.
+Require Import ListsOp.Export.
+Require Import Car.Carry.
+Require Import Car.ZCarry.
+Require Import Car.Reduce.
 
 Open Scope Z.
 
@@ -25,8 +27,9 @@ Proof.
   [apply bounds_car_inf| apply bounds_car_sup];
   try assumption ; rewrite Hcarr2;
   rewrite <- ℤcar25519_eq_car25519 by assumption;
-  eapply (doubleCar_ext_str (ℤ16.lst l1) _ 303) ; 
-  try omega ; try (eapply le_lt_trans ; [eapply Hbounds| | ] ; compute ; reflexivity);
+  eapply (doubleCar_ext_str (ℤ16.lst l1) _ 303) ;
+  try omega ; 
+  try (eapply bounds.le_lt_trans ; [eapply Hbounds | | ] ; compute ; reflexivity) ;
   try (rewrite ℤcar25519_eq_car25519 by assumption ; rewrite Hcarr1 ; reflexivity).
   compute ; auto.
   apply HForalll1.

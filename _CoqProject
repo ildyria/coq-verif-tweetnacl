@@ -1,26 +1,4 @@
--R . VerifTweetNaCl
-./Carry.v
-./ZofList.v
-./Libs.v
-./Tools.v
-./ScalarMult.v
-./ZbinopList.v
-./ZunopList.v
-./notations.v
-./Reduce.v
-./A.v
-./LibTactics.v
-./SumList.v
-./MinusList.v
-./SubList.v
-./MultBounds.v
-./Forall.v
-./Forall_extended.v
-./Forall_ZofList.v
-./Forall_ZopList.v
-./M.v
-./ZCarry.v
-./Zlength.v
-./TrippleRel.v
-./Calc_lib.v
-./Car25519.v
+-R Libs Libs
+-R Op Op
+-R ListsOp ListsOp
+-R Car Car

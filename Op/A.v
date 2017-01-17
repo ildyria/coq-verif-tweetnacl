@@ -1,6 +1,7 @@
-Require Export SumList.
-Require Export Forall_ZofList.
-Require Export Forall_ZopList.
+Require Import Libs.Export.
+Require Import ListsOp.Export.
+
+Require Export Op.SumList.
 Import ListNotations.
 
 Open Scope Z.

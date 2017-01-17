@@ -1,5 +1,7 @@
-Require Export ZofList.
-Require Export Reduce.
+Require Import Libs.Export.
+Require Import ListsOp.Export.
+Require Import Car.Reduce.
+
 Import ListNotations.
 
 Section Integer.
@@ -392,7 +394,7 @@ Proof.
   unfold length.
   unfold nth.
   unfold slice.
-  unfold Tools.tail.
+  unfold tail.
   rewrite <- Zred_factor4.
   rewrite Zmult_minus_distr_l.
   rewrite <- Zred_factor4.

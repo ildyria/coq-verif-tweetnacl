@@ -1,124 +1,56 @@
-Require Export Libs.
-
-Set Implicit Arguments.
+Require Export Libs.LibTactics.
+Require Export Coq.Lists.List.
 Import ListNotations.
 
-(* Iterative tools *)
-Section All.
-  Variable T : Type.
-  Variable T1 : Type.
-  Variable T2 : Type.
-
-
-  Fixpoint All (o: T -> T1 -> T1) (d:T1) (ls:list T) : T1 := match ls with
-    | nil => d
-    | h :: q => o h (All o d q)
-  end.
-End All.
-
-Section AllApp.
-  Variable T : Type.
-  Variable T2 : Type.
-  Variable P : T -> Prop.
-  Variable V : T -> nat.
-  Variable V2 : T -> T2.
-  Variable LS : T -> list T2.
-
-  Definition orAll (ls:list Prop): Prop := 
-    All or False ls.
-
-  Definition andAll (ls: list Prop): Prop :=
-    All and True ls.
-
-  Definition SumAll (ls:list nat) : nat :=
-    All plus 0 ls.
-
-  Definition MaxAll (ls:list nat) : nat :=
-    All max 0 ls.
-
-  Inductive orderedList : list nat -> Prop := 
-    | NilOrdered         : orderedList nil
-    | SingletonOrdered n : orderedList (n::nil)
-    | ConOrdered a h q
-      (ORDER: a < h)
-      (ORDERED: orderedList (h::q))
-      : (* ===================== *)
-      orderedList (a::h::q).
-End AllApp.
-
-(* Lists Tools *)
 Lemma app_nill_r : forall (A:Type) (l:list A), l ++ nil = l.
-Proof. go. Qed.
+Proof. boum. Qed.
 
 Lemma app_nill_l : forall (A:Type) (l:list A), nil ++ l = l.
-Proof. go. Qed.
+Proof. boum. Qed.
 
 Lemma headSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 -> h1 = h2.
-Proof. go. Qed.
+Proof. boum. Qed.
 
 Lemma tailSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 -> q1 = q2.
-Proof. go. Qed.
+Proof. boum. Qed.
 
 Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
-Proof. split ; intro; [|destruct H] ; go. Qed.
+Proof. boum. Qed.
 
 Lemma length_cons : forall (A:Type) (h:A) (q:list A), length (h :: q) = S (length q).
-Proof. intros. go. Qed.
+Proof. boum. Qed.
 
 Lemma lengthNil : forall (A:Type) (l:list A), l = nil <-> length l = 0.
-Proof. intros. split ; intro ; induction l ; go. Qed.
+Proof. ind_boum l. Qed.
 
 Lemma consApp : forall A l (a:A), a :: l = a :: nil ++ l.
-Proof. go. Qed.
+Proof. boum. Qed.
 
 Lemma consApp2 : forall A l1 l2 (a:A), (a :: l1) ++ l2 = a :: l1 ++ l2.
-Proof. go. Qed.
+Proof. boum. Qed.
 
 Lemma consApp3 : forall A l1 l2 (a:A), l1 ++ a :: l2 = (l1 ++ a :: nil) ++ l2.
-Proof. induction l1 ; intros ; go. Qed.
+Proof. ind_boum l1. Qed.
 
 Lemma app_assoc2 : forall (A:Type) (l1 l2 l3:list A), l1 ++ l2 ++ l3 = l1 ++ (l2 ++ l3).
-Proof. go. Qed.
+Proof. boum. Qed.
 
 Lemma list_to_length: forall A (l1 l2:list A), l1 = l2 -> length l1 = length l2.
-Proof. go. Qed.
+Proof. boum. Qed.
 
 Lemma list_eq_False : forall (A:Type) (l:list A) (a:A), a :: l = l -> False.
-Proof. dependent induction l ;  intros ; inversion H ; eapply IHl ; eauto. Qed.
-
+Proof. ind_boum l. Qed.
 
 Lemma app_inv : forall A (l1 l2 l3 l4:list A), l1 = l2 -> l3 = l4 -> l1 ++ l3 = l2 ++ l4.
-Proof. induction l1 ; destruct l2 ; intros ; go. Qed.
+Proof. ind_boum l1. Qed.
 
-Lemma orderedCon : forall l a, orderedList (a :: l) -> orderedList l.
-Proof. intros ; dependent induction H ; go. Qed.
-
-Lemma orderedConcat : forall l1 l2, orderedList (l1 ++ l2) -> orderedList l1 /\ orderedList l2.
-Proof.
-  intros.
-  split.
-  - dependent induction l1 ;  go.
-    + dependent induction l1.
-    * go.
-    * apply ConOrdered.
-        inv H ; go.
-        apply IHl0 with l2.
-        apply orderedCon with a.
-        go.
-  - induction l1.
-    + go.
-    + apply IHl1.
-      apply orderedCon with a.
-      go.
-Qed.
+Theorem appappNil: forall A (l1 l2:list A), l1 ++ l2 = nil -> l1 = nil /\ l2 = nil.
+Proof. boum. Qed.
 
 Lemma rev_nth_error : forall A (l:list A) n, n < length l ->
     nth_error (rev l) n = nth_error l (length l - S n).
 Proof.
-  induction l.
-  - intros.
-    inversion H.
-  - intros.
+  ind_boum l.
     simpl in H.
     simpl (rev (a::l)).
     simpl (length (a :: l) - S n).
@@ -134,26 +66,6 @@ Proof.
     apply IHl ; auto with arith.
     rewrite rev_length; auto.
 Qed.
-
-Ltac transparent_specialize_one H arg :=
-  first [ let test := eval unfold H in H in idtac;
-          let H' := fresh in rename H into H'; pose (H' arg) as H; subst H'
-         | specialize (H arg) ].
-
-Ltac specialize_by' tac :=
-  idtac;
-  match goal with
-  | [ H : ?A -> ?B |- _ ] =>
-    match type of A with
-      Prop =>
-      let H' := fresh in
-      assert (H' : A) by tac;
-      transparent_specialize_one H H';
-      try clear H' (* if [H] was transparent, [H'] will remain *)
-    end
-  end.
-
-Ltac specialize_by tac := repeat specialize_by' tac.
 
 Lemma NoDup_rev_impl: forall A (l: list A), NoDup l -> NoDup (rev l).
 Proof.
@@ -204,90 +116,28 @@ Proof.
   end.
 Qed.
 
-Fixpoint beq_listnat (l1 l2:list nat) : bool := match (l1,l2) with
-| (nil, nil) => true
-| (h1 :: q1, h2 :: q2) => (beq_nat h1 h2) && (beq_listnat q1 q2) 
-| _ => false
-end.
-
-Fact listEqRefl : forall l, beq_listnat l l = true.
-Proof.
-  induction l ; go.
-  apply andb_true_iff ; split ; go ; rewrite beq_nat_refl with a; go.
-Qed.
-
-(* props*)
-Lemma orFalse : forall (P:Prop), P \/ False <-> P.
-Proof. intros ; split ; intro ; [destruct H|] ; go. Qed.
-
-Lemma Falseor : forall (P:Prop), False \/ P <-> P.
-Proof. intros ; split ; intro ; [destruct H|] ; go. Qed.
-
-Lemma andTrue : forall (P:Prop), P /\ True <-> P.
-Proof. intros ; split ; intro; [destruct H|] ; go. Qed.
-
-Lemma Trueand : forall (P:Prop), True /\ P <-> P.
-Proof. intros ; split ; intro; [destruct H|] ; go. Qed.
-
-Theorem GaussSum: forall a b c, a + c = b + c <-> a = b.
-Proof. intros ; split ; intros ; omega. Qed.
-
-(* Tupples *)
-
-Lemma tupple_eq : forall A B (x1 x2:A) (y1 y2:B), (x1,y1) = (x2,y2) <->
-(x1 = x2 /\ y1 = y2).
-Proof. intros ; split ; intro ; go ; destruct H as [Hx Hy] ; go. Qed.
-
-Theorem consconsNil: forall A (l1 l2:list A), l1 ++ l2 = nil -> l1 = nil /\ l2 = nil.
-Proof. go. Qed.
-
-Fact flat_map_map X Y Z (f : Y -> list Z) (g : X -> Y) l : 
-   flat_map f (map g l) = flat_map (fun x => f (g x)) l.
-Proof. induction l; simpl; f_equal; auto. Qed.
-
-Fact flat_map_distr Y Z (f : Y -> list Z)  l1 l2 : 
-   flat_map f (l1 ++ l2) = flat_map f l1 ++ flat_map f l2.
-Proof. induction l1 ; go ; simpl ; rewrite IHl1 ; go. Qed.
-
-Fact flat_map_ext X Y (f g : X -> list Y) l :
-   (forall x, In x l -> f x = g x) -> flat_map f l = flat_map g l.
-Proof. induction l; simpl; intro; f_equal; auto. Qed.
-
-Fact map_ext X Y (f g : X -> Y) l :
-   (forall x, In x l -> f x = g x) -> map f l = map g l.
-Proof. induction l; simpl; intro; f_equal; auto. Qed.
-
-
-Lemma sumAllapp : forall (h:nat) (q:list nat), SumAll (h::q) = h + SumAll q.
-Proof. intros ; induction q ; go. Qed.
-
-Theorem SomeEq: forall A (a b:A), Some a = Some b <-> a = b.
-Proof. go. Qed.
-
 Lemma nth_error_Some_Eq : forall A (l:list A) n, n < length l -> exists st, nth_error l n = Some st.
-Proof. induction l ; intros ; go ; destruct n ; [exists a|apply IHl] ; go. Qed.
+Proof. ind_boum l. destruct n ; boum. Qed.
 
 Lemma nth_cons: forall A (h d:A) (n:nat) (q:list A), nth (S n) (h :: q) d = nth n q d.
-Proof. intros ; go. Qed.
+Proof. boum. Qed.
 
 Lemma nth_cons_0: forall A (h d:A) (q:list A), nth 0 (h :: q) d = h.
-Proof. intros ; go. Qed.
+Proof. boum. Qed.
 
-Fixpoint slice A (n:nat) (l:list A) : list A := match n,l with
+Fixpoint slice {A} (n:nat) (l:list A) : list A := match n,l with
 | _,nil => nil
 | 0, _ => nil
 | S p, h :: q => h :: slice p q
 end.
 
+Arguments slice [A] _ _.
+
 Lemma slice_length_or : forall A (l:list A) n, length (slice n l) = n \/ length (slice n l) = length l.
-Proof. induction l ; intros ; destruct n ; go ; simpl ; rewrite !Nat.succ_inj_wd ; go. Qed.
+Proof. ind_boum l; destr_boum n. simpl ;  rewrite !Nat.succ_inj_wd ; go. Qed.
 
 Lemma slice_length_nil : forall A (l:list A) n, length (slice n l) = 0 <-> l = nil \/ n = 0.
-Proof.
-  intros ; split.
-  - induction l ; intro ; go ; destruct n ; go.
-  - intro ; destruct H ; subst ; [destruct n | destruct l] ; go.
-Qed.
+Proof. boum ; ind_boum l ; destr_boum n. Qed.
 
 Lemma slice_length_min : forall A (l:list A) n, length (slice n l) = min n (length l).
 Proof. induction l ; intros ; destruct n ; go. Qed.
@@ -344,11 +194,12 @@ Proof. intros ; induction l ; go. Qed.
 Lemma slice_cons_0 : forall A (l:list A), slice 0 l = nil.
 Proof. apply slice_nil. Qed.
 
-Fixpoint tail A (n:nat) (l:list A) : list A := match n,l with
+Fixpoint tail {A} (n:nat) (l:list A) : list A := match n,l with
 | _,nil => nil
 | 0, l => l
 | S p, h :: q => tail p q
 end.
+Arguments tail [A] _ _.
 
 Lemma tail_cons_0 : forall A (l:list A), tail 0 l = l.
 Proof. intros ; induction l ; go. Qed.
@@ -386,8 +237,6 @@ Proof.
   rewrite min_r ; go.
 Qed.
 
-Definition oList A (o:A -> A -> Prop) (m:A) (l:list A) := In m l -> forall m', In m' l -> o m m'.
-
 Lemma map_slice : forall A B (f: A -> B) (l:list A) n, map f (slice n l) = slice n (map f l).
 Proof.
   intros A B f.
@@ -400,5 +249,22 @@ Proof.
   induction l ; destruct n ; go.
 Qed.
 
-Lemma truefalseImplFalse : false = true <-> False.
-Proof. split; go. Qed.
+
+Open Scope Z.
+
+Lemma Zlength_pos: forall A (l:list A), 0 <= Zlength l.
+Proof. intros ; rewrite Zlength_correct ; go. Qed.
+
+Lemma app_Zlength: forall (A : Type) (l l' : list A), Zlength (l ++ l') = Zlength l + Zlength l'.
+Proof.
+intros.
+repeat rewrite Zlength_correct.
+rewrite <- Nat2Z.inj_add.
+rewrite app_length.
+reflexivity.
+Qed.
+
+Lemma Zlength_cons' : forall (A : Type) (x : A) (l : list A), Zlength (x :: l) = (Zlength l) + 1.
+Proof. intros ; rewrite Zlength_cons; omega. Qed.
+
+Close Scope Z.

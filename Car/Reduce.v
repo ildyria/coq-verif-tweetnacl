@@ -1,7 +1,5 @@
-Require Export Tools.
-Require Export ZofList.
-Require Export Calc_lib.
-Require Export notations.
+Require Import Libs.Export.
+Require Import ListsOp.Export.
 
 Open Scope Z.
 
