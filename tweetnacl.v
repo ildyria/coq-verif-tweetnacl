@@ -1,4 +1,3 @@
-
 Require Import Clightdefs.
 Local Open Scope Z_scope.
 Definition _A : ident := 115%positive.

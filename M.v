@@ -313,7 +313,8 @@ Proof.
              | _ => progress autorewrite with listdb
              end.
              f_equal; ring.
-    rewrite! Ht.
+  }
+(*    rewrite! Ht.
     rewrite! ZscalarMultnil.
     rewrite ZsumList_nil_r.
     rewrite Ht.
@@ -321,7 +322,7 @@ Proof.
     rewrite ZofList_nil.
     f_equal.
     ring.
-  }
+  }*)
   {
     assert(Hlength: length (slice 16 (l ⊕ 38 ∘ tail 16 l)) = 16%nat).
       rewrite slice_length_min.

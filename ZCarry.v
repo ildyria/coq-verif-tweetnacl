@@ -77,7 +77,7 @@ Proof.
   assert(Hs: 38 * (x / 2 ^ 256) + x mod 2 ^ 256 < 38 * (x / 2 ^ 256) + 2 ^ 256).
     apply Zplus_lt_compat_l.
     apply Z_mod_lt.
-    compute ; reflexivity.
+    reflexivity.
   assert(38 * (x / 2 ^ 256) + 2 ^ 256 < 2 ^ 256).
     clear Hs.
     apply (Z.le_lt_add_lt (-2^256) (-2^256)).
@@ -219,22 +219,44 @@ Proof.
   end.
 Qed.
 
+Fact lower_eq_256: forall a,
+  2 ^ 256 <= a -> 
+  a < 2 ^ 257 -> 
+  1 <= a / 2 ^ 256.
+Proof.
+  intros.
+  rewrite <- (Z_div_same_full (2^256)).
+  apply Z_div_le ; go.
+  intro; false.
+Qed.
+
+Fact upper_eq_256: forall a,
+  2 ^ 256 <= a -> 
+  a < 2 ^ 257 -> 
+  a / 2 ^ 256 < 2.
+Proof.
+  intros ; apply Z.div_lt_upper_bound ; go.
+Qed.
+
+Fact eq1 : forall a, a = 1 <-> a < 2 /\ 1 <= a.
+Proof. intros. omega. Qed.
+
 Fact eq_1_div256: forall a,
   2 ^ 256 <= a -> 
   a < 2 ^ 257 -> 
   a / 2 ^ 256 = 1.
 Proof.
-  intros a Hamin Hamax.
-  assert(1 <= a / 2 ^ 256).
-    rewrite <- (Z_div_same_full (2^256)).
-    apply Z_div_le ; go.
-    intro ; false.
-  assert(a / 2 ^ 256 < 2).
-    apply Z.div_lt_upper_bound ; go.
-  omega.
+  repeat match goal with 
+  | _ => progress intros
+  | _ => assumption
+  | [ |- _ < 2 ] => apply upper_eq_256
+  | [ |- 1 <= _ ] => apply lower_eq_256
+  | [ |- _ /\ _ ]  => progress split
+  | _ => progress apply eq1
+  end.
 Qed.
-
-Eval compute in (Z.pow 2 256).
+(* in the previous proof the order of the tactics matter !
+  if apply eq1 is before split : infinite loop *)
 
 Lemma getCarryNeg:
   forall x,
@@ -261,31 +283,15 @@ Lemma sndCar_neg_str:
 Proof.
   intros x Hx.
   unfold Zcar25519.
-  assert(Hcarry: getCarry 256 x = -1).
-  {
-    unfold getCarry.
-    rewrite Z.shiftr_div_pow2 by omega.
-    pose(r := x + 2 ^ 256).
-    symmetry.
-    eapply (Z.div_unique_pos x (2^256) (-1) r).
-    - subst r.
-      assert(2^256 - 2 ^ 250 < x + 2 ^ 256).
-      omega.
-      simpl in * ; omega.
-    - subst r.
-      omega.
-  }
-  rewrite Hcarry.
+  rewrite (getCarryNeg x Hx).
   rewrite getResidue_mod_eq by omega.
   unfold getResidue_mod.
-  clear Hcarry.
   rewrite <- (Z_mod_plus_full x 1 (2^256)).
   replace ((x + 1 * 2 ^ 256) mod 2 ^ 256) with (x + 1 * 2 ^ 256).
   replace (38 * -1 + (x + 1 * 2 ^ 256)) with (2 ^ 256 - 38 + x).
 
   assert(2 ^ 256 - 38 - 2^250 < 2 ^ 256 - 38 + x) by omega.
   simpl (2 ^ 256 - 38 - 2 ^ 250 ) in H.
-  omega.
   omega.
   omega.
   symmetry.
