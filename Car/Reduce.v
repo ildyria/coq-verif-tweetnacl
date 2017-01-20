@@ -1,5 +1,5 @@
-Require Import Libs.Export.
-Require Import ListsOp.Export.
+Require Import Tweetnacl.Libs.Export.
+Require Import Tweetnacl.ListsOp.Export.
 
 Open Scope Z.
 

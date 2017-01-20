@@ -1,4 +1,4 @@
-Require Export Libs.LibTactics.
+Require Export Tweetnacl.Libs.LibTactics.
 
 Lemma orFalse : forall (P:Prop), P \/ False <-> P.
 Proof. boum. Qed.

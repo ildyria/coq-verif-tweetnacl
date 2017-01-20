@@ -1,4 +1,5 @@
-Require Import Libs.Export.
+Require Import Tweetnacl.Libs.Export.
+Require Import Prelude.prelude.prelude.
 Import ListNotations.
 
 (* Some definitions relating to the functional spec of this particular program.  *)
@@ -19,7 +20,7 @@ Proof. go. Qed.
 Lemma ZunopList_map: forall f a l, ZunopList f a l = map (f a) l.
 Proof. induction l ; go. Qed.
 
-Lemma ZunopList_eq: forall f n a b,
+Lemma ZunopList_eq_length: forall f n a b,
   length b <= n ->
     ZunopList f a b = ZunopList_n f n a b.
 Proof.
@@ -33,16 +34,27 @@ Proof.
   go.
 Qed.
 
-Lemma ZunopList_sliced: forall f n a b, slice n (ZunopList f a b) = ZunopList_n f n a b.
+Open Scope Z.
+
+Lemma ZunopList_eq_Zlength: forall f (n:nat) a b,
+  Zlength b <= n ->
+    ZunopList f a b = ZunopList_n f n a b.
+Proof.
+  intros.
+  convert_length_to_Zlength ZunopList_eq_length.
+Qed.
+
+Lemma ZunopList_taked: forall f n a b, take n (ZunopList f a b) = ZunopList_n f n a b.
 Proof. induction n ; intros a b ; simpl ; flatten ; go. Qed.
 
-Lemma ZunopList_slice : forall f n a b, slice n (ZunopList f a b) = ZunopList f a (slice n b).
+Lemma ZunopList_take : forall f n a b, take n (ZunopList f a b) = ZunopList f a (take n b).
 Proof. induction n ; intros a b ; destruct b ; go. Qed.
 
 Lemma ZunopList_length : forall f a b, length (ZunopList f a b) = (length b).
 Proof. induction b; go. Qed.
 
-Lemma ZunopList_tail : forall f n a b, tail n (ZunopList f a b) = ZunopList f a (tail n b).
-Proof.
-  induction n ; intros a b ; destruct b ; go.
-Qed.
+Lemma ZunopList_Zlength : forall f a b, Zlength (ZunopList f a b) = (Zlength b).
+Proof. induction b ; [|rewrite ZunopList_cons ; rewrite !Zlength_cons ; rewrite IHb] ; auto. Qed.
+
+Lemma ZunopList_drop : forall f n a b, drop n (ZunopList f a b) = ZunopList f a (drop n b).
+Proof. induction n ; intros a b ; destruct b ; go. Qed.

@@ -22,9 +22,9 @@ Ltac go :=
            | h: ?x = _ |- context[match ?x with _ => _ end] => rewrite h
          end;
   autoinjection;
-  try (congruence); 
-  try omega; 
-  subst; 
+  try (congruence);
+  try omega;
+  subst;
   eauto 4 with zarith datatypes;
   try (econstructor ; (solve[go])).
 

@@ -1,9 +1,9 @@
-Require Import Libs.Export.
-Require Import Car.Carry.
-Require Import Car.Reduce.
+Require Import Tweetnacl.Libs.Export.
+Require Import Tweetnacl.Car.Reduce.
+Require Import Tweetnacl.Car.Carry.
+Require Import Prelude.prelude.prelude.
 Require Import Nsatz.
 Require Import Psatz.
-Import ListNotations.
 
 Open Scope Z.
 
@@ -313,7 +313,9 @@ Lemma sndCar_neg:
 Proof.
   intros x Hx.
   apply sndCar_neg_str.
-  simpl in * ; omega.
+  change (-2^250) with (-1809251394333065553493296640760748560207343510400633813116524750123642650624).
+  change (-2^52) with (-4503599627370496) in Hx.
+  omega.
 Qed.
 
 Lemma secondIterCar: 

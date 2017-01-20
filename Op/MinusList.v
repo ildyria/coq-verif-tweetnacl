@@ -1,5 +1,6 @@
-Require Import Libs.Export.
-Require Import ListsOp.Export.
+Require Import Tweetnacl.Libs.Export.
+Require Import Tweetnacl.ListsOp.Export.
+Require Import Prelude.prelude.prelude.
 Import ListNotations.
 
 Open Scope Z.
@@ -18,6 +19,9 @@ Proof. induction l1 ; go. Qed.
 
 Lemma ZminusList_length: forall l, length (ZminusList l) = length l.
 Proof. induction l; go. Qed.
+
+Lemma ZminusList_Zlength: forall l, Zlength (ZminusList l) = Zlength l.
+Proof. convert_length_to_Zlength ZminusList_length. rewrite ZminusList_length. reflexivity. Qed.
 
 Lemma ZminusList_nil: forall l, ZminusList l = [] <-> l = [].
 Proof. induction l ; intros ; go. Qed.

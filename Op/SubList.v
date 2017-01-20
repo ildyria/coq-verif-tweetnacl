@@ -1,7 +1,8 @@
-Require Import Libs.Export.
-Require Import ListsOp.Export.
+Require Import Tweetnacl.Libs.Export.
+Require Import Tweetnacl.ListsOp.Export.
 
-Require Import Op.MinusList.
+Require Import Tweetnacl.Op.MinusList.
+Require Import Prelude.prelude.prelude.
 Import ListNotations.
 
 (* Some definitions relating to the functional spec of this particular program.  *)
@@ -22,7 +23,7 @@ Fixpoint ZsubList_n (n:nat) (a b : list Z) : list Z := match n, a, b with
   | S p, h1::q1, h2::q2 => (Z.sub h1 h2) :: (ZsubList_n p q1 q2)
 end.
 
-Lemma ZsubList_ZbinopList_eq: forall  (a b : list Z), ZsubList a b = ZbinopList Z.sub a b.
+Lemma ZsubList_Zipp_eq: forall  (a b : list Z), ZsubList a b = Zipp Z.sub a b.
 Proof.
   induction a ; intros b ; go.
   destruct b ; go.
@@ -34,27 +35,37 @@ Proof.
   apply map_ext ; intros x ; go.
 Qed.
 
-Lemma ZsubList_sliced: forall n a b, slice n (a ⊖ b) = ZsubList_n n a b.
-Proof. induction n ; intros a b ; simpl ; flatten ; inv Eq ; rewrite <- IHn ; go.
+Lemma ZsubList_taked: forall n a b, take n (a ⊖ b) = ZsubList_n n a b.
+Proof. induction n ; intros a b ; simpl ; flatten ; try rewrite <- IHn ; go.
 replace (l ⊖ []) with l ; [|induction l] ; go.
 Qed.
 
 Lemma ZsubList_nil_r: forall a, a ⊖ [] = a.
 Proof. induction a ; go. Qed.
 
-Lemma ZsubList_slice : forall n a b, slice n (a ⊖ b) = (slice n a) ⊖ (slice n b).
-Proof. intros n a b ; repeat rewrite ZsubList_ZbinopList_eq ;  apply ZbinopList_slice. Qed.
+Lemma ZsubList_take : forall n a b, take n (a ⊖ b) = (take n a) ⊖ (take n b).
+Proof. intros n a b ; repeat rewrite ZsubList_Zipp_eq ;  apply Zipp_take. Qed.
 
-Lemma ZsubList_tail : forall n a b, tail n (a ⊖ b) = (tail n a) ⊖ (tail n b).
-Proof. intros n a b ; repeat rewrite ZsubList_ZbinopList_eq.
-rewrite ZbinopList_tail ; go.
+Lemma ZsubList_drop : forall n a b, drop n (a ⊖ b) = (drop n a) ⊖ (drop n b).
+Proof. intros n a b ; repeat rewrite ZsubList_Zipp_eq.
+rewrite Zipp_drop ; go.
 Qed.
 
 Lemma ZsubList_length : forall a b, length (a ⊖ b) = length a \/ length (a ⊖ b) = length b.
 Proof.
-  intros a b ; repeat rewrite ZsubList_ZbinopList_eq; apply ZbinopList_length.
+  intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_length.
+Qed.
+
+Lemma ZsubList_Zlength : forall a b, Zlength (a ⊖ b) = Zlength a \/ Zlength (a ⊖ b) = Zlength b.
+Proof.
+  intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_Zlength.
 Qed.
 
 Lemma ZsubList_length_max : forall a b, length (a ⊖ b) = max (length a) (length b).
-Proof. intros a b ; repeat rewrite ZsubList_ZbinopList_eq; apply ZbinopList_length_max. Qed.
+Proof. intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_length_max. Qed.
 
+Lemma ZsubList_Zlength_max : forall a b, Zlength (a ⊖ b) = Zmax (Zlength a) (Zlength b).
+Proof. intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_Zlength_max. Qed.
+
+
+Close Scope Z.

@@ -1,6 +1,6 @@
-Require Import Libs.Export.
-Require Export ListsOp.ZofList.
-
+Require Import Prelude.prelude.list.
+Require Import Tweetnacl.Libs.Export.
+Require Export Tweetnacl.ListsOp.ZofList.
 Open Scope Z.
 
 Import ListNotations.
@@ -91,7 +91,7 @@ Proof.
     replace (2 ^ n * (ℤ.lst l)) with 0.
     apply Zplus_0_r_reverse.
     unfold ZList_pos in HFl.
-    rewrite Forall_cons' in HFl.
+    rewrite Forall_cons in HFl.
     destruct HFl as [Hz Hpos].
     apply ZofList_pos in Hpos.
     assert(Hl: {ℤ.lst l < 0} + {ℤ.lst l = 0} + {ℤ.lst l > 0}) by apply Ztrichotomy_inf.
@@ -112,8 +112,8 @@ Proof.
       omega.
 Qed.
 
-Lemma ZofList_n_nn_bound: forall l (m:nat),
-  (length l = m)%nat -> 
+Lemma ZofList_n_nn_bound_length: forall l (m:nat),
+  length l = m -> 
   Forall (fun x => 0 <= x < 2^n) l -> 
     ℤ.lst l < 2^(n*ℤ.ℕ m).
 Proof.
@@ -127,7 +127,7 @@ Proof.
   try congruence.
   rewrite Nat2Z.inj_succ.
   rewrite <- Zmult_succ_r_reverse.
-  rewrite ZofList_app by omega.
+  rewrite ZofList_app' by omega.
   inversion Hl; clear Hl.
   rewrite H0.
   replace (ℤ.lst [x]) with x by (simpl ZofList ; omega).
@@ -139,7 +139,7 @@ Proof.
     rewrite Forall_forall in Hbounds.
     rewrite Forall_forall.
     intros ; apply Hbounds.
-    rewrite in_app_iff.
+    rewrite elem_of_app.
     left ; assumption.
   - clear H0.
     rewrite Zred_factor2.
@@ -147,7 +147,7 @@ Proof.
     + apply Zmult_le_compat_l.
       rewrite Z.add_1_l.
       apply Zlt_le_succ.
-      apply Forall_app_inv in Hbounds.
+      apply Forall_app in Hbounds.
       destruct Hbounds as [Hl Hx].
       rewrite Forall_forall in Hx.
       destruct (Hx x) ; go.
@@ -157,6 +157,12 @@ Proof.
       rewrite Z.mul_comm.
       apply Zmult_gt_0_le_0_compat ; try omega.
 Qed.
+
+Lemma ZofList_n_nn_bound_Zlength: forall l (m:nat),
+  Zlength l = m -> 
+  Forall (fun x => 0 <= x < 2^n) l -> 
+    ℤ.lst l < 2^(n*m).
+Proof. convert_length_to_Zlength ZofList_n_nn_bound_length. Qed.
 
 Fixpoint ZofList_Bound (p:nat) (m: Z) : Z := match p with 
 | 0%nat => 0
@@ -175,7 +181,7 @@ Proof.
   inv Hm.
   inversion Hm.
   rewrite H0.
-  apply Forall_cons' in Hl.
+  apply Forall_cons in Hl.
   destruct Hl as [Hh Hl].
   destruct (IHl m a b H0 Hab Hl) as [Hinf Hsup].
   simpl.
@@ -186,6 +192,15 @@ Proof.
   apply Zmult_le_compat_l ; try apply Z.pow_nonneg ; omega.
 Qed.
 
+
+Lemma ZofList_bounds_Zlength: forall l (m:nat) (a b:Z),
+  Zlength l = m -> 
+  a < 0 < b ->
+  Forall (fun x => a < x < b) l -> 
+   ZofList_Bound m a <= ℤ.lst l <= ZofList_Bound m b.
+Proof. convert_length_to_Zlength ZofList_bounds. Qed.
+
+(* the following lemma is useless! *)
 Lemma ZofList_bounds': forall l (m:nat) a b,
   (length l = m)%nat -> 
   a < 0 < b ->
@@ -205,11 +220,11 @@ Proof.
   try congruence.
   rewrite Nat2Z.inj_succ.
   rewrite <- Zmult_succ_r_reverse.
-  rewrite ZofList_app by omega.
+  rewrite ZofList_app' by omega.
   inversion Hl; clear Hl.
   rewrite H0.
   replace (ℤ.lst [x]) with x by (simpl ZofList ; omega).
-  apply Forall_app_inv in Hbounds.
+  apply Forall_app in Hbounds.
   destruct Hbounds as [Hl Hx].
   destruct (IHl m a b H0 Hab Hl) as [Hinf Hsup].
   inversion Hx ; subst x0 ; subst l0; clear H3.
@@ -241,6 +256,8 @@ Proof.
     apply Zmult_le_compat_l ; try omega.
     apply pown2 ; omega.
 Qed.
+
+
 
 End Integer.
 

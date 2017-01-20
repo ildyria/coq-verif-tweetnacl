@@ -1,7 +1,12 @@
-Require Export Libs.LibTactics.
-Require Export Coq.Lists.List.
+Require Import Tweetnacl.Libs.LibTactics.
+Require Import Coq.Lists.List.
+Require Import Prelude.prelude.prelude.
 Import ListNotations.
 
+Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
+Proof. boum. Qed.
+
+(*
 Lemma app_nill_r : forall (A:Type) (l:list A), l ++ nil = l.
 Proof. boum. Qed.
 
@@ -40,7 +45,16 @@ Proof. boum. Qed.
 
 Lemma list_eq_False : forall (A:Type) (l:list A) (a:A), a :: l = l -> False.
 Proof. ind_boum l. Qed.
+*)
 
+Lemma length_pos : forall (A:Type) (l:list A), 0 <= length l.
+Proof. boum. Qed.
+
+Lemma map_drop : forall A B (f: A -> B) (l:list A) n, map f (drop n l) = drop n (map f l).
+Proof. intros A B f ; induction l ; destruct n ; go. Qed.
+
+
+(*
 Lemma app_inv : forall A (l1 l2 l3 l4:list A), l1 = l2 -> l3 = l4 -> l1 ++ l3 = l2 ++ l4.
 Proof. ind_boum l1. Qed.
 
@@ -248,14 +262,15 @@ Proof.
   intros A B f.
   induction l ; destruct n ; go.
 Qed.
+*)
 
 
 Open Scope Z.
 
-Lemma Zlength_pos: forall A (l:list A), 0 <= Zlength l.
+Lemma Zlength_pos: forall {A : Type} (l:list A), 0 <= Zlength l.
 Proof. intros ; rewrite Zlength_correct ; go. Qed.
 
-Lemma app_Zlength: forall (A : Type) (l l' : list A), Zlength (l ++ l') = Zlength l + Zlength l'.
+Lemma app_Zlength: forall {A : Type} (l l' : list A), Zlength (l ++ l') = Zlength l + Zlength l'.
 Proof.
 intros.
 repeat rewrite Zlength_correct.
@@ -264,7 +279,10 @@ rewrite app_length.
 reflexivity.
 Qed.
 
-Lemma Zlength_cons' : forall (A : Type) (x : A) (l : list A), Zlength (x :: l) = (Zlength l) + 1.
+Lemma Zlength_cons' : forall {A : Type} (x : A) (l : list A), Zlength (x :: l) = (Zlength l) + 1.
 Proof. intros ; rewrite Zlength_cons; omega. Qed.
+
+Lemma Zlength_map: forall A B (f: A -> B) l, Zlength (map f l) = Zlength l.
+Proof. intros; induction l ; auto ; rewrite map_cons ; repeat rewrite Zlength_cons ; go. Qed.
 
 Close Scope Z.

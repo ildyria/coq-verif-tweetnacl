@@ -1,7 +1,8 @@
-Require Import Libs.Export.
-Require Import ListsOp.Export.
+Require Import Tweetnacl.Libs.Export.
+Require Import Tweetnacl.ListsOp.Export.
 
-Require Export Op.SumList.
+Require Export Tweetnacl.Op.SumList.
+Require Import Prelude.prelude.prelude.
 Import ListNotations.
 
 Open Scope Z.
@@ -23,17 +24,13 @@ Proof.
     destruct o ; go.
     simpl in HSum.
     assert(Hh:= HSum).
-    apply headSame in Hh.
-    apply tailSame in HSum.
-    apply IHa in HSum.
-    unfold ZofList.
+    simplify_list_eq.
     rewrite <- Z.add_shuffle2.
     rewrite Zred_factor4.
     apply Zplus_eq_compat.
-    apply Hh.
     f_equal.
     rewrite Z.add_comm.
-    apply HSum.
+    erewrite IHa ; eauto.
 Qed.
 
 Corollary ZsumList_correct: forall a b, (ℤ.lst a ⊕ b) = (ℤ.lst a) + (ℤ.lst b).
@@ -51,8 +48,8 @@ Lemma ZsumList_bound_lt: forall m1 n1 m2 n2 a b,
   Forall (fun x => m1 + m2 < x < n1 + n2) (a ⊕ b).
 Proof.
   introv Hmn1 Hmn2 Ha Hb.
-  rewrite ZsumList_ZbinopList_eq.
-  eapply (Forall_ZbinopList_0 _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
+  rewrite ZsumList_Zipp_eq.
+  eapply (Forall_Zipp_0 _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
 Qed.
 
 Lemma ZsumList_bound_le: forall m1 n1 m2 n2 a b, 
@@ -63,31 +60,45 @@ Lemma ZsumList_bound_le: forall m1 n1 m2 n2 a b,
   Forall (fun x => m1 + m2 <= x <= n1 + n2) (a ⊕ b).
 Proof.
   introv Hmn1 Hmn2 Ha Hb.
-  rewrite ZsumList_ZbinopList_eq.
-  eapply (Forall_ZbinopList_0 _ (fun x : ℤ => m1 <= x <= n1) (fun x : ℤ => m2 <= x <= n2)) ; go.
+  rewrite ZsumList_Zipp_eq.
+  eapply (Forall_Zipp_0 _ (fun x : ℤ => m1 <= x <= n1) (fun x : ℤ => m2 <= x <= n2)) ; go.
 Qed.
 
-Lemma ZsumList_bound_len_lt: forall m1 n1 m2 n2 a b, 
+Lemma ZsumList_bound_lenght_lt: forall m1 n1 m2 n2 a b, 
   length a = length b ->
   Forall (fun x => m1 < x < n1) a -> 
   Forall (fun x => m2 < x < n2) b -> 
   Forall (fun x => m1 + m2 < x < n1 + n2) (a ⊕ b).
 Proof.
   introv Hl Ha Hb.
-  rewrite ZsumList_ZbinopList_eq.
-  eapply (Forall_ZbinopList_len _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
+  rewrite ZsumList_Zipp_eq.
+  eapply (Forall_Zipp_length _ (fun x : ℤ => m1 < x < n1) (fun x : ℤ => m2 < x < n2)) ; go.
 Qed.
 
-Lemma ZsumList_bound_len_le: forall m1 n1 m2 n2 a b, 
+Lemma ZsumList_bound_Zlength_lt: forall m1 n1 m2 n2 a b, 
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 < x < n1) a -> 
+  Forall (fun x => m2 < x < n2) b -> 
+  Forall (fun x => m1 + m2 < x < n1 + n2) (a ⊕ b).
+Proof. convert_length_to_Zlength ZsumList_bound_lenght_lt. Qed.
+
+Lemma ZsumList_bound_length_le: forall m1 n1 m2 n2 a b, 
   length a = length b ->
   Forall (fun x => m1 <= x <= n1) a -> 
   Forall (fun x => m2 <= x <= n2) b -> 
   Forall (fun x => m1 + m2 <= x <= n1 + n2) (a ⊕ b).
 Proof.
   introv Hl Ha Hb.
-  rewrite ZsumList_ZbinopList_eq.
-  eapply (Forall_ZbinopList_len _ (fun x : ℤ => m1 <= x <= n1) (fun x : ℤ => m2 <= x <= n2)) ; go.
+  rewrite ZsumList_Zipp_eq.
+  eapply (Forall_Zipp_length _ (fun x : ℤ => m1 <= x <= n1) (fun x : ℤ => m2 <= x <= n2)) ; go.
 Qed.
+
+Lemma ZsumList_bound_Zlength_le: forall m1 n1 m2 n2 a b, 
+  length a = length b ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 + m2 <= x <= n1 + n2) (a ⊕ b).
+Proof. convert_length_to_Zlength ZsumList_bound_length_le. Qed.
 
 (*
 Lemma ZsumList_pos: forall a b, ZList_pos a -> ZList_pos b -> ZList_pos (a ⊕ b).

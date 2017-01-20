@@ -1,4 +1,4 @@
-Require Export Libs.LibTactics_Rennes.
+Require Export Tweetnacl.Libs.LibTactics_Rennes.
 
 Ltac transparent_specialize_one H arg :=
   first [ let test := eval unfold H in H in idtac;
@@ -37,4 +37,11 @@ Ltac destr_boum n :=
 
 Ltac inv_boum H :=
   inversion H ; boum.
+
+Ltac convert_length_to_Zlength L:=
+  intros;
+  repeat match goal with
+    | [ H : context[Zlength] |- _ ] => progress rewrite Zlength_correct in H
+    | [ |- context[Zlength] ] => progress rewrite Zlength_correct
+  end ; try (apply L ; go).
 

@@ -1,8 +1,10 @@
-Require Export Libs.Lists_extended.
-Require Export Libs.Forall.
+Require Export Tweetnacl.Libs.Lists_extended.
+
+(* Require Export Tweetnacl.Libs.Forall.
+
 
 Lemma Forall_slice: forall n A (l:list A) (P:A -> Prop),
-  Forall P l -> 
+  Forall P l ->
     Forall P (slice n l).
 Proof.
   induction n.
@@ -90,4 +92,4 @@ Proof.
   eapply IHl.
   intros i.
   apply (Hnth (S i)).
-Qed.
+Qed. *)

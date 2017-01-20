@@ -7,17 +7,26 @@ default_target: .loadpath Libs ListsOp Op Car
 DIRS= Libs ListsOp Op Car
 INCLUDE= $(foreach a,$(DIRS),$(if $(wildcard $(a)), -Q $(a) $(a)))
 
+
+PRELUDE = ../Prelude
+
+# for Prelude
+ifdef PRELUDE
+ EXTFLAGS:=$(EXTFLAGS) -Q $(PRELUDE) Prelude
+endif
+
 # for SSReflect
 ifdef MATHCOMP
  EXTFLAGS:=$(EXTFLAGS) -R $(MATHCOMP) mathcomp
 endif
 
 COQFLAGS=$(foreach d, $(DIRS), $(if $(wildcard $(d)), -Q $(d) $(d))) $(EXTFLAGS)
-DEPFLAGS:=$(COQFLAGS)
+LIBPREFIX=Tweetnacl
 
 ifdef LIBPREFIX
  COQFLAGS=$(foreach d, $(DIRS), $(if $(wildcard $(d)), -Q $(d) $(LIBPREFIX).$(d))) $(EXTFLAGS)
 endif
+DEPFLAGS:=$(COQFLAGS)
 
 COQC=$(COQBIN)coqc
 COQTOP=$(COQBIN)coqtop
@@ -32,6 +41,7 @@ endif
 
 define clean_files
 	$($(1):%.v=$(2)/%.vo) \
+	$($(1):%.v=$(2)/.%.aux) \
 	$($(1):%.v=$(2)/.%.vo.aux) \
 	$($(1):%.v=$(2)/%.glob) \
 	$($(1):%.v=$(2)/%.v.crashcoqide)
@@ -78,13 +88,14 @@ ListsOp:	.loadpath $(LISTSOP_FILES:%.v=ListsOp/%.vo)
 Op:			.loadpath $(OP_FILES:%.v=Op/%.vo)
 Car:		.loadpath $(CAR_FILES:%.v=Car/%.vo)
 
-.loadpath: makefile
+.loadpath:
 	echo $(COQFLAGS) > .loadpath
 
 dep:
+	@$(COQDEP) $(filter $(wildcard *.v */*.v */*/*.v),$(FILES))
 	# $(COQDEP) > .depend $(FILES)
 	# $(COQDEP) >.depend `find Libs/ -name "*.v"`
-	$(COQDEP) >.depend `find . -name "*.v"`
+	# $(COQDEP) >.depend `find . -name "*.v"`
 
 .depend:
 	$(COQDEP) $(filter $(wildcard *.v */*.v */*/*.v),$(FILES))  > .depend
