@@ -91,6 +91,10 @@ Car:		.loadpath $(CAR_FILES:%.v=Car/%.vo)
 .loadpath:
 	echo $(COQFLAGS) > .loadpath
 
+doc:
+	mkdir -p doc
+	$(COQDOC) -d doc $(FILES)
+
 dep:
 	@$(COQDEP) $(filter $(wildcard *.v */*.v */*/*.v),$(FILES))
 	# $(COQDEP) > .depend $(FILES)
