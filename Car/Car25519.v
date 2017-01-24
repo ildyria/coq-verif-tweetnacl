@@ -54,7 +54,7 @@ Proof.
   try assumption ; rewrite Hcarr2;
   rewrite <- ℤcar25519_eq_car25519_Zlength by assumption;
   eapply (doubleCar_ext_str (ℤ16.lst l1) _ 303) ;
-  try omega ; 
+  try omega ;
   try (eapply bounds.le_lt_trans ; [eapply Hbounds | | ] ; compute ; reflexivity);
   try (rewrite ℤcar25519_eq_car25519_Zlength by auto ; try rewrite Hcarr1 ; reflexivity).
 Qed.

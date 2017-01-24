@@ -6,6 +6,10 @@ Import ListNotations.
 Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
 Proof. boum. Qed.
 
+Lemma nth_drop : forall A (n:nat) (l:list A) (d: A), n < length l -> drop n l = nth n l d :: drop (S n) l.
+Proof. induction n ; destr_boum l. Qed.
+Arguments nth_drop [A] _ _ _ _.
+
 (*
 Lemma app_nill_r : forall (A:Type) (l:list A), l ++ nil = l.
 Proof. boum. Qed.

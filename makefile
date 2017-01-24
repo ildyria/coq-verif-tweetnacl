@@ -31,7 +31,7 @@ DEPFLAGS:=$(COQFLAGS)
 COQC=$(COQBIN)coqc
 COQTOP=$(COQBIN)coqtop
 COQDEP=$(COQBIN)coqdep $(DEPFLAGS)
-COQDOC=$(COQBIN)coqdoc
+COQDOC=$(COQBIN)coqdoc -d doc -g -utf8 $(DEPFLAGS)
 
 COQVERSION= 8.5pl1 or-else 8.5pl2 or-else 8.5pl3 or-else 8.6beta1 or-else 8.6
 COQV=$(shell $(COQC) -v)
@@ -93,7 +93,7 @@ Car:		.loadpath $(CAR_FILES:%.v=Car/%.vo)
 
 doc:
 	mkdir -p doc
-	$(COQDOC) -d doc $(FILES)
+	$(COQDOC) $(FILES)
 
 dep:
 	@$(COQDEP) $(filter $(wildcard *.v */*.v */*/*.v),$(FILES))
