@@ -4,3 +4,4 @@ Require Export Tweetnacl.Op.MinusList.
 Require Export Tweetnacl.Op.ScalarMult.
 Require Export Tweetnacl.Op.A.
 Require Export Tweetnacl.Op.M.
+Require Export Tweetnacl.Op.M_low_level.
