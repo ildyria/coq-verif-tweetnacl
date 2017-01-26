@@ -1,4 +1,5 @@
--R Libs Libs
--R Op Op
--R ListsOp ListsOp
--R Car Car
+-Q Libs Tweetnacl.Libs
+-Q Op Tweetnacl.Op
+-Q ListsOp Tweetnacl.ListsOp
+-Q Car Tweetnacl.Car
+-Q ../Prelude Prelude
