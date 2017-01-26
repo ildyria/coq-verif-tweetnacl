@@ -207,7 +207,30 @@ Qed.
 
 Definition local_update_M2 (y:list Z) (j:nat) (x:Z) := x + 38 * (from_option id 0 (y !! j)).
 
-Definition update_M2_i (i:nat) o := list_alter (local_update_M2 o (i + 16)) i o.
+Definition update_M2_i (i:nat) o := alter (local_update_M2 o (i + 16)) i o.
+
+Lemma update_M2_i_com: forall (i k: nat) (o: list Z),
+  0 <= i ->
+  0 <= k ->
+  i < k -> 
+  i + 16 <> k ->
+    update_M2_i i (update_M2_i k o) = update_M2_i k (update_M2_i i o).
+Proof.
+intros.
+unfold update_M2_i.
+remember (local_update_M2 (alter (local_update_M2 o (k + 16)) k o) (i + 16)) as f.
+remember (local_update_M2 o (k + 16)) as g.
+remember (local_update_M2 (alter (local_update_M2 o (i + 16)) i o) (k + 16)) as m.
+remember (local_update_M2 o (i + 16)) as n.
+unfold local_update_M2 in *.
+rewrite list_lookup_alter_ne in Heqf by omega.
+rewrite list_lookup_alter_ne in Heqm by omega.
+assert(g = m) by go.
+assert(f = n) by go.
+rewrite <- H3.
+rewrite <- H4.
+rewrite list_alter_commute ; go.
+Qed.
 
 Function M2_fix (i : Z) (o : list Z) {measure Z.to_nat i} : list Z :=
   if (i <=? 0) then o else M2_fix (i - 1) (update_M2_i (Z.to_nat (i - 1)) o).
@@ -217,6 +240,33 @@ Fixpoint M2_fix' (i : nat) (o : list Z) := match i with
   | 0%nat => o
   | S p => M2_fix' p (update_M2_i p o)
 end.
+
+Function M2_fix'' (i : Z) (o : list Z) {measure Z.to_nat i} : list Z :=
+  if (i <=? 0) then o else update_M2_i (Z.to_nat (i - 1)) (M2_fix'' (i - 1) o).
+Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Qed.
+
+Lemma M2_fix''_com : forall (i k : Z) (o : list Z), 
+  0 <= i ->
+  i < k ->
+  k <= 15 -> (*let us hope this will be enough ! *)
+    update_M2_i (Z.to_nat k) (M2_fix'' i o) = M2_fix'' i (update_M2_i (Z.to_nat k) o).
+Proof.
+  intros i k o Hi.
+  gen k o.
+  apply (natlike_ind (fun i => (∀ (k : ℤ) (o : list ℤ),
+i < k
+→ k ≤ 15
+    → update_M2_i (Z.to_nat k) (M2_fix'' i o) = M2_fix'' i (update_M2_i (Z.to_nat k) o)))) ; try omega.
+  - intros ; rewrite M2_fix''_equation ; symmetry ; rewrite M2_fix''_equation ; auto.
+  - clear Hi i ; intros i Hi iHi k o Hik Hkk ; sort.
+    change (Z.succ i) with (i + 1) in *.
+    rewrite M2_fix''_equation ; symmetry ; rewrite M2_fix''_equation.
+    flatten.
+    replace (i + 1 - 1) with (i) by omega.
+    rewrite <- iHi by omega.
+    rewrite update_M2_i_com ; repeat rewrite Z2Nat.id by omega ; try omega.
+    reflexivity.
+Qed.
 
 Lemma update_M2_rec': forall (u:Z) (i:nat) (l:list Z),
   (update_M2_i (S i) (u::l)) = u::update_M2_i i l.
@@ -257,6 +307,30 @@ rewrite iHi; go.
 rewrite Z2Nat.inj_add ; try replace (Z.to_nat 1) with 1%nat by reflexivity ; omega.
 Qed.
 
+Lemma M2_fix_eq'': forall (i: Z) (o: list Z),
+  0 <= i-> 
+  i <= 16 ->
+    M2_fix i o = M2_fix'' i o.
+Proof.
+  intros i o Hi. gen o.
+  eapply (natlike_ind (fun i => ∀ o : list ℤ, i ≤ 16 → M2_fix i o = M2_fix'' i o)) ; try omega.
+  - intros ; rewrite M2_fix_equation ; rewrite M2_fix''_equation ;  auto.
+  - clear i Hi; intros i Hi iHi o Hii.
+    change (Z.succ i) with (i + 1).
+    rewrite M2_fix_equation.
+    rewrite M2_fix''_equation.
+    flatten.
+    replace (i + 1 - 1) with i by omega.
+    rewrite iHi by omega.
+    rewrite M2_fix''_equation.
+    symmetry; rewrite M2_fix''_equation.
+    flatten.
+    apply Z.leb_gt in Eq ; apply Z.leb_gt in Eq0.
+    rewrite <- M2_fix''_com by omega.
+    rewrite <- update_M2_i_com ; repeat rewrite Z2Nat.id ; try omega.
+    reflexivity.
+Qed.
+
 Theorem M2_fix_eq_M2 : forall (a:list Z),
   (length a = 31)%nat ->
   M2_fix 15 a = mult_2 a.
@@ -279,6 +353,7 @@ repeat rewrite update_M2_rec.
 repeat (rewrite update_M2_0 ; simpl).
 reflexivity. *)
 Qed.
+
 
 Function M3_fix (i : Z) (from : list Z) (to : list Z) {measure Z.to_nat i} : list Z :=
   if (i <=? 0) then to else 
