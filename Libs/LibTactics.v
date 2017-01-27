@@ -43,5 +43,5 @@ Ltac convert_length_to_Zlength L:=
   repeat match goal with
     | [ H : context[Zlength] |- _ ] => progress rewrite Zlength_correct in H
     | [ |- context[Zlength] ] => progress rewrite Zlength_correct
-  end ; try (apply L ; go).
+  end ; try (apply L ; go) ; try (rewrite L ; go).
 

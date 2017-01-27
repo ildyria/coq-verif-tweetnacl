@@ -21,7 +21,7 @@ Lemma ZminusList_length: forall l, length (ZminusList l) = length l.
 Proof. induction l; go. Qed.
 
 Lemma ZminusList_Zlength: forall l, Zlength (ZminusList l) = Zlength l.
-Proof. convert_length_to_Zlength ZminusList_length. rewrite ZminusList_length. reflexivity. Qed.
+Proof. convert_length_to_Zlength ZminusList_length. Qed.
 
 Lemma ZminusList_nil: forall l, ZminusList l = [] <-> l = [].
 Proof. induction l ; intros ; go. Qed.

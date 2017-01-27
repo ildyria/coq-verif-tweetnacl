@@ -22,7 +22,7 @@ Lemma ZscalarMult_length: forall n l, length (n ∘∘ l) = length l.
 Proof. intro n ; induction l ; go. Qed.
 
 Lemma ZscalarMult_Zlength: forall n l, Zlength (n ∘∘ l) = Zlength l.
-Proof. convert_length_to_Zlength ZscalarMult_length; rewrite ZscalarMult_length; reflexivity.  Qed.
+Proof. convert_length_to_Zlength ZscalarMult_length. Qed.
 
 
 Lemma ZscalarMult_take: forall l n m, take n (m ∘∘ l) = m ∘∘ (take n l).

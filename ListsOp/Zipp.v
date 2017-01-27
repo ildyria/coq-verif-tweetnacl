@@ -60,7 +60,6 @@ Proof. convert_length_to_Zlength Zipp_eq_length. Qed.
 
 Lemma Zipp_n_Zlength : forall f (n:nat) (a b : list Z), Zlength (Zipp_n f n a b) = Zmin n (Zmax (Zlength a) (Zlength b)).
 Proof. convert_length_to_Zlength Zipp_n_length.
-rewrite Zipp_n_length.
 rewrite Nat2Z.inj_min.
 rewrite Nat2Z.inj_max.
 reflexivity.

@@ -30,8 +30,7 @@ Lemma Forall_Zipp_Zlenth: forall (f:Z -> Z -> Z) (P Q R: Z -> Prop) (a b: list Z
   Forall Q b -> 
   Forall R (Zipp f a b).
 Proof.
-  intros f P Q R a b Hf Hl Ha Hb.
-  repeat rewrite Zlength_correct in Hl.
+  convert_length_to_Zlength Forall_Zipp_length.
   eapply Forall_Zipp_length ; eauto ; omega.
 Qed.
 

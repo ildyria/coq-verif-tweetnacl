@@ -50,7 +50,7 @@ Lemma Carrying_n_length: forall l (m:nat) a, (m < length l)%nat -> length (Carry
 Proof. induction l as [|h q IHl]; intros [] a Hm; simpl ; flatten ; go. Qed.
 
 Lemma Carrying_n_Zlength: forall l (m:nat) a, m < length l -> Zlength (Carrying_n m a l) = Zlength l.
-Proof. convert_length_to_Zlength Carrying_n_length. rewrite Carrying_n_length ; go. Qed.
+Proof. convert_length_to_Zlength Carrying_n_length. Qed.
 
 Lemma CarryPreserveConst : forall l a , a + (ℤ.lst l) = ℤ.lst Carrying a l.
 Proof.

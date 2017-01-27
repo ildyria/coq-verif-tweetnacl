@@ -8,6 +8,7 @@ Require Import Prelude.prelude.prelude.
 Require Import Recdef.
 
 Local Open Scope Z.
+(* convert_length_to_Zlength *)
 
 Definition local_update_M (j:nat) (a:Z) (b : list Z) (x:Z) := x + a * ( from_option id 0 (b !! j)).
 
@@ -129,6 +130,11 @@ Proof.
     reflexivity.
 Qed.
 
+Lemma inner_M_fix_0 : forall i a b o, 0 <= i -> inner_M_fix i 0 a b o = o.
+Proof.
+intros ; rewrite inner_M_fix_equation ; flatten ; compute in Eq ; tryfalse.
+Qed.
+
 Lemma inner_M_fix_step j : 0 <= j -> forall i a b o, 0 <= i -> inner_M_fix i (j + 1) a b o = update_M_i_j i j a b (inner_M_fix i j a b o).
 Proof.
   intros.
@@ -141,6 +147,25 @@ Proof.
   f_equal.
   rewrite inner_M_i_j_eq''; go.
 Qed.
+
+Lemma inner_M_fix_length : forall i j a b o, 0 <= j -> length (inner_M_fix i j a b o) = length o.
+Proof.
+  intros i j a b o Hj; gen i a b o .
+  apply (natlike_ind (fun j => ∀ (i a : ℤ) (b o : list ℤ), length (inner_M_fix i j a b o) = length o)) ; try omega.
+  intros ; rewrite inner_M_fix_equation ; go.
+  clear j Hj; intros j Hj iHj i a b o.
+  change (Z.succ j) with (j + 1).
+  rewrite inner_M_fix_equation.
+  destruct (j + 1 <=? 0) ; auto.
+  replace (j + 1 - 1) with (j) by omega.
+  rewrite iHj.
+  unfold update_M_i_j.
+  rewrite alter_length.
+  reflexivity.
+Qed.
+
+Lemma inner_M_fix_Zlength : forall i j a b o, 0 <= j -> Zlength (inner_M_fix i j a b o) = Zlength o.
+Proof. convert_length_to_Zlength inner_M_fix_length. Qed.
 
 Function outer_M_fix (i j : Z) (a b o : list Z)  {measure Z.to_nat i} : list Z :=
   if (i <=? 0) then o else outer_M_fix (i - 1) 16 a b (inner_M_fix (i - 1) j (from_option id 0 (a !! (Z.to_nat (i - 1)))) b o).
@@ -177,6 +202,41 @@ Proof.
   reflexivity.
   rewrite Z2Nat.inj_add ; try replace (Z.to_nat 1) with 1%nat by reflexivity ; omega.
 Qed.
+
+Lemma outer_M_fix_0 : forall j a b o, outer_M_fix 0 j a b o = o.
+Proof.
+intros ; rewrite outer_M_fix_equation ; flatten ; compute in Eq ; tryfalse.
+Qed.
+
+Lemma outer_M_fix_length : forall i j a b o, 0 <= i -> 0 <= j -> length (outer_M_fix i j a b o) = length o.
+Proof.
+  intros i j a b o Hi; gen j a b o .
+  apply (natlike_ind (fun i => ∀ (j : ℤ) (a b o : list ℤ), 0 <= j -> length (outer_M_fix i j a b o) = length o)) ; try omega.
+  intros ; rewrite outer_M_fix_equation ; go.
+  clear i Hi; intros i Hi iHi j a b o Hj.
+  change (Z.succ i) with (i + 1).
+  rewrite outer_M_fix_equation.
+  destruct (i + 1 <=? 0) ; auto.
+  replace (i + 1 - 1) with (i) by omega.
+  rewrite iHi by omega.
+  rewrite inner_M_fix_length ; go.
+Qed.
+
+Lemma outer_M_fix_Zlength : forall i j a b o, 0 <= i -> 0 <= j -> Zlength (outer_M_fix i j a b o) = Zlength o.
+Proof. convert_length_to_Zlength outer_M_fix_length. Qed.
+
+(* Lemma outer_M_fix_step : forall (i j : Z) (a b o : list Z),
+  0 <= i ->
+  0 <= j ->
+    outer_M_fix (i + 1) j a b o = inner_M_fix i j (from_option id 0 (a !! (Z.to_nat i))) b (outer_M_fix i 16 a b o).
+Proof.
+  intros i j a b o Hi Hj.
+  rewrite outer_M_fix_equation.
+  flatten.
+  apply Zle_bool_imp_le in Eq ; omega. (* silly case *)
+  apply Z.leb_gt in Eq.
+  replace (i + 1 - 1) with i by omega. *)
+  
 
 Definition M1_fix a b := outer_M_fix 16 16 a b [
   0;0;0;0;0;0;0;0;0;0;
@@ -278,7 +338,7 @@ Qed.
 Lemma M2_fix''_com : forall (i k : Z) (o : list Z), 
   (length o <= 31)%nat ->
   0 <= i ->
-  i < k ->
+  i <= k ->
   k <= 16 -> (*let us hope this will be enough ! *)
     update_M2_i (Z.to_nat k) (M2_fix'' i o) = M2_fix'' i (update_M2_i (Z.to_nat k) o).
 Proof.
@@ -286,7 +346,7 @@ Proof.
   gen k o.
   apply (natlike_ind (fun i => (∀ (k : ℤ) (o : list ℤ),
 (length o ≤ 31)%nat
-→ i < k
+→ i ≤ k
 → k ≤ 16
     → update_M2_i (Z.to_nat k) (M2_fix'' i o) = M2_fix'' i (update_M2_i (Z.to_nat k) o)))) ; try omega.
   - intros ; rewrite M2_fix''_equation ; symmetry ; rewrite M2_fix''_equation ; auto.
@@ -374,6 +434,14 @@ Proof.
     omega.
 Qed.
 
+Lemma M2_fix_0 : forall (o: list Z), (M2_fix 0 o) = o.
+Proof.
+  intro o.
+  rewrite M2_fix_equation.
+  flatten.
+  compute in Eq ; tryfalse.
+Qed.
+
 Lemma M2_fix_eq_step : forall (i: Z) (o: list Z),
   (length o <= 31)%nat ->
   0 <= i->
@@ -392,6 +460,58 @@ Proof.
   repeat rewrite (update_M2_id 17) ; go.
   rewrite M2_fix''_length ; omega.
 Qed.
+
+Lemma M2_fix_step : forall (i: Z) (o: list Z),
+  (length o <= 31)%nat ->
+  0 <= i->
+  i <= 16 ->
+    update_M2_i (Z.to_nat (i)) (M2_fix i o) = M2_fix (i + 1) o.
+Proof.
+  intros.
+  symmetry.
+  rewrite M2_fix_equation.
+  flatten.
+  apply Zle_bool_imp_le in Eq ; omega. (* silly case *)
+  replace (i + 1 - 1) with i by omega.
+  rewrite M2_fix_eq'' ; try omega.
+  rewrite M2_fix_eq'' ; try (unfold update_M2_i ; rewrite alter_length); try omega.
+  rewrite M2_fix''_com; try omega.
+  reflexivity.
+  unfold update_M2_i.
+  rewrite alter_length.
+  omega.
+Qed.
+
+Lemma M2_fix_stepZ : forall (i: Z) (o: list Z),
+  Zlength o <= 31 ->
+  0 <= i->
+  i <= 16 ->
+    update_M2_i (Z.to_nat (i)) (M2_fix i o) = M2_fix (i + 1) o.
+Proof. convert_length_to_Zlength M2_fix_step. Qed.
+
+
+Lemma M2_fix_length : forall (i: Z) (o: list Z),
+  0 <= i ->
+    length (M2_fix i o) = length o.
+Proof.
+  intros i l Hi; gen l.
+  apply (natlike_ind (fun i => ∀ l : list ℤ, length (M2_fix i l) = length l)) ; try omega.
+  intros ; rewrite M2_fix_0 ; go.
+  clear i Hi; intros i Hi iHi l.
+  change (Z.succ i) with (i + 1).
+  rewrite M2_fix_equation.
+  destruct (i + 1 <=? 0) ; auto.
+  replace (i + 1 - 1) with (i) by omega.
+  rewrite iHi.
+  unfold update_M2_i.
+  rewrite alter_length.
+  auto.
+Qed.
+
+Lemma M2_fix_Zlength : forall (i: Z) (o: list Z),
+  0 <= i ->
+    Zlength (M2_fix i o) = Zlength o.
+Proof. convert_length_to_Zlength M2_fix_length. Qed.
 
 Theorem M2_fix_eq_M2 : forall (a:list Z),
   (length a = 31)%nat ->
@@ -447,6 +567,32 @@ Proof.
   try (apply Zle_bool_imp_le in Eq ; omega); (* silly case *)
   apply Z.leb_gt in Eq ; replace (i + 1 - 1) with i by omega ; go.
   rewrite Z2Nat.inj_add ; try replace (Z.to_nat 1) with 1%nat by reflexivity ; omega.
+Qed.
+
+Lemma M3_fix_step : forall (i:Z) (f t:list Z),
+  0 <= i < 16 -> 
+  length t = 16%nat -> 
+  length f = 31%nat ->
+    M3_fix (i + 1) f t = ((take (Z.to_nat i) (M3_fix i f t)) ++ [nth (Z.to_nat i) f 0]) ++ drop (Z.to_nat i + 1) (M3_fix i f t).
+Proof.
+intros.
+repeat (destruct t; tryfalse).
+do 16 (destruct f; tryfalse).
+repeat rewrite M3_fix_eq ; try omega.
+rewrite Z2Nat.inj_add ; try omega.
+remember ((Z.to_nat i)%nat) as j.
+replace (Z.to_nat 1) with 1%nat by reflexivity.
+replace (j + 1)%nat with (S j)%nat by omega.
+assert((j < 16)%nat).
+rewrite Heqj.
+change (16%nat) with (Z.to_nat 16).
+apply Z2Nat.inj_lt ; omega.
+simpl.
+flatten ; simpl ; try reflexivity.
+simpl in Heqj.
+exfalso.
+assert(forall n, 16 <= (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S n))))))))))))))))) by (induction 1 ; omega).
+omega.
 Qed.
 
 Theorem M3_fix_eq_M3 : forall (from to:list Z)  ,
