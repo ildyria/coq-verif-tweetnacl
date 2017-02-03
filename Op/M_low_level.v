@@ -536,6 +536,11 @@ repeat (rewrite update_M2_0 ; simpl).
 reflexivity. *)
 Qed.
 
+Theorem M2_fix_eq_M2Z : forall (a:list Z),
+  Zlength a = 31 ->
+  M2_fix 15 a = mult_2 a.
+Proof. convert_length_to_Zlength M2_fix_eq_M2. Qed.
+
 
 Function M3_fix (i : Z) (from : list Z) (to : list Z) {measure Z.to_nat i} : list Z :=
   if (i <=? 0) then to else 
@@ -569,6 +574,14 @@ Proof.
   rewrite Z2Nat.inj_add ; try replace (Z.to_nat 1) with 1%nat by reflexivity ; omega.
 Qed.
 
+Lemma M3_fix_0 : forall (f t:list Z),
+    M3_fix 0 f t = t.
+Proof.
+  intros f t.
+  rewrite M3_fix_equation.
+  destruct (0 <=? 0) eqn:H ; [| compute in H]; go.
+Qed.
+
 Lemma M3_fix_step : forall (i:Z) (f t:list Z),
   0 <= i < 16 -> 
   length t = 16%nat -> 
@@ -595,6 +608,13 @@ assert(forall n, 16 <= (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S n))))))))
 omega.
 Qed.
 
+Lemma M3_fix_stepZ : forall (i:Z) (f t:list Z),
+  0 <= i < 16 -> 
+  Zlength t = 16 -> 
+  Zlength f = 31 ->
+    M3_fix (i + 1) f t = ((take (Z.to_nat i) (M3_fix i f t)) ++ [nth (Z.to_nat i) f 0]) ++ drop (Z.to_nat i + 1) (M3_fix i f t).
+Proof. convert_length_to_Zlength M3_fix_step. Qed.
+
 Theorem M3_fix_eq_M3 : forall (from to:list Z)  ,
   (length from = 31)%nat ->
   (length to = 16)%nat ->
@@ -607,5 +627,19 @@ Proof.
   change (Z.to_nat 16) with 16%nat.
   reflexivity.
 Qed.
+
+Theorem M3_fix_eq_M3Z : forall (from to:list Z)  ,
+  Zlength from = 31 ->
+  Zlength to = 16 ->
+  M3_fix 16 from to = mult_3 from.
+Proof. convert_length_to_Zlength M3_fix_eq_M3. Qed.
+
+Lemma M3_fix_length: forall (i: Z) (f t: list Z),
+  length t = length (M3_fix i f t).
+Proof. intros ; gen i f ; induction t ; intros ; rewrite M3_fix_equation; flatten; go. Qed.
+
+Lemma M3_fix_Zlength: forall (i: Z) (f t: list Z),
+  Zlength t = Zlength (M3_fix i f t).
+Proof. intros; repeat rewrite Zlength_correct; rewrite <- M3_fix_length ; reflexivity. Qed.
 
 Close Scope Z.

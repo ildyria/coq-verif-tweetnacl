@@ -40,6 +40,7 @@ ifeq ("$(filter $(COQVERSION),$(COQV))","")
 endif
 
 define clean_files
+	$($(1):%.v=$(2)/%.vio) \
 	$($(1):%.v=$(2)/%.vo) \
 	$($(1):%.v=$(2)/.%.aux) \
 	$($(1):%.v=$(2)/.%.vo.aux) \
@@ -81,7 +82,18 @@ else
 	@$(COQC) $(COQFLAGS) $*.v
 endif
 
+%.vio: %.v
+	@echo COQC $*.v
+ifeq ($(TIMINGS), true)
+#	bash -c "wc $*.v >>timings; date +'%s.%N before' >> timings; $(COQC) $(COQFLAGS) $*.v; date +'%s.%N after' >>timings" 2>>timings
+	@bash -c "/bin/time --output=TIMINGS -a -f '%e real, %U user, %S sys, '\"$(shell wc $*.v)\" $(COQC) $(COQFLAGS) $*.v"
+#	echo -n $*.v " " >>TIMINGS; bash -c "/usr/bin/time -o TIMINGS -a $(COQC) $(COQFLAGS) $*.v"
+else
+	@$(COQC) -quick $(COQFLAGS) $*.v
+endif
+
 all: .loadpath $(FILES:.v=.vo)
+quick: .loadpath $(FILES:.v=.vio)
 
 Libs: 		.loadpath $(LIBS_FILES:%.v=Libs/%.vo)
 ListsOp:	.loadpath $(LISTSOP_FILES:%.v=ListsOp/%.vo)
@@ -110,8 +122,26 @@ depend:
 clean:
 	rm -f $(CLEANFILES) .loadpath .depend .nia.cache .lia.cache
 
+# check: quick
+# 	coqtop -schedule-vio2vo
+
+vio2vo: quick
+	$(COQC) $(COQFLAGS) -schedule-vio2vo $(J) $(FILES:%.v=%.vio)
+
+checkproofs:
+	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vio-checking $(J) $(FILES:%.v=%.vio)
+
 count:
 	wc $(FILES)
+
+printenv:
+	@"$(COQTOP)" -config
+	@echo 'CAMLC =	$(CAMLC)'
+	@echo 'CAMLOPTC =	$(CAMLOPTC)'
+	@echo 'PP =	$(PP)'
+	@echo 'COQFLAGS =	$(COQFLAGS)'
+	@echo 'COQLIBINSTALL =	$(COQLIBINSTALL)'
+	@echo 'COQDOCINSTALL =	$(COQDOCINSTALL)'
 
 # The .depend file is divided into two parts, .depend and .depend-concur,
 # in order to work around a limitation in Cygwin about how long one
