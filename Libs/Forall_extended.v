@@ -1,5 +1,6 @@
 Require Export Tweetnacl.Libs.Lists_extended.
-
+Require Import Prelude.prelude.prelude.
+Require Import Tweetnacl.Libs.LibTactics.
 (* Require Export Tweetnacl.Libs.Forall.
 
 
@@ -59,7 +60,7 @@ Proof.
   destruct H.
   go.
 Qed.
-
+*)
 Lemma Forall_nth_d: forall A (l:list A) (P:A -> Prop) d,
   P d ->
   Forall P l ->
@@ -86,10 +87,9 @@ Lemma nth_Forall: forall A (l: list A) (P:A -> Prop) d,
     Forall P l.
 Proof.
   induction l ; go.
-  intros P d Hnth ; rewrite Forall_cons'.
-  split.
+  intros P d Hnth ; apply Forall_cons_2.
   apply (Hnth 0).
   eapply IHl.
   intros i.
   apply (Hnth (S i)).
-Qed. *)
+Qed.

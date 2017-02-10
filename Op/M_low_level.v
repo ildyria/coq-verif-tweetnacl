@@ -167,6 +167,241 @@ Qed.
 Lemma inner_M_fix_Zlength : forall i j a b o, 0 <= j -> Zlength (inner_M_fix i j a b o) = Zlength o.
 Proof. convert_length_to_Zlength inner_M_fix_length. Qed.
 
+Lemma inner_M_fix_app_take : forall i j a b o, 0 <= j -> 0 <= i -> i <= length o -> inner_M_fix i j a b o = take (Z.to_nat i) o ++ drop (Z.to_nat i) (inner_M_fix i j a b o).
+Proof.
+intros i j a b o Hj Hi. gen i a b o.
+eapply (natlike_ind (fun j => ∀ i : ℤ,
+0 ≤ i
+→ ∀ (a : ℤ) (b o : list ℤ),
+  i ≤ length o → inner_M_fix i j a b o = take (Z.to_nat i) o ++ drop (Z.to_nat i) (inner_M_fix i j a b o))) ; try omega.
+intros; rewrite inner_M_fix_0 by omega; rewrite take_drop; reflexivity.
+clear j Hj. intros j Hj iHj i Hi a b o Ho.
+change (Z.succ j) with (j + 1).
+rewrite inner_M_i_j_eq'' by omega.
+rewrite inner_M_fix''_equation.
+flatten.
+rewrite take_drop; reflexivity.
+replace (j + 1 - 1) with j by omega.
+rewrite <- inner_M_i_j_eq'' by omega.
+rewrite iHj by omega.
+unfold update_M_i_j.
+rewrite alter_app_r_alt.
+f_equal.
+2: rewrite take_length.
+2: rewrite Z2Nat.inj_add by omega.
+2: apply (NPeano.Nat.le_trans _ (Z.to_nat i)).
+2: apply Min.le_min_l.
+2: omega.
+rewrite drop_app_ge.
+2: rewrite take_length.
+2: apply Min.le_min_l.
+replace ((Z.to_nat i - length (take (Z.to_nat i) o)))%nat with 0%nat.
+rewrite drop_0.
+reflexivity.
+rewrite take_length.
+rewrite min_l ; go.
+apply (NPeano.Nat.le_trans _ (Z.to_nat (length o))).
+apply Z2Nat.inj_le ; go.
+apply NPeano.Nat.eq_le_incl.
+clear j Hj iHj i Hi b Ho Eq.
+induction o ; go.
+simpl.
+rewrite Zpos_P_of_succ_nat.
+rewrite Z2Nat.inj_succ ; go.
+Qed.
+
+Lemma inner_M_fix_app : forall i j a b o o', 0 <= j -> 0 <= i -> i + j <= length o -> inner_M_fix i j a b (o ++ o') = (inner_M_fix i j a b o) ++ o'.
+Proof.
+intros i j a b o o'; gen i j a b o'; induction o as [ | h o iHo] using rev_ind.
+- intros. simpl in *.
+replace i with 0 by omega.
+replace j with 0 by omega.
+subst ; repeat rewrite inner_M_fix_0 by omega ; auto.
+- intros i j a b o' Hj Hi. gen i a b o'.
+  apply (natlike_ind (fun j => ∀ i : ℤ,
+0 ≤ i
+→ ∀ (a : ℤ) (b o' : list ℤ),
+  i + j <= length (o ++ [h]) → inner_M_fix i j a b ((o ++ [h]) ++ o') = inner_M_fix i j a b (o ++ [h]) ++ o')) ; try omega.
+  intros.
+  repeat rewrite inner_M_fix_0 by omega ; reflexivity.
+  clear j Hj; intros j Hj iHj i Hi a b o' Hijo.
+  change (Z.succ j) with (j + 1).
+  repeat rewrite inner_M_i_j_eq'' by omega.
+  rewrite inner_M_fix''_equation.
+  symmetry.
+  rewrite inner_M_fix''_equation.
+  flatten.
+  apply Z.leb_gt in Eq.
+  replace (j + 1 - 1) with j by omega.
+  repeat rewrite <- inner_M_i_j_eq'' by omega.
+  change (Z.succ j) with (j + 1) in *.
+  rewrite app_length in Hijo.
+  simpl in Hijo.
+  replace (i + (j + 1)) with ((i + j) + 1) in Hijo by omega.
+  replace (ℤ.ℕ (length o + 1)%nat) with (length o + 1) in Hijo by (rewrite Nat2Z.inj_add ; simpl ; omega).
+  assert(Hijo': i + j <= length o) by omega.
+  clear Hijo.
+  unfold update_M_i_j.
+  rewrite <- alter_app_l.
+  f_equal.
+  replace ((o ++ [h]) ++ o') with (o ++ h::o').
+  2: rewrite cons_middle; rewrite app_assoc_reverse ; reflexivity.
+  rewrite iHo by omega.
+  rewrite iHo by omega.
+  rewrite app_assoc_reverse.
+  rewrite cons_middle.
+  reflexivity.
+  rewrite inner_M_fix_length by omega.
+  rewrite app_length. simpl.
+  rewrite <- Nat2Z.id.
+  apply Z2Nat.inj_lt.
+  omega.
+  omega.
+  replace (ℤ.ℕ (length o + 1)%nat) with (length o + 1) by (rewrite Nat2Z.inj_add ; simpl ; omega).
+  omega.
+Qed.
+
+Lemma inner_M_fix_take : forall i j a b o, 0 <= j -> 0 <= i -> i + j <= length o -> (inner_M_fix i j a b (take (Z.to_nat (i + j))  o)) = take (Z.to_nat (i + j)) (inner_M_fix i j a b o).
+Proof.
+intros.
+symmetry.
+rewrite <- (take_drop (Z.to_nat (i + j)) o).
+rewrite inner_M_fix_app.
+rewrite (take_drop (Z.to_nat (i + j)) o).
+2: omega.
+2: omega.
+2: rewrite take_length.
+rewrite take_app_ge.
+2: rewrite inner_M_fix_length by omega.
+2: rewrite take_length.
+3: rewrite Nat2Z.inj_min.
+3: rewrite Z.min_l.
+3: rewrite Z2Nat.id ; omega.
+3: rewrite Z2Nat.id ; omega.
+2: apply Min.le_min_l.
+rewrite inner_M_fix_length by omega.
+rewrite take_length.
+rewrite min_l.
+replace ((Z.to_nat (i + j) - Z.to_nat (i + j))%nat) with 0%nat by omega.
+replace (take 0 (drop (Z.to_nat (i + j)) o)) with (nil:list Z).
+rewrite app_nil_r ; auto.
+reflexivity.
+apply Z2Nat.inj_le in H1.
+rewrite <- Nat2Z.id.
+omega.
+omega.
+omega.
+Qed.
+
+
+
+Lemma inner_M_fix_app_drop : forall i j a b o, 0 <= j -> 0 <= i -> i + j <= length o -> inner_M_fix i j a b o = take (Z.to_nat (i + j)) (inner_M_fix i j a b o) ++ drop (Z.to_nat (i + j)) o.
+Proof.
+intros i j a b o Hj Hi Hij.
+rewrite <- (take_drop (Z.to_nat (i + j)) o) at 1.
+rewrite inner_M_fix_app.
+2: omega.
+2: omega.
+2: rewrite take_length.
+2: rewrite min_l.
+2: rewrite Z2Nat.id ; omega.
+2: rewrite Z2Nat.inj_le in Hij by omega ; rewrite (Nat2Z.id (length o)) in Hij ; omega.
+rewrite inner_M_fix_take by omega.
+reflexivity.
+Qed.
+
+Lemma inner_M_fix_bounds : forall m1 m2 m3 n1 n2 n3 i j a b o p q,
+  0 <= j ->
+  0 <= i ->
+  i + j <= 31 ->
+  m1 <= a <= n1 ->
+  (fun x => m1 <= x <= n1) 0 ->
+  (fun x => m2 <= x <= n2) 0 ->
+  Forall (fun x => m2 <= x <= n2) b ->
+  Forall (fun x => m3 <= x <= n3) o ->
+  length b = 16%nat ->
+  length o = 31%nat ->
+  p = m3 + min_prod m1 n1 m2 n2 ->
+  q = n3 + max_prod m1 n1 m2 n2 ->
+  Forall (fun x => p <= x <= q) (inner_M_fix i j a b o).
+Proof.
+  intros m1 m2 m3 n1 n2 n3 i j    a b o p q Hj Hi.
+  gen a b o p q.
+  apply (natlike_ind (fun j => ∀ (a : ℤ) (b o : list ℤ) (p q : ℤ),
+i + j ≤ 31 -> m1 ≤ a ∧ a ≤ n1
+→ m1 ≤ 0 ∧ 0 ≤ n1
+  → m2 ≤ 0 ∧ 0 ≤ n2
+    → Forall (λ x : ℤ, m2 ≤ x ∧ x ≤ n2) b
+      → Forall (λ x : ℤ, m3 ≤ x ∧ x ≤ n3) o
+        → length b = 16%nat
+          → length o = 31%nat
+            → p = m3 + min_prod m1 n1 m2 n2
+              → q = n3 + max_prod m1 n1 m2 n2
+                → Forall (λ x : ℤ, p ≤ x ∧ x ≤ q) (inner_M_fix i j a b o)
+)) ; try omega.
+  - intros a b o p q Hij Ha Hm1n1 Hm2n2 Hb Ho Hlb Hlo Hp Hq.
+    rewrite inner_M_fix_0 by omega.
+    assert(Hpmin:= min_prod_neg_le m1 n1 m2 n2 Hm1n1 Hm2n2).
+    assert(Hqmax:= max_prod_pos_le m1 n1 m2 n2 Hm1n1 Hm2n2).
+    eapply Forall_impl.
+    eauto.
+    intros x H; simpl in H.
+    omega.
+  - clear j Hj.
+    intros j Hj iHj.
+    intros a b o p q Hij Ha Hm1n1 Hm2n2 Hb Ho Hlb Hlo Hp Hq.
+    assert(Hpmin:= min_prod_neg_le m1 n1 m2 n2 Hm1n1 Hm2n2).
+    assert(Hqmax:= max_prod_pos_le m1 n1 m2 n2 Hm1n1 Hm2n2).
+    change (Z.succ j) with (j + 1).
+    rewrite inner_M_fix_step by omega.
+    rewrite inner_M_fix_app_drop.
+    2: omega.
+    2: omega.
+    unfold update_M_i_j.
+    rewrite alter_app_r_alt.
+    + apply Forall_app_2.
+      apply Forall_take ; apply iHj ; auto.
+      omega.
+        assert(Hij' : (Z.to_nat (i + j) <= 31)%nat).
+        rewrite <- Nat2Z.id ; apply Z2Nat.inj_le ; [ | | change (ℤ.ℕ  31%nat) with 31] ; omega.
+        rewrite take_length.
+        rewrite inner_M_fix_length by omega.
+        rewrite min_l by omega.
+        replace ((Z.to_nat (i + j) - Z.to_nat (i + j))%nat) with 0%nat by omega.
+        apply le_lt_eq_dec in Hij'.
+        destruct Hij'.
+        (* get rid of second case: list is empty *)
+        2: rewrite e ; rewrite drop_ge ; go.
+        remember (drop (Z.to_nat (i + j)) o) as t.
+        destruct t.
+        (* first case where the list is empty is not possible *)
+          assert(length (drop (Z.to_nat (i + j)) o) > 0%nat).
+            rewrite drop_length ; rewrite Hlo ; rewrite <- Nat2Z.inj_gt ; omega.
+          rewrite <- Heqt in H.
+          inversion H.
+        assert(Hzw: Forall (λ x : ℤ, m3 ≤ x ∧ x ≤ n3) (z::t)).
+          rewrite Heqt.
+          apply Forall_drop.
+          apply Ho.
+        simpl.
+        inversion Hzw.
+        subst x l0.
+        apply Forall_cons_2.
+        2: eapply Forall_impl ; eauto ; intros; simpl in *; omega.
+        unfold local_update_M.
+        assert(m2 <= from_option id 0 (b !! Z.to_nat j) <= n2).
+          rewrite <- nth_lookup.
+          apply Forall_nth_d ; eauto.
+        assert( min_prod m1 n1 m2 n2 <= a * from_option id 0 (b !! Z.to_nat j) <= max_prod m1 n1 m2 n2).
+          apply Mult_interval_correct_min_max_le ; omega.
+        omega.
+    + rewrite take_length.
+      apply Min.le_min_l.
+    + rewrite Hlo.
+      change (ℤ.ℕ  31%nat) with 31.
+      omega.
+Qed.
+
 Function outer_M_fix (i j : Z) (a b o : list Z)  {measure Z.to_nat i} : list Z :=
   if (i <=? 0) then o else outer_M_fix (i - 1) 16 a b (inner_M_fix (i - 1) j (from_option id 0 (a !! (Z.to_nat (i - 1)))) b o).
 Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Qed.
