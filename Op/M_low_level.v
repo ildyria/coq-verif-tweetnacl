@@ -460,6 +460,8 @@ Qed.
 Lemma outer_M_fix_Zlength : forall i j a b o, 0 <= i -> 0 <= j -> Zlength (outer_M_fix i j a b o) = Zlength o.
 Proof. convert_length_to_Zlength outer_M_fix_length. Qed.
 
+
+
 (* Lemma outer_M_fix_step : forall (i j : Z) (a b o : list Z),
   0 <= i ->
   0 <= j ->

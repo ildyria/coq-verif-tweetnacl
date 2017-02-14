@@ -8,11 +8,11 @@ DIRS= Libs ListsOp Op Car
 INCLUDE= $(foreach a,$(DIRS),$(if $(wildcard $(a)), -Q $(a) $(a)))
 
 
-PRELUDE = ../Prelude
+COQSTDPP = ../Prelude
 
 # for Prelude
-ifdef PRELUDE
- EXTFLAGS:=$(EXTFLAGS) -Q $(PRELUDE) Prelude
+ifdef COQSTDPP
+ EXTFLAGS:=$(EXTFLAGS) -Q $(COQSTDPP) Prelude
 endif
 
 # for SSReflect
