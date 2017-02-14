@@ -3,7 +3,7 @@ Require Import Tweetnacl.ListsOp.Export.
 Require Import Tweetnacl.Car.Carry.
 Require Import Tweetnacl.Car.ZCarry.
 Require Import Tweetnacl.Car.Reduce.
-Require Import Prelude.prelude.prelude.
+Require Import stdpp.prelude.
 
 Open Scope Z.
 

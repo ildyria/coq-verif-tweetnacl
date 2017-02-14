@@ -1,7 +1,7 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Car.Reduce.
 Require Import Tweetnacl.Car.Carry.
-Require Import Prelude.prelude.prelude.
+Require Import stdpp.prelude.
 Require Import Nsatz.
 Require Import Psatz.
 

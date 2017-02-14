@@ -3,7 +3,7 @@ Require Import Tweetnacl.ListsOp.Export.
 Require Import Tweetnacl.Car.Reduce.
 Require Import Tweetnacl.Op.M.
 
-Require Import Prelude.prelude.prelude.
+Require Import stdpp.prelude.
 
 Local Open Scope Z.
 Section Integer.

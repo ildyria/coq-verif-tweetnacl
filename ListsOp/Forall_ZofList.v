@@ -1,4 +1,4 @@
-Require Import Prelude.prelude.list.
+Require Import stdpp.list.
 Require Import Tweetnacl.Libs.Export.
 Require Export Tweetnacl.ListsOp.ZofList.
 Open Scope Z.

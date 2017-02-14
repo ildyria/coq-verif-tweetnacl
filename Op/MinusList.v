@@ -1,6 +1,6 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
-Require Import Prelude.prelude.prelude.
+Require Import stdpp.prelude.
 Import ListNotations.
 
 Open Scope Z.

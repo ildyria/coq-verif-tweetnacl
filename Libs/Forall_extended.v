@@ -1,5 +1,5 @@
 Require Export Tweetnacl.Libs.Lists_extended.
-Require Import Prelude.prelude.prelude.
+Require Import stdpp.prelude.
 Require Import Tweetnacl.Libs.LibTactics.
 (* Require Export Tweetnacl.Libs.Forall.
 
