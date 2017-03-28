@@ -10,7 +10,7 @@ INCLUDE= $(foreach a,$(DIRS),$(if $(wildcard $(a)), -Q $(a) $(a)))
 
 COQSTDPP = ../coq-stdpp/theories
 
-# for Prelude
+# for Coq-stdpp
 ifdef COQSTDPP
  EXTFLAGS:=$(EXTFLAGS) -R $(COQSTDPP) stdpp
 endif

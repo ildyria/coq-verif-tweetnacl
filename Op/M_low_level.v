@@ -200,7 +200,6 @@ rewrite drop_0.
 reflexivity.
 rewrite take_length.
 rewrite min_l ; go.
-SearchAbout Z.to_nat.
 rewrite <- Nat2Z.id.
 apply Z2Nat.inj_le ; go.
 Qed.
@@ -379,12 +378,14 @@ i + j ≤ 31 -> m1 ≤ a ∧ a ≤ n1
 Qed.
 
 Function outer_M_fix (i j : Z) (a b o : list Z)  {measure Z.to_nat i} : list Z :=
-  if (i <=? 0) then o else outer_M_fix (i - 1) 16 a b (inner_M_fix (i - 1) j (from_option id 0 (a !! (Z.to_nat (i - 1)))) b o).
+  if (i <=? 0)
+    then (inner_M_fix 0 j (from_option id 0 (a !! (Z.to_nat 0))) b o)
+    else outer_M_fix (i - 1) 16 a b (inner_M_fix i j (from_option id 0 (a !! (Z.to_nat i))) b o).
 Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Qed.
 
 Fixpoint outer_M_fix' (i j : nat) (a b o : list Z) := match i with
-  | 0%nat => o
-  | S p => outer_M_fix' p 16 a b (inner_M_fix' p j (from_option id 0 (a !! p)) b o)
+  | 0%nat => (inner_M_fix' 0%nat j (from_option id 0 (a !! 0%nat)) b o)
+  | S p => outer_M_fix' p 16 a b (inner_M_fix' (S p) j (from_option id 0 (a !! (S p))) b o)
 end.
 
 Lemma outer_M_i_j_eq : forall (i j:Z) (a b o: list Z),
@@ -396,7 +397,12 @@ Proof.
   gen j a b o.
   gen i.
   apply (natlike_ind (fun i => ∀ j : ℤ, 0 ≤ j → ∀ a b o : list ℤ, outer_M_fix i j a b o = outer_M_fix' (Z.to_nat i) (Z.to_nat j) a b o)).
-  intros ; rewrite outer_M_fix_equation ; auto.
+  intros.
+  rewrite outer_M_fix_equation.
+  rewrite Zle_imp_le_bool by omega.
+  rewrite inner_M_i_j_eq by omega.
+  simpl.
+  f_equal.
   - intros i Hi IHi j Hj a b o.
     sort. (* sort the hypothesises *)
   change (Z.succ i) with (i + 1).
@@ -409,10 +415,16 @@ Proof.
   replace (i + 1 - 1) with i by omega.
   rewrite IHi by omega.
   rewrite inner_M_i_j_eq by omega.
-  reflexivity.
+  f_equal; f_equal ; [| f_equal;f_equal] ; rewrite <- Z2Nat.inj_succ ; go.
 Qed.
 
-Lemma outer_M_fix_0 : forall j a b o, outer_M_fix 0 j a b o = o.
+Lemma outer_M_fix_0 : forall a b o, outer_M_fix 0 0 a b o = o.
+Proof.
+intros ; rewrite outer_M_fix_equation ; flatten ; compute in Eq ; tryfalse.
+rewrite inner_M_fix_0 ; go.
+Qed.
+
+Lemma outer_M_fix_0' : forall a b o j , outer_M_fix 0 j a b o = inner_M_fix 0 j (from_option id 0 (a !! Z.to_nat 0)) b o.
 Proof.
 intros ; rewrite outer_M_fix_equation ; flatten ; compute in Eq ; tryfalse.
 Qed.
@@ -422,10 +434,14 @@ Proof.
   intros i j a b o Hi; gen j a b o .
   apply (natlike_ind (fun i => ∀ (j : ℤ) (a b o : list ℤ), 0 <= j -> length (outer_M_fix i j a b o) = length o)) ; try omega.
   intros ; rewrite outer_M_fix_equation ; go.
+  flatten.
+  rewrite inner_M_fix_length ; go.
+  tryfalse.
   clear i Hi; intros i Hi iHi j a b o Hj.
   change (Z.succ i) with (i + 1).
   rewrite outer_M_fix_equation.
   destruct (i + 1 <=? 0) ; auto.
+  rewrite inner_M_fix_length ; go.
   replace (i + 1 - 1) with (i) by omega.
   rewrite iHi by omega.
   rewrite inner_M_fix_length ; go.
@@ -449,7 +465,7 @@ Proof.
   replace (i + 1 - 1) with i by omega. *)
   
 
-Definition M1_fix a b := outer_M_fix 16 16 a b [
+Definition M1_fix a b := outer_M_fix 16 0 a b [
   0;0;0;0;0;0;0;0;0;0;
   0;0;0;0;0;0;0;0;0;0;
   0;0;0;0;0;0;0;0;0;0;
@@ -473,6 +489,37 @@ Proof.
   unfold nth.
   repeat (f_equal ; try ring).
 Qed.
+(*
+Lemma outer_M_fix_bound : forall m n m3 n3 i j a b,
+  (fun x => m <= x <= n) 0 ->
+  Forall (fun x => m <= x <= n) a ->
+  Forall (fun x => m <= x <= n) b ->
+  m3 = Zmin (Zlength a) (Zlength b) * min_prod m n m n -> 
+  n3 = Zmin (Zlength a) (Zlength b) * max_prod m n m n ->
+  Forall (fun y : ℤ => m3 <= y <= n3)
+    (outer_M_fix i j a b
+       [0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0;
+       0; 0; 0; 0; 0; 0; 0]).
+Proof.
+*)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (*-------------------------------------------------------------------------------------*)
 
@@ -823,6 +870,22 @@ Proof.
   repeat (destruct to ; tryfalse).
   rewrite M3_fix_eq by omega.
   change (Z.to_nat 16) with 16%nat.
+  reflexivity.
+Qed.
+
+Theorem M3_fix_eq_M3' : forall (from to:list Z)  ,
+  (length from = 31)%nat ->
+  (length to = 16)%nat ->
+  M3_fix 16 from to = mult_3 from.
+Proof.
+  intros.
+  repeat (destruct from ; tryfalse).
+  repeat (destruct to ; tryfalse).
+  rewrite M3_fix_eq by omega.
+  change (Z.to_nat 15) with 15%nat.
+  simpl.
+  unfold mult_3.
+  simpl.
   reflexivity.
 Qed.
 
