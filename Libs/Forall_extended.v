@@ -93,3 +93,12 @@ Proof.
   intros i.
   apply (Hnth (S i)).
 Qed.
+
+Open Scope Z.
+
+Lemma Forall_bounds_le_lt: forall a b l,
+  Forall (fun x => a < x < b) l ->
+    Forall (fun x => a <= x <= b) l.
+Proof. intros; eapply Forall_impl ; eauto ; intros ; go. Qed.
+
+Close Scope Z.

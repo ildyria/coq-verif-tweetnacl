@@ -2,4 +2,3 @@
 -Q Op Tweetnacl.Op
 -Q ListsOp Tweetnacl.ListsOp
 -Q Car Tweetnacl.Car
--Q ../Prelude Prelude

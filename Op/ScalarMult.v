@@ -31,6 +31,10 @@ Proof. induction l ; intros [] m; go. Qed.
 Lemma ZscalarMult_drop: forall l n m, drop n (m ∘∘ l) = m ∘∘ (drop n l).
 Proof. induction l ; intros [] m; go. Qed.
 
+(* ADD PROOF x * nth L = nth (x * L) *)
+Lemma ZscalarMult_nth: forall l i k d, k * nth i l d = nth i (k ∘∘ l) (k * d).
+Proof. induction l ; intros ; simpl ; flatten ; go. Qed.
+
 Section Integer.
 
 Variable n:Z.
