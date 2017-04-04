@@ -10,30 +10,7 @@ Require Import Recdef.
 Local Open Scope Z.
 (* convert_length_to_Zlength *)
 
-Ltac change_Z_to_nat :=
-  try change (Z.to_nat 0) with 0%nat;
-  try change (Z.to_nat 1) with 1%nat;
-  try change (Z.to_nat 2) with 2%nat;
-  try change (Z.to_nat 3) with 3%nat;
-  try change (Z.to_nat 4) with 4%nat;
-  try change (Z.to_nat 5) with 5%nat;
-  try change (Z.to_nat 6) with 6%nat;
-  try change (Z.to_nat 7) with 7%nat;
-  try change (Z.to_nat 8) with 8%nat;
-  try change (Z.to_nat 9) with 9%nat;
-  try change (Z.to_nat 10) with 10%nat;
-  try change (Z.to_nat 11) with 11%nat;
-  try change (Z.to_nat 12) with 12%nat;
-  try change (Z.to_nat 13) with 13%nat;
-  try change (Z.to_nat 14) with 14%nat;
-  try change (Z.to_nat 15) with 15%nat.
-
-Ltac gen_i H i :=
-  assert(H: i = 0 \/ i = 1 \/ i = 2 \/ i = 3 \/ i = 4 \/ i = 5 \/ i = 6 \/ i = 7
-    \/ i = 8 \/ i = 9 \/ i = 10 \/ i = 11 \/ i = 12 \/ i = 13 \/ i = 14 \/ i = 15) by omega
-    ; repeat (destruct H; try subst i).
-
-Definition local_update_M (j:nat) (a:Z) (b : list Z) (x:Z) := x + a * ( from_option id 0 (b !! j)).
+Definition local_update_M (j:nat) (a:Z) (b : list Z) (x:Z) := a * ( from_option id 0 (b !! j)) + x.
 
 (* Definition update_M_i_j (i j a:Z) b o := list_alter (local_update_M (Z.to_nat j) a b) (Z.to_nat (i + j)) o. *)
 Definition update_M_i_j (i j a:Z) b o := alter (local_update_M (Z.to_nat j) a b) (Z.to_nat (i + j)) o.
@@ -320,6 +297,20 @@ apply Z.gt_lt_iff in H ; rewrite Z2Nat.inj_lt in H by omega ; rewrite (Nat2Z.id 
 apply Z.gt_lt_iff in H ; rewrite Z2Nat.inj_lt in H by omega ; rewrite (Nat2Z.id (length o)) in H ; omega.
 Qed.
 
+Lemma inner_M_fix'_app_drop : forall i j a b o, inner_M_fix' i j a b o = take (i + j)%nat (inner_M_fix' i j a b o) ++ drop (i + j)%nat o.
+Proof.
+intros.
+assert(exists i', (Z.to_nat i' = i /\ i' = Z.of_nat i)%nat) by (exists (Z.of_nat i) ; split ; [apply Nat2Z.id|reflexivity]).
+destruct H as [i' [Hi' Hi'']].
+assert(exists j', (Z.to_nat j' = j /\ j' = Z.of_nat j)%nat) by (exists (Z.of_nat j) ; split ; [apply Nat2Z.id|reflexivity]).
+destruct H as [j' [Hj' Hj'']].
+rewrite <- Hi'.
+rewrite <- Hj'.
+rewrite <- Z2Nat.inj_add by omega.
+rewrite  <- inner_M_i_j_eq by omega.
+apply inner_M_fix_app_drop; omega.
+Qed.
+
 (*
   Ltac start_nat_ind j :=
   match goal with
@@ -529,7 +520,8 @@ Proof.
   unfold local_update_M.
   repeat rewrite <- nth_lookup.
   unfold nth.
-  repeat (f_equal ; try ring).
+  repeat rewrite Z.add_0_r.
+  reflexivity.
 Qed.
 
 Theorem M1_fix_eq_M1Z : forall (a b o:list Z),
@@ -955,21 +947,7 @@ Proof.
   | [H : context[Forall] |- _ ] => apply Forall_cons in H ; destruct H
   end;
   repeat match goal with
-  | [ |- update_M2_i 1 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 2 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 3 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 4 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 5 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 6 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 7 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 8 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 9 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 10 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 11 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 12 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 13 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 14 _ ] => rewrite update_M2_rec' ; simpl
-  | [ |- update_M2_i 15 _ ] => rewrite update_M2_rec' ; simpl
+  | [ |- update_M2_i (S _) _ ] => rewrite update_M2_rec' ; simpl
   | [ |- context[local_update_M2]] => unfold local_update_M2 ; simpl
   | [ |- update_M2_i 0 (_ :: _) ] => rewrite update_M2_0 ; simpl
   | [ |- Forall _ [] ] => go
