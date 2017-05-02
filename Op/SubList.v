@@ -67,5 +67,34 @@ Proof. intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_length_max. Qed.
 Lemma ZsubList_Zlength_max : forall a b, Zlength (a ⊖ b) = Zmax (Zlength a) (Zlength b).
 Proof. intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_Zlength_max. Qed.
 
+Lemma ZsubList_n_taked: forall n a b, take n (a ⊖ b) = ZsubList_n n a b.
+Proof. induction n ; intros a b ; simpl ; flatten ; try rewrite <- IHn ; try rewrite! ZsubList_nil_r ;  go. Qed.
 
+Lemma ZsubList_n_Zipp_n_eq: forall n (a b : list Z), ZsubList_n n a b = Zipp_n Z.sub n a b.
+Proof.
+  induction n.
+  intros ; go.
+  destruct a, b; go;
+  rewrite <- ZsubList_n_taked ; rewrite <- Zipp_taked.
+  rewrite Zipp_nil_r ; go.
+  intro x ; go.
+Qed.
+
+Lemma ZsubList_n_length : forall (n:nat) (a b : list Z), length (ZsubList_n n a b) = min n (max (length a) (length b)).
+Proof. intros; repeat rewrite ZsumList_Zipp_eq; rewrite ZsubList_n_Zipp_n_eq ;  apply Zipp_n_length. Qed.
+
+Lemma ZsubList_n_Zlength : forall (n:nat) (a b : list Z), Zlength (ZsubList_n n a b) = Zmin n (Zmax (Zlength a) (Zlength b)).
+Proof. intros; repeat rewrite ZsubList_Zipp_eq; rewrite ZsubList_n_Zipp_n_eq ; apply Zipp_n_Zlength. Qed.
+
+Lemma ZsubList_n_nth_length : forall (n : nat) (a b : list Z),
+  length a = length b ->
+  (n < length a)%nat ->
+  ZsubList_n (S n) a b = (ZsubList_n n a b) ++ [(nth n a 0) - (nth n b 0)].
+Proof. intros; repeat rewrite ZsubList_n_Zipp_n_eq. apply Zipp_n_nth_length ; auto. Qed.
+
+Lemma ZsubList_n_nth_Zlength : forall (n : nat) (a b : list Z),
+  Zlength a = Zlength b ->
+  n < Zlength a ->
+  ZsubList_n (S n) a b = (ZsubList_n n a b) ++ [(nth n a 0) - (nth n b 0)].
+Proof. convert_length_to_Zlength ZsubList_n_nth_length. Qed.
 Close Scope Z.
