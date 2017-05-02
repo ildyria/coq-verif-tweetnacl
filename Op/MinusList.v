@@ -26,4 +26,7 @@ Proof. convert_length_to_Zlength ZminusList_length. Qed.
 Lemma ZminusList_nil: forall l, ZminusList l = [] <-> l = [].
 Proof. induction l ; intros ; go. Qed.
 
+Lemma ZminusList_ZofList: forall n l, ZofList n (ZminusList l) = - ZofList n l.
+Proof. induction l ; intros ; go ; simpl; rewrite IHl; lia. Qed.
+
 Close Scope Z.
