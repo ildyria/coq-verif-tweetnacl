@@ -33,7 +33,7 @@ COQTOP=$(COQBIN)coqtop
 COQDEP=$(COQBIN)coqdep $(DEPFLAGS)
 COQDOC=$(COQBIN)coqdoc -d doc -g -utf8 $(DEPFLAGS)
 
-COQVERSION= 8.5pl1 or-else 8.5pl2 or-else 8.5pl3 or-else 8.6beta1 or-else 8.6
+COQVERSION= 8.6
 COQV=$(shell $(COQC) -v)
 ifeq ("$(filter $(COQVERSION),$(COQV))","")
 	$(error FAILURE: You need Coq $(COQVERSION) but you have this version: $(COQV))

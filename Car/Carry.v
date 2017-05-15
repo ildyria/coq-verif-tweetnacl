@@ -1,9 +1,11 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
 Require Import Tweetnacl.Car.Reduce.
+Require Import Tweetnacl.Car.Carry_n.
 Require Import Tweetnacl.Op.M.
 
 Require Import stdpp.prelude.
+
 
 Local Open Scope Z.
 Section Integer.
@@ -20,37 +22,19 @@ Fixpoint Carrying (a:Z) (l:list Z) : list Z := match a,l with
 | a,h :: q => getResidue n (a + h) :: Carrying (getCarry n (a + h)) q
 end.
 
-Fixpoint Carrying_n (p:nat) (a:Z) (l:list Z) : list Z := match p,a,l with 
-| _,  0,[]     => []
-| _,  a,[]     => [a]
-| 0%nat,  a,h::q   => (a + h) :: q
-| S p,a,h :: q => getResidue n (a + h) :: Carrying_n p (getCarry n (a + h)) q
-end.
-
-Lemma Carry_n_step: forall m a h q, Carrying_n (S m) a (h :: q) = getResidue n (a + h) :: Carrying_n m (getCarry n (a + h)) q.
-Proof. intros; simpl ; flatten. Qed.
-
-Lemma Carrying_n_eq: forall l (m:nat) a, m = length l -> Carrying_n m a l = Carrying a l.
+Lemma Carrying_n_eq: forall l (m:nat) a, m = length l -> Carrying_n n m a l = Carrying a l.
 Proof.
   induction l as [|h q IHl]; intros m a Hm; go.
   destruct m.
   inv Hm.
   simpl in *.
   inversion Hm.
+  replace (h + a) with (a + h) by omega.
   flatten ; f_equal ; go.
 Qed.
 
-Lemma Carrying_n_eq_Z: forall l (m:nat) a, Zlength l = m -> Carrying_n m a l = Carrying a l.
+Lemma Carrying_n_eq_Z: forall l (m:nat) a, Zlength l = m -> Carrying_n n m a l = Carrying a l.
 Proof. convert_length_to_Zlength Carrying_n_eq. Qed.
-
-Lemma Carry_n_step_0 : forall h q a, Carrying_n 0 a (h :: q) = (a + h) :: q.
-Proof. intros ; simpl; flatten. Qed.
-
-Lemma Carrying_n_length: forall l (m:nat) a, (m < length l)%nat -> length (Carrying_n m a l) = length l.
-Proof. induction l as [|h q IHl]; intros [] a Hm; simpl ; flatten ; go. Qed.
-
-Lemma Carrying_n_Zlength: forall l (m:nat) a, m < length l -> Zlength (Carrying_n m a l) = Zlength l.
-Proof. convert_length_to_Zlength Carrying_n_length. Qed.
 
 Lemma CarryPreserveConst : forall l a , a + (ℤ.lst l) = ℤ.lst Carrying a l.
 Proof.
@@ -66,20 +50,6 @@ Proof.
   go.
 Qed.
 
-Lemma CarrynPreserveConst : forall m l a , a + (ℤ.lst l)  = ℤ.lst Carrying_n m a l.
-Proof.
-  assert(Hn0: 2 ^ n * 0 = 0) by (symmetry ; apply Zmult_0_r_reverse).
-  induction m ; intros l a.
-  - simpl ; flatten ; try rewrite <- ZofList_add ; go.
-  - simpl ; flatten ; go ;
-    rewrite! ZofList_cons ;
-    rewrite <- IHm ; 
-    rewrite <- Zplus_assoc_reverse ; 
-    rewrite <- Zred_factor4 ;
-    rewrite <- Zplus_assoc_reverse ;
-    rewrite residuteCarry ; go.
-Qed.
-
 Corollary CarryPreserve : forall l, ℤ.lst l = ℤ.lst Carrying 0 l.
 Proof.
   intros.
@@ -88,16 +58,6 @@ Proof.
   symmetry.
   rewrite Z.add_comm.
   apply CarryPreserveConst.
-Qed.
-
-Corollary CarrynPreserve : forall m l, ℤ.lst l = ℤ.lst Carrying_n m 0 l.
-Proof.
-  intros.
-  symmetry.
-  rewrite Zplus_0_r_reverse.
-  symmetry.
-  rewrite Z.add_comm.
-  apply CarrynPreserveConst.
 Qed.
 
 End Integer.
@@ -195,7 +155,7 @@ Proof.
   rewrite Zlength_correct in Hlength ; simpl ; omega.
 Qed.
 
-Lemma car25519_bound : forall i l, (length l = 16)%nat -> (i <> 0)%nat -> nth i (car25519 l) 0 < 2 ^ 16.
+Lemma car25519_bound_sup : forall i l, (length l = 16)%nat -> (i <> 0)%nat -> nth i (car25519 l) 0 < 2 ^ 16.
 Proof.
   destruct i ; intros l H Hi ; [false|].
   apply destruct_length_16 in H.
@@ -242,7 +202,7 @@ Qed.
 
 
 Lemma car25519_bound_Z : forall (i:nat) l, Zlength l = 16 -> 0 <> i -> nth i (car25519 l) 0 < 2 ^ 16.
-Proof. convert_length_to_Zlength car25519_bound. Qed.
+Proof. convert_length_to_Zlength car25519_bound_sup. Qed.
 
 (*
     Proof could be smaller but due to the kernel verification it is better to split go into detail.
@@ -351,8 +311,8 @@ Carrying_n 16 15 0 [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z1
 getCarry 16 (nth 15 (z15 :: l) 0) = getCarry 256 (ℤ16.lst [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14]).
 Proof.
   intros.
-  repeat rewrite Carry_n_step in H.
-  rewrite Carry_n_step_0 in H.
+  repeat rewrite Carry_n_step2 in H.
+  rewrite Carry_n_step_02 in H.
   repeat (destruct l; tryfalse).
   repeat rewrite ListSame in H.
   jauto_set.
@@ -390,7 +350,7 @@ Proof.
   - f_equal.
     apply getCarry_16_eq_256.
     assumption.
-  - rewrite Carry_n_step in Eq.
+  - rewrite Carry_n_step2 in Eq.
   repeat rewrite ListSame in Eq ; jauto_set.
   subst l z.
   rewrite ZofList_cons.
@@ -398,7 +358,7 @@ Proof.
   rewrite ZofList_take by omega.
   rewrite <- CarrynPreserveConst by omega.
   change (0 + x) with x.
-  repeat rewrite Carry_n_step ; rewrite Carry_n_step_0.
+  repeat rewrite Carry_n_step2 ; rewrite Carry_n_step_02.
   remember (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 x + x0) + x1) + x2) + x3) + x4) + x5) + x6) + x7) + x8) + x9) + x10) + x11) + x12) + x13) + x14) as t.
   unfold length.
   unfold nth.
@@ -467,8 +427,8 @@ Proof.
   unfold backCarry.
   flatten.
   repeat (destruct l ; tryfalse).
-  repeat rewrite Carry_n_step in Eq.
-  rewrite Carry_n_step_0 in Eq.
+  repeat rewrite Carry_n_step2 in Eq.
+  rewrite Carry_n_step_02 in Eq.
   change (0 + z0) with z0.
   repeat (destruct l0; tryfalse).
   repeat rewrite ListSame in Eq ; jauto_set.
@@ -504,7 +464,7 @@ Proof.
   intros i.
   assert(Hi: i <> 0%nat \/ i = 0%nat) by omega.
   destruct Hi.
-  intros ; apply car25519_bound ; auto.
+  intros ; apply car25519_bound_sup ; auto.
   intros l Hl Hlb.
   rewrite BackCarry_fix_length ; auto.
   subst i.
@@ -522,8 +482,8 @@ Lemma bounds_car_inf_length: forall i l, (length l = 16)%nat -> 0 <= ℤ16.lst l
 Proof.
   intros ; rewrite BackCarry_fix_length ; auto.
   flatten ; repeat (destruct l ; tryfalse).
-  repeat rewrite Carry_n_step.
-  rewrite Carry_n_step_0.
+  repeat rewrite Carry_n_step2.
+  rewrite Carry_n_step_02.
   unfold nth.
   flatten ; try apply getResidue_bounds; try omega.
   rewrite getCarry16_240.
