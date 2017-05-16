@@ -9,27 +9,42 @@
   sudo apt-get install gcc
   sudo apt-get install opam
   opam init
-  opam switch 4.03.0
+  opam switch 4.04.1
 ````
 
-##### 2. install coq 8.5.2 + coqide + ssreflect
+##### 2. install coq 8.6 + coqide + ssreflect
 
 ````bash
-  opam install coq.8.5.3
-  opam install coqide.8.5.3
+  opam install coq.8.6
+  opam install coqide.8.6
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam install coq-mathcomp-ssreflect
   opam install menhir
 ````
 
-##### 3. Get VST from Princeton
+##### 3. install coq-stdpp
 
 ````bash
-  git clone git@github.com:PrincetonUniversity/VST.git
-# go into VST folder and delete compcert folder: this version doesn't compile for some reasons
+  git clone https://gitlab.mpi-sws.org/robbertkrebbers/coq-stdpp
+  cd coq-stdpp
+  make
+  #make install
+````
+
+##### 4. Get VST from Princeton
+
+````bash
+  git clone git@github.com:ildyria/VST.git
   cd VST
-# I compile with 3 of my 4 cores, if you have 8 cores, you can try with -j 5
-  make -j 3
+  git checkout ECC
+  rm -fr compcert
+  git clone git@github.com:ildyria/CompCert.git compcert
+  cd compcert
+  ./configure -clightgen ia32-linux
+  # or ia32-macosx
+  make -j
+  cd ..
+  make -j
 ````
 
 <!--
