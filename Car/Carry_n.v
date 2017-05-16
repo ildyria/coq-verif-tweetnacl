@@ -65,23 +65,75 @@ Qed.
 
 End Integer.
 
-(*
-
-
-
-
 Theorem Zcar25519_bounds_length:
-  forall l1 l2 l3,
-    length l1 = 16%nat ->
-    length l2 = 16%nat -> (* not required but easier *)
-    length l3 = 16%nat -> (* not required but easier *)
-    Forall (fun x => -2^62 < x < 2^62) l1 ->
-    l2 = car25519 l1 ->
-    l3 = car25519 l2 ->
-    Forall (fun x => 0 <= x < 2^16) (car25519 l3).
+  forall l,
+    length l = 16%nat ->
+    Forall (fun x => -2^62 < x < 2^62) l ->
+    forall j, 0 <= j < 16 ->
+    Forall (fun x => - 2^63 < x < 2^63) (Carrying_n 16 (Z.to_nat j) 0 l).
 Proof.
-  intros l1 l2 l3 Hl1 Hl2 Hl3 HForalll1 Hcarr1 Hcarr2.
-  apply Forall_lookup.
-  intros i x Hl.
-*)
+  intros l H HForalll i Hi.
+  apply (nth_Forall _ _ _ 0).
+  intros j.
+  assert(Hi': exists i', Z.to_nat i = i') by eauto.
+    destruct Hi' as [i' Hi'].
+    assert(Hi'': 0 <= i' < 16).
+    (* brute force because I'm lazy with conversion *)
+    assert(Hii: i = 0 \/ i = 1 \/ i = 2 \/ i = 3 \/ i = 4 \/
+           i = 5 \/ i = 6 \/ i = 7 \/ i = 8 \/ i = 9 \/
+           i = 10 \/ i = 11 \/ i = 12 \/ i = 13 \/ i = 14 \/ i = 15) by omega.
+    repeat match goal with
+      | [H : _ \/ _ |- _ ] => destruct H ; subst ; [compute ; split ; try intro ; try reflexivity ; tryfalse|]
+      | _ => compute ; split ; try intro ; try reflexivity ; tryfalse
+    end.
+  apply destruct_length_16 in H.
+  do 16 destruct H.
+  rewrite Hi'.
+  subst l.
+  assert(Hi''': (i' = 0 \/ i' = 1 \/ i' = 2 \/ i' = 3 \/ i' = 4 \/
+       i' = 5 \/ i' = 6 \/ i' = 7 \/ i' = 8 \/ i' = 9 \/
+       i' = 10 \/ i' = 11 \/ i' = 12 \/ i' = 13 \/ i' = 14 \/ i' = 15 \/ 15 < i')%nat) by omega.
+  assert(H216262: 2^16 < 2^63) by reflexivity.
+  assert(H262263: 2^62 < 2^63) by reflexivity.
+  assert(H263262: - 2^63 < - 2^62) by reflexivity.
+  assert(H2630: - 2^63 < 0) by reflexivity.
+  assert(i' = 0%nat
+        ∨ i' = 1%nat
+          ∨ i' = 2%nat
+            ∨ i' = 3%nat
+              ∨ i' = 4%nat
+                ∨ i' = 5%nat
+                  ∨ i' = 6%nat
+                    ∨ i' = 7%nat
+                      ∨ i' = 8%nat
+                        ∨ i' = 9%nat
+                          ∨ i' = 10%nat
+                            ∨ i' = 11%nat
+                              ∨ i' = 12%nat
+                                ∨ i' = 13%nat
+                                  ∨ i' = 14%nat ∨ i' = 15%nat) by omega.
+  repeat rewrite Forall_cons in HForalll.
+  repeat match goal with
+    | [H : (_ /\ _) /\ _ |-_] => destruct H
+  end.
+  clear Hi Hi' i Hi''' H16.
+  rename H into Hi'.
+  assert(H16 : 16 > 0) by reflexivity.
+  assert(HH : forall k, 0 ≤ getResidue 16 k ∧ getResidue 16 k < 2 ^ 16) by (clear ; intro; eapply getResidue_bounds ; omega).
+  repeat match goal with
+    | _ => rewrite Carry_n_step
+    | _ => rewrite Carry_n_step_0
+    | [H : _ \/ _ |- _ ] => destruct H ; try subst j; try subst i'
+    | _ => unfold nth ; flatten ; try omega
+  end;
+  repeat match goal with
+    | _ => omega
+    | [ HH : context[getResidue] |- - 2 ^ 63 < getResidue 16 (?x) ∧ getResidue 16 (?x) < 2 ^ 63 ] => specialize HH with x
+    | [ |- context[2 ^ 63] ] => change (-2^63) with ((-2^62) + (-2^62)); change (2^63) with ((2^62) + (2^62))
+    | [ |- _ < _ ∧ _ < _ ] => apply Add_interval_mono
+    | [ |- -2^62 < getCarry _ _ ∧ _ < _ ] => apply getCarry_bound_str63
+  end.
+Qed.
+
+
 Local Close Scope Z.

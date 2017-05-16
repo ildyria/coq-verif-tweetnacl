@@ -150,4 +150,11 @@ Proof.
     Psatz.nia.
 Qed.
 
+Lemma Add_interval_mono:
+  forall a b c d x y: Z,
+  a < x < b ->
+  c < y < d ->
+  a + c < x + y < b + d.
+Proof. intros ; split ; apply Z.add_lt_mono ; omega. Qed.
+
 Close Scope Z.

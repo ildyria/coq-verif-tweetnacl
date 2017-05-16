@@ -60,8 +60,6 @@ Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
 Definition getCarry (m:Z) : Z :=  Z.shiftr m n.
 
-(* Compute (getCarry (Z.pow 2 18)). *)
-
 Definition getResidue (m:Z) : Z := m - Z.shiftl (getCarry m) n.
 
 Definition getResidue_mod (m:Z) : Z := m mod 2^n.
@@ -203,23 +201,6 @@ Proof.
   omega.
 Qed.
 
-(*
-Lemma getCarry_neg_str: forall m,
-  - 2 ^ n < m <= 0->
-  0 = getCarry m.
-Proof.
-  intros m Hm.
-  unfold getCarry.
-  rewrite Z.shiftr_div_pow2 ; try omega.
-  SearchAbout Z.div 0.
-  apply Z.div_str_pos.
-  split.
-  rewrite <- Z.gt_lt_iff.
-  apply pown0.
-  assumption.
-  assumption.
-Qed.
-*)
 Lemma getCarry_1: forall m,
   2^n <= m < 2^(n+1) ->
   getCarry m = 1.
@@ -244,5 +225,78 @@ Proof.
   omega.
 Qed.
 
+Lemma getCarry_neg_sup: forall m,
+  m < 0 -> 
+    getCarry m <= 0.
+Proof.
+  intros m Hm.
+  unfold getCarry.
+  rewrite Z.shiftr_div_pow2 by omega.
+  replace 0 with (0 / 2^n).
+  apply Z_div_le.
+  apply pown0 ; auto.
+  omega.
+  apply Zdiv_small.
+  split.
+  reflexivity.
+  rewrite <- Z.gt_lt_iff.
+  apply pown0.
+  assumption.
+Qed.
 
+Lemma getCarryMonotone_pos_le: forall m,
+  0 <= m ->
+    getCarry m <= m.
+Proof.
+  intros m Hm.
+  apply Zle_lt_or_eq in Hm.
+  destruct Hm.
+  apply getCarryMonotone_pos in H.
+  omega.
+  subst.
+  rewrite getCarry_0 ; reflexivity.
+Qed.
+
+Lemma getCarry_bounds: forall x m,
+  -2 ^ m < x < 2 ^ m -> 
+    -2 ^ m <= getCarry x <= 2 ^ m.
+Proof.
+  intros.
+  assert(x < 0 \/ x >= 0) by omega.
+  destruct H0.
+  assert(Hx:= getCarry_neg_sup x  H0).
+  assert(Hxx:= getCarryMonotone_neg x H0).
+  omega.
+  rewrite Z.ge_le_iff in H0.
+  assert(Hx := getCarry_pos x H0).
+  assert(Hxx := getCarryMonotone_pos_le x H0).
+  omega.
+Qed.
+
+Lemma getCarry_incr : forall x y,
+  x < y -> getCarry x <= getCarry y.
+Proof.
+  intros.
+  unfold getCarry.
+  repeat rewrite Z.shiftr_div_pow2 by omega.
+  apply Z_div_le.
+  apply pown0.
+  assumption.
+  omega.
+Qed.
 End Integer.
+
+Lemma getCarry_bound_str63 : forall x,
+  - 2^63 < x < 2^63 -> -2^62 < getCarry 16 x < 2^62.
+Proof.
+  intros.
+  assert(Hbound: getCarry 16 (- 2^63) <= getCarry 16 x <= getCarry 16 (2^63)).
+  split ; apply getCarry_incr ; omega.
+  change (getCarry 16 (- 2 ^ 63)) with (-140737488355328) in Hbound;
+  change (getCarry 16 (2 ^ 63)) with (140737488355328) in Hbound.
+  assert(-2^62 < -140737488355328) by reflexivity.
+  assert(140737488355328 < 2 ^62) by reflexivity.
+  omega.
+Qed.
+
+Close Scope Z.
