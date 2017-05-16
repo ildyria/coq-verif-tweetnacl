@@ -65,7 +65,7 @@ Qed.
 
 End Integer.
 
-Theorem Zcar25519_bounds_length:
+Theorem Zcarry_n_bounds_length:
   forall l,
     length l = 16%nat ->
     Forall (fun x => -2^62 < x < 2^62) l ->
