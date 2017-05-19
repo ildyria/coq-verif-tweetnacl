@@ -3,8 +3,6 @@ Require Import Tweetnacl.ListsOp.Export.
 
 Require Import Tweetnacl.Op.Inner_M1.
 Require Import Tweetnacl.Op.Outer_M1.
-(*Require Import Tweetnacl.Op.ScalarMult.*)
-(*Require Import Tweetnacl.Op.A.*)
 Require Import Tweetnacl.Op.M.
 Require Import stdpp.prelude.
 Require Import Recdef.
@@ -17,7 +15,7 @@ Definition M1_fix a b := outer_M_fix 16 0 a b [
   0;0;0;0;0;0;0;0;0;0;
   0].
 
-Theorem M1_fix_eq_M1 : forall (a b o:list Z),
+Theorem M1_fix_eq_M1 : forall (a b:list Z),
   (length a = 16)%nat ->
   (length b = 16)%nat ->
     M1_fix a b = mult_1 a b.
@@ -37,7 +35,7 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem M1_fix_eq_M1Z : forall (a b o:list Z),
+Theorem M1_fix_eq_M1Z : forall (a b:list Z),
   Zlength a = 16 ->
   Zlength b = 16 ->
     M1_fix a b = mult_1 a b.

@@ -245,3 +245,23 @@ Proof.
       change 257 with (256 + 1) in Hbound_strict.
       rewrite getCarry_1; omega.
 Qed.
+
+Lemma car25519_length : forall l,
+  length l = 16%nat ->
+  length (car25519 l) = 16%nat.
+Proof.
+  intros.
+  apply destruct_length_16 in H.
+  do 16 destruct H.
+  subst.
+  unfold car25519.
+  repeat rewrite Carry_n.Carry_n_step.
+  rewrite Carry_n.Carry_n_step_0.
+  reflexivity.
+Qed.
+
+Lemma car25519_Zlength : forall l,
+  Zlength l = 16 -> 
+  Zlength (car25519 l) = 16.
+Proof. convert_length_to_Zlength car25519_length. Qed.
+  
