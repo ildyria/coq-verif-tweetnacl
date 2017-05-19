@@ -81,43 +81,31 @@ Proof.
     destruct Hlength.
     + rename l0 into H.
       assert(Zlength l < 15) by omega.
-      rewrite nth_overflow.
-      rewrite take_ge.
-      rewrite getResidue_0.
-      rewrite getCarry_0.
-      rewrite ZofList_cons_0.
-      f_equal.
-      ring.
-      omega.
-      rewrite Zlength_correct in H0; omega.
-      rewrite Zlength_correct in H0 ; simpl ; omega.
+      rewrite Zlength_correct in H0.
+      repeat match goal with 
+       | _ => simpl; omega
+       | _ => rewrite nth_overflow
+       | _ => rewrite take_ge
+       | _ => rewrite getResidue_0
+       | _ => rewrite getCarry_0
+       | _ => rewrite ZofList_cons_0
+       | _ => f_equal ; ring
+       end.
     + rename e into H.
-      assert((length l = 15)%nat).
-      rewrite Zlength_correct in H ; omega.
+      assert((length l = 15)%nat) by (rewrite Zlength_correct in H ; omega).
       repeat (destruct l ; tryfalse).
       clear H H0.
-      unfold nth.
-      unfold take.
+      unfold nth , take.
       change ([z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13]) with ([z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12] ++ [ z13]).
       rewrite ZofList_app ; try omega.
-      simpl Zlength.
       repeat rewrite ZofList_cons_0.
-      rewrite <- Zred_factor4.
-      rewrite <- Zred_factor4.
-      rewrite Zplus_assoc_reverse.
-      rewrite <- Z.add_mod_idemp_r by (compute ; omega).
-      symmetry.
-      rewrite <- Z.add_mod_idemp_r by (compute ; omega).
-      f_equal.
-      f_equal.
+      do 2 rewrite <- Zred_factor4 ; rewrite Zplus_assoc_reverse.
+      rewrite <- Z.add_mod_idemp_r by (compute ; omega);symmetry;rewrite <- Z.add_mod_idemp_r by (compute ; omega).
+      f_equal; f_equal.
       rewrite Z.add_shuffle3.
-      rewrite <- Z.add_mod_idemp_r by (compute ; omega).
-      symmetry.
-      rewrite <- Z.add_mod_idemp_r by (compute ; omega).
-      f_equal.
-      f_equal.
-      rewrite <- Z.add_mod_idemp_l by (compute ; omega).
-      symmetry.
+      rewrite <- Z.add_mod_idemp_r by (compute ; omega);symmetry;rewrite <- Z.add_mod_idemp_r by (compute ; omega).
+      f_equal; f_equal.
+      rewrite <- Z.add_mod_idemp_l by (compute ; omega) ; symmetry.
       rewrite Zmult_mod.
       rewrite <- t2256is38.
       rewrite <- Zmult_mod.
@@ -126,19 +114,13 @@ Proof.
       rewrite Z.pow_add_r by omega.
       rewrite Zmult_assoc_reverse.
       rewrite Zred_factor4.
-      rewrite Zmult_mod.
-      symmetry.
-      rewrite Zmult_mod.
-      f_equal.
-      f_equal.
+      rewrite Zmult_mod ; symmetry ; rewrite Zmult_mod.
+      f_equal;f_equal.
       change (2 ^ (16 * 15)) with (2 ^ (16 * 14) * 2 ^ 16).
       rewrite Zmult_mod.
       symmetry.
-      rewrite Zmult_assoc_reverse.
-      rewrite Zred_factor4.
-      rewrite Zmult_mod.
-      f_equal.
-      f_equal.
+      rewrite Zmult_assoc_reverse ; rewrite Zred_factor4 ; rewrite Zmult_mod.
+      f_equal; f_equal.
       rewrite Z.add_comm.
       rewrite residuteCarry ; go.
 Qed.
@@ -155,64 +137,26 @@ Proof.
   rewrite Zlength_correct in Hlength ; simpl ; omega.
 Qed.
 
-Lemma car25519_bound_sup : forall i l, (length l = 16)%nat -> (i <> 0)%nat -> nth i (car25519 l) 0 < 2 ^ 16.
+Lemma car25519_bound_sup : forall i l, (length l = 16)%nat -> (i <> 0)%nat -> 0 <= nth i (car25519 l) 0 < 2 ^ 16.
 Proof.
-  destruct i ; intros l H Hi ; [false|].
+  intros i l H Hi.
   apply destruct_length_16 in H.
   do 16 destruct H.
   unfold car25519.
-  unfold backCarry.
-  flatten. symmetry ; reflexivity.
-  rewrite nth_lookup.
-  unfold lookup. unfold list_lookup.
-  subst l.
-  repeat rewrite Carry_n_step in Eq.
-  rewrite Carry_n_step_0 in Eq.
-  repeat (destruct l0 ; tryfalse).
-  repeat rewrite ListSame in Eq.
-  jauto_set.
-  clear Hi H15.
-  (* destruct the big /\ construction *)
-  assert(Hi: (i < 14 \/ i = 14 \/ i > 14)%nat) by omega.
-  (* case analisys on i: in slice, last elem or outside *)
-  case Hi ; intro Hi_temp ; clear Hi ; rename Hi_temp into Hi.
-  (* IN *)
-  {
-    unfold take.
-    simpl ; unfold lookup ; flatten; simpl ; subst ; try (apply getResidue_bounds ; omega).
-    reflexivity.
-  }
-  case Hi ; intro Hi_temp ; clear Hi ; rename Hi_temp into Hi.
-  {
-    clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13.
-    subst i.
-    simpl.
-    apply getResidue_bounds ; omega.
-  }
-  {
-    clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14.
-    simpl.
-    replace ([z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; getResidue 16 z14] !! i) with (None:option Z).
-    reflexivity.
-    symmetry.
-    rewrite lookup_ge_None.
-    simpl ; omega.
-  }
+  subst.
+  repeat match goal with
+    | _ => rewrite Carry_n_step
+    | _ => rewrite Carry_n_step_0
+  end ; simpl ; flatten;
+  repeat match goal with
+    | _ => eapply getResidue_bounds
+    | _ => omega
+    | _ => compute; split ; [intro|] ; go
+  end.
 Qed.
-
 
 Lemma car25519_bound_Z : forall (i:nat) l, Zlength l = 16 -> 0 <> i -> nth i (car25519 l) 0 < 2 ^ 16.
 Proof. convert_length_to_Zlength car25519_bound_sup. Qed.
-
-(*
-    Proof could be smaller but due to the kernel verification it is better to split go into detail.
-
-    Opaque getResidue.
-    Opaque getCarry.
-    simpl ; flatten ; try apply withinBounds16 ; try omega.
-    simpl ; flatten ; simpl ; try reflexivity.
-    simpl ; flatten ; try apply withinBounds16 ; simpl ; try reflexivity.
-Qed.*)
 
 Definition Zcar25519 (n:ℤ) : ℤ  :=  38 * getCarry 256 n +  getResidue 256 n.
 
@@ -222,21 +166,15 @@ Lemma Zcar25519_correct: forall n, n:𝓖𝓕 = (Zcar25519 n) :𝓖𝓕.
 Proof.
   intro n.
   unfold ℤcar25519.
-  rewrite  <- Z.add_mod_idemp_l.
+  rewrite  <- Z.add_mod_idemp_l by (compute ; intro ; false).
   rewrite <- Zmult_mod_idemp_l.
   rewrite <- t2256is38.
   rewrite Zmult_mod_idemp_l.
-  rewrite Z.add_mod_idemp_l.
+  rewrite Z.add_mod_idemp_l by (compute ; intro ; false).
   rewrite Z.add_comm.
-  rewrite residuteCarry.
+  rewrite residuteCarry by omega.
   reflexivity.
-  omega.
-  compute ; intro ; false.
-  compute ; intro ; false.
 Qed.
-
-Lemma Carry_n_length_False: forall (h:Z) (q:list Z), Carrying_n 16 15 0 (h :: q) = [] -> False.
-Proof. intros ; rewrite Carry_n_step in H ; false. Qed.
 
 (*
 A bunch of facts required to prove getCarry_16_eq_256.
@@ -494,3 +432,15 @@ Qed.
 
 Lemma bounds_car_inf_Zlength: forall i l, Zlength l = 16 -> 0 <= ℤ16.lst l < 2^256 -> 0 <= nth i (car25519 l) 0.
 Proof. convert_length_to_Zlength bounds_car_inf_length. Qed.
+
+(* ADD LENGTH PROOF *)
+
+
+
+
+
+
+
+
+
+

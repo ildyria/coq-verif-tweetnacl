@@ -299,4 +299,17 @@ Proof.
   omega.
 Qed.
 
+Lemma getCarry_bound_str47 : forall x,
+  - 2^63 < x < 2^63 -> -2^47 <= getCarry 16 x <= 2^47.
+Proof.
+  intros.
+  assert(Hbound: getCarry 16 (- 2^63) <= getCarry 16 x <= getCarry 16 (2^63)).
+  split ; apply getCarry_incr ; omega.
+  change (getCarry 16 (- 2 ^ 63)) with (-140737488355328) in Hbound;
+  change (getCarry 16 (2 ^ 63)) with (140737488355328) in Hbound.
+  change (-2 ^ 47) with (-140737488355328).
+  change (2 ^ 47) with (140737488355328).
+  omega.
+Qed.
+
 Close Scope Z.

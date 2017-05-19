@@ -3,7 +3,6 @@ Require Import Tweetnacl.ListsOp.Export.
 
 Require Export Tweetnacl.Op.SumList.
 Require Import stdpp.prelude.
-Import ListNotations.
 
 Open Scope Z.
 
@@ -100,19 +99,6 @@ Lemma ZsumList_bound_Zlength_le: forall m1 n1 m2 n2 a b,
   Forall (fun x => m1 + m2 <= x <= n1 + n2) (a ⊕ b).
 Proof. convert_length_to_Zlength ZsumList_bound_length_le. Qed.
 
-(*
-Lemma ZsumList_pos: forall a b, ZList_pos a -> ZList_pos b -> ZList_pos (a ⊕ b).
-Proof.
-  induction a , b ; intros.
-  - auto.
-  - auto.
-  - auto.
-  - simpl.
-    unfold ZList_pos in *.
-    rewrite Forall_cons'.
-    rewrite Forall_cons' in H.
-    rewrite Forall_cons' in H0.
-    destruct H, H0. go.
-Qed.
-*)
 End Integer.
+
+Close Scope Z.

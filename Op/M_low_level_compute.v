@@ -1,14 +1,14 @@
 Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.ListsOp.Export.
-
-Require Import Tweetnacl.Op.ScalarMult.
-Require Import Tweetnacl.Op.A.
-Require Import Tweetnacl.Op.M.
-Require Import Tweetnacl.Op.M_low_level.
 Require Import stdpp.prelude.
-Require Import Recdef.
+
+Require Import Tweetnacl.Op.Inner_M1.
+Require Import Tweetnacl.Op.Outer_M1.
 
 Local Open Scope Z.
+
+Ltac inner_M_fix_compute_solve := intros ; repeat rewrite inner_M_i_j_eq by omega ; change_Z_to_nat ;
+simpl ; unfold update_M_i_j' ; unfold local_update_M ;reflexivity.
+
 
 Lemma inner_M_fix_0_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -23,15 +23,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53; z54; z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_1_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -46,15 +38,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53; z54; z55; z56; z57; z58; z59; z60].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_2_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -69,15 +53,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53; z54; z55; z56; z57; z58; z59].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_3_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -91,16 +67,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53; z54; z55; z56; z57; z58].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_4_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -114,16 +81,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53; z54; z55; z56; z57].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_5_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -137,16 +95,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53; z54; z55; z56].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_6_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -160,16 +109,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53; z54; z55].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_7_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -183,16 +123,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53; z54].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_8_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -206,16 +137,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52; z53].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_9_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -229,16 +151,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51; z52].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_10_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -252,16 +165,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50; z51].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_11_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -275,16 +179,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49; z50].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_12_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -298,16 +193,7 @@ z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48;
 z49].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_13_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -320,16 +206,7 @@ Lemma inner_M_fix_13_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 
 z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47; z48].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_14_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -342,16 +219,7 @@ Lemma inner_M_fix_14_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 
 z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46; z47].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Lemma inner_M_fix_15_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -364,16 +232,7 @@ Lemma inner_M_fix_15_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 
 z0 * z19 + z35; z0 * z20 + z36; z0 * z21 + z37; z0 * z22 + z38;
 z0 * z23 + z39; z0 * z24 + z40; z0 * z25 + z41; z0 * z26 + z42;
 z0 * z27 + z43; z0 * z28 + z44; z0 * z29 + z45; z0 * z30 + z46].
-Proof.
-intros.
-repeat rewrite inner_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-simpl.
-reflexivity.
-Qed.
+Proof. inner_M_fix_compute_solve. Qed.
 
 Hint Rewrite inner_M_fix_0_16
 inner_M_fix_1_16
@@ -404,17 +263,14 @@ Lemma outer_M_fix_0_16: forall z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z
   z * z25 + z41; z * z26 + z42; z * z27 + z43; z * z28 + z44; z * z29 + z45;
   z * z30 + z46; z47; z48; z49; z50; z51; z52; z53; z54; z55; z56; z57; z58;
   z59; z60; z61].
-Proof.
-intros.
-repeat rewrite outer_M_i_j_eq by omega.
-change_Z_to_nat.
-simpl.
-unfold update_M_i_j'.
-unfold local_update_M.
-reflexivity.
-Qed.
+Proof. intros; repeat rewrite outer_M_i_j_eq by omega ; reflexivity. Qed.
 
 Hint Rewrite outer_M_fix_0_16 : innerouterMdb.
+
+Ltac outer_M_fix_compute_solve := intros ;
+rewrite outer_M_fix_equation ; flatten ; tryfalse ; autorewrite with innerouterMdb ;
+reflexivity.
+
 
 Lemma outer_M_fix_1_16: forall z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
   z30 z31 z32 z33 z34 z35 z36 z37 z38 z39 z40 z41 z42 z43 z44 z45 z46 z47 z48 z49 z50 z51 z52 z53 z54 z55 z56 z57 z58 z59 z60 z61,
@@ -432,13 +288,7 @@ z * z26 + (z0 * z25 + z42); z * z27 + (z0 * z26 + z43);
 z * z28 + (z0 * z27 + z44); z * z29 + (z0 * z28 + z45);
 z * z30 + (z0 * z29 + z46); z0 * z30 + z47; z48; z49; z50; z51; z52; z53;
 z54; z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_1_16 : innerouterMdb.
 
@@ -466,14 +316,7 @@ z * z29 + (z0 * z28 + (z1 * z27 + z45));
 z * z30 + (z0 * z29 + (z1 * z28 + z46)); z0 * z30 + (z1 * z29 + z47);
 z1 * z30 + z48; z49; z50; z51; z52; z53; z54; z55; z56; z57; z58; z59; z60;
 z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_2_16 : innerouterMdb.
 
@@ -501,14 +344,7 @@ z * z29 + (z0 * z28 + (z1 * z27 + (z2 * z26 + z45)));
 z * z30 + (z0 * z29 + (z1 * z28 + (z2 * z27 + z46)));
 z0 * z30 + (z1 * z29 + (z2 * z28 + z47)); z1 * z30 + (z2 * z29 + z48);
 z2 * z30 + z49; z50; z51; z52; z53; z54; z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_3_16 : innerouterMdb.
 
@@ -537,14 +373,7 @@ z * z30 + (z0 * z29 + (z1 * z28 + (z2 * z27 + (z3 * z26 + z46))));
 z0 * z30 + (z1 * z29 + (z2 * z28 + (z3 * z27 + z47)));
 z1 * z30 + (z2 * z29 + (z3 * z28 + z48)); z2 * z30 + (z3 * z29 + z49);
 z3 * z30 + z50; z51; z52; z53; z54; z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_4_16 : innerouterMdb.
 
@@ -585,14 +414,7 @@ z0 * z30 + (z1 * z29 + (z2 * z28 + (z3 * z27 + (z4 * z26 + z47))));
 z1 * z30 + (z2 * z29 + (z3 * z28 + (z4 * z27 + z48)));
 z2 * z30 + (z3 * z29 + (z4 * z28 + z49)); z3 * z30 + (z4 * z29 + z50);
 z4 * z30 + z51; z52; z53; z54; z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_5_16 : innerouterMdb.
 
@@ -645,14 +467,7 @@ z1 * z30 + (z2 * z29 + (z3 * z28 + (z4 * z27 + (z5 * z26 + z48))));
 z2 * z30 + (z3 * z29 + (z4 * z28 + (z5 * z27 + z49)));
 z3 * z30 + (z4 * z29 + (z5 * z28 + z50)); z4 * z30 + (z5 * z29 + z51);
 z5 * z30 + z52; z53; z54; z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_6_16 : innerouterMdb.
 
@@ -717,14 +532,7 @@ z2 * z30 + (z3 * z29 + (z4 * z28 + (z5 * z27 + (z6 * z26 + z49))));
 z3 * z30 + (z4 * z29 + (z5 * z28 + (z6 * z27 + z50)));
 z4 * z30 + (z5 * z29 + (z6 * z28 + z51)); z5 * z30 + (z6 * z29 + z52);
 z6 * z30 + z53; z54; z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_7_16 : innerouterMdb.
 
@@ -801,14 +609,7 @@ z3 * z30 + (z4 * z29 + (z5 * z28 + (z6 * z27 + (z7 * z26 + z50))));
 z4 * z30 + (z5 * z29 + (z6 * z28 + (z7 * z27 + z51)));
 z5 * z30 + (z6 * z29 + (z7 * z28 + z52)); z6 * z30 + (z7 * z29 + z53);
 z7 * z30 + z54; z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_8_16 : innerouterMdb.
 
@@ -897,14 +698,7 @@ z4 * z30 + (z5 * z29 + (z6 * z28 + (z7 * z27 + (z8 * z26 + z51))));
 z5 * z30 + (z6 * z29 + (z7 * z28 + (z8 * z27 + z52)));
 z6 * z30 + (z7 * z29 + (z8 * z28 + z53)); z7 * z30 + (z8 * z29 + z54);
 z8 * z30 + z55; z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_9_16 : innerouterMdb.
 
@@ -1005,14 +799,7 @@ z5 * z30 + (z6 * z29 + (z7 * z28 + (z8 * z27 + (z9 * z26 + z52))));
 z6 * z30 + (z7 * z29 + (z8 * z28 + (z9 * z27 + z53)));
 z7 * z30 + (z8 * z29 + (z9 * z28 + z54)); z8 * z30 + (z9 * z29 + z55);
 z9 * z30 + z56; z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_10_16 : innerouterMdb.
 
@@ -1125,14 +912,7 @@ z6 * z30 + (z7 * z29 + (z8 * z28 + (z9 * z27 + (z10 * z26 + z53))));
 z7 * z30 + (z8 * z29 + (z9 * z28 + (z10 * z27 + z54)));
 z8 * z30 + (z9 * z29 + (z10 * z28 + z55)); z9 * z30 + (z10 * z29 + z56);
 z10 * z30 + z57; z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_11_16 : innerouterMdb.
 
@@ -1257,14 +1037,7 @@ z7 * z30 + (z8 * z29 + (z9 * z28 + (z10 * z27 + (z11 * z26 + z54))));
 z8 * z30 + (z9 * z29 + (z10 * z28 + (z11 * z27 + z55)));
 z9 * z30 + (z10 * z29 + (z11 * z28 + z56)); z10 * z30 + (z11 * z29 + z57);
 z11 * z30 + z58; z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_12_16 : innerouterMdb.
 
@@ -1404,14 +1177,7 @@ z8 * z30 + (z9 * z29 + (z10 * z28 + (z11 * z27 + (z12 * z26 + z55))));
 z9 * z30 + (z10 * z29 + (z11 * z28 + (z12 * z27 + z56)));
 z10 * z30 + (z11 * z29 + (z12 * z28 + z57)); z11 * z30 + (z12 * z29 + z58);
 z12 * z30 + z59; z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_13_16 : innerouterMdb.
 
@@ -1565,14 +1331,7 @@ z9 * z30 + (z10 * z29 + (z11 * z28 + (z12 * z27 + (z13 * z26 + z56))));
 z10 * z30 + (z11 * z29 + (z12 * z28 + (z13 * z27 + z57)));
 z11 * z30 + (z12 * z29 + (z13 * z28 + z58)); z12 * z30 + (z13 * z29 + z59);
 z13 * z30 + z60; z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_14_16 : innerouterMdb.
 
@@ -1740,13 +1499,6 @@ z10 * z30 + (z11 * z29 + (z12 * z28 + (z13 * z27 + (z14 * z26 + z57))));
 z11 * z30 + (z12 * z29 + (z13 * z28 + (z14 * z27 + z58)));
 z12 * z30 + (z13 * z29 + (z14 * z28 + z59)); z13 * z30 + (z14 * z29 + z60);
 z14 * z30 + z61].
-Proof.
-intros.
-rewrite outer_M_fix_equation.
-flatten ; tryfalse.
-autorewrite with innerouterMdb.
-simpl.
-reflexivity.
-Qed.
+Proof. outer_M_fix_compute_solve. Qed.
 
 Hint Rewrite outer_M_fix_15_16 : innerouterMdb.

@@ -133,6 +133,23 @@ Proof.
     Psatz.nia.
 Qed.
 
+Lemma Mult_interval_correct_pos_le :
+  forall c d x y : Z,
+    0 < x ->
+    c <= y <= d ->
+    x * c <= x * y <= x * d.
+Proof.
+  intros. split.
+  repeat apply Z.min_case_strong;
+    destruct (Z.nonpos_pos_cases x), (Z.nonpos_pos_cases y);
+    destruct (Z.nonpos_pos_cases c), (Z.nonpos_pos_cases c);
+    Psatz.nia.
+  repeat apply Z.max_case_strong;
+    destruct (Z.nonpos_pos_cases x), (Z.nonpos_pos_cases y);
+    destruct (Z.nonpos_pos_cases c), (Z.nonpos_pos_cases c);
+    Psatz.nia.
+Qed.
+
 Lemma Mult_interval_correct_nonpos :
   forall c d x y : Z,
     x < 0 ->
@@ -156,5 +173,19 @@ Lemma Add_interval_mono:
   c < y < d ->
   a + c < x + y < b + d.
 Proof. intros ; split ; apply Z.add_lt_mono ; omega. Qed.
+
+Lemma Add_interval_mono2:
+  forall b c d x y: Z,
+  0 <= x < b ->
+  c < y < d ->
+  c < x + y < b + d.
+Proof. intros; change c with (0 + c) ; split ;[apply Z.add_le_lt_mono | apply Z.add_lt_mono] ; omega. Qed.
+
+Lemma Add_interval_mono3:
+  forall b c d x y: Z,
+  0 <= x < b ->
+  c <= y <= d ->
+  c <= x + y < b + d.
+Proof. intros; change c with (0 + c) ; split ;[apply Z.add_le_mono | apply Z.add_lt_le_mono] ; omega. Qed.
 
 Close Scope Z.
