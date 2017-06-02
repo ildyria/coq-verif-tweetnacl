@@ -20,6 +20,7 @@
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
   opam install coq-mathcomp-ssreflect.1.6.1
+  opam install coq-mathcomp-multinomials
   opam install coq-ssr-elliptic-curves
   opam install menhir
 ````
