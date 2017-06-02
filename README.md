@@ -18,17 +18,30 @@
   opam install coq.8.6
   opam install coqide.8.6
   opam repo add coq-released https://coq.inria.fr/opam/released
-  opam install coq-mathcomp-ssreflect
+  opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
+  opam install coq-mathcomp-ssreflect.1.6.1
+  opam install coq-ssr-elliptic-curves
   opam install menhir
 ````
 
 ##### 3. install coq-stdpp
 
 ````bash
-  git clone https://gitlab.mpi-sws.org/robbertkrebbers/coq-stdpp
+  git clone git-rts@gitlab.mpi-sws.org:robbertkrebbers/coq-stdpp.git
   cd coq-stdpp
   make
-  #make install
+  cd ..
+````
+
+##### 4. Install Compcert
+
+````bash
+  git clone git@github.com:ildyria/CompCert.git compcert
+  cd Compcert
+  ./configure -clightgen ia32-linux
+  # or ia32-macosx
+  make -j
+  cd ..
 ````
 
 ##### 4. Get VST from Princeton
@@ -37,13 +50,6 @@
   git clone git@github.com:ildyria/VST.git
   cd VST
   git checkout ECC
-  rm -fr compcert
-  git clone git@github.com:ildyria/CompCert.git compcert
-  cd compcert
-  ./configure -clightgen ia32-linux
-  # or ia32-macosx
-  make -j
-  cd ..
   make -j
 ````
 

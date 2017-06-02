@@ -3,13 +3,8 @@ Require Export Tweetnacl.Libs.LibTactics_Rennes.
 Require Export Tweetnacl.Libs.LibTactics.
 Require Export Tweetnacl.Libs.Lists_extended.
 Require Export Tweetnacl.Libs.Forall_extended.
-(*Require Export Tweetnacl.Libs.Forall.
-Require Export Tweetnacl.Libs.Logic_extended.*)
 Require Export Tweetnacl.Libs.ZArith_extended.
 Require Export Tweetnacl.Libs.Relations.
-
-
-
 Require Export Coq.ZArith.BinInt.
 Require Export Coq.ZArith.Zdiv.
 
