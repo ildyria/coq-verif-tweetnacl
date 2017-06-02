@@ -44,7 +44,7 @@
   cd ..
 ````
 
-##### 4. Get VST from Princeton
+##### 5. Get VST from Princeton
 
 ````bash
   git clone git@github.com:ildyria/VST.git
