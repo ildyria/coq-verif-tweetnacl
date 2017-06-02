@@ -136,7 +136,7 @@ _CoqProject: Makefile
 	$(SHOW)Generate _CoqProject
 	$(HIDE)echo $(COQFLAGS) >_CoqProject
 
-.loadpath: Makefile _CoqProject
+.loadpath: _CoqProject
 	$(SHOW)Generate .loadpath
 	$(HIDE)echo $(COQFLAGS) > .loadpath
 
