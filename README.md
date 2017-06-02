@@ -39,6 +39,7 @@
 ````bash
   git clone git@github.com:ildyria/CompCert.git Compcert
   cd Compcert
+  git checkout v2.7.2
   ./configure -clightgen ia32-linux
   # or ia32-macosx
   make -j
