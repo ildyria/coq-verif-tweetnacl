@@ -16,7 +16,6 @@
 *.v.d
 .depend
 .loadpath
-_CoqProject
 *.cache
 *~
 *#
