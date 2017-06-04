@@ -1,5 +1,5 @@
 Require Import Tweetnacl.Libs.LibTactics.
-Require Export stdpp.prelude.
+Require Import stdpp.prelude.
 Import ListNotations.
 
 Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
