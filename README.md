@@ -19,8 +19,8 @@
   opam install coqide.8.6
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
-  opam install coq-mathcomp-ssreflect.1.6.1
-  opam install coq-mathcomp-multinomials
+  # opam install coq-mathcomp-ssreflect.1.6.1
+  # opam install coq-mathcomp-multinomials
   opam install coq-ssr-elliptic-curves
   opam install menhir
 ````
@@ -30,15 +30,16 @@
 ````bash
   git clone git-rts@gitlab.mpi-sws.org:robbertkrebbers/coq-stdpp.git
   cd coq-stdpp
-  make
+  make -j
   cd ..
 ````
 
 ##### 4. Install Compcert
 
 ````bash
-  git clone git@github.com:ildyria/CompCert.git compcert
+  git clone git@github.com:ildyria/CompCert.git Compcert
   cd Compcert
+  git checkout v2.7.2
   ./configure -clightgen ia32-linux
   # or ia32-macosx
   make -j
@@ -52,6 +53,22 @@
   cd VST
   git checkout ECC
   make -j
+  cd ..
+````
+
+##### 6. Install TweetNacl
+
+````bash
+  git clone git@gitlab.science.ru.nl:benoit/tweetnacl.git
+  cd tweetnacl
+
+  # build Coqprime
+  cd Coqprime
+  make -j
+  cd ..
+
+  make -j
+  cd ..
 ````
 
 <!--
