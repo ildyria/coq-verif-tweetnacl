@@ -9,6 +9,23 @@ Lemma nth_drop : forall A (n:nat) (l:list A) (d: A), n < length l -> drop n l = 
 Proof. induction n ; destr_boum l. Qed.
 Arguments nth_drop [A] _ _ _ _.
 
+Lemma take_drop_length: forall A (n:nat) (l l':list A),
+  length l = length l' -> length (take n l ++ drop n l') = length l.
+Proof. intros A n l l' Hll'.
+assert(H: n < length l \/ length l <= n) by omega.
+destruct H ; rewrite app_length ; rewrite drop_length ; rewrite <- Hll' ; [rewrite take_length_le|rewrite take_length_ge] ; omega.
+Qed.
+Arguments take_drop_length [A] _ _ _.
+
+Lemma nth_take: forall A (n:nat) (l l':list A) d,
+  n <= length l -> nth n ((take n l) ++ l') d = nth 0 l' d.
+Proof. induction n ; destr_boum l. Qed.
+Arguments nth_take [A] _ _ _ _ _.
+
+Lemma nth_drop_2 : forall A (n:nat) (l:list A) (d:A), n <= length l -> nth n l d = nth 0 (drop n l) d.
+Proof. induction n ; destr_boum l. Qed.
+Arguments nth_drop [A] _ _ _.
+
 (*
 Lemma app_nill_r : forall (A:Type) (l:list A), l ++ nil = l.
 Proof. boum. Qed.

@@ -84,7 +84,7 @@ FILES = \
  $(LISTSOP_FILES:%=ListsOp/%) \
  $(OP_FILES:%=Op/%) \
  $(CAR_FILES:%=Car/%) \
- $(SEL_FILES:%=Car/%) \
+ $(SEL_FILES:%=Sel/%) \
 
 ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(FILES))
