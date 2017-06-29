@@ -1,4 +1,4 @@
-default_target: .loadpath Libs ListsOp Op Car Montgomery
+default_target: .loadpath Libs ListsOp Op Car Sel Montgomery
 
 #Note3: for SSReflect, one solution is to install MathComp 1.6
 # somewhere add this line to a CONFIGURE file
@@ -75,6 +75,7 @@ LIBS_FILES = $(notdir $(wildcard Libs/*.v))
 LISTSOP_FILES = $(notdir $(wildcard ListsOp/*.v))
 OP_FILES = $(notdir $(wildcard Op/*.v))
 CAR_FILES = $(notdir $(wildcard Car/*.v))
+SEL_FILES = $(notdir $(wildcard Sel/*.v))
 MONTGOMERY_FILES = $(notdir $(wildcard Montgomery/*.v))
 
 FILES = \
@@ -83,6 +84,7 @@ FILES = \
  $(LISTSOP_FILES:%=ListsOp/%) \
  $(OP_FILES:%=Op/%) \
  $(CAR_FILES:%=Car/%) \
+ $(SEL_FILES:%=Car/%) \
 
 ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(FILES))
@@ -96,6 +98,7 @@ CLEANFILES = $(call clean_files,LIBS_FILES,Libs) \
 	$(call clean_files,LISTSOP_FILES,ListsOp) \
 	$(call clean_files,OP_FILES,Op) \
 	$(call clean_files,CAR_FILES,Car) \
+	$(call clean_files,SEL_FILES,Sel) \
 	$(call clean_files,MONTGOMERY_FILES,Montgomery)
 
 %_stripped.v: %.v
@@ -130,6 +133,7 @@ Libs: 		.loadpath $(LIBS_FILES:%.v=Libs/%.vo)
 ListsOp:	.loadpath $(LISTSOP_FILES:%.v=ListsOp/%.vo)
 Op:		.loadpath $(OP_FILES:%.v=Op/%.vo)
 Car:		.loadpath $(CAR_FILES:%.v=Car/%.vo)
+Sel:		.loadpath $(SEL_FILES:%.v=Sel/%.vo)
 Montgomery:	.loadpath $(MONTGOMERY_FILES:%.v=Montgomery/%.vo)
 
 _CoqProject: Makefile
