@@ -10,7 +10,7 @@ SHOW := $(if $(VERBOSE),@true "",@echo "")
 HIDE := $(if $(VERBOSE),,@)
 
 
-DIRS= Libs ListsOp Op Car Montgomery
+DIRS= Libs ListsOp Op Car Sel Montgomery
 INCLUDE= $(foreach a,$(DIRS),$(if $(wildcard $(a)), -Q $(a) $(a)))
 
 

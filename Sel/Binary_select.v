@@ -5,8 +5,10 @@ Open Scope Z.
 
 Definition set_xor (i:Z) := Z.lnot (i - 1).
 
+(*
 Eval compute in (set_xor 0).
 Eval compute in (set_xor 1).
+*)
 
 Lemma set_xor_0 : set_xor 0 = 0.
 Proof. reflexivity. Qed.
@@ -20,3 +22,4 @@ Proof. intro. go. Qed.
 Lemma land_minus_1 : forall i, Z.land (-1) i = i.
 Proof. intro. apply Z.land_m1_l. Qed.
 
+Close Scope Z.
