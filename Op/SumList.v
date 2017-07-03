@@ -64,6 +64,15 @@ Lemma ZsumList_n_nth_Zlength : forall (n : nat) (a b : list Z),
   ZsumList_n (S n) a b = (ZsumList_n n a b) ++ [(nth n a 0) + (nth n b 0)].
 Proof. convert_length_to_Zlength ZsumList_n_nth_length. Qed.
 
+Lemma ZsumList_nth : forall (n:nat) (a b : list Z),
+  length a = length b ->
+  (n < length a)%nat ->
+  nth n (a ⊕ b) 0 = (nth n a 0) + (nth n b 0).
+Proof. intros; repeat rewrite ZsumList_Zipp_eq.
+
+
+
+
 Lemma ZsumList_comm: forall a b, a ⊕ b = b ⊕ a.
 Proof.
   intros a b.

@@ -17,6 +17,11 @@ destruct H ; rewrite app_length ; rewrite drop_length ; rewrite <- Hll' ; [rewri
 Qed.
 Arguments take_drop_length [A] _ _ _.
 
+Lemma take_drop_Zlength: forall A (n:nat) (l l':list A),
+  Zlength l = Zlength l' -> Zlength (take n l ++ drop n l') = Zlength l.
+Proof. convert_length_to_Zlength take_drop_length. Qed.
+Arguments take_drop_Zlength [A] _ _ _.
+
 Lemma nth_take: forall A (n:nat) (l l':list A) d,
   n <= length l -> nth n ((take n l) ++ l') d = nth 0 l' d.
 Proof. induction n ; destr_boum l. Qed.
