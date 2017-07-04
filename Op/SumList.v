@@ -15,6 +15,7 @@ end.
 
 Notation "A ⊕ B" := (ZsumList A B) (at level 60, right associativity).
 
+(*
 Fixpoint ZsumList_n (n:nat) (a b : list Z) : list Z := match n, a, b with 
   | 0%nat, _, _ => []
   | S p, [], []  => []
@@ -22,7 +23,7 @@ Fixpoint ZsumList_n (n:nat) (a b : list Z) : list Z := match n, a, b with
   | S p, h::q, []  => h :: (ZsumList_n p [] q)
   | S p, h1::q1, h2::q2 => (Z.add h1 h2) :: (ZsumList_n p q1 q2)
 end.
-
+*)
 Lemma ZsumList_Zipp_eq: forall  (a b : list Z), ZsumList a b = Zipp Z.add a b.
 Proof.
   induction a ; destruct b ; go.
@@ -30,7 +31,7 @@ Proof.
   rewrite Zipp_nil_r ; go.
   intro x ; go.
 Qed.
-
+(*
 Lemma ZsumList_n_taked: forall n a b, take n (a ⊕ b) = ZsumList_n n a b.
 Proof. induction n ; intros a b ; simpl ; flatten ; try rewrite <- IHn ; go. Qed.
 
@@ -63,15 +64,12 @@ Lemma ZsumList_n_nth_Zlength : forall (n : nat) (a b : list Z),
   n < Zlength a ->
   ZsumList_n (S n) a b = (ZsumList_n n a b) ++ [(nth n a 0) + (nth n b 0)].
 Proof. convert_length_to_Zlength ZsumList_n_nth_length. Qed.
-
+*)
 Lemma ZsumList_nth : forall (n:nat) (a b : list Z),
   length a = length b ->
   (n < length a)%nat ->
   nth n (a ⊕ b) 0 = (nth n a 0) + (nth n b 0).
-Proof. intros; repeat rewrite ZsumList_Zipp_eq.
-
-
-
+Proof. intros; repeat rewrite ZsumList_Zipp_eq; apply Zipp_nth_length ; auto. Qed.
 
 Lemma ZsumList_comm: forall a b, a ⊕ b = b ⊕ a.
 Proof.
