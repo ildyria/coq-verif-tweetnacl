@@ -1,3 +1,4 @@
+Set Warnings "-notation-overridden,-parsing".
 Require Import ZArith Znumtheory Znat.
 From mathcomp Require Import ssreflect ssrbool eqtype ssrnat div prime.
 

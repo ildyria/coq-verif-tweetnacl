@@ -1,3 +1,4 @@
+Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat.
 From mathcomp Require Import tuple seq fintype bigop ssralg finalg.
 From mathcomp Require Import choice zmodp fingroup.

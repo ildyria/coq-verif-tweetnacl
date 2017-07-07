@@ -1,3 +1,4 @@
+Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrbool eqtype ssrnat div ssralg.
 
 Import GRing.Theory.

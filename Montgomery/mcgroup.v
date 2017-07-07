@@ -1,3 +1,4 @@
+Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrnat ssrbool eqtype fintype.
 From mathcomp Require Import tuple seq fintype bigop ssralg finalg.
 From mathcomp Require Import ssrfun choice zmodp fingroup.
@@ -13,14 +14,6 @@ Local Open Scope ring_scope.
 Set Implicit Arguments.
 Unset Strict Implicit.
 
-(* Ltac ssring :=
-  let xt := fresh "xt" in
-  let xe := fresh "xe" in
-    apply/eqP; rewrite -subr_eq0; apply/eqP;
-      rewrite ?(mulr0, mul0r, mulr1, mul1r); reify xt xe;
-      move: (@Rcorrect _ 100 xe [::] xt (Ring_polynom.PEc 0) I (erefl true));
-      by rewrite !PEReval.
- *)
 Section MCEC.
   Variable K : ecuFieldType.
   Variable M : mcuType K.

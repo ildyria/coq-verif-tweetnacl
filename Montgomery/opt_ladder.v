@@ -1,3 +1,5 @@
+Set Warnings "-notation-overridden,-parsing".
+
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div ssralg.
 From Tweetnacl.Montgomery Require Import mc.
 From Tweetnacl.Montgomery Require Import mcgroup.
