@@ -1,7 +1,7 @@
 # TweetNaCl verification
 -------------------------------
 
-## Setting up your environment (Debian 8.5)
+## Setting up your environment (Debian 9.0)
 
 ##### 1. download & install GCC and OPAM and initialize it.
 
