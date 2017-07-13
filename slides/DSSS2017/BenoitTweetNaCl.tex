@@ -6,6 +6,12 @@
 
 \mode<presentation>{}
 
+
+\newcommand{\chapternote}[1]{{%
+  \let\thempfn\relax% Remove footnote number printing mechanism
+  \footnotetext[0]{#1}% Print footnote text
+}}
+
 %% preamble
 \title{Toward the correctness of TweetNaCl's Ed25519 with VST}
 % \subtitle{Coq }
@@ -83,7 +89,8 @@
   }
 \end{lstlisting}
 
-  \end{center}
+  \end{center}\chapternote{\url{https://tweetnacl.cr.yp.to}}
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,7 +202,7 @@ sv M(gf o,const gf a,const gf b)    # Multiplication
       \node[anchor=west,single arrow,draw=red!80!black,fill=red!80!black,minimum width=0.5cm,minimum height=3.25cm] at (-0.75,0) {};
       \node[anchor=west,double arrow,draw=green!60!black,fill=green!60!black,minimum width=0.5cm,minimum height=2.25cm] at (4.25,0) {};
       % \node[anchor=west,double arrow,draw=green!60!black,fill=green!60!black,minimum width=0.5cm,minimum height=2cm] at (3,0) {};
-  \end{tikzpicture}
+  \end{tikzpicture}\chapternote{\url{http://vst.cs.princeton.edu}}
 
   \end{center}
 \end{frame}
@@ -285,14 +292,14 @@ Qed.
 \begin{frame}[fragile]{Work In Progress}
     Done:
     \begin{itemize}
-      \item Specification of basic operations (A,Z,M,S,Car25519).
-      \item Bounds of basic operations.
-      \item Proof that model matches the semantic (\texttt{code.v}) using VST (\#Princeton).
+      \item[\color{ruDarkTeal}$\blacktriangleright$] Specification of basic operations (A,Z,M,S,Car25519).
+      \item[\color{ruDarkTeal}$\blacktriangleright$] Bounds of basic operations.
+      \item[\color{ruDarkTeal}$\blacktriangleright$] Proof that model matches the semantic (\texttt{code.v}) using VST (\#Princeton).
     \end{itemize}
 
     Curent and future work:
     \begin{itemize}
-      \item Proof of a lot of small utilary functions used in TweetNaCl...
+      \item[\color{ruDarkTeal}$\blacktriangleright$] Proof of a lot of small utilary functions used in TweetNaCl...
       \item Full Proof that Montgomery Ladder correctness.
       \item Proof the model is {\it aligned} with Timmy's work.
       \item Continue on the X25519\ldots
