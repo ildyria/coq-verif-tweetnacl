@@ -1,4 +1,5 @@
 Require Import Tweetnacl.Libs.LibTactics.
+Require Import Tweetnacl.Libs.LibTactics_SF.
 Require Import stdpp.prelude.
 Import ListNotations.
 
@@ -30,6 +31,204 @@ Arguments nth_take [A] _ _ _ _ _.
 Lemma nth_drop_2 : forall A (n:nat) (l:list A) (d:A), n <= length l -> nth n l d = nth 0 (drop n l) d.
 Proof. induction n ; destr_boum l. Qed.
 Arguments nth_drop [A] _ _ _.
+
+Fixpoint upd_nth {A} (n:nat) (l:list A) (v:A) := match l with
+  | [] => match n with
+    | 0%nat => v :: []
+    | S p => v :: []
+    end
+  | h :: q => match n with
+    | 0%nat => v :: q
+    | S p => h :: (upd_nth p q v)
+    end
+  end.
+
+Lemma upd_nth_length:
+  forall (A : Type) (i : nat) (l : list A) (v : A),
+  0 <= i < length l -> length (upd_nth i l v) = length l.
+Proof. induction i ; destruct l; simpl ;
+  repeat match goal with
+  | _ => progress intros
+  | _ => reflexivity
+  | _ => omega
+  | [ H : _ < 0 |- _ ] => inversion H
+  | [ H : _ ≤ _ ∧ _ < _ |- _] => inv H
+  | [ |- S _ = S _ ] => f_equal ; apply IHi
+  | [ H : S _ < S _ |-  _] => inv H
+  end.
+Qed.
+
+
+Lemma upd_nth_map:
+  forall (A B : Type) (f : A -> B) (i : nat) (l : list A) (v : A),
+  upd_nth i (map f l) (f v) = map f (upd_nth i l v).
+Proof.
+induction i ; destruct l; simpl  ; intros ;
+repeat match goal with
+  | _ => progress intros
+  | _ => reflexivity
+  | _ => omega
+  | _ => rewrite IHi
+  end.
+Qed.
+
+Lemma upd_nth_lookup:
+  forall (K : nat) (A : Type) (l : list A),
+  length l = K ->
+  forall (i j : nat) (d v : A),
+  0 <= i < K ->
+  0 <= j < K ->
+  i = j /\ nth i (upd_nth j l v) d = v \/
+  i <> j /\ nth i (upd_nth j l v) d = nth i l d.
+Proof.
+  intros K A l; gen K ; induction l ; intros [] HSl i j d v HSi HSj;
+  simpl in HSl ; try omega.
+  inversion HSl as [Hl].
+  destruct i,j.
+  left ; go.
+  right ; go.
+  right ; go.
+  simpl.
+  assert(Hi : 0 ≤ i ∧ i < n) by omega.
+  assert(Hj : 0 ≤ j ∧ j < n) by omega.
+  clear HSi HSj HSl.
+  apply (IHl n Hl i j d v) in Hj.
+  2: assumption.
+  destruct Hj as [Hj|Hj]; [left|right]; destruct Hj ; go.
+Qed.
+
+Lemma upd_nth_lookup':
+  forall (K : nat) (A : Type) (l : list A),
+  length l = K ->
+  forall (i : nat),
+  0 <= i < K ->
+  forall (j : nat),
+  0 <= j < K ->
+  forall d v : A,
+  nth i (upd_nth j l v) d = (if beq_nat i j then v else nth i l d).
+Proof.
+  intros K A l Hl i Hi j H d v.
+  apply (upd_nth_lookup K A l Hl i j d v Hi) in H.
+  destruct H as [H|H];
+  destruct H as [Hij Hnth].
+  subst i;
+  flatten.
+  apply beq_nat_false in Eq ; tryfalse.
+  flatten.
+  apply beq_nat_true in Eq ; tryfalse.
+Qed.
+
+Lemma upd_nth_same:
+  forall (A : Type) (i : nat) (l : list A) (u d : A),
+  0 <= i < length l -> nth i (upd_nth i l u) d = u.
+Proof.
+induction i ; destruct l; simpl  ; intros ;
+repeat match goal with
+  | _ => progress intros
+  | _ => reflexivity
+  | _ => omega
+  | _ => rewrite IHi
+  end.
+Qed.
+
+Lemma upd_nth_diff:
+  forall (A : Type) (i j : nat) (l : list A) (u d : A),
+  0 <= i < length l ->
+  0 <= j < length l -> i <> j -> nth i (upd_nth j l u) d = nth i l d.
+Proof.
+  intros A i j l; gen i j ; induction l ; intros [] [] d v HSi HSj Hij;
+  simpl in * ; go.
+Qed.
+
+Lemma upd_nth_app1:
+  forall (A : Type) (i : nat) (l1 l2 : list A),
+  0 <= i < length l1 ->
+  forall v : A, upd_nth i (l1 ++ l2) v = upd_nth i l1 v ++ l2.
+Proof.
+  intros A i l1; gen i; induction l1 ; intros [] l2 HSi v;
+  simpl in * ; go.
+  f_equal ; go.
+Qed.
+
+Lemma upd_nth_app2:
+  forall (A : Type) (l1 l2 : list A) (i : nat) (v : A),
+  length l1 <= i <= length l1 + length l2 ->
+  upd_nth i (l1 ++ l2) v = l1 ++ upd_nth (i - length l1) l2 v.
+Proof.
+  induction l1 ; intros l2 [] v Hl1 ; simpl in * ; try reflexivity.
+  omega.
+  assert(Hl1': length l1 ≤ n ∧ n ≤ length l1 + length l2) by omega.
+  apply (IHl1 l2 n v) in Hl1'.
+  go.
+Qed.
+
+Lemma upd_nth0:
+  forall (A : Type) (l : list A) (h v : A),
+  upd_nth 0 (h::l) v = v :: l.
+Proof. reflexivity. Qed.
+
+Lemma upd_nth_app':
+  forall (A : Type) (n : nat) (l1 : list A) (v : A) (l2 : list A) (w : A),
+  length l1 = n -> upd_nth n (l1 ++ v :: l2) w = l1 ++ w :: l2.
+Proof.
+  intros.
+  rewrite upd_nth_app2 by omega.
+  replace (n - length l1) with 0 by omega.
+  go.
+Qed.
+
+Lemma upd_nth_list_alter: forall A (f : A -> A) i (v:A) (l: list A), f = (fun x => v) -> 
+i < length l -> upd_nth i l v = list_alter f i l.
+Proof.
+intros A f; induction i as [| i IHi]; intros v l Hf H.
+intros. destruct l. simpl in H. omega.
+unfold upd_nth.
+simpl.
+rewrite Hf.
+reflexivity.
+destruct l ; simpl in H.
+inversion H.
+change (a::l) with ([a] ++ l).
+rewrite upd_nth_app2 by go.
+simpl.
+rewrite <- minus_n_O.
+f_equal.
+apply IHi.
+assumption.
+omega.
+Qed.
+
+Lemma upd_nth_alter: forall A (f : A -> A) (i: nat) (v:A) (l: list A), 0 <= i -> f = (fun x => v) -> 
+i < length l -> upd_nth i l v = alter f i l.
+Proof. intros ; unfold base.alter ; apply upd_nth_list_alter ; auto. Qed.
+
+Lemma upd_nth_app_step:
+  forall i (a r:list Z) d, 
+    0 <= i ->
+    i < length r ->
+    i < length a ->
+    firstn (S i) a ++ skipn (S i) r =
+    upd_nth i (firstn i a ++ skipn i r) (nth i a d).
+Proof.
+  intros.
+  rewrite (nth_drop i r 0) by assumption.
+  rewrite cons_middle; rewrite app_assoc ; rewrite upd_nth_app1.
+  2: rewrite app_length ; rewrite firstn_length_le ; simpl ; omega.
+  rewrite upd_nth_app2.
+  2: rewrite firstn_length_le ; simpl; omega.
+  replace (i - length (firstn i a)) with 0.
+  2: rewrite firstn_length_le; omega.
+  rewrite upd_nth0.
+  f_equal.
+  rewrite <- (take_drop i a).
+  replace (S i) with (i + 1)%nat by omega.
+  rewrite take_plus_app by (rewrite firstn_length_le; omega).
+  rewrite (take_drop i a).
+  f_equal.
+  clear H0 r.
+  gen i.
+  induction a ; intros [] Hi Hl ; go.
+Qed.
 
 (*
 Lemma app_nill_r : forall (A:Type) (l:list A), l ++ nil = l.
