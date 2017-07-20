@@ -1,4 +1,4 @@
-default_target: .loadpath Libs ListsOp Op Car Sel Montgomery
+default_target: .loadpath Libs ListsOp Op Car Sel Montgomery Unpack
 
 #Note3: for SSReflect, one solution is to install MathComp 1.6
 # somewhere add this line to a CONFIGURE file
@@ -10,7 +10,7 @@ SHOW := $(if $(VERBOSE),@true "",@echo "")
 HIDE := $(if $(VERBOSE),,@)
 
 
-DIRS= Libs ListsOp Op Car Sel Montgomery
+DIRS= Libs ListsOp Op Car Sel Montgomery Unpack
 INCLUDE= $(foreach a,$(DIRS),$(if $(wildcard $(a)), -Q $(a) $(a)))
 
 
@@ -76,17 +76,23 @@ LISTSOP_FILES = $(notdir $(wildcard ListsOp/*.v))
 OP_FILES = $(notdir $(wildcard Op/*.v))
 CAR_FILES = $(notdir $(wildcard Car/*.v))
 SEL_FILES = $(notdir $(wildcard Sel/*.v))
+UNPACK_FILES = $(notdir $(wildcard Unpack/*.v))
 MONTGOMERY_FILES = $(notdir $(wildcard Montgomery/*.v))
 
-FILES = \
- $(MONTGOMERY_FILES:%=Montgomery/%) \
+COUNTFILES = \
  $(LIBS_FILES:%=Libs/%) \
  $(LISTSOP_FILES:%=ListsOp/%) \
  $(OP_FILES:%=Op/%) \
  $(CAR_FILES:%=Car/%) \
  $(SEL_FILES:%=Sel/%) \
+ $(UNPACK_FILES:%=Unpack/%) \
 
-ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
+
+FILES = \
+ $(COUNTFILES) \
+ $(MONTGOMERY_FILES:%=Montgomery/%) \
+
+ifneq ($(filter-out archclean clean cleanall printenv count,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(FILES))
 else
 ifeq ($(MAKECMDGOALS),)
@@ -94,11 +100,13 @@ ifeq ($(MAKECMDGOALS),)
 endif
 endif
 
-CLEANFILES = $(call clean_files,LIBS_FILES,Libs) \
+CLEANFILES = \
+	$(call clean_files,LIBS_FILES,Libs) \
 	$(call clean_files,LISTSOP_FILES,ListsOp) \
 	$(call clean_files,OP_FILES,Op) \
 	$(call clean_files,CAR_FILES,Car) \
 	$(call clean_files,SEL_FILES,Sel) \
+	$(call clean_files,UNPACK_FILES,Unpack) \
 	$(call clean_files,MONTGOMERY_FILES,Montgomery)
 
 %_stripped.v: %.v
@@ -131,9 +139,10 @@ quick: .loadpath $(FILES:.v=.vio)
 
 Libs: 		.loadpath $(LIBS_FILES:%.v=Libs/%.vo)
 ListsOp:	.loadpath $(LISTSOP_FILES:%.v=ListsOp/%.vo)
-Op:		.loadpath $(OP_FILES:%.v=Op/%.vo)
+Op:			.loadpath $(OP_FILES:%.v=Op/%.vo)
 Car:		.loadpath $(CAR_FILES:%.v=Car/%.vo)
 Sel:		.loadpath $(SEL_FILES:%.v=Sel/%.vo)
+Unpack:		.loadpath $(UNPACK_FILES:%.v=Unpack/%.vo)
 Montgomery:	.loadpath $(MONTGOMERY_FILES:%.v=Montgomery/%.vo)
 
 _CoqProject: Makefile
@@ -167,7 +176,7 @@ checkproofs:
 	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vio-checking $(J) $(FILES:%.v=%.vio)
 
 count:
-	wc $(FILES)
+	wc -l $(COUNTFILES)
 
 printenv:
 	@"$(COQTOP)" -config

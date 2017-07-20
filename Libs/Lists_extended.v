@@ -230,6 +230,20 @@ Proof.
   induction a ; intros [] Hi Hl ; go.
 Qed.
 
+Definition list_ind_by_2 :
+    forall A (P : list A → Prop),
+    P [] →
+    (forall a, P [a]) →
+    (forall (a b:A) (l : list A), P l → P (a :: b :: l)) →
+    forall (l : list A), P l :=
+       fun A => fun P => fun P0 => fun P1 => fun PSS =>
+          fix f (l : list A) := match l with
+                             [] => P0
+                           | [a] => P1 a
+                           | a :: b :: l => PSS a b l (f l)
+                          end.
+
+
 (*
 Lemma app_nill_r : forall (A:Type) (l:list A), l ++ nil = l.
 Proof. boum. Qed.
