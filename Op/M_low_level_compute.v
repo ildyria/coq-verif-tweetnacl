@@ -6,8 +6,9 @@ Require Import Tweetnacl.Op.Outer_M1.
 
 Local Open Scope Z.
 
-Ltac inner_M_fix_compute_solve := intros ; repeat rewrite inner_M_i_j_eq by omega ; change_Z_to_nat ;
-simpl ; unfold update_M_i_j' ; unfold local_update_M ;reflexivity.
+(* Ltac inner_M_fix_compute_solve := intros ; repeat rewrite inner_M_i_j_eq by omega ; change_Z_to_nat ;
+simpl ; unfold update_M_i_j' ; unfold local_update_M ;reflexivity. *)
+Ltac inner_M_fix_compute_solve := intros ; repeat rewrite inner_M_i_j_eq by omega ; simpl ; unfold update_M_i_j' ; unfold local_update_M ;reflexivity.
 
 
 Lemma inner_M_fix_0_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29

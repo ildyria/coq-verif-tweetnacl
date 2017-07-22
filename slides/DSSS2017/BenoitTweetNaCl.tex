@@ -1,5 +1,5 @@
 \documentclass[8pt]{beamer}
-\usetheme{ru}           % Use ru theme
+\usetheme[block=fill]{ru}           % Use ru theme
 
 \usepackage{common}
 \usetikzlibrary{shapes.arrows}
@@ -201,8 +201,8 @@ sv M(gf o,const gf a,const gf b)    # Multiplication
       \draw (8,0) node[textstyle, anchor=east, draw=black, thick, minimum width=1cm,minimum height=2cm] {proofs.v};
       \node[anchor=west,single arrow,draw=red!80!black,fill=red!80!black,minimum width=0.5cm,minimum height=3.25cm] at (-0.75,0) {};
       \node[anchor=west,double arrow,draw=green!60!black,fill=green!60!black,minimum width=0.5cm,minimum height=2.25cm] at (4.25,0) {};
-      % \node[anchor=west,double arrow,draw=green!60!black,fill=green!60!black,minimum width=0.5cm,minimum height=2cm] at (3,0) {};
   \end{tikzpicture}\chapternote{\url{http://vst.cs.princeton.edu}}
+  \chapternote{\url{http://compcert.inria.fr}}
 
   \end{center}
 \end{frame}
@@ -234,20 +234,6 @@ end.
 
 Notation "\Z.lst A" := (ZofList A) (at level 65).
 \end{lstlisting}
-
-% Lemma ZofList_nil : \Z.lst nil = 0.
-
-% Lemma ZofList_cons_0 : forall a, \Z.lst [a] = a.
-
-% Lemma ZofList_cons :
-%   forall a b, \Z.lst a :: b = a + 2^n * \Z.lst b.
-
-% Lemma ZofList_add :
-%   forall m a b, \Z.lst m + a :: b = m + \Z.lst a :: b.
-
-% Lemma ZofList_app :
-%   forall a b, \Z.lst a ++ b = (\Z.lst a) + 2^(n * \Z.\N (length a)) * \Z.lst b.
-
   \end{center}
 \end{frame}
 
@@ -285,36 +271,46 @@ Qed.
   \end{center}
 \end{frame}
 
+% \begin{frame}[fragile]{Example: Addition - Clight}
+%   \begin{center}
+%     \includegraphics[height=0.8\textheight]{f_A}.
+%   \end{center}
+% \end{frame}
+
+% \begin{frame}[fragile]{Example: Addition - Spec}
+%   \begin{center}
+%     \includegraphics[width=\linewidth]{Spec}.
+%   \end{center}
+% \end{frame}
+
 \begin{frame}[standout]
-  \Huge What is left ?
+  \Huge What's left ?
 \end{frame}
 
-\begin{frame}[fragile]{Work In Progress}
-    Done:
+\begin{frame}[fragile]{Done so far\ldots}
     \begin{itemize}
       \item[\color{ruDarkTeal}$\blacktriangleright$] Specification of basic operations (A,Z,M,S,Car25519).
       \item[\color{ruDarkTeal}$\blacktriangleright$] Bounds of basic operations.
-      \item[\color{ruDarkTeal}$\blacktriangleright$] Proof that model matches the semantic (\texttt{code.v}) using VST (\#Princeton).
+      \item[\color{ruDarkTeal}$\blacktriangleright$] Proof that model matches the semantic (\texttt{code.v}) using VST \includegraphics[height=\fontcharht\font`\B]{princeton-logo}.
     \end{itemize}
 
-    Curent and future work:
     \begin{itemize}
-      \item[\color{ruDarkTeal}$\blacktriangleright$] Proof of a lot of small utilary functions used in TweetNaCl...
-      \item Full Proof that Montgomery Ladder correctness.
-      \item Proof the model is {\it aligned} with Timmy's work.
-      \item Continue on the X25519\ldots
+    \item $\sim$10 months.
+    \item compiles ({\tt coqc}) in $\sim$1 hours\ldots ({\it i7-4770K CPU @ 3.50GHz})
+    \item 62 lines of {\tt C} have been verified.
+    \item 7\,180 lines of Specifications with {\tt Coq}.
+    \item 2\,872 lines of Verification with {\tt Coq} using VST \includegraphics[height=\fontcharht\font`\B]{princeton-logo}.
     \end{itemize}
 \end{frame}
 
-
-% Fixpoint ZsubList (a b : list Z) : list Z := match a,b with
-% | [], q => ZminusList q
-% | q,[] => q
-% | h1::q1,h2::q2 => (Z.sub h1 h2) :: ZsubList q1 q2
-% end.
-
-% Notation "A \ominus B" := (ZsubList A B) (at level 60).
-
+\begin{frame}[fragile]{Curent and future Works}
+    \begin{itemize}
+      \item[\color{ruDarkTeal}$\blacktriangleright$] Proof of a lot of {\it small} utilary functions used in TweetNaCl...
+      \item Full Proof of Montgomery Ladder's correctness.
+      \item Proof that the model is {\it aligned} with Timmy's work.
+      \item Continue on the X25519 signature scheme, Poly1305\ldots
+    \end{itemize}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
