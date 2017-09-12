@@ -80,10 +80,10 @@ Qed.
 
 Close Scope Z.
 
-Corollary Unpack25519_length_16_32 : forall l, length l = 32 -> length (unpack_for 16 l) = 16.
+Corollary Unpack25519_length_16_32 : forall l, length l = 32 -> length (unpack_for 8 l) = 16.
 Proof.
 intros.
-rewrite (Unpack25519_length 16) with (m:=32).
+rewrite (Unpack25519_length 8) with (m:=32).
 reflexivity.
 omega.
 assumption.

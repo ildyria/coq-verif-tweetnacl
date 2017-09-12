@@ -9,7 +9,7 @@ Function outer_M_fix (i j : Z) (a b o : list Z)  {measure Z.to_nat i} : list Z :
   if (i <=? 0)
     then (inner_M_fix 0 j (from_option id 0 (a !! (Z.to_nat 0))) b o)
     else outer_M_fix (i - 1) 16 a b (inner_M_fix i j (from_option id 0 (a !! (Z.to_nat i))) b o).
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Qed.
+Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
 
 Fixpoint outer_M_fix' (i j : nat) (a b o : list Z) := match i with
   | 0%nat => (inner_M_fix' 0%nat j (from_option id 0 (a !! 0%nat)) b o)

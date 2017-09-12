@@ -53,4 +53,17 @@ Qed.
 
 End Integer.
 
+Lemma ZscalarMult_bound_const: forall (m2 n2 o p a: Z) (b: list Z),
+  0 <= a ->
+  Forall (fun x => m2 <= x <= n2) b -> 
+  o = a * m2 ->
+  p = a * n2 ->
+  Forall (fun x => o <= x <= p) (a ∘∘ b).
+Proof.
+  introv Ha Hb Ho Hp.
+  rewrite ZscalarMult_eq_ZunopList.
+  eapply (Forall_ZunopList _ (fun x : ℤ => a = x) (fun x : ℤ => m2 <= x <= n2)) ; go.
+Qed.
+
+
 Close Scope Z.

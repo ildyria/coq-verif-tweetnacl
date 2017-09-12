@@ -10,7 +10,7 @@ Definition update_M_i_j' (i j:nat) (a:Z) b o := list_alter (local_update_M j a b
 
 Function inner_M_fix (i j a:Z) (b o : list Z) {measure Z.to_nat j} : list Z :=
   if (j <=? 0) then o else inner_M_fix i (j - 1) a b (update_M_i_j i (j - 1) a b o).
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Qed.
+Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
 
 Fixpoint inner_M_fix' (i j : nat) (a:Z) (b o : list Z) := match j with
   | 0%nat => o

@@ -9,14 +9,14 @@
   sudo apt-get install gcc
   sudo apt-get install opam
   opam init
-  opam switch 4.04.1
+  opam switch 4.05.0
 ````
 
 ##### 2. install coq 8.6 + coqide + ssreflect
 
 ````bash
-  opam install coq.8.6
-  opam install coqide.8.6
+  opam install coq
+  opam install coqide
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
   # opam install coq-mathcomp-ssreflect.1.6.1
