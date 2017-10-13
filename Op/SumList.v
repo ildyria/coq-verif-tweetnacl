@@ -3,7 +3,6 @@ Require Import Tweetnacl.ListsOp.Export.
 Require Import stdpp.prelude.
 Import ListNotations.
 
-
 Open Scope Z.
 
 (* Some definitions relating to the functional spec of this particular program.  *)
@@ -17,7 +16,7 @@ Notation "A ⊕ B" := (ZsumList A B) (at level 60, right associativity).
 
 Lemma ZsumList_Zipp_eq: forall  (a b : list Z), ZsumList a b = Zipp Z.add a b.
 Proof.
-  induction a ; destruct b ; go.
+  elim => [|a l IHa] [|b Hb] ; go.
   rewrite Zipp_nil_l ; go.
   rewrite Zipp_nil_r ; go.
   intro x ; go.
@@ -27,22 +26,20 @@ Lemma ZsumList_nth : forall (n:nat) (a b : list Z),
   length a = length b ->
   (n < length a)%nat ->
   nth n (a ⊕ b) 0 = (nth n a 0) + (nth n b 0).
-Proof. intros; repeat rewrite ZsumList_Zipp_eq; apply Zipp_nth_length ; auto. Qed.
+Proof. intros; rewrite ?ZsumList_Zipp_eq; apply Zipp_nth_length ; auto. Qed.
 
 Lemma ZsumList_comm: forall a b, a ⊕ b = b ⊕ a.
 Proof.
-  intros a b.
-  repeat rewrite ZsumList_Zipp_eq.
-  apply Zipp_comm.
-  intros x y ; omega.
+  move => a b.
+  rewrite ?ZsumList_Zipp_eq.
+  apply Zipp_comm => x y ; omega.
 Qed.
 
 Lemma ZsumList_nil_r: forall a, a ⊕ [] = a.
 Proof.
   intros a.
   rewrite ZsumList_Zipp_eq.
-  apply Zipp_nil_r.
-  intros x ; omega.
+  apply Zipp_nil_r => x ; omega.
 Qed.
 
 Lemma ZsumList_nil_l: forall a, [] ⊕ a = a.
@@ -50,30 +47,28 @@ Proof. go. Qed.
 
 Lemma ZsumList_assoc : forall a b c, (a ⊕ b) ⊕ c = a ⊕ (b ⊕ c).
 Proof.
-  intros a b c.
-  repeat rewrite ZsumList_Zipp_eq.
-  apply Zipp_assoc.
-  intros x y z ; omega.
-  intros x ; omega.
-  intros x ; omega.
+  move=> a b c.
+  rewrite ?ZsumList_Zipp_eq.
+  apply Zipp_assoc => x ; try omega.
+  move=> y z ; omega.
 Qed.
 
 Lemma ZsumList_take : forall n a b, take n (a ⊕ b) = (take n a) ⊕ (take n b).
-Proof. intros n a b ; repeat rewrite ZsumList_Zipp_eq ;  apply Zipp_take. Qed.
+Proof. intros n a b ; rewrite ?ZsumList_Zipp_eq ;  apply Zipp_take. Qed.
 
 Lemma ZsumList_drop : forall n a b, drop n (a ⊕ b) = (drop n a) ⊕ (drop n b).
-Proof. intros n a b ; repeat rewrite ZsumList_Zipp_eq ;  apply Zipp_drop ; go. Qed.
+Proof. intros n a b ; rewrite ?ZsumList_Zipp_eq ;  apply Zipp_drop ; go. Qed.
 
 Lemma ZsumList_length : forall a b, length (a ⊕ b) = length a \/ length (a ⊕ b) = length b.
-Proof. intros a b ; repeat rewrite ZsumList_Zipp_eq; apply Zipp_length. Qed.
+Proof. intros a b ; rewrite ?ZsumList_Zipp_eq; apply Zipp_length. Qed.
 
 Lemma ZsumList_Zlength : forall a b, Zlength (a ⊕ b) = Zlength a \/ Zlength (a ⊕ b) = Zlength b.
-Proof. intros a b ; repeat rewrite ZsumList_Zipp_eq; apply Zipp_Zlength. Qed.
+Proof. intros a b ; rewrite ?ZsumList_Zipp_eq; apply Zipp_Zlength. Qed.
 
 Lemma ZsumList_length_max : forall a b, length (a ⊕ b) = max (length a) (length b).
-Proof. intros a b ; repeat rewrite ZsumList_Zipp_eq; apply Zipp_length_max. Qed.
+Proof. intros a b ; rewrite ?ZsumList_Zipp_eq; apply Zipp_length_max. Qed.
 
 Lemma ZsumList_Zlength_max : forall a b, Zlength (a ⊕ b) = Zmax (Zlength a) (Zlength b).
-Proof. intros a b ; repeat rewrite ZsumList_Zipp_eq; apply Zipp_Zlength_max. Qed.
+Proof. intros a b ; rewrite ?ZsumList_Zipp_eq; apply Zipp_Zlength_max. Qed.
 
 Close Scope Z.

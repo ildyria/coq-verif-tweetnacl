@@ -25,11 +25,8 @@ Lemma ZunopList_eq_length: forall f n a b,
     ZunopList f a b = ZunopList_n f n a b.
 Proof.
   induction n.
-  destruct b ; go.
-  intros a b Hlb.
-  destruct b ; go.
-  simpl in *.
-  apply le_S_n in Hlb.
+  move => a [|h l] H ; go.
+  move => a [|h l] Hlb //= ; go. apply le_S_n in Hlb.
   f_equal.
   go.
 Qed.
@@ -45,10 +42,10 @@ Proof.
 Qed.
 
 Lemma ZunopList_taked: forall f n a b, take n (ZunopList f a b) = ZunopList_n f n a b.
-Proof. induction n ; intros a b ; simpl ; flatten ; go. Qed.
+Proof. induction n => a b //= ; flatten ; go. Qed.
 
 Lemma ZunopList_take : forall f n a b, take n (ZunopList f a b) = ZunopList f a (take n b).
-Proof. induction n ; intros a b ; destruct b ; go. Qed.
+Proof. induction n => a [] ; go. Qed.
 
 Lemma ZunopList_length : forall f a b, length (ZunopList f a b) = (length b).
 Proof. induction b; go. Qed.
@@ -57,4 +54,4 @@ Lemma ZunopList_Zlength : forall f a b, Zlength (ZunopList f a b) = (Zlength b).
 Proof. induction b ; [|rewrite ZunopList_cons ; rewrite !Zlength_cons ; rewrite IHb] ; auto. Qed.
 
 Lemma ZunopList_drop : forall f n a b, drop n (ZunopList f a b) = ZunopList f a (drop n b).
-Proof. induction n ; intros a b ; destruct b ; go. Qed.
+Proof. induction n => a [] ; go. Qed.

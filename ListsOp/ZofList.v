@@ -30,7 +30,7 @@ end.
 Notation "ℤ.lst A" := (ZofList A) (at level 65, right associativity).
 
 Lemma pown: 2 ^ n > 1.
-Proof. rewrite Z.gt_lt_iff ; apply Z.pow_gt_1 ; try omega. Qed.
+Proof. rewrite Z.gt_lt_iff ; apply Z.pow_gt_1 ; omega. Qed.
 
 Lemma pown0: 2 ^ n > 0.
 Proof. assert(Hp:= pown) ; omega. Qed.
@@ -39,18 +39,12 @@ Lemma pown2: 2 <= 2 ^ n.
 Proof. change 2 with (2 ^ 1) ;apply Z.pow_le_mono ; change (2^1) with 2 ; omega. Qed.
 
 Lemma ZofList_eq : forall l i, 0 <= i -> ZofListi l i = 2^(n * i) * ZofList l.
-Proof.
-  dependent induction l; go.
-  intros i Hi.
-  unfold ZofListi ; fold ZofListi.
-  unfold ZofList ; fold ZofList.
+Proof. elim ; go => h l IHl i Hi /=.
   assert (H := Hi).
   apply IHl in H.
-  rewrite <- Zred_factor4.
-  rewrite Z.mul_comm.
+  rewrite -Zred_factor4 Z.mul_comm.
   f_equal.
-  rewrite <- Zmult_assoc_reverse.
-  rewrite <- Zpower_exp ; go ; try omega.
+  rewrite -Zmult_assoc_reverse -Zpower_exp ; go ; try omega.
   rewrite Zmult_succ_r_reverse.
   go.
   apply Z.ge_le_iff.
@@ -64,8 +58,7 @@ Proof.
   intro l.
   assert (2^(n * 0) = 1) by (rewrite <- Zmult_0_r_reverse ; go).
   assert (ZofList l = 2^(n * 0) * ZofList l).
-    rewrite H.
-    rewrite Z.mul_comm ; go.
+    rewrite H Z.mul_comm ; go.
   rewrite H0.
   apply ZofList_eq.
   omega.
@@ -84,19 +77,12 @@ Lemma ZofList_add : forall m a b, ℤ.lst m + a :: b = m + ℤ.lst a :: b.
 Proof. intros m a b ; go. Qed.
 
 Lemma ZofList_app' : forall a b, ℤ.lst a ++ b = (ℤ.lst a) + 2^(n * ℤ.ℕ (length a)) * ℤ.lst b.
-Proof.
-  induction a as [| h a Hl].
-  - intro b.
-    simpl "ℤ.lst".
+Proof. elim => [| h a Hl] b.
+  - simpl ZofList.
     simpl length.
-    rewrite <- Zmult_0_r_reverse.
-    rewrite Z.pow_0_r.
-    omega.
-  - intro b.
-    rewrite <- app_comm_cons.
-    simpl ZofList.
-    rewrite Hl.
-    rewrite Zplus_assoc_reverse.
+    rewrite -Zmult_0_r_reverse Z.pow_0_r ; omega.
+  - simpl ZofList. 
+    rewrite Hl Zplus_assoc_reverse.
     f_equal.
     rewrite <- Zred_factor4.
     f_equal.
@@ -104,34 +90,21 @@ Proof.
     assert(ℤ.ℕ length (h :: a) = ℤ.ℕ 1 + length a) by go ; rewrite H ; clear H.
     rewrite Nat2Z.inj_add.
     simpl.
-    rewrite <- Zred_factor4.
-    rewrite Z.pow_add_r ; try omega.
-    rewrite Z.mul_1_r.
-    go.
+    rewrite - Zred_factor4 Z.pow_add_r ; try omega.
+    by rewrite Z.mul_1_r.
     nia.
 Qed.
 
 Lemma ZofList_app : forall a b, ℤ.lst a ++ b = (ℤ.lst a) + 2^(n * Zlength a) * ℤ.lst b.
-Proof.
-  induction a as [| h a Hl].
-  - intro b.
-    simpl "ℤ.lst".
-    rewrite Zlength_nil.
-    rewrite <- Zmult_0_r_reverse.
-    rewrite Z.pow_0_r.
-    omega.
-  - intro b.
-    rewrite <- app_comm_cons.
-    simpl ZofList.
-    rewrite Hl.
-    rewrite Zplus_assoc_reverse.
+Proof. elim => [| h a Hl] b /=.
+  - rewrite Zlength_nil -Zmult_0_r_reverse Z.pow_0_r. omega.
+  - rewrite Hl Zplus_assoc_reverse.
     f_equal.
     rewrite <- Zred_factor4.
     f_equal.
     rewrite <- Zmult_assoc_reverse.
     replace (Zlength (h :: a)) with(1 + Zlength a) by (rewrite Zlength_cons ; omega).
-    rewrite <- Zred_factor4.
-    rewrite Z.pow_add_r ; try omega.
+    rewrite -Zred_factor4 Z.pow_add_r ; try omega.
     rewrite Z.mul_1_r.
     go.
     assert(H:= Zlength_pos a).
@@ -151,30 +124,24 @@ Proof. go. Qed.
 
 Lemma ZofList_drop' : forall l (m:nat),
   2^(n * ℤ.ℕ length (take m l)) * (ℤ.lst drop m l) = (ℤ.lst l) - ℤ.lst take m l.
-Proof.
-  intros l; destruct l; intros m.
+Proof. elim => [| z l IHl] m.
   - destr_boum m.
-  - replace(2^(n * ℤ.ℕ length (take m (z::l))) * (ℤ.lst drop m (z :: l))) with (2^(n * ℤ.ℕ length (take m (z::l))) * (ℤ.lst drop m (z :: l)) - (ℤ.lst take m (z :: l)) + (ℤ.lst take m (z :: l))) by omega.
+  - rep_omega (2^(n * ℤ.ℕ length (take m (z::l))) * (ℤ.lst drop m (z :: l))) (2^(n * ℤ.ℕ length (take m (z::l))) * (ℤ.lst drop m (z :: l)) - (ℤ.lst take m (z :: l)) + (ℤ.lst take m (z :: l))).
     rewrite <- Z.add_sub_swap.
     f_equal.
-    rewrite Z.add_comm.
-    rewrite <- ZofList_app'.
-    replace(take m (z :: l) ++ drop m (z :: l)) with (z :: l) by (rewrite firstn_skipn ; reflexivity).
-    reflexivity.
+    rewrite Z.add_comm -ZofList_app'.
+    by replace(take m (z :: l) ++ drop m (z :: l)) with (z :: l) by (rewrite firstn_skipn ; reflexivity).
 Qed.
 
 Lemma ZofList_drop : forall l (m:nat),
   2^(n * Zlength (take m l)) * (ℤ.lst drop m l) = (ℤ.lst l) - ℤ.lst take m l.
-Proof.
-  intros l; destruct l; intros m.
+Proof. elim => [|z l IHl] m.
   - destr_boum m.
-  - replace (2^(n * Zlength (take m (z::l))) * (ℤ.lst drop m (z :: l))) with (2^(n * Zlength (take m (z::l))) * (ℤ.lst drop m (z :: l)) - (ℤ.lst take m (z :: l)) + (ℤ.lst take m (z :: l))) by omega.
+  - rep_omega (2^(n * Zlength (take m (z::l))) * (ℤ.lst drop m (z :: l))) (2^(n * Zlength (take m (z::l))) * (ℤ.lst drop m (z :: l)) - (ℤ.lst take m (z :: l)) + (ℤ.lst take m (z :: l))).
     rewrite <- Z.add_sub_swap.
     f_equal.
-    rewrite Z.add_comm.
-    rewrite <- ZofList_app.
-    replace(take m (z :: l) ++ drop m (z :: l)) with (z :: l) by (rewrite firstn_skipn ; reflexivity).
-    reflexivity.
+    rewrite Z.add_comm -ZofList_app.
+    by replace(take m (z :: l) ++ drop m (z :: l)) with (z :: l) by (rewrite firstn_skipn ; reflexivity).
 Qed.
 
 Lemma ZofList_take' : forall l (m:nat),
@@ -194,31 +161,23 @@ Lemma ZofList_take_drop : forall l (m:nat),
 Proof. intros l m ; rewrite ZofList_drop ; go. Qed.
 
 Lemma ZofList_take_nth' : forall l (m:nat), (ℤ.lst take m l) + 2^(n * ℤ.ℕ length (take m l)) * nth m l 0 = ℤ.lst take (S m) l.
-Proof.
-  induction l ; destruct m ; flatten ; go.
+Proof. elim => [| z l IHl] [] ; flatten ; go.
   - destruct l ; flatten ; simpl ; go ;
     rewrite <-! Zmult_0_r_reverse ; ring.
-  - simpl take; simpl ZofList;
-    simpl nth; simpl length.
-    rewrite <- IHl.
-    rewrite Zplus_assoc_reverse.
-    rewrite <- Zred_factor4.
-    f_equal ; f_equal ; rewrite <- Zmult_assoc_reverse.
-    f_equal ; rewrite <- Z.pow_add_r ; go.
+  - move => m /=. 
+    rewrite -IHl Zplus_assoc_reverse -Zred_factor4.
+    f_equal ; f_equal ; rewrite -Zmult_assoc_reverse.
+    f_equal ; rewrite -Z.pow_add_r ; go.
     f_equal ; nia.
 Qed.
 
 Lemma ZofList_take_nth : forall l (m:nat), (ℤ.lst take m l) + 2^(n * Zlength (take m l)) * nth m l 0 = ℤ.lst take (S m) l.
 Proof.
-  induction l ; destruct m ; flatten ; go.
+  elim => [| z l IHl] [] ; flatten ; go.
   - destruct l ; flatten ; simpl ; go ;
     rewrite <-! Zmult_0_r_reverse ; ring.
-  - simpl take; simpl ZofList;
-    simpl nth; rewrite Zlength_cons'.
-    rewrite <- IHl.
-    rewrite Zplus_assoc_reverse.
-    repeat rewrite <- Zred_factor4.
-    f_equal ; f_equal ; repeat rewrite <- Zmult_assoc_reverse.
+  - move => m /=. rewrite Zlength_cons' -IHl Zplus_assoc_reverse -!Zred_factor4.
+    f_equal ; f_equal ; rewrite -!Zmult_assoc_reverse.
     assert(H := Zlength_pos (take m l)).
     f_equal ; rewrite <- Z.pow_add_r ; try nia.
     f_equal ; nia.
@@ -230,8 +189,7 @@ Proof.
   Proof.
   intros l m.
   rewrite ZofList_take_nth'.
-  rewrite ZofList_take_drop'.
-  reflexivity.
+  by rewrite ZofList_take_drop'.
 Qed.
 
 Lemma ZofList_take_nth_drop : forall l (m:nat), (ℤ.lst take m l) + 2^(n * Zlength (take m l)) * nth m l 0 + 2^(n * Zlength (take (S m) l)) * (ℤ.lst drop (S m) l) = ℤ.lst l.
@@ -239,17 +197,14 @@ Proof.
   Proof.
   intros l m.
   rewrite ZofList_take_nth.
-  rewrite ZofList_take_drop.
-  reflexivity.
+  by rewrite ZofList_take_drop.
 Qed.
 
 End Integer.
 
 Lemma destruct_length_16 : forall (l:list Z), (length l = 16)%nat -> exists z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14,
 l = [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14].
-Proof.
-intros l Hl.
-repeat (destruct l ; tryfalse).
+Proof. move => l Hl. repeat (destruct l ; tryfalse).
 repeat eexists.
 Qed.
 

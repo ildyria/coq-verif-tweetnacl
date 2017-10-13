@@ -10,9 +10,9 @@ Lemma Forall_Zipp_length: forall (f:Z -> Z -> Z) (P Q R: Z -> Prop) (a b: list Z
   Forall Q b -> 
   Forall R (Zipp f a b).
 Proof.
-  intros f P Q R.
-  induction a ; intros b Hf Hl Ha Hb.
-  - simpl in Hl; symmetry in Hl; rewrite length_zero_iff_nil in Hl.
+  move => f P Q R; elim => [|x l IHa] b Hf Hl Ha Hb.
+  - symmetry in Hl; simpl in Hl.
+    apply length_zero_iff_nil in Hl.
     subst b ; go.
   - destruct b ; inv Hl.
     simpl.
@@ -42,8 +42,8 @@ Lemma Forall_Zipp_0: forall (f:Z -> Z -> Z) (P Q R: Z -> Prop) (a b: list Z),
   Forall Q b -> 
   Forall R (Zipp f a b).
 Proof.
-  intros f P Q R.
-  induction a ; intros b Hf HP HQ Ha Hb.
+  move=> f P Q R.
+  elim => [|x l IHa] b Hf HP HQ Ha Hb.
   - induction b ; go.
     simpl.
     inv Hb.

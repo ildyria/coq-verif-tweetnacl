@@ -74,12 +74,10 @@ Lemma Zipp_taked: forall f n a b, take n (Zipp f a b) = Zipp_n f n a b.
 Proof. ind_destr_destr n a b ; simpl ; flatten ; go ; try inv Eq ; rewrite <- IHn ; f_equal ;   [rewrite Zipp_map_r | rewrite Zipp_map_l]; go. Qed.
 *)
 Lemma Zipp_take : forall f n a b, take n (Zipp f a b) = Zipp f (take n a) (take n b).
-Proof.
-ind_destr_destr n a b ; simpl; repeat rewrite <- Zipp_map_l ; repeat rewrite <- Zipp_map_r ; rewrite IHn; destruct n; go.
-Qed.
+Proof. ind_destr_destr n a b => //=; rewrite -?Zipp_map_l -?Zipp_map_r IHn; destruct n; go. Qed.
 
 Lemma Zipp_length_max : forall f a b, length (Zipp f a b) = max (length a) (length b).
-Proof. induction a; destruct b ; go ; simpl ; rewrite map_length ; reflexivity. Qed.
+Proof. induction a ; destruct b ; go => //= ; rewrite map_length ; reflexivity. Qed.
 
 Lemma Zipp_Zlength_max : forall f a b, Zlength (Zipp f a b) = Z.max (Zlength a) (Zlength b).
 Proof.
@@ -87,15 +85,13 @@ Proof.
   try assert(Ha := Zlength_pos a);
   try assert(Hb := Zlength_pos b).
 
-  repeat rewrite Zlength_cons ; rewrite Zlength_map.
-  rewrite Z.max_r; try reflexivity.
+  rewrite ?Zlength_cons Zlength_map Z.max_r; try reflexivity.
   rewrite Zlength_nil; omega.
 
-  repeat rewrite Zlength_cons ; rewrite Zlength_map.
-  rewrite Z.max_l ; try reflexivity.
+  rewrite ?Zlength_cons Zlength_map Z.max_l ; try reflexivity.
   rewrite Zlength_nil; omega.
 
-  repeat rewrite Zlength_cons; rewrite IHl.
+  rewrite ?Zlength_cons IHl.
   apply Z.succ_max_distr.
 Qed.
 
@@ -209,9 +205,5 @@ Lemma Zipp_drop : forall f n a b, drop n (Zipp f a b) = Zipp f (drop n a) (drop 
 Proof.
   ind_destr_destr n a b; simpl drop ; [rewrite Zipp_map_r | rewrite Zipp_map_l] ; auto ; rewrite map_drop ; reflexivity.
 Qed.
-
-
-
-
 
 Close Scope Z.

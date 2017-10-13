@@ -44,9 +44,7 @@ Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
 Lemma ZscalarMult_correct: forall a b, ℤ.lst a ∘∘ b = a * ℤ.lst b.
 Proof.
-  intros a ; induction b ; go.
-  unfold ZscalarMult ; fold ZscalarMult.
-  rewrite! ZofList_cons.
+  move=> a ; elim => [|b l IHb]; go => //=. 
   rewrite IHb.
   ring.
 Qed.

@@ -17,48 +17,46 @@ Notation "A ⊖ B" := (ZsubList A B) (at level 60, right associativity).
 Open Scope Z.
 
 Lemma ZsubList_Zipp_eq: forall  (a b : list Z), ZsubList a b = Zipp Z.sub a b.
-Proof.
-  induction a ; intros b ; go.
-  destruct b ; go.
-  destruct b ; go.
-  simpl.
+Proof. elim=> [|h a IHa]. move=> [|b h]; go.
+       move => [|b lb] ; simpl.
   f_equal ; go.
-  replace (map (fun x : ℤ => x - 0) a0) with (map (fun x : ℤ => x) a0).
+  replace (map (fun x : ℤ => x - 0) a) with (map (fun x : ℤ => x) a).
   rewrite map_id ; go.
   apply map_ext ; intros x ; go.
+  f_equal ; go.
 Qed.
 
 Lemma ZsubList_nth : forall (n:nat) (a b : list Z),
   length a = length b ->
   (n < length a)%nat ->
   nth n (a ⊖ b) 0 = (nth n a 0) - (nth n b 0).
-Proof. intros; repeat rewrite ZsubList_Zipp_eq; apply Zipp_nth_length ; auto. Qed.
+Proof. intros; rewrite ?ZsubList_Zipp_eq; apply Zipp_nth_length ; auto. Qed.
 
 Lemma ZsubList_nil_r: forall a, a ⊖ [] = a.
-Proof. induction a ; go. Qed.
+Proof. elim ; go. Qed.
 
 Lemma ZsubList_take : forall n a b, take n (a ⊖ b) = (take n a) ⊖ (take n b).
-Proof. intros n a b ; repeat rewrite ZsubList_Zipp_eq ;  apply Zipp_take. Qed.
+Proof. intros n a b ; rewrite ?ZsubList_Zipp_eq ;  apply Zipp_take. Qed.
 
 Lemma ZsubList_drop : forall n a b, drop n (a ⊖ b) = (drop n a) ⊖ (drop n b).
-Proof. intros n a b ; repeat rewrite ZsubList_Zipp_eq.
+Proof. intros n a b ; rewrite ?ZsubList_Zipp_eq.
 rewrite Zipp_drop ; go.
 Qed.
 
 Lemma ZsubList_length : forall a b, length (a ⊖ b) = length a \/ length (a ⊖ b) = length b.
 Proof.
-  intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_length.
+  intros a b ; rewrite ?ZsubList_Zipp_eq; apply Zipp_length.
 Qed.
 
 Lemma ZsubList_Zlength : forall a b, Zlength (a ⊖ b) = Zlength a \/ Zlength (a ⊖ b) = Zlength b.
 Proof.
-  intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_Zlength.
+  intros a b ; rewrite ?ZsubList_Zipp_eq; apply Zipp_Zlength.
 Qed.
 
 Lemma ZsubList_length_max : forall a b, length (a ⊖ b) = max (length a) (length b).
-Proof. intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_length_max. Qed.
+Proof. intros a b ; rewrite ?ZsubList_Zipp_eq; apply Zipp_length_max. Qed.
 
 Lemma ZsubList_Zlength_max : forall a b, Zlength (a ⊖ b) = Zmax (Zlength a) (Zlength b).
-Proof. intros a b ; repeat rewrite ZsubList_Zipp_eq; apply Zipp_Zlength_max. Qed.
+Proof. intros a b ; rewrite ?ZsubList_Zipp_eq; apply Zipp_Zlength_max. Qed.
 
 Close Scope Z.

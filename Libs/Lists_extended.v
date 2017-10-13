@@ -1,6 +1,7 @@
 Require Import Tweetnacl.Libs.LibTactics.
 Require Import Tweetnacl.Libs.LibTactics_SF.
 Require Import stdpp.prelude.
+Require Import mathcomp.ssreflect.ssreflect.
 Import ListNotations.
 
 Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
@@ -12,9 +13,9 @@ Arguments nth_drop [A] _ _ _ _.
 
 Lemma take_drop_length: forall A (n:nat) (l l':list A),
   length l = length l' -> length (take n l ++ drop n l') = length l.
-Proof. intros A n l l' Hll'.
-assert(H: n < length l \/ length l <= n) by omega.
-destruct H ; rewrite app_length ; rewrite drop_length ; rewrite <- Hll' ; [rewrite take_length_le|rewrite take_length_ge] ; omega.
+Proof. move => A n l l' Hll'.
+have H: n < length l \/ length l <= n by omega.
+destruct H ; rewrite app_length drop_length -Hll' ; [rewrite take_length_le|rewrite take_length_ge] ; omega.
 Qed.
 Arguments take_drop_length [A] _ _ _.
 
@@ -62,8 +63,7 @@ Qed.
 Lemma upd_nth_map:
   forall (A B : Type) (f : A -> B) (i : nat) (l : list A) (v : A),
   upd_nth i (map f l) (f v) = map f (upd_nth i l v).
-Proof.
-induction i ; destruct l; simpl  ; intros ;
+Proof. induction i ; destruct l; simpl ; intros ;
 repeat match goal with
   | _ => progress intros
   | _ => reflexivity
@@ -81,16 +81,12 @@ Lemma upd_nth_lookup:
   i = j /\ nth i (upd_nth j l v) d = v \/
   i <> j /\ nth i (upd_nth j l v) d = nth i l d.
 Proof.
-  intros K A l; gen K ; induction l ; intros [] HSl i j d v HSi HSj;
+  move => K A l; move: K. induction l; intros [] HSl i j d v HSi HSj;
   simpl in HSl ; try omega.
   inversion HSl as [Hl].
-  destruct i,j.
-  left ; go.
-  right ; go.
-  right ; go.
-  simpl.
-  assert(Hi : 0 ≤ i ∧ i < n) by omega.
-  assert(Hj : 0 ≤ j ∧ j < n) by omega.
+  destruct i, j ; [left | right | right| ] ; go =>  /=.
+  have Hi : 0 ≤ i ∧ i < n by omega.
+  have Hj : 0 ≤ j ∧ j < n by omega.
   clear HSi HSj HSl.
   apply (IHl n Hl i j d v) in Hj.
   2: assumption.
@@ -107,7 +103,7 @@ Lemma upd_nth_lookup':
   forall d v : A,
   nth i (upd_nth j l v) d = (if beq_nat i j then v else nth i l d).
 Proof.
-  intros K A l Hl i Hi j H d v.
+  move => K A l Hl i Hi j H d v.
   apply (upd_nth_lookup K A l Hl i j d v Hi) in H.
   destruct H as [H|H];
   destruct H as [Hij Hnth].
@@ -157,7 +153,7 @@ Lemma upd_nth_app2:
 Proof.
   induction l1 ; intros l2 [] v Hl1 ; simpl in * ; try reflexivity.
   omega.
-  assert(Hl1': length l1 ≤ n ∧ n ≤ length l1 + length l2) by omega.
+  have Hl1': length l1 ≤ n ∧ n ≤ length l1 + length l2 by omega.
   apply (IHl1 l2 n v) in Hl1'.
   go.
 Qed.
@@ -172,9 +168,9 @@ Lemma upd_nth_app':
   length l1 = n -> upd_nth n (l1 ++ v :: l2) w = l1 ++ w :: l2.
 Proof.
   intros.
-  rewrite upd_nth_app2 by omega.
-  replace (n - length l1) with 0 by omega.
-  go.
+  rewrite upd_nth_app2.
+  2: by omega.
+  by rep_omega (n - length l1) 0.
 Qed.
 
 Lemma upd_nth_list_alter: forall A (f : A -> A) i (v:A) (l: list A), f = (fun x => v) -> 
@@ -189,18 +185,16 @@ reflexivity.
 destruct l ; simpl in H.
 inversion H.
 change (a::l) with ([a] ++ l).
-rewrite upd_nth_app2 by go.
-simpl.
-rewrite <- minus_n_O.
+rewrite upd_nth_app2 ; simpl.
+rewrite -minus_n_O.
 f_equal.
-apply IHi.
-assumption.
+go.
 omega.
 Qed.
 
 Lemma upd_nth_alter: forall A (f : A -> A) (i: nat) (v:A) (l: list A), 0 <= i -> f = (fun x => v) -> 
 i < length l -> upd_nth i l v = alter f i l.
-Proof. intros ; unfold base.alter ; apply upd_nth_list_alter ; auto. Qed.
+Proof.  intros ; unfold base.alter ; apply upd_nth_list_alter ; auto. Qed.
 
 Lemma upd_nth_app_step:
   forall i (a r:list Z) d, 
@@ -211,23 +205,25 @@ Lemma upd_nth_app_step:
     upd_nth i (firstn i a ++ skipn i r) (nth i a d).
 Proof.
   intros.
-  rewrite (nth_drop i r 0) by assumption.
-  rewrite cons_middle; rewrite app_assoc ; rewrite upd_nth_app1.
-  2: rewrite app_length ; rewrite firstn_length_le ; simpl ; omega.
+  rewrite (nth_drop i r 0).
+  rewrite cons_middle app_assoc upd_nth_app1.
+  2: rewrite app_length firstn_length_le ; go.
   rewrite upd_nth_app2.
   2: rewrite firstn_length_le ; simpl; omega.
   replace (i - length (firstn i a)) with 0.
   2: rewrite firstn_length_le; omega.
   rewrite upd_nth0.
   f_equal.
-  rewrite <- (take_drop i a).
-  replace (S i) with (i + 1)%nat by omega.
-  rewrite take_plus_app by (rewrite firstn_length_le; omega).
+  rewrite -(take_drop i a).
+  rep_omega (S i) (i + 1)%nat.
+  rewrite take_plus_app.
   rewrite (take_drop i a).
+  2: (rewrite firstn_length_le; omega).
   f_equal.
   clear H0 r.
   gen i.
   induction a ; intros [] Hi Hl ; go.
+  done.
 Qed.
 
 Definition list_ind_by_2 :
@@ -509,18 +505,12 @@ Lemma Zlength_pos: forall {A : Type} (l:list A), 0 <= Zlength l.
 Proof. intros ; rewrite Zlength_correct ; go. Qed.
 
 Lemma app_Zlength: forall {A : Type} (l l' : list A), Zlength (l ++ l') = Zlength l + Zlength l'.
-Proof.
-intros.
-repeat rewrite Zlength_correct.
-rewrite <- Nat2Z.inj_add.
-rewrite app_length.
-reflexivity.
-Qed.
+Proof. intros; by rewrite !Zlength_correct -Nat2Z.inj_add app_length. Qed.
 
 Lemma Zlength_cons' : forall {A : Type} (x : A) (l : list A), Zlength (x :: l) = (Zlength l) + 1.
-Proof. intros ; rewrite Zlength_cons; omega. Qed.
+Proof. intros ; by rewrite Zlength_cons. Qed.
 
 Lemma Zlength_map: forall A B (f: A -> B) l, Zlength (map f l) = Zlength l.
-Proof. intros; induction l ; auto ; rewrite map_cons ; repeat rewrite Zlength_cons ; go. Qed.
+Proof. intros; induction l ; auto ; rewrite map_cons !Zlength_cons ; go. Qed.
 
 Close Scope Z.
