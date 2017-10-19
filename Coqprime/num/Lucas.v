@@ -9,7 +9,9 @@
 Set Implicit Arguments.
 
 Require Import ZArith Znumtheory Zpow_facts.
-Require Import CyclicAxioms DoubleCyclic BigN Cyclic31 Int31.
+Require Import CyclicAxioms.
+Require Import Bignums.CyclicDouble.DoubleCyclic.
+Require Import Bignums.BigN.BigN Cyclic31 Int31.
 Require Import ZCAux.
 Require Import W.
 Require Import Mod_op.

@@ -110,6 +110,7 @@ Doc
 *.vio
 *.crashcoqide
 *.cache
+Makefile.conf
 
 ### C ###
 # Object files

@@ -48,6 +48,7 @@ Eval vm_compute in
   positive_to_num 2147483648.
 *)
 Let wB := (2^ Z_of_nat size)%Z.
+
 Definition mphi (n : number) := 
   fold_right (fun i r => phi i + wB * r )%Z 0%Z n.
 
@@ -171,10 +172,10 @@ case (le_lt_or_eq n 30); auto with zarith; intros HH3.
 rewrite Zmod_small; nrom; auto with zarith.
 split; auto with zarith.
 change wB with (Zpower_nat 2 31); apply Zpower_nat_lt_compat; auto with zarith.
-rewrite HH3, Z_mod_same; auto with zarith.
+rewrite HH3, Z_mod_same; auto with zarith ; try reflexivity.
 assert (Hij: (forall i j n, phi i = Zpower_nat 2 n -> phi j < phi i -> 
              phi (i + j) = phi i + phi j)%Z).
-intros i j n Hi Hj.
+  intros i j n Hi Hj.
   rewrite spec_add, Zmod_small; auto; nrom.
   case (phi_bounded i); case (phi_bounded j); nrom; intros H1j H2j H1i H2i;
    split; auto with zarith.
@@ -184,7 +185,7 @@ intros i j n Hi Hj.
   apply Zlt_le_trans with (Zpower_nat 2 (S n)).
   rewrite Zpower_nat_S, <-Hi; auto with zarith.
   change wB with (Zpower_nat 2 31).
-  apply Zpower_nat_le_compat; auto with zarith.
+   apply Zpower_nat_le_compat; auto with zarith.
 assert (H: forall p1 i j n, phi i = Zpower_nat 2 n -> (phi j < phi i ->
    mphi (positive_aux_to_num p1 i j) = Zpos p1 * phi i + phi j)%Z).
 induction p1 as [p1 Hrec| p1 Hrec| ]; simpl positive_aux_to_num; intros i j n Hi Hj.
@@ -217,6 +218,7 @@ Qed.
 Lemma phi_pos n : (0 <= [n])%Z.
 Proof.
 induction n as [ | a n Hrec]; nrom; auto with zarith.
+unfold wB.
 case (phi_bounded a); intros Ha1 Ha2; auto with zarith.
 Qed.
 

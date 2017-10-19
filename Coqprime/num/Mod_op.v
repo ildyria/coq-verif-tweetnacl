@@ -8,8 +8,16 @@
 
 Set Implicit Arguments.
 
-Require Import DoubleBase DoubleSub DoubleMul DoubleSqrt DoubleLift DoubleDivn1 DoubleDiv. 
-Require Import CyclicAxioms DoubleCyclic BigN Cyclic31.
+Require Import Bignums.CyclicDouble.DoubleBase.
+Require Import Bignums.CyclicDouble.DoubleSub.
+Require Import Bignums.CyclicDouble.DoubleMul.
+Require Import Bignums.CyclicDouble.DoubleSqrt.
+Require Import Bignums.CyclicDouble.DoubleLift.
+Require Import Bignums.CyclicDouble.DoubleDivn1.
+Require Import Bignums.CyclicDouble.DoubleDiv.
+Require Import CyclicAxioms.
+Require Import Bignums.CyclicDouble.DoubleCyclic.
+Require Import Bignums.BigN.BigN Cyclic31.
 Require Import ZArith ZCAux.
 Import CyclicAxioms DoubleType DoubleBase.
 

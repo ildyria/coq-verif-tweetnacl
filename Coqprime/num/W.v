@@ -7,7 +7,7 @@
 (*************************************************************)
 
 Set Implicit Arguments.
-Require Import CyclicAxioms DoubleCyclic BigN Cyclic31 Int31.
+Require Import CyclicAxioms Bignums.CyclicDouble.DoubleCyclic Bignums.BigN.BigN Cyclic31 Int31.
 Require Import ZArith ZCAux.
 
 (* ** Type of words ** *)
