@@ -8,7 +8,7 @@ Local Open Scope Z.
 
 (* Ltac inner_M_fix_compute_solve := intros ; repeat rewrite inner_M_i_j_eq by omega ; change_Z_to_nat ;
 simpl ; unfold update_M_i_j' ; unfold local_update_M ;reflexivity. *)
-Ltac inner_M_fix_compute_solve := intros ; repeat rewrite inner_M_i_j_eq by omega ; simpl ; unfold update_M_i_j' ; unfold local_update_M ;reflexivity.
+Ltac inner_M_fix_compute_solve := intros ; repeat orewrite inner_M_i_j_eq ; simpl ; unfold update_M_i_j' ; unfold local_update_M ;reflexivity.
 
 
 Lemma inner_M_fix_0_16 : forall z0 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29
@@ -264,7 +264,7 @@ Lemma outer_M_fix_0_16: forall z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z
   z * z25 + z41; z * z26 + z42; z * z27 + z43; z * z28 + z44; z * z29 + z45;
   z * z30 + z46; z47; z48; z49; z50; z51; z52; z53; z54; z55; z56; z57; z58;
   z59; z60; z61].
-Proof. intros; repeat rewrite outer_M_i_j_eq by omega ; reflexivity. Qed.
+Proof. intros; repeat orewrite outer_M_i_j_eq; reflexivity. Qed.
 
 Hint Rewrite outer_M_fix_0_16 : innerouterMdb.
 

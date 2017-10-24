@@ -113,7 +113,7 @@ Proof.
   rewrite <- Zmult_0_r_reverse ; go.
   destruct m;
   move : Hl ; rewrite app_length.
-  simpl; rep_omega (length l + 1)%nat (S (length l))%nat => Hl.
+  simpl; oreplace (length l + 1)%nat (S (length l))%nat => Hl.
   try congruence.
   move=> Hl.
   rewrite Nat2Z.inj_succ -Zmult_succ_r_reverse ZofList_app'.
@@ -204,7 +204,7 @@ Proof.
   omega.
   destruct m;
   move : Hl; rewrite app_length; simpl length ; 
-  rep_omega (length l + 1)%nat (S (length l))%nat => Hl;
+  oreplace (length l + 1)%nat (S (length l))%nat => Hl;
   try congruence.
   rewrite Nat2Z.inj_succ -Zmult_succ_r_reverse ZofList_app'.
   2: done.

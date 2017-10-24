@@ -9,7 +9,7 @@ Function outer_M_fix (i j : Z) (a b o : list Z)  {measure Z.to_nat i} : list Z :
   if (i <=? 0)
     then (inner_M_fix 0 j (from_option id 0 (a !! (Z.to_nat 0))) b o)
     else outer_M_fix (i - 1) 16 a b (inner_M_fix i j (from_option id 0 (a !! (Z.to_nat i))) b o).
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
+Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
 
 Fixpoint outer_M_fix' (i j : nat) (a b o : list Z) := match i with
   | 0%nat => (inner_M_fix' 0%nat j (from_option id 0 (a !! 0%nat)) b o)
@@ -27,8 +27,8 @@ Proof.
   apply (natlike_ind (fun i => ∀ j : ℤ, 0 ≤ j → ∀ a b o : list ℤ, outer_M_fix i j a b o = outer_M_fix' (Z.to_nat i) (Z.to_nat j) a b o)).
   intros.
   rewrite outer_M_fix_equation.
-  rewrite Zle_imp_le_bool by omega.
-  rewrite inner_M_i_j_eq by omega.
+  rewrite Zle_imp_le_bool ; try omega.
+  rewrite inner_M_i_j_eq ; try omega.
   simpl.
   f_equal.
   - intros i Hi IHi j Hj a b o.
@@ -41,8 +41,8 @@ Proof.
   apply Zle_bool_imp_le in Eq ; omega. (* silly case *)
   apply Z.leb_gt in Eq.
   replace (i + 1 - 1) with i by omega.
-  rewrite IHi by omega.
-  rewrite inner_M_i_j_eq by omega.
+  rewrite IHi ; try omega.
+  rewrite inner_M_i_j_eq ; try omega.
   f_equal; f_equal ; [| f_equal;f_equal] ; rewrite <- Z2Nat.inj_succ ; go.
 Qed.
 
@@ -69,7 +69,7 @@ Proof.
   destruct (i + 1 <=? 0) ; auto.
   rewrite inner_M_fix_length ; go.
   replace (i + 1 - 1) with (i) by omega.
-  rewrite iHi by omega.
+  orewrite iHi.
   rewrite inner_M_fix_length ; go.
 Qed.
 
@@ -111,19 +111,11 @@ Proof.
                 → Forall (λ x : ℤ, p ≤ x ∧ x ≤ q) (outer_M_fix i j a b o))) ; try omega.
 - intros j Hj a Ha Hla b Hb Hlb o Hlo p q m3 Hp n3 Ho Hq.
   rewrite outer_M_fix_0'.
-  replace ((0 + 1) * min_prod m1 n1 m2 n2) with (min_prod m1 n1 m2 n2) in Hp by omega.
-  replace ((0 + 1) * max_prod m1 n1 m2 n2) with (max_prod m1 n1 m2 n2) in Hq by omega.
-  eapply inner_M_fix_bounds ; try omega.
-  2: apply Hm1n1.
-  2: apply Hm2n2.
-  rewrite <- nth_lookup.
-  apply Forall_nth_len.
-  auto.
+  move: Hp ; oreplace ((0 + 1) * min_prod m1 n1 m2 n2) (min_prod m1 n1 m2 n2) => Hp.
+  move: Hq ; oreplace ((0 + 1) * max_prod m1 n1 m2 n2) (max_prod m1 n1 m2 n2) => Hq.
+  eapply inner_M_fix_bounds ; try omega; [rewrite <- nth_lookup | apply Hm1n1 | apply Hm2n2 | | | | ] ; eauto.
+  apply Forall_nth_len ; auto.
   rewrite Hla ; go.
-  auto.
-  eauto.
-  eauto.
-  eauto.
 - clear i Hi ; intros i Hi iHi.
   intros j Hj a Ha Hla b Hb Hlb o Hlo p q m3 Hp n3 Ho Hq.
   rewrite outer_M_fix_equation.
@@ -144,14 +136,8 @@ Proof.
   2: eauto.
   simpl in Hm1n1, Hm2n2.
   subst.
-  eapply inner_M_fix_bounds ; try omega.
-  2: eapply Hm1n1.
-  2: eapply Hm2n2.
-  2: assumption.
-  2: eauto.
-  2: eauto.
-  2: eauto.
-  rewrite <- nth_lookup.
+  eapply inner_M_fix_bounds ; try omega ; [| eapply Hm1n1 | eapply Hm2n2 | | | | ] ; eauto.
+  rewrite <- nth_lookup;
   eapply Forall_nth_d ; go.
 Qed.
 
@@ -173,7 +159,7 @@ Lemma outer_M_fix_Zbounds : forall m1 m2 m3 n1 n2 n3 i j a b o p q,
   Forall (fun x => p <= x <= q) (outer_M_fix i j a b o).
 Proof.
 intros.
-rewrite Zlength_correct in H6, H7, H8.
+move : H6 H7 H8 ; rewrite ?Zlength_correct => H6 H7 H8.
 eapply (outer_M_fix_bounds m1 m2 m3 n1 n2 n3) ; go.
 eapply Forall_impl ; [eapply H3|]; intros ; go.
 eapply Forall_impl ; [eapply H4|]; intros ; go.

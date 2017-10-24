@@ -56,11 +56,9 @@ Qed.
 Corollary CarrynPreserve : forall m l, ℤ.lst l = ℤ.lst Carrying_n m 0 l.
 Proof.
   intros.
-  symmetry.
-  rewrite Zplus_0_r_reverse.
-  symmetry.
-  rewrite Z.add_comm.
-  apply CarrynPreserveConst.
+  simpl.
+  rewrite -CarrynPreserveConst.
+  omega.
 Qed.
 
 End Integer.
@@ -96,7 +94,8 @@ Proof.
   assert(H263262: - 2^63 < - 2^62) by reflexivity.
   assert(H2630: - 2^63 < 0) by reflexivity.
   assert(i' = 0%nat ∨ i' = 1%nat ∨ i' = 2%nat ∨ i' = 3%nat ∨ i' = 4%nat ∨ i' = 5%nat ∨ i' = 6%nat ∨ i' = 7%nat ∨ i' = 8%nat ∨ i' = 9%nat ∨ i' = 10%nat ∨ i' = 11%nat ∨ i' = 12%nat ∨ i' = 13%nat ∨ i' = 14%nat ∨ i' = 15%nat) by omega.
-  repeat rewrite Forall_cons in HForalll.
+  move: HForalll.
+  rewrite ?Forall_cons => HForalll.
   repeat match goal with
     | [H : (_ /\ _) /\ _ |-_] => destruct H
   end.

@@ -24,7 +24,7 @@ Proof.
   unfold M1_fix.
   repeat (destruct a ; tryfalse).
   repeat (destruct b ; tryfalse).
-  rewrite outer_M_i_j_eq by omega.
+  orewrite outer_M_i_j_eq.
   change (Z.to_nat 16) with 16%nat.
   simpl.
   unfold update_M_i_j' ; simpl.
@@ -69,7 +69,7 @@ Proof.
   unfold update_M2_i.
   simpl.
   unfold local_update_M2.
-  rewrite lookup_ge_None_2 by omega.
+  orewrite (@lookup_ge_None_2 Z).
   simpl.
   apply list_alter_id ; auto.
   intros ; omega.
@@ -89,8 +89,8 @@ Proof.
   remember (local_update_M2 (alter (local_update_M2 o (i + 16)) i o) (k + 16)) as m.
   remember (local_update_M2 o (i + 16)) as n.
   unfold local_update_M2 in *.
-  rewrite list_lookup_alter_ne in Heqf by omega.
-  rewrite list_lookup_alter_ne in Heqm by omega.
+  move: Heqf ; orewrite (@list_lookup_alter_ne Z) => Heqf.
+  move: Heqm ; orewrite (@list_lookup_alter_ne Z) => Heqm.
   assert(g = m) by go.
   assert(f = n) by go.
   rewrite <- H3.
@@ -100,7 +100,7 @@ Qed.
 
 Function M2_fix (i : Z) (o : list Z) {measure Z.to_nat i} : list Z :=
   if (i <=? 0) then o else M2_fix (i - 1) (update_M2_i (Z.to_nat (i - 1)) o).
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Qed.
+Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Qed.
 
 Fixpoint M2_fix' (i : nat) (o : list Z) := match i with
   | 0%nat => o
@@ -109,7 +109,7 @@ end.
 
 Function M2_fix'' (i : Z) (o : list Z) {measure Z.to_nat i} : list Z :=
   if (i <=? 0) then o else update_M2_i (Z.to_nat (i - 1)) (M2_fix'' (i - 1) o).
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Qed.
+Proof. intros. apply Z2Nat.inj_lt ;  move: teq ; rewrite Z.leb_gt => teq; omega. Qed.
 
 Lemma M2_fix''_length : forall k l, 0 <= k -> length (M2_fix'' k l) = length l.
 Proof.
@@ -149,7 +149,7 @@ Proof.
     rewrite <- iHi by omega.
     apply Z_le_lt_eq_dec in Hkk.
     destruct Hkk.
-    rewrite update_M2_i_com ; repeat rewrite Z2Nat.id by omega ; try omega.
+    rewrite update_M2_i_com ; repeat orewrite Z2Nat.id.
     reflexivity.
     subst k.
     change (Z.to_nat 16) with 16%nat.
@@ -233,7 +233,7 @@ Lemma M2_fix_eq_step : forall (i: Z) (o: list Z),
     update_M2_i (Z.to_nat (i + 1)) (M2_fix i o) = M2_fix i (update_M2_i (Z.to_nat (i + 1)) o).
 Proof.
   intros.
-  rewrite M2_fix_eq'' by omega.
+  orewrite M2_fix_eq''.
   rewrite M2_fix_eq'' ; try (unfold update_M2_i ; rewrite alter_length) ; try omega.
   apply Z_le_lt_eq_dec in H1.
   destruct H1.
@@ -385,7 +385,7 @@ Function M3_fix (i : Z) (from : list Z) (to : list Z) {measure Z.to_nat i} : lis
       | _ , [] => []
       | f::from, t::to => f :: M3_fix (i - 1) from to
     end.
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Qed.
+Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Qed.
 
 Fixpoint M3_fix' (i : nat) (from : list Z) (to : list Z) := match i, from, to with
   | 0%nat, _, to => to
@@ -458,7 +458,7 @@ Proof.
   intros.
   repeat (destruct from ; tryfalse).
   repeat (destruct to ; tryfalse).
-  rewrite M3_fix_eq by omega.
+  orewrite M3_fix_eq.
   change (Z.to_nat 16) with 16%nat.
   reflexivity.
 Qed.
@@ -471,7 +471,7 @@ Proof.
   intros.
   repeat (destruct from ; tryfalse).
   repeat (destruct to ; tryfalse).
-  rewrite M3_fix_eq by omega.
+  orewrite M3_fix_eq.
   change (Z.to_nat 15) with 15%nat.
   simpl.
   unfold mult_3.

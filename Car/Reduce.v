@@ -46,8 +46,8 @@ Hypothesis Hn: n > 0.
 Lemma res_pos: forall (a:Z), 0 <= a - Z.shiftl (Z.shiftr a n) n.
 Proof.
   intro a.
-  rewrite Z.shiftr_div_pow2 by omega.
-  rewrite Z.shiftl_mul_pow2 by omega.
+  orewrite Z.shiftr_div_pow2.
+  orewrite Z.shiftl_mul_pow2.
   apply Zle_minus_le_0.
   rewrite Z.mul_comm.
   apply Z.mul_div_le.
@@ -71,8 +71,8 @@ Proof.
   unfold getResidue.
   unfold getResidue_mod.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 by omega.
-  rewrite Z.shiftl_mul_pow2 by omega.
+  orewrite Z.shiftr_div_pow2.
+  orewrite Z.shiftl_mul_pow2.
   apply Zplus_minus_eq.
   rewrite Z.mul_comm.
   apply Z_div_mod_eq.
@@ -109,8 +109,8 @@ Proof.
   intro m.
   unfold getResidue.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 ; try omega.
-  rewrite Z.shiftl_mul_pow2 ; try omega.
+  orewrite Z.shiftr_div_pow2.
+  orewrite Z.shiftl_mul_pow2.
   rewrite Z.mul_comm.
   omega.
 Qed.
@@ -121,11 +121,11 @@ Lemma getCarryMonotone_pos: forall m,
 Proof.
   intros m Hm.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 ; try omega.
+  orewrite Z.shiftr_div_pow2.
   induction m ; go.
   - apply Z_div_lt ; go.
   assert(2 = 2 ^ 1) by go.
-  rewrite H at 2; clear H.
+  rewrite {2}H; clear H.
   rewrite Z.ge_le_iff.
   apply Z.pow_le_mono_r_iff ; omega.
   - assert (Z.neg p < 0) by apply Zlt_neg_0 ; go.
@@ -137,7 +137,7 @@ Lemma getCarryMonotone_neg: forall m,
 Proof.
   intros m Hm.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 ; try omega.
+  orewrite Z.shiftr_div_pow2.
   induction m.
   go.
   - assert (Z.pos p > 0) by apply Zgt_pos_0 ; go.
@@ -165,7 +165,7 @@ Lemma getCarry_pos: forall m,
 Proof.
   intros m Hm.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 ; try omega.
+  orewrite Z.shiftr_div_pow2.
   apply Z.div_pos.
   assumption.
   rewrite <- Z.gt_lt_iff.
@@ -179,7 +179,7 @@ Lemma getCarry_pos_str: forall m,
 Proof.
   intros m Hm.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 ; try omega.
+  orewrite Z.shiftr_div_pow2.
   apply Z.div_str_pos.
   split.
   rewrite <- Z.gt_lt_iff.
@@ -194,7 +194,7 @@ Lemma getCarry_impl_0: forall m,
 Proof.
   intros m Hm.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 ; try omega.
+  orewrite Z.shiftr_div_pow2.
   symmetry.
   eapply Zdiv_unique.
   eapply Hm.
@@ -207,7 +207,7 @@ Lemma getCarry_1: forall m,
 Proof.
   intros m Hm.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 ; try omega.
+  orewrite Z.shiftr_div_pow2.
   assert(1<= m / 2 ^ n).
   replace 1 with (2 ^ n/2 ^ n) by (apply Z_div_same_full; intro ; assert(Ht:= pown0 n Hn) ; omega).
   apply Z_div_le.
@@ -231,7 +231,7 @@ Lemma getCarry_neg_sup: forall m,
 Proof.
   intros m Hm.
   unfold getCarry.
-  rewrite Z.shiftr_div_pow2 by omega.
+  orewrite Z.shiftr_div_pow2.
   replace 0 with (0 / 2^n).
   apply Z_div_le.
   apply pown0 ; auto.
@@ -267,7 +267,7 @@ Proof.
   assert(Hx:= getCarry_neg_sup x  H0).
   assert(Hxx:= getCarryMonotone_neg x H0).
   omega.
-  rewrite Z.ge_le_iff in H0.
+  move: H0 ; rewrite Z.ge_le_iff => H0.
   assert(Hx := getCarry_pos x H0).
   assert(Hxx := getCarryMonotone_pos_le x H0).
   omega.
@@ -278,7 +278,7 @@ Lemma getCarry_incr : forall x y,
 Proof.
   intros.
   unfold getCarry.
-  repeat rewrite Z.shiftr_div_pow2 by omega.
+  repeat orewrite Z.shiftr_div_pow2.
   apply Z_div_le.
   apply pown0.
   assumption.

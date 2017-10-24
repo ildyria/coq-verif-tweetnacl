@@ -31,7 +31,7 @@ Proof.
   eapply (doubleCar_ext_str (ℤ16.lst l1) _ 303) ;
   try omega ; 
   try (eapply bounds.le_lt_trans ; [eapply Hbounds | | ] ; compute ; reflexivity);
-  try (rewrite ℤcar25519_eq_car25519_length by auto ; try rewrite Hcarr1 ; reflexivity).
+  try (rewrite ℤcar25519_eq_car25519_length ; auto ; try rewrite Hcarr1 ; reflexivity).
 Qed.
 
 Theorem Zcar25519_bounds_Zlength:
@@ -56,7 +56,7 @@ Proof.
   eapply (doubleCar_ext_str (ℤ16.lst l1) _ 303) ;
   try omega ;
   try (eapply bounds.le_lt_trans ; [eapply Hbounds | | ] ; compute ; reflexivity);
-  try (rewrite ℤcar25519_eq_car25519_Zlength by auto ; try rewrite Hcarr1 ; reflexivity).
+  try (rewrite ℤcar25519_eq_car25519_Zlength ; auto ; try rewrite Hcarr1 ; reflexivity).
 Qed.
 
 Ltac assert_base_lemmas:=
@@ -85,7 +85,7 @@ Proof.
   apply destruct_length_16 in H.
   do 16 destruct H.
   subst.
-  repeat rewrite Forall_cons in HForalll1.
+  move: HForalll1 ; rewrite ?Forall_cons => HForalll1.
   repeat match goal with
     | [H : (_ /\ _) /\ _ |-_] => destruct H
   end.
@@ -120,8 +120,8 @@ Proof.
   do 16 destruct H.
   subst.
   assert_base_lemmas.
+  move: HForalll1 ; rewrite ?Forall_cons => HForalll1.
   repeat match goal with
-    | [H : context[Forall] |- _ ] => rewrite Forall_cons in H
     | [H : (_ /\ _) /\ _ |-_] => destruct H
     | _ => progress unfold car25519
     | _ => rewrite Carry_n.Carry_n_step
@@ -264,4 +264,3 @@ Lemma car25519_Zlength : forall l,
   Zlength l = 16 -> 
   Zlength (car25519 l) = 16.
 Proof. convert_length_to_Zlength car25519_length. Qed.
-  

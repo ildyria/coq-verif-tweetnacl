@@ -15,7 +15,7 @@ Lemma addition: forall a b : Z,
 Proof.
   intros.
   assert(H': 2 ^ Z.succ n = 2 * 2 ^ n) by (apply Z.pow_succ_r ; omega).
-  rewrite H' ; omega.
+  orewrite H'.
 Qed.
 
 Fixpoint ZofListi (a: list Z) (i:Z) : Z := match a with 
@@ -126,7 +126,7 @@ Lemma ZofList_drop' : forall l (m:nat),
   2^(n * ℤ.ℕ length (take m l)) * (ℤ.lst drop m l) = (ℤ.lst l) - ℤ.lst take m l.
 Proof. elim => [| z l IHl] m.
   - destr_boum m.
-  - rep_omega (2^(n * ℤ.ℕ length (take m (z::l))) * (ℤ.lst drop m (z :: l))) (2^(n * ℤ.ℕ length (take m (z::l))) * (ℤ.lst drop m (z :: l)) - (ℤ.lst take m (z :: l)) + (ℤ.lst take m (z :: l))).
+  - oreplace (2^(n * ℤ.ℕ length (take m (z::l))) * (ℤ.lst drop m (z :: l))) (2^(n * ℤ.ℕ length (take m (z::l))) * (ℤ.lst drop m (z :: l)) - (ℤ.lst take m (z :: l)) + (ℤ.lst take m (z :: l))).
     rewrite <- Z.add_sub_swap.
     f_equal.
     rewrite Z.add_comm -ZofList_app'.
@@ -137,7 +137,7 @@ Lemma ZofList_drop : forall l (m:nat),
   2^(n * Zlength (take m l)) * (ℤ.lst drop m l) = (ℤ.lst l) - ℤ.lst take m l.
 Proof. elim => [|z l IHl] m.
   - destr_boum m.
-  - rep_omega (2^(n * Zlength (take m (z::l))) * (ℤ.lst drop m (z :: l))) (2^(n * Zlength (take m (z::l))) * (ℤ.lst drop m (z :: l)) - (ℤ.lst take m (z :: l)) + (ℤ.lst take m (z :: l))).
+  - oreplace (2^(n * Zlength (take m (z::l))) * (ℤ.lst drop m (z :: l))) (2^(n * Zlength (take m (z::l))) * (ℤ.lst drop m (z :: l)) - (ℤ.lst take m (z :: l)) + (ℤ.lst take m (z :: l))).
     rewrite <- Z.add_sub_swap.
     f_equal.
     rewrite Z.add_comm -ZofList_app.

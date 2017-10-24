@@ -90,23 +90,17 @@ Definition formula_denote env (t : formula) : Prop :=
   | LEq x y    => list_expr_denote env x = list_expr_denote env y
   end.
 
-(*
-Fixpoint expr_size (t : expr) : nat :=
-  match t with
-  | R _ => 1%nat
-  | M x y => 1%nat
-  | A x y => 1%nat + expr_size x + expr_size y
-  end.
-
-Lemma all_expr_have_size t : (0 < expr_size t)%nat.
-Proof. induction t; simpl; omega. Qed.
-*)
-
-Fixpoint flatten_expr (e : expr) : (list (list term)) := match e with
-  | A a b => flatten_expr a ++ flatten_expr b
+Fixpoint latten_expr (e : expr) : (list (list term)) := match e with
+  | A a b => latten_expr a ++ latten_expr b
   | M a b => (a :: b :: nil) :: nil
   | R x => (x :: nil) :: nil
 end.
+
+Fixpoint simplify_M (l: list term) : list term := match l with
+  | nil => nil
+  | Val 1 :: q => simplify_M q
+  | h :: q => h :: simplify_M q
+  end.
 
 Fixpoint ldenote_M env (ls : list term) : Z :=
   match ls with
@@ -120,7 +114,35 @@ Proof. by move=> //. Qed.
 Lemma ldenote_M_app: forall env a b, ldenote_M env (a ++ b) = ldenote_M env a * ldenote_M env b.
 Proof. induction a ; intros ; simpl => //.
 destruct (ldenote_M env b) ; auto.
-rewrite IHa ; ring. Qed.
+rewrite IHa ; ring.
+Qed.
+
+Lemma ldenote_M_simplify: forall env l, ldenote_M env l = ldenote_M env (simplify_M l).
+Proof. induction l as [|h l IHl] => //=.
+rewrite IHl. destruct h. by destruct p.
+destruct z ; try destruct p ; try reflexivity.
+simpl term_denote ; omega.
+Qed.
+
+Lemma simplifiy_M_0 : forall env a, existsb (term_eqb (Val 0)) a = true -> ldenote_M env a = 0.
+Proof.
+induction a => //=.
+rewrite Bool.orb_true_iff => H.
+case H ; clear H => H.
+destruct a ; try discriminate.
+destruct z ; try discriminate.
+simpl term_denote ; omega.
+apply IHa in H ; rewrite H ; omega.
+Qed.
+
+Fixpoint simplify_A (l :list (list term)) : list (list term) := match l with
+  | nil => nil
+  | h :: q => let s := simplify_M h in
+    match existsb (term_eqb (Val 0)) s with
+    | true => simplify_A q
+    | false => s :: simplify_A q
+    end
+  end.
 
 Fixpoint ldenote env (ls : list (list term)) : Z :=
   match ls with
@@ -137,13 +159,27 @@ induction a ; intros ; simpl => //.
 rewrite IHa ; ring.
 Qed.
 
-Lemma flatten_expr_correct : forall env t, expr_denote env t = ldenote env (flatten_expr t).
+Lemma latten_expr_correct : forall env t, expr_denote env t = ldenote env (latten_expr t).
 Proof.
 induction t ; simpl ; try ring.
 rewrite ldenote_app IHt1 IHt2 => //.
 Qed.
 
+Lemma ldenote_simplify: forall env l, ldenote env l = ldenote env (simplify_A l).
+Proof. induction l ; intros ; simpl => //.
+destruct (existsb (term_eqb (Val 0)) (simplify_M a)) eqn:H; auto.
+apply (simplifiy_M_0 env) in H.
+move: H ; rewrite -ldenote_M_simplify => -> ; omega.
+simpl; rewrite -?ldenote_M_simplify. omega.
+Qed.
 
+Definition flatten_expr t := simplify_A (latten_expr t).
+
+Lemma flatten_expr_correct : forall env t, expr_denote env t = ldenote env (flatten_expr t).
+Proof. move => env t. unfold flatten_expr.
+rewrite -ldenote_simplify.
+apply latten_expr_correct.
+Qed.
 
 (*****************************************************************************************
  *   SORT THE LIST

@@ -54,10 +54,8 @@ Corollary CarryPreserve : forall l, ℤ.lst l = ℤ.lst Carrying 0 l.
 Proof.
   intros.
   symmetry.
-  rewrite Zplus_0_r_reverse.
-  symmetry.
-  rewrite Z.add_comm.
-  apply CarryPreserveConst.
+  rewrite -CarryPreserveConst.
+  omega.
 Qed.
 
 End Integer.
@@ -109,9 +107,9 @@ Proof.
       rewrite Zmult_mod.
       rewrite <- t2256is38.
       rewrite <- Zmult_mod.
-      rewrite Z.add_mod_idemp_l by (compute ; omega).
+      rewrite Z.add_mod_idemp_l.
       change 256 with (16 + 16 * 15).
-      rewrite Z.pow_add_r by omega.
+      orewrite Z.pow_add_r.
       rewrite Zmult_assoc_reverse.
       rewrite Zred_factor4.
       rewrite Zmult_mod ; symmetry ; rewrite Zmult_mod.
@@ -123,6 +121,7 @@ Proof.
       f_equal; f_equal.
       rewrite Z.add_comm.
       rewrite residuteCarry ; go.
+      compute; omega.
 Qed.
 
 Definition car25519 (l:list Z) : list Z := backCarry (Carrying_n 16 15 0 l).
@@ -170,10 +169,10 @@ Proof.
   rewrite <- Zmult_mod_idemp_l.
   rewrite <- t2256is38.
   rewrite Zmult_mod_idemp_l.
-  rewrite Z.add_mod_idemp_l by (compute ; intro ; false).
+  rewrite Z.add_mod_idemp_l.
   rewrite Z.add_comm.
-  rewrite residuteCarry by omega.
-  reflexivity.
+  orewrite residuteCarry.
+  compute ; intro ; false.
 Qed.
 
 (*
@@ -200,7 +199,7 @@ Proof.
   unfold getCarry in *.
   unfold getResidue in *.
   repeat rewrite Zshiftr_div_pow2_16.
-  rewrite Z.shiftr_div_pow2 by omega.
+  orewrite Z.shiftr_div_pow2.
   unfold ZofList.
   rewrite <- Zmult_0_r_reverse.
   rewrite <- Zplus_0_r_reverse.
@@ -232,7 +231,7 @@ Proof.
   unfold getCarry in *.
   unfold getResidue in *.
   repeat rewrite Zshiftr_div_pow2_16.
-  rewrite Z.shiftr_div_pow2 by omega.
+  orewrite Z.shiftr_div_pow2.
   unfold ZofList.
   rewrite <- Zmult_0_r_reverse.
   rewrite <- Zplus_0_r_reverse.
@@ -252,7 +251,7 @@ Proof.
   repeat rewrite Carry_n_step2 in H.
   rewrite Carry_n_step_02 in H.
   repeat (destruct l; tryfalse).
-  repeat rewrite ListSame in H.
+  move: H ; rewrite ?ListSame => H.
   jauto_set.
   clear H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H15.
   unfold nth.
@@ -288,67 +287,59 @@ Proof.
   - f_equal.
     apply getCarry_16_eq_256.
     assumption.
-  - rewrite Carry_n_step2 in Eq.
-  repeat rewrite ListSame in Eq ; jauto_set.
+  - move: Eq ; rewrite Carry_n_step2 ?ListSame => Eq ; jauto_set.
   subst l z.
   rewrite ZofList_cons.
-  rewrite ZofList_app by omega.
-  rewrite ZofList_take by omega.
-  rewrite <- CarrynPreserveConst by omega.
+  orewrite ZofList_app.
+  orewrite ZofList_take.
+  rewrite <- CarrynPreserveConst ; try omega.
   change (0 + x) with x.
   repeat rewrite Carry_n_step2 ; rewrite Carry_n_step_02.
   remember (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 (getCarry 16 x + x0) + x1) + x2) + x3) + x4) + x5) + x6) + x7) + x8) + x9) + x10) + x11) + x12) + x13) + x14) as t.
-  unfold length.
-  unfold nth.
-  unfold take.
-  unfold drop.
-  rewrite <- Zred_factor4.
-  rewrite Zmult_minus_distr_l.
-  rewrite <- Zred_factor4.
-  rewrite <- Z.add_sub_assoc.
-  rewrite <- Z.add_assoc.
-  rewrite <- Zplus_assoc_reverse.
-  rewrite residuteCarry by omega.
-  rewrite <- Zplus_assoc_reverse.
-  rewrite Z.add_sub_assoc.
-  rewrite <- ZofList_cons.
+  unfold length, nth, take, drop.
+  rewrite -Zred_factor4 Zmult_minus_distr_l -Zred_factor4 -Z.add_sub_assoc -Z.add_assoc.
+  rewrite -Zplus_assoc_reverse;
+  orewrite residuteCarry.
+  rewrite -Zplus_assoc_reverse Z.add_sub_assoc -ZofList_cons -Zmult_assoc_reverse -Z.pow_add_r.
+  2: (compute ; go).
   rewrite <- Zmult_assoc_reverse.
   rewrite <- Z.pow_add_r by (compute ; go).
-  rewrite <- Zmult_assoc_reverse.
-  rewrite <- Z.pow_add_r by (compute ; go).
-  rewrite <- Z.add_opp_r.
-  rewrite Zopp_mult_distr_r.
-  rewrite <- Z.add_assoc.
-  rewrite Zred_factor4.
+  rewrite -Z.add_opp_r Zopp_mult_distr_r -Z.add_assoc -Zred_factor4.
+  simpl Z.succ.
   rewrite pre_compute_rewrite in Heqt.
-  repeat rewrite getResidue_mod_eq by omega.
+  repeat orewrite getResidue_mod_eq.
   unfold getResidue_mod.
   symmetry.
-  rewrite Zmod_eq by reflexivity.
+  orewrite Zmod_eq.
+  2: (compute ; reflexivity).
   symmetry.
   rewrite <- Z.add_opp_r.
   f_equal.
   symmetry.
-  rewrite Z.mul_comm.
-  rewrite Zopp_mult_distr_r.
+  rewrite Z.mul_comm Zopp_mult_distr_r.
   change (2 ^ 256) with (2 ^ (16 + 16 * 14) * 2 ^ 16).
   rewrite Zmult_assoc_reverse.
+  orewrite Zmod_eq.
+  2: compute ; reflexivity.
+  rewrite ?ZofList_cons_0.
+  symmetry.
+  change (16 * 13 + 16 * 1) with (16 * 14).
+  2: compute ; intro ; false.
+  rewrite Zred_factor4.
   f_equal.
-  rewrite Zmod_eq by (compute ; reflexivity).
-  repeat rewrite ZofList_cons_0.
+  rewrite <- Zopp_mult_distr_r.
   rewrite Z.add_sub_assoc.
   rewrite Z.add_opp_l.
-  rewrite <- Zminus_diag_reverse.
-  symmetry ; rewrite Z.sub_0_l.
-  rewrite <- Zopp_mult_distr_r.
+  rewrite Z.sub_diag.
+  rewrite Z.sub_0_l.
   f_equal.
   rewrite Z.mul_comm.
   f_equal.
-  change (2 ^ (16 + 16 * 14) * 2 ^ 16) with (2^256).
   subst t.
   unfold ZofList.
   rewrite <- Zmult_0_r_reverse.
   rewrite <- Zplus_0_r_reverse.
+  change (2 ^ (16 + 16 * 14) * 2 ^ 16) with (2^256).
   rewrite factors_256.
   rewrite pre_compute_equality_factor.
   repeat (rewrite <- Z.div_div; [|compute  ; intro ; false | compute ; reflexivity]).
@@ -365,32 +356,28 @@ Proof.
   unfold backCarry.
   flatten.
   repeat (destruct l ; tryfalse).
-  repeat rewrite Carry_n_step2 in Eq.
-  rewrite Carry_n_step_02 in Eq.
-  change (0 + z0) with z0.
+  move : Eq ; rewrite ?Carry_n_step2 Carry_n_step_02.
+  change (0 + z0) with z0 => Eq.
   repeat (destruct l0; tryfalse).
-  repeat rewrite ListSame in Eq ; jauto_set.
-  clear H H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H15 H16 H18.
+  move: Eq ; rewrite ?ListSame => Eq ; jauto_set ; try reflexivity.
+(*   clear H H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H15 H16 H18. *)
   unfold nth.
-  unfold take.
-  f_equal.
   - subst z30.
     rewrite getCarry16_256.
     assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
     apply getCarry_impl_0 ; omega.
     omega.
-  - change ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30]) with
-  ([z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29] ++ [z30]).
-  f_equal ; f_equal.
-  unfold getResidue.
-    subst z30.
-    repeat rewrite getCarry16_256.
+  - unfold getResidue.
+  erewrite (getCarry_16_eq_256 z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15).
+  2: rewrite ?Carry_n_step2 Carry_n_step_02 ; change (0 + z0) with z0; rewrite ?ListSame ; jauto_set ; try assumption.
+    assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
+    apply getCarry_impl_0 ; omega.
+  clear H19 H18 H17 H16 H15 H14 H13 H13 H12 H11 H10 H9 H8 H7 H6 H5 H4 H3 H2 H.
+    simpl nth.
     assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
     apply getCarry_impl_0 ; omega.
   rewrite H.
-  simpl Z.shiftl.
-  rewrite <- Zminus_0_l_reverse.
-  reflexivity.
+  change (0 ≪ 16) with 0. omega.
 Qed.
 
 Lemma BackCarry_fix_Zlength: forall l, Zlength l = 16 -> 0 <= ℤ16.lst l < 2^256 -> car25519 l = Carrying_n 16 15 0 l.

@@ -1,6 +1,5 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
-Require Import mathcomp.ssreflect.ssreflect.
 Require Import stdpp.prelude.
 
 
@@ -21,26 +20,11 @@ Fixpoint unpack_for (l:list Z) : list Z := match l with
 
 Lemma unpack_for_nth : forall (i:nat) (l:list Z), nth i (unpack_for l) 0 = nth (2 * i) l 0 + 2 ^ n * nth (2 * i + 1) l 0.
 Proof.
-  elim=> [|i iH] [|l q] /=.
-  omega.
+  elim=> [|i iH] [|l q] /= ; try omega.
   flatten => /= ; ring.
-  ring.
   flatten => /= ; replace (i + S(i + 0))%nat with (S (2*i))%nat by omega.
-  ro mega.
-  ; ring.
-  flatten.
-  ring.
-  move => 
-  induction i; intros.
-destruct l ; simpl ; flatten ; simpl ; ring.
-destruct l ; simpl ; flatten.
-omega.
-simpl ; flatten ; omega.
-replace (i + S(i + 0))%nat with (S (2 * i))%nat by omega.
-replace (S(2 * i) + 1)%nat with (S (2 * i + 1))%nat by omega.
-simpl nth.
-rewrite IHi.
-reflexivity.
+  flatten ; ring.
+  destruct i; destruct l ; rewrite iH ; simpl ; flatten ; simpl; ring.
 Qed.
 
 End Integer.
@@ -57,7 +41,7 @@ Proof.
   rewrite  <-Zred_factor4.
   f_equal.
   replace ( 2* n ) with (n + n) by omega.
-  rewrite Zpower_exp by omega. ring.
+  orewrite Zpower_exp; ring.
 Qed.
 
 Lemma Unpack25519_correct: forall n, 0 < n -> forall l, ZofList (2*n) (unpack_for n l) = ZofList n l.
@@ -83,7 +67,7 @@ Proof.
   subst m.
   simpl in H0.
   replace (S (S (length l))) with (length l + 1*2)%nat by omega.
-  rewrite NPeano.Nat.div_add by omega.
+  orewrite NPeano.Nat.div_add.
   replace (length l `div` 2 + 1)%nat with (S (length l `div` 2))%nat by omega.
   f_equal.
   apply IHl ; auto.
@@ -135,11 +119,5 @@ Close Scope Z.
 Corollary Unpack25519_length_16_32 : forall l, length l = 32 -> length (unpack_for 8 l) = 16.
 Proof.
 intros.
-rewrite (Unpack25519_length 8) with (m:=32).
-reflexivity.
-omega.
-assumption.
-reflexivity.
+rewrite (Unpack25519_length 8 _ _ 32) ; go.
 Qed.
-
-Close Scope Z.

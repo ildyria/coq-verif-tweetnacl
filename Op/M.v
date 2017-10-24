@@ -308,8 +308,9 @@ Proof.
     rewrite Hnul ; clear Hnul.
     rewrite <- Zplus_0_r_reverse.
     reflexivity.
-    symmetry ; apply drop_ge ; rewrite Zlength_correct in *;
-    rewrite drop_length ; omega.
+    symmetry ; apply drop_ge.
+    move: Hl H ; rewrite ?Zlength_correct;
+    rewrite drop_length => Hl H ; omega.
   }
 Qed.
 

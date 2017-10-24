@@ -170,7 +170,7 @@ Proof.
   intros.
   rewrite upd_nth_app2.
   2: by omega.
-  by rep_omega (n - length l1) 0.
+  by oreplace (n - length l1) 0.
 Qed.
 
 Lemma upd_nth_list_alter: forall A (f : A -> A) i (v:A) (l: list A), f = (fun x => v) -> 
@@ -215,7 +215,7 @@ Proof.
   rewrite upd_nth0.
   f_equal.
   rewrite -(take_drop i a).
-  rep_omega (S i) (i + 1)%nat.
+  oreplace (S i) (i + 1)%nat.
   rewrite take_plus_app.
   rewrite (take_drop i a).
   2: (rewrite firstn_length_le; omega).

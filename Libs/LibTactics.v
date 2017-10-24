@@ -39,8 +39,11 @@ Ltac destr_boum n :=
 Ltac inv_boum H :=
   inversion H ; boum.
 
-Ltac rep_omega a b :=
+Ltac oreplace a b :=
   replace a with b by omega.
+
+Ltac orewrite H :=
+  rewrite H ; try omega.
 
 Ltac convert_length_to_Zlength L:=
   intros;

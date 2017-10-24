@@ -8,11 +8,11 @@ Require Import Psatz.
 Open Scope Z.
 
 Ltac getCarryToZ := 
-  unfold getCarry in *; try rewrite Z.shiftr_div_pow2 in * by omega.
+  unfold getCarry in *; try orewrite Z.shiftr_div_pow2.
 
 Ltac getResidueToZ := 
   unfold getResidue in *; getCarryToZ ; 
-  try rewrite Z.shiftl_mul_pow2 in * by omega.
+  try orewrite Z.shiftl_mul_pow2.
 
 Ltac ZCar25519ToZ := 
   unfold Zcar25519 in *;
@@ -100,7 +100,7 @@ Proof.
       subst r ; omega.
       subst r ; omega.
     omega.
-    rewrite getResidue_mod_eq by omega.
+    orewrite getResidue_mod_eq.
     unfold getResidue_mod.
   omega.
 Qed.
@@ -162,7 +162,7 @@ Proof.
     apply getResidue_bounds ; omega.
   remember (getResidue 256 x) as y.
   remember (getCarry 256 x) as z.
-  getCarryToZ.
+  unfold getCarry in *; move: Heqz ; orewrite Z.shiftr_div_pow2 => Heqz.
   assert(H'': z < 2^250).
   subst z.
   apply Zdiv_lt_upper_bound ; auto.
@@ -184,7 +184,7 @@ Proof.
     apply getResidue_bounds ; omega.
   remember (getResidue 256 x) as y.
   remember (getCarry 256 x) as z.
-  getCarryToZ.
+  unfold getCarry in *; move: Heqz ; orewrite Z.shiftr_div_pow2 => Heqz.
   assert(H'': z < 2^250).
   subst z.
   apply Zdiv_lt_upper_bound ; auto.
@@ -213,12 +213,12 @@ Proof.
   repeat match goal with
     | _ => omega
     | _ => progress intros
-    | _ => progress unfold Zcar25519 ; getCarryToZ
-    | [ |- _ + _ = _ ] =>  rewrite Z.add_comm ;  rewrite Zplus_0_r_reverse ;  f_equal
+    | _ => progress unfold Zcar25519 ; unfold getCarry in *; try orewrite Z.shiftr_div_pow2
+    | [ |- _ + _ = ?x ] =>  rewrite Z.add_comm ; oreplace x (x + 0) ; f_equal
     | _ => progress rewrite getResidue_mod_eq ; unfold getResidue_mod
-    | _ => progress apply Zmod_small
     | _ => rewrite Z.mul_comm ; apply Z_eq_mult ; apply Zdiv_small ; omega
-  end.
+    | [ |- _ = ?x ] => oreplace (x + 0) x; progress apply Zmod_small
+   end.
 Qed.
 
 Fact lower_eq_256: forall a,
@@ -286,7 +286,7 @@ Proof.
   intros x Hx.
   unfold Zcar25519.
   rewrite (getCarryNeg x Hx).
-  rewrite getResidue_mod_eq by omega.
+  orewrite getResidue_mod_eq.
   unfold getResidue_mod.
   rewrite <- (Z_mod_plus_full x 1 (2^256)).
   replace ((x + 1 * 2 ^ 256) mod 2 ^ 256) with (x + 1 * 2 ^ 256).
@@ -331,9 +331,9 @@ Proof.
     | _ => progress unfold Zcar25519
     | _ => progress unfold getResidue
     | _ => progress unfold getCarry
-    | _ => progress rewrite Z.shiftl_mul_pow2 by omega
-    | _ => progress rewrite Z.shiftr_div_pow2 by omega
-    | [  |- context[?x/2^256] ] => progress rewrite (eq_1_div256 x) ; try omega
+    | _ => progress orewrite Z.shiftl_mul_pow2
+    | _ => progress orewrite Z.shiftr_div_pow2
+    | [  |- context[?x/2^256] ] => progress orewrite (eq_1_div256 x)
   end.
 Qed.
 
@@ -370,12 +370,13 @@ Proof.
          | [ H : _ \/ _ |- _ ] => destruct H
          | _ => progress go
          | _ => progress subst
-         | [ H : context[ℤcar25519 _] |- _ ] => rewrite Zcarry25519_fixpoint in H by omega
-         | [ H : _ /\ _ |- _ ] => destruct H
-         | [ H : ℤcar25519 ?x < 0, H1 : 0 <= ?x |- _ ] => apply ZCarry25519_pos in H1 ; omega
-         | [  |- context[ℤcar25519 ?x] ] => rewrite (Zcarry25519_fixpoint x) by omega
-         | _ => progress eauto using doubleCar_str_case
          end.
+  move: H ; orewrite Zcarry25519_fixpoint => H ; orewrite (Zcarry25519_fixpoint x).
+  destruct Hx ; apply ZCarry25519_pos in H1 ; omega.
+  orewrite (Zcarry25519_fixpoint x).
+  orewrite (Zcarry25519_fixpoint (ℤcar25519 x)).
+  move: H ; orewrite Zcarry25519_fixpoint => H ; orewrite (Zcarry25519_fixpoint x).
+  eapply (doubleCar_str_case _ _ m); try omega ; eauto ; omega.
 Qed.
 
 Lemma doubleCar:

@@ -3,15 +3,14 @@ Require Import stdpp.prelude.
 Require Import Recdef.
 
 Local Open Scope Z.
-
 Definition local_update_M (j:nat) (a:Z) (b : list Z) (x:Z) := a * ( from_option id 0 (b !! j)) + x.
-(* Definition update_M_i_j (i j a:Z) b (o:Z) := alter (local_update_M (Z.to_nat j) a b) (Z.to_nat (i + j)) o. *)
-Definition update_M_i_j' (i j:nat) (a:Z) b o := list_alter (local_update_M j a b) (i + j)%nat o.
+Definition update_M_i_j (i j a:Z) (b:list Z) (o:list Z) := alter (local_update_M (Z.to_nat j) a b) (Z.to_nat (i + j)) o.
+Definition update_M_i_j' (i j:nat) (a:Z) (b:list Z) (o:list Z) : (list Z) := alter (local_update_M j a b) (i + j)%nat o.
 
-(* Function inner_M_fix (i j a:Z) (b o : list Z) {measure Z.to_nat j} : list Z :=
+Function inner_M_fix (i j a:Z) (b o : list Z) {measure Z.to_nat j} : list Z :=
   if (j <=? 0) then o else inner_M_fix i (j - 1) a b (update_M_i_j i (j - 1) a b o).
 Proof. intros. apply Z2Nat.inj_lt ; move: teq; rewrite Z.leb_gt => teq; omega. Defined.
- *)
+
 Fixpoint inner_M_fix' (i j : nat) (a:Z) (b o : list Z) := match j with
   | 0%nat => o
   | S p => inner_M_fix' i p a b (update_M_i_j' i p a b o)
@@ -29,19 +28,18 @@ Proof.
   intros ; unfold update_M_i_j, update_M_i_j', alter; f_equal ; rewrite Z2Nat.inj_add; omega.
 Qed.
 
-Lemma update_M_i_j_comm_j: forall (i j k a:Z) (b o: list Z),
+Lemma update_M_i_j_comm_j: forall (i j k:nat) (a:Z) (b o: list Z),
   0 <= i ->
   0 <= j ->
   0 <= k ->
   j <> k -> 
-    update_M_i_j i j a b (update_M_i_j i k a b o) = update_M_i_j i k a b (update_M_i_j i j a b o).
+    update_M_i_j' i j a b (update_M_i_j' i k a b o) = update_M_i_j' i k a b (update_M_i_j' i j a b o).
 Proof.
 repeat match goal with
   | _ => omega
   | _ => progress intro
-  | _ => progress unfold update_M_i_j
+  | _ => progress unfold update_M_i_j'
   | _ => apply list_alter_commute ; intro
-  | [ H : Z.to_nat ( _ ) = Z.to_nat ( _ ) |- _ ] => apply Z2Nat.inj_iff in H ; omega
 end.
 Qed.
 
@@ -79,7 +77,10 @@ Proof.
     rewrite inner_M_fix''_equation ; symmetry ; rewrite inner_M_fix''_equation.
     flatten.
     replace (j + 1 - 1) with (j) by omega.
-    rewrite <- iHj by omega; rewrite update_M_i_j_comm_j ; go.
+    rewrite <- iHj by omega.
+    rewrite ?update_M_i_j_eq ; try omega.
+    rewrite update_M_i_j_comm_j ; go.
+    intro ; apply Z2Nat.inj_iff in H ; omega.
 Qed.
 
 Lemma inner_M_i_j_eq'' : forall (i j a:Z) (b o: list Z),
@@ -95,13 +96,15 @@ Proof.
     change (Z.succ j) with (j + 1).
     rewrite inner_M_fix_equation ; rewrite inner_M_fix''_equation.
     flatten.
-    rep_omega (j + 1 - 1) (j).
+    oreplace (j + 1 - 1) (j).
     rewrite iHj.
     rewrite inner_M_fix''_equation ; symmetry ; rewrite inner_M_fix''_equation.
     flatten.
     apply Z.leb_gt in Eq0.
     rewrite <- inner_M_fix''_com by omega.
-    rewrite update_M_i_j_comm_j ; try reflexivity ; omega.
+    rewrite ?update_M_i_j_eq ; try omega.
+    rewrite update_M_i_j_comm_j ; go.
+    intro ; apply Z2Nat.inj_iff in H ; omega.
 Qed.
 
 Lemma inner_M_fix_0 : forall i a b o, 0 <= i -> inner_M_fix i 0 a b o = o.
@@ -115,7 +118,7 @@ Proof.
   flatten.
   apply Zle_bool_imp_le in Eq ; omega. (* silly case *)
   apply Z.leb_gt in Eq.
-  rep_omega (j + 1 - 1)  (j).
+  oreplace (j + 1 - 1)  (j).
   rewrite inner_M_i_j_eq''; go.
 Qed.
 
@@ -150,7 +153,7 @@ rewrite inner_M_i_j_eq''; try omega.
 rewrite inner_M_fix''_equation.
 flatten.
 rewrite take_drop; reflexivity.
-rep_omega (j + 1 - 1) j.
+oreplace (j + 1 - 1) j.
 rewrite <- inner_M_i_j_eq'' ; try omega.
 rewrite iHj ; try omega.
 unfold update_M_i_j.
