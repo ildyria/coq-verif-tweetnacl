@@ -2,7 +2,7 @@ Require Export Tweetnacl.Libs.LibTactics_SF.
 Require Export Tweetnacl.Libs.LibTactics_Rennes.
 Require Export Tweetnacl.Libs.LibTactics.
 Require Export Tweetnacl.Libs.Lists_extended.
-Require Export Tweetnacl.Libs.Lists_Ltac.
+Require Export Tweetnacl.Libs.List_Ltac.
 Require Export Tweetnacl.Libs.Forall_extended.
 Require Export Tweetnacl.Libs.ZArith_extended.
 Require Export Tweetnacl.Libs.Relations.

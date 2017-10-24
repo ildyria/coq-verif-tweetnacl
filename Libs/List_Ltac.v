@@ -1,25 +1,5 @@
 Set Warnings "-notation-overridden".
-Require Import Tweetnacl.Libs.List_Decidable.
-(**************************************************************************
- * Data type for representing partial results, taken from Chlipala's CPDT
- *)
-
-Inductive partial (P : Prop) : Set :=
-| Proved : P -> partial P
-| Uncertain : partial P.
-
-Notation "[ P ]" := (partial P) : type_scope.
-
-Notation "'Yes'" := (Proved _ _) : partial_scope.
-Notation "'No'" := (Uncertain _) : partial_scope.
-
-Local Open Scope partial_scope.
-Delimit Scope partial_scope with partial.
-
-Notation "'Reduce' v" := (if v then Yes else No) (at level 100) : partial_scope.
-
-(* Open Scope Z. *)
-
+Require Export Tweetnacl.Libs.List_Decidable.
 
 (**************************************************************************
  * Environment management tactics
