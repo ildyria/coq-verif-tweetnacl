@@ -12,17 +12,16 @@
   opam switch 4.05.0
 ````
 
-##### 2. install coq 8.6 + coqide + ssreflect
+##### 2. install coq 8.7 + coqide + ssreflect
 
 ````bash
   opam install coq
   opam install coqide
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
-  # opam install coq-mathcomp-ssreflect.1.6.1
-  # opam install coq-mathcomp-multinomials
   opam install coq-ssr-elliptic-curves
   opam install menhir
+  opam install coq-bignums
 ````
 
 ##### 3. install coq-stdpp
