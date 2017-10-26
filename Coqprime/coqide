@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [ -v WINDIR ]
-then
-# Coq 8.6 on Windows, "asynchronous proofs" are broken, so we disable.
-coqide -async-proofs off `cat .loadpath` $* &
-else
-coqide `cat .loadpath` $* &
-fi

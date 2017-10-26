@@ -35,6 +35,15 @@ Proof.
   apply (Hnth (S i)).
 Qed.
 
+Lemma upd_nth_Forall: forall i A (l:list A) (P: A -> Prop) v,
+  Forall P l -> P v ->
+  Forall P (upd_nth i l v).
+Proof.
+  induction i => A [|h q] P v Hl Hv ; simpl;
+  try solve[apply Forall_cons_2 ; go];
+  apply Forall_cons in Hl ; destruct Hl as [Ha Hl] ; apply Forall_cons_2 ; go.
+Qed.
+
 Open Scope Z.
 
 Lemma Forall_bounds_le_lt: forall a b l,

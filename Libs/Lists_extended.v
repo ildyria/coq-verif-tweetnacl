@@ -240,6 +240,8 @@ Definition list_ind_by_2 :
                           end.
 
 
+
+
 (*
 Lemma app_nill_r : forall (A:Type) (l:list A), l ++ nil = l.
 Proof. boum. Qed.
