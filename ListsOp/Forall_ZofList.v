@@ -1,9 +1,9 @@
-Require Import stdpp.list.
+(* Require Import stdpp.list. *)
 Require Import Tweetnacl.Libs.Export.
 Require Export Tweetnacl.ListsOp.ZofList.
 Open Scope Z.
 
-Import ListNotations.
+(* Import ListNotations. *)
 
 Section Integer.
 
@@ -220,7 +220,7 @@ Proof.
   - rewrite Z.add_comm.
     eapply (Z.le_lt_trans _ (2 * a * 2 ^ (n * (ℤ.ℕ m)) + 2 ^ (n * (ℤ.ℕ m)) * x))
     ; [| apply Zplus_lt_compat_r ; omega].
-    rewrite Z.pow_add_r ; go.
+    rewrite Z.pow_add_r. 2: omega. 2: go.
     replace (2 * a * 2 ^ (n * (ℤ.ℕ m))) with (2 ^ (n * (ℤ.ℕ m)) * 2 * a) by ring.
     rewrite -!Z.mul_assoc Zred_factor4.
     replace (2 * (a * (2 ^ n * 2 ^ (n * (ℤ.ℕ m))))) with (2 ^ (n * (ℤ.ℕ m)) * (2 * a * 2 ^ n)) by ring.
@@ -232,7 +232,7 @@ Proof.
     apply pown2 ; omega.
   - eapply (Z.lt_le_trans _ (2 * b * 2 ^ (n * (ℤ.ℕ m)) + 2 ^ (n * (ℤ.ℕ m)) * x)).
     apply Zplus_lt_compat_r ; omega.
-    rewrite Z.pow_add_r ; go.
+    rewrite Z.pow_add_r. 2: go. 2: omega.
     replace (2 * b * 2 ^ (n * (ℤ.ℕ m))) with (2 ^ (n * (ℤ.ℕ m)) * 2 * b) by ring.
     rewrite -!Z.mul_assoc Zred_factor4.
     replace (2 * (b * (2 ^ (n * (ℤ.ℕ m))* 2 ^ n))) with (2 ^ (n * (ℤ.ℕ m)) * (2 * b * 2 ^ n)) by ring.

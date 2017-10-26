@@ -1,4 +1,4 @@
-default_target: .loadpath Libs ListsOp Mid Low Car Sel Unpack
+default_target: .loadpath Libs ListsOp Mid Low
 
 all: default_target High
 
@@ -12,7 +12,7 @@ SHOW := $(if $(VERBOSE),@true "",@echo "")
 HIDE := $(if $(VERBOSE),,@)
 
 
-DIRS= Libs ListsOp Mid Car Sel High Unpack
+DIRS= Libs ListsOp Mid Low High 
 INCLUDE= $(foreach a,$(DIRS),$(if $(wildcard $(a)), -Q $(a) $(a)))
 
 COQFLAGS=$(foreach d, $(DIRS), $(if $(wildcard $(d)), -Q $(d) $(d))) $(EXTFLAGS)
@@ -37,13 +37,11 @@ endif
 LIBS_FILES = $(wildcard Libs/*.v)
 LISTSOP_FILES = $(wildcard ListsOp/*.v)
 MID_FILES = $(wildcard Mid/*.v)
-CAR_FILES = $(wildcard Car/*.v)
-SEL_FILES = $(wildcard Sel/*.v)
-UNPACK_FILES = $(wildcard Unpack/*.v)
+LOW_FILES = $(wildcard Low/*.v)
 HIGH_FILES = $(wildcard High/*.v)
 
-COUNTFILES = $(LIBS_FILES) $(LISTSOP_FILES) $(MID_FILES) $(CAR_FILES) \
- $(SEL_FILES) $(UNPACK_FILES)
+COUNTFILES = $(LIBS_FILES) $(LISTSOP_FILES) $(MID_FILES) $(LOW_FILES) \
+$(UNPACK_FILES)
 
 
 FILES = $(COUNTFILES) $(HIGH_FILES)
@@ -87,9 +85,7 @@ quick: .loadpath $(FILES:.v=.vio)
 Libs: 		.loadpath $(LIBS_FILES:%.v=%.vo)
 ListsOp:	.loadpath $(LISTSOP_FILES:%.v=%.vo)
 Mid:		.loadpath $(MID_FILES:%.v=%.vo)
-Car:		.loadpath $(CAR_FILES:%.v=%.vo)
-Sel:		.loadpath $(SEL_FILES:%.v=%.vo)
-Unpack:		.loadpath $(UNPACK_FILES:%.v=%.vo)
+Low:		.loadpath $(LOW_FILES:%.v=%.vo)
 High:		.loadpath $(HIGH_FILES:%.v=%.vo)
 
 _CoqProject: Makefile

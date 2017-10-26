@@ -2,7 +2,6 @@ Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
 
 Require Export Tweetnacl.Mid.SumList.
-Require Import stdpp.prelude.
 
 Open Scope Z.
 
@@ -102,3 +101,5 @@ Proof. convert_length_to_Zlength ZsumList_bound_length_le. Qed.
 End Integer.
 
 Close Scope Z.
+
+Definition A a b := ZsumList a b.

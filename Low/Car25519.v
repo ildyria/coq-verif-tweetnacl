@@ -1,128 +1,11 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
-Require Import Tweetnacl.Car.Reduce.
-Require Import Tweetnacl.Car.Carry_n.
-Require Import Tweetnacl.Mid.M.
-
-Require Import stdpp.prelude.
-
+Require Import Tweetnacl.Mid.Reduce.
+Require Import Tweetnacl.Low.Carry_n.
+Require Import Tweetnacl.Low.BackCarry.
+Require Import Tweetnacl.Mid.Carry.
 
 Local Open Scope Z.
-Section Integer.
-
-Variable n:Z.
-Hypothesis Hn: n > 0.
-
-
-Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
-
-Fixpoint Carrying (a:Z) (l:list Z) : list Z := match a,l with 
-| 0,[] => []
-| a,[] => [a]
-| a,h :: q => getResidue n (a + h) :: Carrying (getCarry n (a + h)) q
-end.
-
-Lemma Carrying_n_eq: forall l (m:nat) a, m = length l -> Carrying_n n m a l = Carrying a l.
-Proof.
-  induction l as [|h q IHl]; intros m a Hm; go.
-  destruct m.
-  inv Hm.
-  simpl in *.
-  inversion Hm.
-  replace (h + a) with (a + h) by omega.
-  flatten ; f_equal ; go.
-Qed.
-
-Lemma Carrying_n_eq_Z: forall l (m:nat) a, Zlength l = m -> Carrying_n n m a l = Carrying a l.
-Proof. convert_length_to_Zlength Carrying_n_eq. Qed.
-
-Lemma CarryPreserveConst : forall l a , a + (ℤ.lst l) = ℤ.lst Carrying a l.
-Proof.
-  induction l as [| h q IHl].
-  intro a ; destruct a ; assert(Hn0: 2 ^ n * 0 = 0) by (symmetry ; apply Zmult_0_r_reverse) ; simpl ; try rewrite Hn0 ; go.
-  intro a ; unfold Carrying ; fold Carrying.
-  flatten ;
-  unfold ZofList ; fold ZofList ; rewrite <- IHl ;
-  rewrite <- Zplus_assoc_reverse ; 
-  rewrite <- Zred_factor4 ;
-  rewrite <- Zplus_assoc_reverse ;
-  rewrite residuteCarry ;
-  go.
-Qed.
-
-Corollary CarryPreserve : forall l, ℤ.lst l = ℤ.lst Carrying 0 l.
-Proof.
-  intros.
-  symmetry.
-  rewrite -CarryPreserveConst.
-  omega.
-Qed.
-
-End Integer.
-
-Definition backCarry (l:list Z) : (list Z) := 
-  match l with
-  | [] => []
-  | h :: q => let v := nth 15 l 0 in
-              (h + 38 * getCarry 16 v) :: take 14 q ++ [getResidue 16 v]
-  end.
-
-Lemma backCarry_ToFF_25519 : forall l, Zlength l <= 16 -> (ℤ16.lst l) :𝓖𝓕  = ((ℤ16.lst backCarry l) :𝓖𝓕).
-Proof.
-  destruct l as [| h l]; intro Hlength.
-  - go.
-  - unfold backCarry.
-    repeat rewrite ZofList_cons.
-    rewrite ZofList_app ; try omega.
-    rewrite Zlength_cons' in Hlength.
-    apply Z_le_lt_eq_dec in Hlength.
-    destruct Hlength.
-    + rename l0 into H.
-      assert(Zlength l < 15) by omega.
-      rewrite Zlength_correct in H0.
-      repeat match goal with 
-       | _ => simpl; omega
-       | _ => rewrite nth_overflow
-       | _ => rewrite take_ge
-       | _ => rewrite getResidue_0
-       | _ => rewrite getCarry_0
-       | _ => rewrite ZofList_cons_0
-       | _ => f_equal ; ring
-       end.
-    + rename e into H.
-      assert((length l = 15)%nat) by (rewrite Zlength_correct in H ; omega).
-      repeat (destruct l ; tryfalse).
-      clear H H0.
-      unfold nth , take.
-      change ([z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13]) with ([z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12] ++ [ z13]).
-      rewrite ZofList_app ; try omega.
-      repeat rewrite ZofList_cons_0.
-      do 2 rewrite <- Zred_factor4 ; rewrite Zplus_assoc_reverse.
-      rewrite <- Z.add_mod_idemp_r by (compute ; omega);symmetry;rewrite <- Z.add_mod_idemp_r by (compute ; omega).
-      f_equal; f_equal.
-      rewrite Z.add_shuffle3.
-      rewrite <- Z.add_mod_idemp_r by (compute ; omega);symmetry;rewrite <- Z.add_mod_idemp_r by (compute ; omega).
-      f_equal; f_equal.
-      rewrite <- Z.add_mod_idemp_l by (compute ; omega) ; symmetry.
-      rewrite Zmult_mod.
-      rewrite <- t2256is38.
-      rewrite <- Zmult_mod.
-      rewrite Z.add_mod_idemp_l.
-      change 256 with (16 + 16 * 15).
-      orewrite Z.pow_add_r.
-      rewrite Zmult_assoc_reverse.
-      rewrite Zred_factor4.
-      rewrite Zmult_mod ; symmetry ; rewrite Zmult_mod.
-      f_equal;f_equal.
-      change (2 ^ (16 * 15)) with (2 ^ (16 * 14) * 2 ^ 16).
-      rewrite Zmult_mod.
-      symmetry.
-      rewrite Zmult_assoc_reverse ; rewrite Zred_factor4 ; rewrite Zmult_mod.
-      f_equal; f_equal.
-      rewrite Z.add_comm.
-      rewrite residuteCarry ; go.
-      compute; omega.
-Qed.
 
 Definition car25519 (l:list Z) : list Z := backCarry (Carrying_n 16 15 0 l).
 
@@ -420,14 +303,24 @@ Qed.
 Lemma bounds_car_inf_Zlength: forall i l, Zlength l = 16 -> 0 <= ℤ16.lst l < 2^256 -> 0 <= nth i (car25519 l) 0.
 Proof. convert_length_to_Zlength bounds_car_inf_length. Qed.
 
-(* ADD LENGTH PROOF *)
 
+Lemma car25519_length : forall l,
+  length l = 16%nat ->
+  length (car25519 l) = 16%nat.
+Proof.
+  intros.
+  apply destruct_length_16 in H.
+  do 16 destruct H.
+  subst.
+  unfold car25519.
+  repeat rewrite Carry_n.Carry_n_step.
+  rewrite Carry_n.Carry_n_step_0.
+  reflexivity.
+Qed.
 
+Lemma car25519_Zlength : forall l,
+  Zlength l = 16 -> 
+  Zlength (car25519 l) = 16.
+Proof. convert_length_to_Zlength car25519_length. Qed.
 
-
-
-
-
-
-
-
+Close Scope Z.

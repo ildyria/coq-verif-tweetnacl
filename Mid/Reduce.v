@@ -1,5 +1,4 @@
 Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.ListsOp.Export.
 
 Open Scope Z.
 
@@ -55,8 +54,6 @@ Proof.
   apply pown0.
   assumption.
 Qed.
-
-Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
 Definition getCarry (m:Z) : Z :=  Z.shiftr m n.
 

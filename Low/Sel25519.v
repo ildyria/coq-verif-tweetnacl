@@ -1,5 +1,4 @@
 Require Import Tweetnacl.Libs.Export.
-Require Import stdpp.prelude.
 
 Open Scope Z.
 
@@ -23,6 +22,6 @@ Proof. intros; unfold list_cswap; destruct (Z.eqb b 0); go. Qed.
 Lemma list_cswap_Zlength_eq: forall b p q, Zlength p = Zlength q -> Zlength p = Zlength (list_cswap b p q).
 Proof. intros; unfold list_cswap; destruct (Z.eqb b 0); go. Qed.
 
-
-
 Close Scope Z.
+
+Definition Sel25519 b p q := list_cswap b p q.

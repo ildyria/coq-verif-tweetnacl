@@ -106,3 +106,5 @@ Proof. convert_length_to_Zlength ZsubList_bound_length_le. Qed.
 End Integer.
 
 Close Scope Z.
+
+Definition Z a b := ZsubList a b.

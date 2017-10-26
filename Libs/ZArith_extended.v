@@ -188,4 +188,20 @@ Lemma Add_interval_mono3:
   c <= x + y < b + d.
 Proof. intros; change c with (0 + c) ; split ;[apply Z.add_le_mono | apply Z.add_lt_le_mono] ; omega. Qed.
 
+Section Integer.
+
+Variable n:Z.
+Hypothesis Hn: n > 0.
+
+Lemma pown: 2 ^ n > 1.
+Proof. rewrite Z.gt_lt_iff ; apply Z.pow_gt_1 ; omega. Qed.
+
+Lemma pown0: 2 ^ n > 0.
+Proof. assert(Hp:= pown) ; omega. Qed.
+
+Lemma pown2: 2 <= 2 ^ n.
+Proof. change 2 with (2 ^ 1) ;apply Z.pow_le_mono ; change (2^1) with 2 ; omega. Qed.
+
+End Integer.
+
 Close Scope Z.

@@ -7,6 +7,7 @@ Require Export Tweetnacl.Libs.Forall_extended.
 Require Export Tweetnacl.Libs.ZArith_extended.
 Require Export Tweetnacl.Libs.Relations.
 Require Export mathcomp.ssreflect.ssreflect.
+Require Export stdpp.prelude.
 Require Export Coq.ZArith.BinInt.
 Require Export Coq.ZArith.Zdiv.
 

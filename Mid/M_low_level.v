@@ -1,10 +1,11 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
 
-Require Import Tweetnacl.Mid.Inner_M1.
-Require Import Tweetnacl.Mid.Outer_M1.
 Require Import Tweetnacl.Mid.M.
-Require Import stdpp.prelude.
+Require Import Tweetnacl.Low.Inner_M1.
+Require Import Tweetnacl.Low.Outer_M1.
+Require Import Tweetnacl.Low.Car25519.
+(* Require Import stdpp.prelude. *)
 Require Import Recdef.
 
 Local Open Scope Z.

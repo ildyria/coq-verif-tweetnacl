@@ -1,6 +1,4 @@
 Require Import Tweetnacl.Libs.Export.
-Require Import stdpp.prelude.
-Import ListNotations.
 
 Open Scope Z.
 
@@ -28,15 +26,6 @@ Fixpoint ZofList (a : list Z) : Z := match a with
 | h :: q => h + Z.pow 2 n * ZofList q
 end.
 Notation "ℤ.lst A" := (ZofList A) (at level 65, right associativity).
-
-Lemma pown: 2 ^ n > 1.
-Proof. rewrite Z.gt_lt_iff ; apply Z.pow_gt_1 ; omega. Qed.
-
-Lemma pown0: 2 ^ n > 0.
-Proof. assert(Hp:= pown) ; omega. Qed.
-
-Lemma pown2: 2 <= 2 ^ n.
-Proof. change 2 with (2 ^ 1) ;apply Z.pow_le_mono ; change (2^1) with 2 ; omega. Qed.
 
 Lemma ZofList_eq : forall l i, 0 <= i -> ZofListi l i = 2^(n * i) * ZofList l.
 Proof. elim ; go => h l IHl i Hi /=.

@@ -1,9 +1,6 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
-Require Import Tweetnacl.Car.Reduce.
-Require Import Tweetnacl.Mid.M.
-
-Require Import stdpp.prelude.
+Require Import Tweetnacl.Mid.Reduce.
 
 Local Open Scope Z.
 Section Integer.
@@ -116,10 +113,9 @@ Proof.
     | [ |- -2^62 < getCarry _ _ ∧ _ < _ ] => apply getCarry_bound_str63
   end.
 Qed.
+(* THIS QED IS REALLY SLOW... should be improved by reflection ... *)
 
 Lemma Carry_n_length_False: forall (h:Z) (q:list Z), Carrying_n 16 15 0 (h :: q) = [] -> False.
 Proof. intros ; rewrite Carry_n_step in H ; false. Qed.
-
-
 
 Local Close Scope Z.

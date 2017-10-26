@@ -1,6 +1,6 @@
 Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.Mid.Inner_M1.
-Require Import stdpp.prelude.
+Require Import Tweetnacl.Low.Inner_M1.
+
 Require Import Recdef.
 
 Local Open Scope Z.

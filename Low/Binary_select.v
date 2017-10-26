@@ -1,14 +1,8 @@
 Require Import Tweetnacl.Libs.Export.
-Require Import stdpp.prelude.
 
 Open Scope Z.
 
 Definition set_xor (i:Z) := Z.lnot (i - 1).
-
-(*
-Eval compute in (set_xor 0).
-Eval compute in (set_xor 1).
-*)
 
 Lemma set_xor_0 : set_xor 0 = 0.
 Proof. reflexivity. Qed.

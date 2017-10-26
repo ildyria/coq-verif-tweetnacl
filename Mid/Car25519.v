@@ -1,9 +1,9 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
-Require Import Tweetnacl.Car.Carry.
-Require Import Tweetnacl.Car.ZCarry.
-Require Import Tweetnacl.Car.Reduce.
-Require Import stdpp.prelude.
+Require Import Tweetnacl.Mid.Carry.
+Require Import Tweetnacl.Mid.ZCarry.
+Require Import Tweetnacl.Mid.Reduce.
+Require Import Tweetnacl.Low.Car25519.
 
 Open Scope Z.
 
@@ -191,7 +191,7 @@ Proof.
 
     rewrite <- Hcarr1 in H.
     unfold car25519.
-    unfold backCarry.
+    unfold BackCarry.backCarry.
     rename H into Hbound_strict.
     rename Hl2 into H.
     apply destruct_length_16 in H.
@@ -246,21 +246,3 @@ Proof.
       rewrite getCarry_1; omega.
 Qed.
 
-Lemma car25519_length : forall l,
-  length l = 16%nat ->
-  length (car25519 l) = 16%nat.
-Proof.
-  intros.
-  apply destruct_length_16 in H.
-  do 16 destruct H.
-  subst.
-  unfold car25519.
-  repeat rewrite Carry_n.Carry_n_step.
-  rewrite Carry_n.Carry_n_step_0.
-  reflexivity.
-Qed.
-
-Lemma car25519_Zlength : forall l,
-  Zlength l = 16 -> 
-  Zlength (car25519 l) = 16.
-Proof. convert_length_to_Zlength car25519_length. Qed.
