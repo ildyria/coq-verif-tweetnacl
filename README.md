@@ -19,18 +19,12 @@
   opam install coqide
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
+  opam repo add tweetnacl git://github.com/ildyria/opam-repository.git
   opam install coq-ssr-elliptic-curves
   opam install menhir
   opam install coq-bignums
-````
-
-##### 3. install coq-stdpp
-
-````bash
-  git clone git-rts@gitlab.mpi-sws.org:robbertkrebbers/coq-stdpp.git
-  cd coq-stdpp
-  make -j
-  cd ..
+  opam install coq-coqprime
+  opam install coq-stdpp
 ````
 
 ##### 4. Install Compcert

@@ -3,9 +3,8 @@ From mathcomp Require Import ssreflect ssrnat ssrbool eqtype fintype.
 From mathcomp Require Import tuple seq fintype bigop ssralg finalg.
 From mathcomp Require Import ssrfun choice zmodp fingroup.
 From SsrMultinomials Require Import mpoly.
-From SsrEllipticCurves Require Import polyall polydec ssrring ecgroup.
-From SsrEllipticCurves Require Export ec.
-From Tweetnacl.Montgomery Require Import mc.
+From SsrEllipticCurves Require Import polyall polydec ssrring ecgroup ec.
+From Tweetnacl.High Require Import mc.
 
 Import GRing.Theory.
 

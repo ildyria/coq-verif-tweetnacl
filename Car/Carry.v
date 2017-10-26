@@ -2,7 +2,7 @@ Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
 Require Import Tweetnacl.Car.Reduce.
 Require Import Tweetnacl.Car.Carry_n.
-Require Import Tweetnacl.Op.M.
+Require Import Tweetnacl.Mid.M.
 
 Require Import stdpp.prelude.
 

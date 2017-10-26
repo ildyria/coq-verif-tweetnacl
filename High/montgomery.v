@@ -5,7 +5,7 @@ From mathcomp Require Import choice zmodp fingroup.
 From SsrMultinomials Require Import mpoly.
 From SsrEllipticCurves Require Import polyall polydec ssrring.
 From SsrEllipticCurves Require Export ec.
-From Tweetnacl.Montgomery Require Import mc.
+From Tweetnacl.High Require Import mc.
 
 Import GRing.Theory.
 

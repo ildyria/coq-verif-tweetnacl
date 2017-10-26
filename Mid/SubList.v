@@ -1,7 +1,7 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
 
-Require Import Tweetnacl.Op.MinusList.
+Require Import Tweetnacl.Mid.MinusList.
 Require Import stdpp.prelude.
 Import ListNotations.
 

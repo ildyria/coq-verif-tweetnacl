@@ -1,10 +1,10 @@
 Set Warnings "-notation-overridden,-parsing".
 
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div ssralg.
-From Tweetnacl.Montgomery Require Import mc.
-From Tweetnacl.Montgomery Require Import mcgroup.
-From Tweetnacl.Montgomery Require Import ladder.
-From Tweetnacl.Montgomery Require Import montgomery.
+From Tweetnacl.High Require Import mc.
+From Tweetnacl.High Require Import mcgroup.
+From Tweetnacl.High Require Import ladder.
+From Tweetnacl.High Require Import montgomery.
 
 Import GRing.Theory.
 
