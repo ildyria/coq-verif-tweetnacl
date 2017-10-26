@@ -12,22 +12,21 @@
   opam switch 4.05.0
 ````
 
-##### 2. install coq 8.7 + coqide + ssreflect
+##### 2. Dependencies (coq 8.7, coqide, ssreflect, stdpp, coqprime)
 
 ````bash
-  opam install coq
-  opam install coqide
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
   opam repo add tweetnacl git://github.com/ildyria/opam-repository.git
   opam install coq-ssr-elliptic-curves
   opam install menhir
-  opam install coq-bignums
-  opam install coq-coqprime
   opam install coq-stdpp
+  opam install coq-coqprime
 ````
 
-##### 4. Install Compcert
+##### 2. Install Compcert
+
+**THIS NEED TO BE UPDATED**
 
 ````bash
   git clone git@github.com:ildyria/CompCert.git Compcert
@@ -41,6 +40,8 @@
 
 ##### 5. Get VST from Princeton
 
+**THIS NEED TO BE UPDATED**
+
 ````bash
   git clone git@github.com:ildyria/VST.git
   cd VST
@@ -52,24 +53,10 @@
 ##### 6. Install TweetNacl
 
 ````bash
-  git clone git@gitlab.science.ru.nl:benoit/tweetnacl.git
-  cd tweetnacl
-
-  # build Coqprime
-  cd Coqprime
-  make -j
-  cd ..
+  opam source coq-tweetnacl
+  cd coq-tweetnacl.dev
 
   make -j
   cd ..
 ````
 
-<!--
-##### 4. launch coqide from THIS folder (VST) so it uses `.loadpath`
-
-````bash
-  ./coqide
-# or if you use ProofGeneral
-  ./pg
-````
--->
