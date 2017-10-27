@@ -1,8 +1,7 @@
-Require Import Tweetnacl.Libs.Export.
 Require Import stdpp.prelude.
-
-Require Import Tweetnacl.Low.Inner_M1.
-Require Import Tweetnacl.Low.Outer_M1.
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import Low.Inner_M1.
+From Tweetnacl Require Import Low.Outer_M1.
 
 Local Open Scope Z.
 

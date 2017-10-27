@@ -1,9 +1,10 @@
-Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.ListsOp.Export.
-Require Import Tweetnacl.Mid.Reduce.
-Require Import Tweetnacl.Low.Carry_n.
-Require Import Tweetnacl.Low.BackCarry.
-Require Import Tweetnacl.Mid.Carry.
+Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import ListsOp.Export.
+From Tweetnacl Require Import Mid.Reduce.
+From Tweetnacl Require Import Low.Carry_n.
+From Tweetnacl Require Import Low.BackCarry.
+From Tweetnacl Require Import Mid.Carry.
 
 Local Open Scope Z.
 

@@ -1,5 +1,5 @@
 Set Warnings "-notation-overridden".
-Require Export Tweetnacl.Libs.List_Decidable.
+From Tweetnacl Require Export Libs.List_Decidable.
 
 (**************************************************************************
  * Environment management tactics

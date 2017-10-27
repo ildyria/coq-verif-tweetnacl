@@ -1,7 +1,7 @@
-Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.Mid.Reduce.
-Require Import Tweetnacl.Mid.Carry.
-Require Import Tweetnacl.Low.Car25519.
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import Mid.Reduce.
+From Tweetnacl Require Import Mid.Carry.
+From Tweetnacl Require Import Low.Car25519.
 Require Import Nsatz.
 Require Import Psatz.
 

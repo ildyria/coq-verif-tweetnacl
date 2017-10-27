@@ -1,5 +1,5 @@
-Require Import Tweetnacl.Libs.Export.
-
+Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.Export.
 Require Import Recdef.
 
 Local Open Scope Z.

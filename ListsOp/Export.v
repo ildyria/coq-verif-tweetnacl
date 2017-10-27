@@ -1,6 +1,6 @@
-Require Export Tweetnacl.ListsOp.ZofList.
-Require Export Tweetnacl.ListsOp.Forall_ZopList.
-Require Export Tweetnacl.ListsOp.Zipp.
-Require Export Tweetnacl.ListsOp.Forall_ZopList.
-Require Export Tweetnacl.ListsOp.Forall_ZofList.
-Require Export Tweetnacl.ListsOp.ZunopList.
+From Tweetnacl Require Export ListsOp.ZofList.
+From Tweetnacl Require Export ListsOp.Forall_ZopList.
+From Tweetnacl Require Export ListsOp.Zipp.
+From Tweetnacl Require Export ListsOp.Forall_ZopList.
+From Tweetnacl Require Export ListsOp.Forall_ZofList.
+From Tweetnacl Require Export ListsOp.ZunopList.

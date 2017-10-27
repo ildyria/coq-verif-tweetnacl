@@ -1,13 +1,12 @@
-Require Export Tweetnacl.Libs.LibTactics_SF.
-Require Export Tweetnacl.Libs.LibTactics_Rennes.
-Require Export Tweetnacl.Libs.LibTactics.
-Require Export Tweetnacl.Libs.Lists_extended.
-Require Export Tweetnacl.Libs.List_Ltac.
-Require Export Tweetnacl.Libs.Forall_extended.
-Require Export Tweetnacl.Libs.ZArith_extended.
-Require Export Tweetnacl.Libs.Relations.
+From Tweetnacl Require Export Libs.LibTactics_SF.
+From Tweetnacl Require Export Libs.LibTactics_Rennes.
+From Tweetnacl Require Export Libs.LibTactics.
+From Tweetnacl Require Export Libs.Lists_extended.
+From Tweetnacl Require Export Libs.List_Ltac.
+From Tweetnacl Require Export Libs.Forall_extended.
+From Tweetnacl Require Export Libs.ZArith_extended.
+From Tweetnacl Require Export Libs.Relations.
 Require Export mathcomp.ssreflect.ssreflect.
-Require Export stdpp.prelude.
 Require Export Coq.ZArith.BinInt.
 Require Export Coq.ZArith.Zdiv.
 

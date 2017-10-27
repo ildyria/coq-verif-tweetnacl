@@ -1,6 +1,6 @@
-Require Export Tweetnacl.Libs.Lists_extended.
-Require Import Tweetnacl.Libs.LibTactics.
 Require Import stdpp.prelude.
+From Tweetnacl Require Export Libs.Lists_extended.
+From Tweetnacl Require Import Libs.LibTactics.
 
 Lemma Forall_nth_d: forall A (l:list A) (P:A -> Prop) d,
   P d ->

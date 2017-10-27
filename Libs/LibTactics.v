@@ -1,4 +1,4 @@
-Require Export Tweetnacl.Libs.LibTactics_Rennes.
+From Tweetnacl Require Export Libs.LibTactics_Rennes.
 Require Import ZArith.
 
 Ltac transparent_specialize_one H arg :=

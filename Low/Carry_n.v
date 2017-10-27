@@ -1,6 +1,7 @@
-Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.ListsOp.Export.
-Require Import Tweetnacl.Mid.Reduce.
+Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import ListsOp.Export.
+From Tweetnacl Require Import Mid.Reduce.
 
 Local Open Scope Z.
 Section Integer.

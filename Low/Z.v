@@ -1,9 +1,8 @@
-Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.ListsOp.Export.
-
-Require Export Tweetnacl.Mid.SubList.
-Require Import Tweetnacl.Mid.MinusList.
 Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import ListsOp.Export.
+From Tweetnacl Require Export Mid.SubList.
+From Tweetnacl Require Import Mid.MinusList.
 
 Open Scope Z.
 

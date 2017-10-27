@@ -1,8 +1,7 @@
-Require Import Tweetnacl.Libs.LibTactics.
-Require Import Tweetnacl.Libs.LibTactics_SF.
 Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.LibTactics.
+From Tweetnacl Require Import Libs.LibTactics_SF.
 Require Import mathcomp.ssreflect.ssreflect.
-Import ListNotations.
 
 Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
 Proof. boum. Qed.

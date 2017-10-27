@@ -1,7 +1,7 @@
 Require Import stdpp.prelude.
-Require Export Tweetnacl.ListsOp.Zipp.
-Require Export Tweetnacl.ListsOp.ZunopList.
-Require Import Tweetnacl.Libs.Export.
+From Tweetnacl Require Export ListsOp.Zipp.
+From Tweetnacl Require Export ListsOp.ZunopList.
+From Tweetnacl Require Import Libs.Export.
 
 Lemma Forall_Zipp_length: forall (f:Z -> Z -> Z) (P Q R: Z -> Prop) (a b: list Z),
   (forall x y, P x -> Q y -> R (f x y)) ->

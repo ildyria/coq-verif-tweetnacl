@@ -1,5 +1,5 @@
-Require Import Tweetnacl.Libs.Export.
 Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.Export.
 
 Ltac ind_destr_destr n a b :=
   induction n ; destruct a ; destruct b ; boum.

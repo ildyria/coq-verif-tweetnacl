@@ -1,4 +1,5 @@
-Require Import Tweetnacl.Libs.Export.
+Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.Export.
 
 Open Scope Z.
 

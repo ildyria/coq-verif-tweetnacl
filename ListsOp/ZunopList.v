@@ -1,6 +1,5 @@
-Require Import Tweetnacl.Libs.Export.
 Require Import stdpp.prelude.
-Import ListNotations.
+From Tweetnacl Require Import Libs.Export.
 
 (* Some definitions relating to the functional spec of this particular program.  *)
 Fixpoint ZunopList (f:Z -> Z -> Z) (a:Z) (b : list Z) : list Z := match b with

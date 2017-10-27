@@ -1,9 +1,7 @@
-Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.ListsOp.Export.
-
-Require Import Tweetnacl.Mid.MinusList.
 Require Import stdpp.prelude.
-Import ListNotations.
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import ListsOp.Export.
+From Tweetnacl Require Import Mid.MinusList.
 
 (* Some definitions relating to the functional spec of this particular program.  *)
 Fixpoint ZsubList (a b : list Z) : list Z := match a,b with

@@ -1,5 +1,6 @@
-Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.Low.Inner_M1.
+Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import Low.Inner_M1.
 
 Require Import Recdef.
 

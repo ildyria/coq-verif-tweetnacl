@@ -1,6 +1,6 @@
-(* Require Import stdpp.list. *)
-Require Import Tweetnacl.Libs.Export.
-Require Export Tweetnacl.ListsOp.ZofList.
+Require Import stdpp.prelude.
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Export ListsOp.ZofList.
 Open Scope Z.
 
 (* Import ListNotations. *)
