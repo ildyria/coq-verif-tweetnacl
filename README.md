@@ -12,50 +12,26 @@
   opam switch 4.05.0
 ````
 
-##### 2. Dependencies (coq 8.7, coqide, ssreflect, stdpp, coqprime)
+##### 2. Dependencies (coq 8.7, coqide, ssreflect, stdpp, coqprime, VST)
 
 ````bash
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
   opam repo add tweetnacl git://github.com/ildyria/opam-repository.git
+  opam update
   opam install coq-ssr-elliptic-curves
   opam install menhir
   opam install coq-stdpp
   opam install coq-coqprime
+  opam install coq-compcert.2.7.2
+  opam install coq-vst.1.8
 ````
 
-##### 2. Install Compcert
-
-**THIS NEED TO BE UPDATED**
-
-````bash
-  git clone git@github.com:ildyria/CompCert.git Compcert
-  cd Compcert
-  git checkout v2.7.2
-  ./configure -clightgen ia32-linux
-  # or ia32-macosx
-  make -j
-  cd ..
-````
-
-##### 5. Get VST from Princeton
-
-**THIS NEED TO BE UPDATED**
-
-````bash
-  git clone git@github.com:ildyria/VST.git
-  cd VST
-  git checkout ECC
-  make -j
-  cd ..
-````
-
-##### 6. Install TweetNacl
+##### 3. Install TweetNacl math model
 
 ````bash
   opam source coq-tweetnacl
   cd coq-tweetnacl.dev
-
   make -j
   cd ..
 ````
