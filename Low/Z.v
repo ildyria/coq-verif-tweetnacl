@@ -106,4 +106,4 @@ End Integer.
 
 Close Scope Z.
 
-Definition Z a b := ZsubList a b.
+Definition Zub a b := ZsubList a b.
