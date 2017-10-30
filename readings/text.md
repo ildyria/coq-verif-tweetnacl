@@ -2,7 +2,7 @@
 
 **Abstract**:
 By using the Coq formal proof assistant with the VST library, we prove the
-soundness and correctness of TweetNaCl's Curve25519 implementation. 
+soundness and correctness of TweetNaCl's Curve25519 implementation.
 
 ## Introduction
 
@@ -67,7 +67,13 @@ This is *shape analysis*.
 ### Correctness Theorem
 
 
+
 ## Mathematical Model
+
+ASK TIMMY
+
+## Number representation and C implementation
+
 
 
 ## Related Works
@@ -81,7 +87,6 @@ This is *shape analysis*.
 
 ## Using VST
 
-**SLOW**
-
-
-##
+This approach is **slow**, **tedious** and **frustrating**.
+The time cost way to big for such a proof and definitively not applicable for a
+cryptographic engineer.
