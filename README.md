@@ -19,12 +19,11 @@
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
   opam repo add tweetnacl git://github.com/ildyria/opam-repository.git
   opam update
-  opam install coq-ssr-elliptic-curves
-  opam install menhir
-  opam install coq-stdpp
-  opam install coq-coqprime
-  opam install coq-compcert.2.7.2
+  # if you want coqide
+  opam install coqide
+  # install the two main repository
   opam install coq-vst.1.8
+  opam install coq-tweetnacl
 ````
 
 ##### 3. Install TweetNacl math model
