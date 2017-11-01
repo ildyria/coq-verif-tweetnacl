@@ -9,7 +9,7 @@
   sudo apt-get install gcc
   sudo apt-get install opam
   opam init
-  opam switch 4.05.0
+  opam switch -A 4.05.0 Tweetnacl
 ````
 
 ##### 2. Dependencies (coq 8.7, coqide, ssreflect, stdpp, coqprime, VST)
