@@ -10,6 +10,7 @@
   sudo apt-get install opam
   opam init
   opam switch -A 4.05.0 Tweetnacl
+  eval `opam config env`
 ````
 
 ##### 2. Dependencies (coq 8.7, coqide, ssreflect, stdpp, coqprime, VST)
