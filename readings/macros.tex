@@ -1,0 +1,258 @@
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\newcommand\invisiblesection[1]{%
+  \refstepcounter{section}
+\sectionmark{#1}}
+
+\newenvironment{proof}[1][Proof]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+  \newenvironment{definition}[1][Definition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+  \newenvironment{example}[1][Example]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+  \newenvironment{remark}[1][Remark]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+  \newcommand{\qed}{\nobreak \ifvmode \relax \else
+    \ifdim\lastskip<1.5em \hskip-\lastskip
+    \hskip1.5em plus0em minus0.5em \fi \nobreak
+  \vrule height0.75em width0.5em depth0.25em\fi}
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\Vol}{Vol}
+\DeclareMathOperator*{\Supp}{Supp}
+\newcommand{\cR}{\ensuremath{\mathcal R}}
+\newcommand{\cS}{\ensuremath{\mathcal S}}
+
+\newcommand{\CVPDf}{\ensuremath{\algo{CVP}_{\tilde{D}_4}}}
+\newcommand{\CVPDfZf}{\ensuremath{\algo{CVP}_{D_4/\ZZ^4}}}
+\newcommand{\LDEncode}{\algo{Encode}}
+\newcommand{\LDDecode}{\algo{Decode}}
+
+
+ 
+\usepackage{soul}\let\strikethrough\st\let\st\undefined
+
+
+
+\newcommand{\PeiktertROUND}[1]{\langle #1 \rangle_2}
+\newcommand{\PeiktertRec}{\textsf{rec}\xspace}
+\newcommand{\PeiktertDbl}{\textsf{dbl}\xspace}
+\newcommand{\PeiktertALICE}{Alice}
+\newcommand{\PeiktertBOB}{Bob}
+
+\newcommand{\NewHope}{\textsc{NewHope}\xspace}
+\newcommand{\JarJar}{\textsc{JarJar}\xspace}
+
+
+\newcommand{\NewhopeALICE}{Alice}
+\newcommand{\NewhopeBOB}{Bob}
+\newcommand{\NewhopeSERVER}{server}
+\newcommand{\NewhopeCLIENT}{client}
+
+
+\newcommand{\NewhopeRAND}{\{0,1\}^{256}}
+\newcommand{\NewhopeGENA}{\textsf{prg}\xspace}
+\newcommand{\NewhopeSEED}{seed\xspace}
+
+\newcommand{\NewhopeHASHXOF}{\textsf{SHAKE-128}\xspace}
+\newcommand{\NewhopePARSE}{\textsf{Parse}\xspace}
+
+
+
+\newcommand{\NewhopeHASH}{\textsf{SHA3-256}\xspace}
+\newcommand{\NewhopeREC}{{\textsf{Rec}}\xspace}
+\newcommand{\NewhopeHelpREC}{{\textsf{HelpRec}}\xspace}
+\newcommand{\NewhopeSENDA}{{\textsf{encodeA}}\xspace}
+\newcommand{\NewhopeSENDB}{{\textsf{encodeB}}\xspace}
+\newcommand{\NewhopeRECVA}{{\textsf{decodeA}}\xspace}
+\newcommand{\NewhopeRECVB}{{\textsf{decodeB}}\xspace}
+\newcommand{\NewhopeLDDECODE}{\textsf{Decode}\xspace}
+\newcommand{\NewhopeValuek}{16}
+\newcommand{\NewhopeValuekhalf}{8}
+\newcommand{\NewhopeErrorDist}{\psi^n_{\NewhopeValuek}}
+\newcommand{\NewhopeErrorDistOne}{\psi_{\NewhopeValuek}}
+
+\newcommand{\NewhopeK}{\nu}
+\newcommand{\NewhopeKey}{\mu}
+\newcommand{\NTT}{\mbox{\textsf{NTT}}\xspace}
+\newcommand{\INVNTT}{\ensuremath{\mbox{\textsf{NTT}}^{-1}}\xspace}
+\newcommand{\pw}{\circ}
+
+\newcommand{\NewhopeRing}{\ensuremath{\mathcal{R}_q}}
+
+\newcommand{\T}{L}
+
+%\newcommand{\F}{\mathbb{Z}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\corr}{\,\hat{=}\,}
+
+\newcommand{\RR}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+
+\newcommand{\mbf}{\ensuremath{\mathbf}}
+\newcommand{\rando}{\ensuremath{\xleftarrow{\$}}}
+\newcommand{\la}{\ensuremath{\leftarrow}}
+
+\newcommand{\MD}{\ensuremath{\mathcal{D}}\xspace}
+\newcommand{\MS}{\ensuremath{\mathcal{D}}\xspace}
+\newcommand{\MA}{\ensuremath{\mathcal{A}}\xspace}
+\newcommand{\MB}{\ensuremath{\mathcal{B}}\xspace}
+\newcommand{\MP}{\ensuremath{\mathcal{P}}\xspace}
+\newcommand{\tA}{\ensuremath{t_{\mathcal{A}}}}
+\newcommand{\eA}{\ensuremath{\varepsilon_{\mathcal{A}}}}
+\newcommand{\tS}{\ensuremath{t_{\mathcal{D}}}}
+\newcommand{\eS}{\ensuremath{\varepsilon_{\mathcal{D}}}}
+
+\newcommand{\vX}{\mathcal X}
+\newcommand{\vY}{\mathcal Y}
+
+
+\newcommand{\MR}{\ensuremath{\mathcal{R}}\xspace}
+\newcommand{\tR}{\ensuremath{t_{\mathcal{R}}}}
+\newcommand{\eR}{\ensuremath{\varepsilon_{\mathcal{R}}}}
+
+\newcommand{\tD}{\ensuremath{t_{\mathcal{D}}}}
+\newcommand{\eD}{\ensuremath{\varepsilon_{\mathcal{D}}}}
+\newcommand{\sis}{\textsf{SIS}\xspace}
+\newcommand{\isis}{\textsf{ISIS}\xspace}
+\newcommand{\lwe}{\textsf{LWE}\xspace}
+\newcommand{\dlwe}{\textsf{LWE}\xspace}
+\newcommand{\rdlwe}{\textsf{R-LWE}\xspace}
+
+\newcommand{\ee}{\ensuremath{\varepsilon}}
+
+\newcommand{\sS}{\ensuremath{\sigma}}
+\newcommand{\sE}{\ensuremath{\sigma}}
+\newcommand{\DS}{\ensuremath{D_{\sS}}}
+\newcommand{\DE}{\ensuremath{D_{\sE}}}
+%\newcommand{\Dy}{\ensuremath{D_y}}
+\newcommand{\Dy}{\ensuremath{[-B, B]}}
+\newcommand{\Dysc}{\ensuremath{D_{y,\mat{Sc}}}}
+\newcommand{\Dz}{\ensuremath{D_z}}
+\newcommand{\bit}{\ensuremath{\{0,1\}}}
+\newcommand{\eqdef}{\stackrel{\mathrm{def}}=}
+\newcommand{\rand}{\getsr}
+
+\newcommand{\rounddq}[1]{\ensuremath{\lfloor #1 \rceil_{d,q}}}
+\newcommand{\roundd}[1]{\ensuremath{\lfloor #1 \rceil_d}}
+\newcommand{\norm}[1]{\ensuremath{||#1||}}
+
+%\newcommand{\KeyGen}{\ensuremath{\mathsf{KeyGen_{BG}}}}
+%\newcommand{\Sign}{\ensuremath{\mathsf{Sign_{BG}}}}
+%\newcommand{\Verify}{\ensuremath{\mathsf{Verify_{BG}}}}
+\newcommand{\KeyGen}{\keygen}
+\newcommand{\Sign}{\sign}
+\newcommand{\Verify}{\verify}
+\newcommand{\keygen}{\ensuremath{\mathsf{KeyGen}}}
+\newcommand{\sign}{\ensuremath{\mathsf{Sign}}}
+\newcommand{\verify}{\ensuremath{\mathsf{Verify}}}
+\newcommand{\start}{\underline{\ensuremath{\mathsf{Start}}}\xspace}
+\newcommand{\randO}{\ensuremath{\underline{\mathsf{Rand}}^{O_c}}\xspace}
+\newcommand{\signO}{\ensuremath{\underline{\mathsf{Sign}}^{O_c}}\xspace}
+\newcommand{\finishO}{\ensuremath{\underline{\mathsf{Finish}}^{O_c}}}
+\newcommand{\instance}{\underline{\ensuremath{\mathsf{Instance}}}}
+\newcommand{\Sample}{\ensuremath{\mathsf{Sample}}}
+
+\newcommand{\keygenQ}{\ensuremath{\mathsf{KeyGen}}}
+\newcommand{\signQ}{\ensuremath{\mathsf{Sign}}}
+\newcommand{\verifyQ}{\ensuremath{\mathsf{Verify}}}
+\newcommand{\CHgen}{\ensuremath{\mathsf{ChGen}}}
+
+\newcommand{\inputtext}{\textsf{INPUT:}\;}
+\newcommand{\outputtext}{\textsf{OUTPUT:}\;}
+\newcommand{\iftext}{\mathbf{if\;}}
+\newcommand{\elsetext}{\mathbf{else\;}}
+\newcommand{\then}{\mathbf{then\;}}
+\newcommand{\return}{\mathbf{return\;}}
+
+\newcommand{\mat}[1]{\mathbf{#1}}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\modq}{\ensuremath{\; (\bmod \; q)}}
+%\newcommand{\modq}{\ensuremath{\; (q)}}
+\newcommand{\ip}[2]{\ensuremath{\langle {#1},{#2}\rangle}}
+
+\newcommand{\adv}{\ensuremath{\mathcal{A}}}
+\newcommand{\secpar}{\ensuremath{\lambda}}
+
+\newcommand{\sk}{\ensuremath{\mathsf{sk}}\xspace}
+\newcommand{\pk}{\ensuremath{\mathsf{vk}}\xspace}
+\newcommand{\sst}{\ensuremath{\mathsf{st}}\xspace}
+
+\newcommand{\CH}{\ensuremath{\mathcal{CH}}}
+\newcommand{\ch}{\ensuremath{\mathsf{CH}}}
+\newcommand{\Mek}{\ensuremath{\mathsf{M_{ek}}}}
+\newcommand{\Yek}{\ensuremath{\mathsf{Y_{ek}}}}
+\newcommand{\Rek}{\ensuremath{\mathsf{R_{ek}}}}
+\newcommand{\ek}{\ensuremath{\mathsf{ek}}}
+\newcommand{\td}{\ensuremath{\mathsf{td}}}
+\newcommand{\Gen}{\ensuremath{\mathsf{Gen}}}
+
+\newcommand{\negl}{\ensuremath{\mathsf{negl}}}
+
+
+\newcommand{\R}{\mathcal{R}}
+\newcommand{\Rp}{\mathcal{R}_p}
+\newcommand{\Rq}{\mathcal{R}_q}
+\newcommand{\Rqk}[1]{\mathcal{R}_{q,#1}}
+
+\def\getsr{\stackrel{{\scriptscriptstyle \$}}{\leftarrow}}
+\def\gets{{\leftarrow}}
+
+
+\newcommand{\Uniform}{\mathcal{U}}
+\newcommand{\UniRk}[1]{\Rqk{#1}}
+\newcommand{\UniRq}{\Rq}
+
+
+\newcommand{\zeropo}{{\bf 0}}
+\newcommand{\Apo}{{\bf A\xspace}}
+\newcommand{\Bpo}{{\bf B\xspace}}
+\newcommand{\Ipo}{{\bf I\xspace}}
+\newcommand{\apo}{{\bf a\xspace}}
+\newcommand{\bpo}{{\bf b\xspace}}
+\newcommand{\cpo}{{\bf c\xspace}}
+\newcommand{\Cpo}{{\bf C\xspace}}
+\newcommand{\dpo}{{\bf d\xspace}}
+\newcommand{\epo}{{\bf e\xspace}}
+\newcommand{\ppo}{{\bf p\xspace}}
+\newcommand{\fpo}{{\bf f\xspace}}
+\newcommand{\gpo}{{\bf g\xspace}}
+\newcommand{\Gpo}{{\bf G\xspace}}
+\newcommand{\hpo}{{\bf h\xspace}}
+\newcommand{\kpo}{{\bf k\xspace}}
+\newcommand{\Kpo}{{\bf K\xspace}}
+\newcommand{\lpo}{{\bf l\xspace}}
+\newcommand{\Lpo}{{\bf L\xspace}}
+\newcommand{\mpo}{{\bf m\xspace}}
+\newcommand{\rpo}{{\bf r\xspace}}
+\newcommand{\spo}{{\bf s\xspace}}
+\newcommand{\tpo}{{\bf t\xspace}}
+\newcommand{\upo}{{\bf u\xspace}}
+\newcommand{\Upo}{{\bf U\xspace}}
+\newcommand{\vpo}{{\bf v\xspace}}
+\newcommand{\wpo}{{\bf w\xspace}}
+\newcommand{\xpo}{{\bf x\xspace}}
+\newcommand{\ypo}{{\bf y\xspace}}
+\newcommand{\zpo}{{\bf z\xspace}}
+\newcommand{\Zpo}{{\bf Z\xspace}}
+
+\newcommand{\Spo}{{\bf S}}
+\newcommand{\Ypo}{{\bf Y}}
+
+\newcommand{\NTTPSI}{{\gamma}}
+
+
+\newcommand{\algo}[1]{\textsf{#1}}
+
+\newcommand{\PeikertDBL}{\algo{dbl}}
+\newcommand{\PeikertREC}{\algo{rec}}
+
+
+\newcommand{\PowMul}{{\text{\sf PowMul}}}
+\newcommand{\PowMulPsi}{{\text{\sf PowMul}_{\psi}}}

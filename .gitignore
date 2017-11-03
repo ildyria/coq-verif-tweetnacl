@@ -44,6 +44,7 @@ Doc
 *.bbl
 *.bcf
 *.blg
+*.brf
 *.dvi
 *.fdb_latexmk
 *.fls
