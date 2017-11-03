@@ -90,3 +90,7 @@ ASK TIMMY
 This approach is **slow**, **tedious** and **frustrating**.
 The time cost way to big for such a proof and definitively not applicable for a
 cryptographic engineer.
+
+Two years ago:
+https://www.imperialviolet.org/2014/09/11/moveprovers.html
+https://www.imperialviolet.org/2014/09/07/provers.html
