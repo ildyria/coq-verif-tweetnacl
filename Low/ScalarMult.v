@@ -67,7 +67,7 @@ Fixpoint opt_montgomery_rec (m : nat) (z a b c d x : list Z) : (list ℤ * list 
   match m with
   | 0%nat => (a,b,c,d)
   | S n => 
-      let r := getbit (Z.of_nat m) z in
+      let r := getbit (Z.of_nat (254 - m)) z in
       let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
       let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
       let e := A a c in
@@ -93,3 +93,4 @@ Fixpoint opt_montgomery_rec (m : nat) (z a b c d x : list Z) : (list ℤ * list 
       let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
       opt_montgomery_rec n z a b c d x
     end.
+
