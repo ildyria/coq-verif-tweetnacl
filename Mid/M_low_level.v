@@ -378,7 +378,7 @@ Proof. convert_length_to_Zlength M2_fix_bounds; eapply M2_fix_bounds ; go. Qed.
 
 
 
-Function M3_fix (i : Z) (from : list Z) (to : list Z) {measure Z.to_nat i} : list Z :=
+Function M3_fix {T} (i : Z) (from : list T) (to : list T) {measure Z.to_nat i} : list T :=
   if (i <=? 0) then to else 
     match from, to with
       | [], _  => to
@@ -387,18 +387,18 @@ Function M3_fix (i : Z) (from : list Z) (to : list Z) {measure Z.to_nat i} : lis
     end.
 Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Qed.
 
-Fixpoint M3_fix' (i : nat) (from : list Z) (to : list Z) := match i, from, to with
+Fixpoint M3_fix' {T} (i : nat) (from : list T) (to : list T) := match i, from, to with
   | 0%nat, _, to => to
   | _, [], to => to
   | _, _, [] => []
   | S p, f::from, t::to => f :: M3_fix' p from to
 end.
 
-Lemma M3_fix_eq : forall (i:Z) (f t:list Z), 0 <= i ->  M3_fix i f t = M3_fix' (Z.to_nat i) f t.
+Lemma M3_fix_eq : forall T (i:Z) (f t:list T), 0 <= i ->  M3_fix T i f t = M3_fix' (Z.to_nat i) f t.
 Proof.
-  intros i f t Hi.
+  intros T i f t Hi.
   gen i f t.
-  apply (natlike_ind (fun i => ∀ f t : list ℤ, M3_fix i f t = M3_fix' (Z.to_nat i) f t)).
+  apply (natlike_ind (fun i => ∀ f t : list T, M3_fix T i f t = M3_fix' (Z.to_nat i) f t)).
   intros; rewrite M3_fix_equation ; auto.
   intros i Hi iHi from to.
   change (Z.succ i) with (i + 1).
@@ -410,23 +410,25 @@ Proof.
   apply Z.leb_gt in Eq ; replace (i + 1 - 1) with i by omega ; go.
 Qed.
 
-Lemma M3_fix_0 : forall (f t:list Z),
-    M3_fix 0 f t = t.
+Lemma M3_fix_0 : forall T (f t:list T),
+    M3_fix T 0 f t = t.
 Proof.
-  intros f t.
+  intros T f t.
   rewrite M3_fix_equation.
   destruct (0 <=? 0) eqn:H ; [| compute in H]; go.
 Qed.
 
-Lemma M3_fix_step : forall (i:Z) (f t:list Z),
+Lemma M3_fix_step : forall T (i:Z) (f t:list T) (d:T),
   0 <= i < 16 -> 
   length t = 16%nat -> 
   length f = 31%nat ->
-    M3_fix (i + 1) f t = ((take (Z.to_nat i) (M3_fix i f t)) ++ [nth (Z.to_nat i) f 0]) ++ drop (Z.to_nat i + 1) (M3_fix i f t).
+    M3_fix T (i + 1) f t = ((take (Z.to_nat i) (M3_fix T i f t)) ++ [nth (Z.to_nat i) f d]) ++ drop (Z.to_nat i + 1) (M3_fix T i f t).
 Proof.
 intros.
-repeat (destruct t; tryfalse).
 do 16 (destruct f; tryfalse).
+rename f into t16.
+rename t into f.
+repeat (destruct f; tryfalse).
 repeat rewrite M3_fix_eq ; try omega.
 rewrite Z2Nat.inj_add ; try omega.
 remember ((Z.to_nat i)%nat) as j.
@@ -436,24 +438,23 @@ assert((j < 16)%nat).
 rewrite Heqj.
 change (16%nat) with (Z.to_nat 16).
 apply Z2Nat.inj_lt ; omega.
+simpl; flatten ; simpl ; try reflexivity.
 simpl.
-flatten ; simpl ; try reflexivity.
 exfalso.
-assert(forall n, 16 <= (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S n))))))))))))))))) by (induction 1 ; omega).
 omega.
 Qed.
 
-Lemma M3_fix_stepZ : forall (i:Z) (f t:list Z),
+Lemma M3_fix_stepZ : forall T (i:Z) (f t:list T) (d:T),
   0 <= i < 16 -> 
   Zlength t = 16 -> 
   Zlength f = 31 ->
-    M3_fix (i + 1) f t = ((take (Z.to_nat i) (M3_fix i f t)) ++ [nth (Z.to_nat i) f 0]) ++ drop (Z.to_nat i + 1) (M3_fix i f t).
+    M3_fix T (i + 1) f t = ((take (Z.to_nat i) (M3_fix T i f t)) ++ [nth (Z.to_nat i) f d]) ++ drop (Z.to_nat i + 1) (M3_fix T i f t).
 Proof. convert_length_to_Zlength M3_fix_step. Qed.
 
-Theorem M3_fix_eq_M3 : forall (from to:list Z)  ,
+Theorem M3_fix_eq_M3 : forall T (from:list Z) (to:list T) (f : Z -> T),
   (length from = 31)%nat ->
   (length to = 16)%nat ->
-  M3_fix 16 from to = mult_3 from.
+  M3_fix T 16 (map f from) to = map f (mult_3 from).
 Proof.
   intros.
   repeat (destruct from ; tryfalse).
@@ -463,10 +464,10 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem M3_fix_eq_M3' : forall (from to:list Z)  ,
+Theorem M3_fix_eq_M3' : forall T (from:list Z) (to:list T) (f : Z -> T),
   (length from = 31)%nat ->
   (length to = 16)%nat ->
-  M3_fix 16 from to = mult_3 from.
+  M3_fix T 16 (map f from) to = map f (mult_3 from).
 Proof.
   intros.
   repeat (destruct from ; tryfalse).
@@ -479,18 +480,18 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem M3_fix_eq_M3Z : forall (from to:list Z)  ,
+Theorem M3_fix_eq_M3Z : forall T (from:list Z) (to:list T) (f : Z -> T),
   Zlength from = 31 ->
   Zlength to = 16 ->
-  M3_fix 16 from to = mult_3 from.
+  M3_fix T 16 (map f from) to = map f (mult_3 from).
 Proof. convert_length_to_Zlength M3_fix_eq_M3. Qed.
 
-Lemma M3_fix_length: forall (i: Z) (f t: list Z),
-  length t = length (M3_fix i f t).
+Lemma M3_fix_length: forall T (i: Z)  (f t : list T),
+  length t = length (M3_fix T i f t).
 Proof. intros ; gen i f ; induction t ; intros ; rewrite M3_fix_equation; flatten; go. Qed.
 
-Lemma M3_fix_Zlength: forall (i: Z) (f t: list Z),
-  Zlength t = Zlength (M3_fix i f t).
+Lemma M3_fix_Zlength: forall T (i: Z) (f t: list T),
+  Zlength t = Zlength (M3_fix T i f t).
 Proof. intros; repeat rewrite Zlength_correct; rewrite <- M3_fix_length ; reflexivity. Qed.
 
 Close Scope Z.
