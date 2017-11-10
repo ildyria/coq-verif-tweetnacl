@@ -43,7 +43,7 @@ Proof.
   orewrite Zpower_exp; ring.
 Qed.
 
-Lemma Unpack25519_correct: forall n, 0 < n -> forall l, ZofList (2*n) (unpack_for n l) = ZofList n l.
+Lemma Unpack_for_correct: forall n, 0 < n -> forall l, ZofList (2*n) (unpack_for n l) = ZofList n l.
 Proof.
 intros n Hn l.
 induction l using list_ind_by_2.
@@ -52,7 +52,7 @@ simpl. omega.
 apply Unpack_for_ind_step ; assumption.
 Qed.
 
-Lemma Unpack25519_length : forall n, 0 < n -> forall l m , length l = m -> even m = true -> length (unpack_for n l) = Nat.div m 2.
+Lemma Unpack_for_length : forall n, 0 < n -> forall l m , length l = m -> even m = true -> length (unpack_for n l) = Nat.div m 2.
 Proof.
   intros n Hn. induction l using list_ind_by_2 ; intros.
   simpl in H.
@@ -146,16 +146,16 @@ Qed.
 
 Close Scope Z.
 
-Corollary Unpack25519_length_16_32 : forall l, length l = 32 -> length (unpack_for 8 l) = 16.
+Corollary Unpack_for_length_16_32 : forall l, length l = 32 -> length (unpack_for 8 l) = 16.
 Proof.
 intros.
-rewrite (Unpack25519_length 8 _ _ 32) ; go.
+rewrite (Unpack_for_length 8 _ _ 32) ; go.
 Qed.
 
 Open Scope Z.
 
-Corollary Unpack25519_Zlength_16_32 : forall l, Zlength l = 32 -> Zlength (unpack_for 8 l) = 16.
-Proof. convert_length_to_Zlength Unpack25519_length_16_32. Qed.
+Corollary Unpack_for_Zlength_16_32 : forall l, Zlength l = 32 -> Zlength (unpack_for 8 l) = 16.
+Proof. convert_length_to_Zlength Unpack_for_length_16_32. Qed.
 
 Lemma unpack_for_bounded : forall l, Forall (fun x : ℤ => 0 <= x < 2 ^ 8) l ->  Forall (fun x : ℤ => 0 <= x < 2 ^ 16) (unpack_for 8 l).
 Proof.
@@ -193,5 +193,15 @@ Proof.
 move=> l H ; rewrite /Unpack25519.
 by apply upd_nth_mask0x7FFF_bounded, unpack_for_bounded.
 Qed.
+
+Close Scope Z.
+
+Lemma Unpack25519_length : forall l, length l = 32 -> length (Unpack25519 l) = 16.
+Proof. intros ; rewrite /Unpack25519 upd_nth_length Unpack_for_length_16_32 ; omega. Qed.
+
+Open Scope Z.
+
+Lemma Unpack25519_Zlength : forall l, Zlength l = 32 -> Zlength (Unpack25519 l) = 16.
+Proof. convert_length_to_Zlength Unpack25519_length. Qed.
 
 Close Scope Z.
