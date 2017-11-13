@@ -1,4 +1,6 @@
-curve25519.pdf: curve25519.tex collection.bib
+FILES := $(wildcard *.tex) $(wildcard *.sty)
+
+curve25519.pdf: $(FILES) collection.bib
 	latexmk -pdf curve25519.tex
 
 .PHONY: clean

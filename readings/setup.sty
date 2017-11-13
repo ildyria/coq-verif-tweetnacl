@@ -1,0 +1,278 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage[pdf]{pstricks}
+\usepackage{multido}
+
+% \usepackage{etex}
+\usepackage{amsfonts,amsmath,amscd,amscd,amssymb,array}
+\usepackage{type1cm}
+\newcommand{\lstsize}{\fontsize{8.5pt}{8.5pt}\selectfont}
+\usepackage{algorithm, algorithmic}
+
+
+\usepackage{xspace}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{ntheorem}
+
+\RequirePackage{xcolor}
+
+\definecolor{linkcolor}{rgb}{0.65,0,0}
+\definecolor{citecolor}{rgb}{0,0.45,0}
+\definecolor{urlcolor}{rgb}{0,0,0.65}
+\usepackage[colorlinks=true, backref=page, linkcolor=linkcolor, urlcolor=urlcolor, citecolor=citecolor]{hyperref}
+% \usepackage{breakurl}
+%\usepackage{varioref}
+\usepackage{hyperref}
+\RequirePackage{tikz}
+
+\usepackage{ctable}
+\usepackage{cite}
+
+\usepackage{dsfont}
+
+\usepackage{xspace}
+\usepackage{subfig}
+\usepackage{float}
+
+\usepackage[capitalise,nameinlink]{cleveref}
+
+\floatstyle{ruled}
+\newfloat{Listing}{htb}{lst}
+\floatstyle{plain}
+\newfloat{Protocol}{htb}{proto}
+\newcounter{subListing}
+\newcounter{subListing@save}
+\renewcommand{\thesubListing}{\alph{subListing}}
+
+\renewcommand{\tabcolsep}{4pt}
+
+\def\subheading#1{\medskip\noindent{\boldmath\textbf{#1}}~\ignorespaces}
+
+% \makeatletter
+% \newenvironment{Listing}[2][1]%
+%   {\begin{minipage}[s]{#2}%
+%     \setcounter{Lcount}{#1}\ifnum\value{Lcount}<\@ne\Lstartrue\fi
+%     \let\State\item
+%     \begin{list}{\ifLstar\else\arabic{Lcount}.\fi}%
+%     {\usecounter{Lcount}\setcounter{Lcount}{#1}\addtocounter{Lcount}{-1}%
+%       \ifLstar\setlength{\leftmargin}{0em}\else\setlength{\leftmargin}{2em}\fi%
+%       \setlength{\labelwidth}{2em}%
+%       \setlength{\labelsep}{.5em}}}%
+%   {\end{list}\end{minipage}}
+% \makeatother
+
+\RequirePackage[
+labelfont=sf,
+hypcap=false,
+format=hang,
+width=0.8\columnwidth
+]{caption}
+
+\newcommand{\crd}[1]{\textcolor{red}{#1}}
+\newcommand{\cbl}[1]{\textcolor{blue}{#1}}
+
+\definecolor{doc@lstidentifier}{HTML}{000000}   % black
+\definecolor{doc@lstcomment}{HTML}{CC3300}      % dark orange
+\definecolor{doc@lstfunctions}{HTML}{006600}    % dark green
+\definecolor{doc@lststring}{HTML}{FF5500}       % orange
+\definecolor{doc@lstkeyword}{HTML}{0000CC}      % deep blue
+\definecolor{doc@lstdirective}{HTML}{881000}    % dark red
+\definecolor{doc@lstconstants}{HTML}{0033AA}    % dark blue
+\definecolor{doc@lstidentifiers2}{HTML}{FF0033} % purple-red
+\definecolor{doc@lstnumbers}{HTML}{AA00AA}      % purple
+
+\definecolor{doc@lstbackground}{HTML}{FFFFFF}   % white
+\definecolor{doc@lstframe}{HTML}{FFFFFF}        % white
+
+\lstloadlanguages{% check documentation for other languages...
+  C
+}
+
+\lstdefinelanguage{cgimli}{%
+  morekeywords=[1]{for, if, return, extern, while},
+  morekeywords=[2]{void, int, uint32_t, uint64_t, uint8_t, void},
+  morekeywords=[3]{const, typedef},
+  morekeywords=[4]{gimli, Gimli_hash, memset, memcpy, MIN, rotate},
+  morekeywords=[5]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 24, 26, 32, 0x80, 0x1F, 0x9e377900},
+  sensitive=true,
+  alsoletter   = {0,1,2,3,4,5,6,7,8,9} ,
+   % morekeywords = [1]{1,2,3,40} ,
+  % otherkeywords={<, >, \\=, |, &, ^},
+  %
+  morestring=[b]",
+  %
+  morecomment=[l]{//},
+  %
+  identifierstyle=\color[rgb]{0,0,0},
+  commentstyle=\color{doc@lstcomment}\itshape,
+  stringstyle=\color{doc@lststring},
+  keywordstyle=\color{doc@lstkeyword},
+  keywordstyle=[1]\color{doc@lstidentifiers2},
+  keywordstyle=[2]\color{doc@lstconstants},
+  % keywordstyle=[3]\color[rgb]{0.127,0.427,0.514},
+  keywordstyle=[4]\color{doc@lstfunctions},
+  keywordstyle=[5]\color{doc@lstnumbers},
+  % alsoletter={?},
+  % keywordsprefix=?,
+  delim=[l][\color{doc@lstdirective}]{\#},
+  % moredelim=[s][\color{magenta}]{<}{>},
+  % moredelim=[s][\color{magenta}]{:}{,},
+  % moredelim=[s][\color{magenta}]{:}{^^J},
+  % moredelim=[s][\color{magenta}]{:}{\ },
+  % moredelim=[l][\color{black}]{:}{/},
+}
+
+\lstdefinelanguage{HASM}{%
+  morekeywords=[1]{u, v},
+  morekeywords=[2]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 24, 26, 32},
+  sensitive=true,
+  alsoletter   = {0,1,2,3,4,5,6,7,8,9} ,
+   % morekeywords = [1]{1,2,3,40} ,
+  % otherkeywords={<, >, \\=, |, &, ^},
+  %
+  morestring=[b]",
+  %
+  morecomment=[l]{\#},
+  %
+  identifierstyle=\color[rgb]{0,0,0},
+  commentstyle=\color{doc@lstcomment}\itshape,
+  stringstyle=\color{doc@lststring},
+  keywordstyle=\color{doc@lstkeyword},
+  keywordstyle=[1]\color{doc@lstidentifiers2},
+  keywordstyle=[2]\color{doc@lstconstants},
+  % keywordstyle=[3]\color[rgb]{0.127,0.427,0.514},
+  % keywordstyle=[4]\color{doc@lstfunctions},
+  % keywordstyle=[5]\color{doc@lstnumbers},
+  % alsoletter={?},
+  % keywordsprefix=?,
+  delim=[l][\color{doc@lstdirective}]{\#},
+  % moredelim=[s][\color{magenta}]{<}{>},
+  % moredelim=[s][\color{magenta}]{:}{,},
+  % moredelim=[s][\color{magenta}]{:}{^^J},
+  % moredelim=[s][\color{magenta}]{:}{\ },
+  % moredelim=[l][\color{black}]{:}{/},
+  literate=
+    % {\\forall}{{\color{doc@lstcomment}{$\forall\;$}}}1
+    {.}{{\color{white}{.}}}1
+    {<-}{{$\leftarrow\;$}}1
+    {=>}{{$\Rightarrow\;$}}1
+    {==}{{\ttfamily{==}\;}}1
+    {==>}{{\ttfamily{==>}\;}}1
+%    {:>}{{\code{:>}\;}}1
+    {->}{{$\rightarrow$}}1
+    {<->}{{$\leftrightarrow$}}1
+    {<>}{{$\neq\;$}}1
+%    { nil }{{ [ ]}}1
+    {<=}{{$\leq\;$}}1
+    {<<}{{$\ll\;$}}1
+    {<<<}{{$\lll\;$}}1
+    {>=}{{$\geq\;$}}1
+    {\\o}{{$\circ\;$}}1
+    {\@}{{$\cdot$}}1
+    {/\\}{{$\wedge$}}1
+    {\\/}{{$\vee$}}1
+    {++}{{\ttfamily{++}}}1
+    {~}{{$\sim$}}1
+    {\@\@}{{$@$}}1
+    {\\mapsto}{{$\mapsto\;$}}1
+    {\\oplus}{{$\oplus$}}1
+    {\\boxplus}{{$\boxplus$}}1
+    {\\hline}{{\rule{\linewidth}{0.5pt}}}1
+}
+
+\lstset{%
+  lineskip=-0.1em,
+  %
+%  basicstyle=\ttfamily\scriptsize, % font that is used for the code
+  basicstyle=\ttfamily\small, % font that is used for the code
+  identifierstyle=\color{doc@lstidentifier},
+  commentstyle=\color{doc@lstcomment}\itshape,
+  stringstyle=\color{doc@lststring},
+  keywordstyle=\color{doc@lstkeyword},
+  keywordstyle=[2]\color[rgb]{0,0,0.75},
+  keywordstyle=[3]\color[rgb]{0.127,0.427,0.514},
+  keywordstyle=[4]\color[rgb]{1,0.4,0},
+  %
+  extendedchars=true,
+  inputencoding=utf8,
+  upquote=true, %
+  tabsize=2, % set default tabsize to 4 spaces
+  showtabs=false, % show tabs within strings adding particular underscores
+  %  tab=$\to$,
+  showspaces=false, % show spaces adding particular underscores
+  showstringspaces=false, % underline spaces within strings
+  %
+  numbers=left, % where to put the line numbers
+  stepnumber=0, % step between two line numbers
+  numberstyle=\small, % line number font size
+  %
+  captionpos=b, % set the caption position to `bottom'
+  %
+  xleftmargin=0.4em, % text to the right
+  xrightmargin=0.4em, % text to the left
+  breaklines=false, % don't break long lines of code
+  %
+  frame=single, % add a frame around the code
+  framexleftmargin=0pt, % frame back to the left
+  framexrightmargin=0pt, % frame back to the right
+  backgroundcolor=\color{doc@lstbackground}, % set the background color
+  rulecolor=\color{doc@lstframe}, % frame color
+  %
+  columns=flexible, % try not to ruin the spacing intended by the font designer
+  keepspaces=true, % don't drop spaces to fix column alignment
+  directivestyle={\color{doc@lstdirective}},
+  %
+  % mathescape, % allow escaping to (La)TeX mode within $..$
+  escapechar=², % allow escaping to (La)TeX mode within ²..²
+  % The backquote was NOT judicious: in some code (comments), I wrap vars
+  % between such a backquote (`var')
+  %
+  % conversion of UTF-8 chars to latin1
+  literate=
+  { }{{~}}1
+  {á}{{\'a}}1
+  {à}{{\`a}}1
+  {â}{{\^a}}1
+  {ä}{{\"a}}1
+  {ç}{{\c{c}}}1
+  {é}{{\'e}}1
+  {è}{{\`e}}1
+  {ê}{{\^e}}1
+  {ë}{{\"e}}1
+  {í}{{\'i}}1
+  {ì}{{\`i}}1
+  {î}{{\^i}}1
+  {ï}{{\"i}}1
+  {ó}{{\'o}}1
+  {ò}{{\`o}}1
+  {ô}{{\^o}}1
+  {ö}{{\"o}}1
+  {ú}{{\'u}}1
+  {ù}{{\`u}}1
+  {û}{{\^u}}1
+  {ü}{{\"u}}1
+  {Á}{{\'A}}1
+  {À}{{\`A}}1
+  {Â}{{\^A}}1
+  {Ä}{{\"A}}1
+  {Ç}{{\c{C}}}1
+  {É}{{\'E}}1
+  {È}{{\`E}}1
+  {Ê}{{\^E}}1
+  {Ë}{{\"E}}1
+  {Í}{{\'I}}1
+  {Ì}{{\`I}}1
+  {Î}{{\^I}}1
+  {Ï}{{\"I}}1
+  {Ó}{{\'O}}1
+  {Ò}{{\`O}}1
+  {Ô}{{\^O}}1
+  {Ö}{{\"O}}1
+  {Ú}{{\'U}}1
+  {Ù}{{\`U}}1
+  {Û}{{\^U}}1
+  {Ü}{{\"U}}1
+}

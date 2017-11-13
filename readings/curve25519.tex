@@ -13,66 +13,22 @@
 % the .sty file from the LaTeX source template, so that people can
 % more easily include the .sty file into an existing document.  Also
 % changed to more closely follow the style guidelines as represented
-% by the Word sample file. 
+% by the Word sample file.
 
 % Note that since 2010, USENIX does not require endnotes. If you want
-% foot of page notes, don't include the endnotes package in the 
+% foot of page notes, don't include the endnotes package in the
 % usepackage command, below.
 
 % This version uses the latex2e styles, not the very ancient 2.09 stuff.
 \documentclass[letterpaper,twocolumn,10pt]{article}
 \usepackage{usenix,epsfig}
-%\usepackage{etex}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-
-\usepackage[pdf]{pstricks}
-\usepackage{multido}
+\usepackage{setup}
 
 \newif\ifpublic
 \publictrue
 
 \newif\iffull
 \fulltrue
-
-\usepackage{amsfonts,amsmath,amscd,amssymb,array}
-
-\usepackage{type1cm}
-\newcommand{\lstsize}{\fontsize{8.5pt}{8.5pt}\selectfont}
-
-\usepackage{algorithm}
-\usepackage{algorithmic}
-
-\usepackage{xcolor}
-\definecolor{linkcolor}{rgb}{0.65,0,0}
-\definecolor{citecolor}{rgb}{0,0.65,0}
-\definecolor{urlcolor}{rgb}{0,0,0.65}
-\usepackage[colorlinks=true, backref=page, linkcolor=linkcolor, urlcolor=urlcolor, citecolor=citecolor]{hyperref}
-%\usepackage{breakurl}
-
-
-\usepackage{ctable}
-\usepackage{cite}
-
-\usepackage{dsfont}
-
-\usepackage{xspace}
-\usepackage{subfig}
-\usepackage{float}
-\floatstyle{ruled}
-\newfloat{Listing}{htb}{lst}
-\floatstyle{plain}
-\newfloat{Protocol}{htb}{proto}
-\newcounter{subListing}
-\newcounter{subListing@save}
-\renewcommand{\thesubListing}{\alph{subListing}}
-
-\renewcommand{\tabcolsep}{4pt}
-
-\def\subheading#1{\medskip\noindent{\boldmath\textbf{#1}}~\ignorespaces}
-\newcommand{\todo}[1]{\marginpar{\baselineskip0ex\rule{2,5cm}{0.5pt}\\[0ex]{\tiny\textsf{#1}}}}
-
- 
 
 \input{macros}
 
@@ -108,7 +64,12 @@ Date: somewhen in 2018.}
 By using the Coq formal proof assistant with the VST library, we prove the
 soundness and correctness of TweetNaCl's Curve25519 implementation.
 
-%\input{intro}
+\input{1_Introduction.tex}
+\input{2_Implementation.tex}
+\input{3_Maths.tex}
+\input{4_NumberAndImplementation.tex}
+\input{5_RelatedWorks.tex}
+\input{6_UsingVST.tex}
 
 \vspace*{1cm}
 {\footnotesize \bibliographystyle{acm}
@@ -119,10 +80,3 @@ soundness and correctness of TweetNaCl's Curve25519 implementation.
 
 
 \end{document}
-
-
-
-
-
-
-

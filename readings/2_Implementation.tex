@@ -1,0 +1,62 @@
+\section{Curve25519 implementation}
+
+\subsection{Implementation}
+
+256 bits words are cut into limbs of 16 bits placed into 64 bits signed
+containers.
+\begin{lstlisting}[language=C]
+typedef long long i64;
+typedef i64 gf[16];
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+sv A(gf o,const gf a,const gf b) {
+  int i;
+  FOR(i,16) o[i]=a[i]+b[i];
+}
+
+sv M(gf o,const gf a,const gf b) {
+  i64 i,j,t[31];
+  FOR(i,31) t[i]=0;
+  FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
+  FOR(i,15) t[i]+=38*t[i+16];
+  FOR(i,16) o[i]=t[i];
+  car25519(o);
+  car25519(o);
+}
+
+sv car25519(gf o) {
+  int i;
+  i64 c;
+  FOR(i,16) {
+    o[i]+=(1LL<<16);
+    c=o[i]>>16;
+    o[(i+1)*(i<15)]+=c-1+37*(c-1)*(i==15);
+    o[i]-=c<<16;
+  }
+}
+\end{lstlisting}
+
+\subsection{What need to be proven?}
+
+\textbf{Soundness} and \textbf{Correctness}.
+
+We show that TweetNaCl's code is \textbf{sound} also know as \textit{shape analysis} \ie
+
+\begin{itemize}
+\item absence of array out-of-bounds,
+\textit{For each array access, VST requires to prove the range.}
+\item absence of overflows/underflow.
+\textit{for each operation, VST requires to prove that the resulting value are in ranges.}
+\end{itemize}
+
+We also show that TweetNaCl's code is \textbf{correct}:
+
+\begin{itemize}
+\item Curve25519 is correctly implemented
+\item The number representation
+\end{itemize}
+
+\subsection{Correctness Theorem}
+
+The soundness is implied by the functionnal definition of the theorem.

@@ -1,0 +1,56 @@
+\section{Using VST}
+
+\subsection{The Trusted Base}
+
+The soundness of our proof relies on a trusted base
+, i.e. a foundation of specifications and implementations
+that must stay correct with respect to the specifications.
+
+\begin{itemize}
+  \item \textbf{Calculus of Inductive Construction} : The intuitionistic logic
+  used by Coq must be consistent in order to trust the proofs. We assumed that
+  the functional extensionality was also consistent with that logic.
+
+$
+\begin{array}{c}
+  \forall A\ B (f\ g : A \to B ),\\
+  ( \forall x : A , f(x) = g(x) ) \implies f = g
+\end{array}
+$
+  \item \textbf{Specification, model...}
+
+  \item The last part of the trusted base is about the \textbf{Coq kernel}, the
+  \textbf{Ocaml compiler}, the \textbf{Ocaml Runtime} and the \textbf{CPU}.
+  These are common to all proofs done with this architecture \cite{2015-Appel,coq-faq}.
+\end{itemize}
+
+\subsection{Feelings of a VST user}
+
+This approach is \textbf{slow}, \textbf{tedious} and \textbf{frustrating}.
+The time cost way to big for such a proof and definitively not applicable for a
+cryptographic engineer.
+
+Necessity to prove everything at least 3 to 4 times.
+
+Necessity to go back into your specification multiple times to refine your model.
+e.g. prove \texttt{M(o,a,b)} later notice that you can have aliasing, need to redifine
+your theorem to prove \texttt{M(o,a,a)} (\textit{squaring}) and other variants such as:
+\texttt{M(a,a,b)} and \texttt{M(b,a,b)}.
+
+Prove \texttt{M(o,a,b)} where o is a \texttt{list $\Z$} and then realize that
+\texttt{o} can be a list of \textit{undefined}. Thus needs to reprove the above
+theorem again.
+
+The \texttt{forward} and \texttt{entailer} tactics are slow.
+
+Specification and proofs does not need to be in the same file (as initially \textit{implied}
+by the examples provided by the VST repository). Putting the specification of each
+functions in separate file reduce the amount of dependencies. One does not need
+to wait for the proof of \texttt{M(b,a,b)} to compile the proof of \texttt{crypto\_scalarmult(q,n,p)}.
+This separation allows a high degree of parallelism during compilation \texttt{make -j},
+greatly reducing the amount of time required.
+
+
+Two years ago:
+\url{https://www.imperialviolet.org/2014/09/11/moveprovers.html}
+\url{https://www.imperialviolet.org/2014/09/07/provers.html}

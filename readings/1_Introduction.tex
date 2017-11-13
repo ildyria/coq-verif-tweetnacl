@@ -1,0 +1,11 @@
+\section{Introduction}
+
+Implementing cryptographic primitives without any bugs is hard. While tests
+provides a decent code coverage, they don't cover 100\% of the possible values.
+
+Using the \textit{clightgen} tool from compcert \cite{Leroy-backend}, we can
+generate the \textit{semantic version} (Clight\cite{Blazy-Leroy-Clight-09}) of
+the C code. Using the Floyd–Hoare logic\cite{1969-Hoare} with the Verifiable
+Software Toolchain (VST)\cite{2012-Appel} we can show that the semantic of the
+program is equivalent to some functions in Coq. We can then prove that these
+\textit{equivalent functions} do respect the semantic of the arithmetic.
