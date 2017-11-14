@@ -63,10 +63,67 @@ Require Import Tweetnacl.Low.S.
 Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Constant.
 
-Fixpoint opt_montgomery_rec (m : nat) (z a b c d x : list Z) : (list ℤ * list ℤ * list ℤ * list ℤ) :=
+Open Scope Z.
+
+
+Definition next_a (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d) => a
+end.
+
+Definition next_b (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d) => b
+end.
+
+Definition next_c (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d) => c
+end.
+
+Definition next_d (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d) => d
+end.
+
+Section ScalarRec.
+
+Variable A : list Z -> list Z -> list Z.
+Variable M : list Z -> list Z -> list Z.
+Variable Zub : list Z -> list Z -> list Z.
+Variable Sq : list Z -> list Z.
+Variable _121665: list Z.
+Variable Sel25519 : Z -> list Z -> list Z -> list Z.
+Variable getbit : Z -> list Z -> Z.
+
+Fixpoint montgomery_rec_gen (m : nat) (z a b c d x : list Z) : (list Z * list Z * list Z * list Z) :=
   match m with
   | 0%nat => (a,b,c,d)
   | S n => 
+      let r := getbit (Z.of_nat (254 - n)) z in
+      let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+      let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+      let e := A a c in
+      let a := Zub a c in
+      let c := A b d in
+      let b := Zub b d in
+      let d := Sq e in
+      let f := Sq a in
+      let a := M c a in
+      let c := M b e in
+      let e := A a c in
+      let a := Zub a c in
+      let b := Sq a in
+      let c := Zub d f in
+      let a := M c _121665 in
+      let a := A a d in
+      let c := M c a in
+      let a := M d f in
+      let d := M b x in
+      let b := Sq e in
+      let r := 0 in
+      let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+      let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+      montgomery_rec_gen n z a b c d x
+    end.
+
+Definition montgomery_step_gen (m:nat) (z a b c d x: list Z) : (list Z * list Z * list Z * list Z) :=
       let r := getbit (Z.of_nat (254 - m)) z in
       let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
       let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
@@ -91,6 +148,42 @@ Fixpoint opt_montgomery_rec (m : nat) (z a b c d x : list Z) : (list ℤ * list 
       let r := 0 in
       let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
       let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
-      opt_montgomery_rec n z a b c d x
-    end.
+      (a,b,c,d)
+(*     end. *)
+.
+
+Lemma opt_montgomery_rec_step_gen : forall z a b c d x n,
+  montgomery_rec_gen (S n) z a b c d x = 
+  montgomery_rec_gen n z 
+  (next_a (montgomery_step_gen n z a b c d x))
+  (next_b (montgomery_step_gen n z a b c d x))
+  (next_c (montgomery_step_gen n z a b c d x))
+  (next_d (montgomery_step_gen n z a b c d x))
+  x.
+Proof.
+intros.
+simpl ; reflexivity.
+Qed.
+
+
+End ScalarRec.
+
+Definition montgomery_step := montgomery_step_gen A M Zub Sq _121665 Sel25519 getbit.
+Definition montgomery_rec := montgomery_rec_gen A M Zub Sq _121665 Sel25519 getbit.
+
+Lemma opt_montgomery_rec_step : forall z a b c d x n,
+  montgomery_rec (S n) z a b c d x = 
+  montgomery_rec n z 
+  (next_a (montgomery_step n z a b c d x))
+  (next_b (montgomery_step n z a b c d x))
+  (next_c (montgomery_step n z a b c d x))
+  (next_d (montgomery_step n z a b c d x))
+  x.
+Proof.
+rewrite /montgomery_rec /montgomery_step.
+apply opt_montgomery_rec_step_gen.
+Qed.
+
+Close Scope Z.
+
 
