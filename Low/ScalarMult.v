@@ -66,19 +66,19 @@ Require Import Tweetnacl.Low.Constant.
 Open Scope Z.
 
 
-Definition next_a (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
+Definition get_a (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
   (a,b,c,d) => a
 end.
 
-Definition next_b (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
+Definition get_b (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
   (a,b,c,d) => b
 end.
 
-Definition next_c (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
+Definition get_c (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
   (a,b,c,d) => c
 end.
 
-Definition next_d (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
+Definition get_d (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
   (a,b,c,d) => d
 end.
 
@@ -155,10 +155,10 @@ Definition montgomery_step_gen (m:nat) (z a b c d x: list Z) : (list Z * list Z 
 Lemma opt_montgomery_rec_step_gen : forall z a b c d x n,
   montgomery_rec_gen (S n) z a b c d x = 
   montgomery_rec_gen n z 
-  (next_a (montgomery_step_gen n z a b c d x))
-  (next_b (montgomery_step_gen n z a b c d x))
-  (next_c (montgomery_step_gen n z a b c d x))
-  (next_d (montgomery_step_gen n z a b c d x))
+  (get_a (montgomery_step_gen n z a b c d x))
+  (get_b (montgomery_step_gen n z a b c d x))
+  (get_c (montgomery_step_gen n z a b c d x))
+  (get_d (montgomery_step_gen n z a b c d x))
   x.
 Proof.
 intros.
@@ -174,10 +174,10 @@ Definition montgomery_rec := montgomery_rec_gen A M Zub Sq _121665 Sel25519 getb
 Lemma opt_montgomery_rec_step : forall z a b c d x n,
   montgomery_rec (S n) z a b c d x = 
   montgomery_rec n z 
-  (next_a (montgomery_step n z a b c d x))
-  (next_b (montgomery_step n z a b c d x))
-  (next_c (montgomery_step n z a b c d x))
-  (next_d (montgomery_step n z a b c d x))
+  (get_a (montgomery_step n z a b c d x))
+  (get_b (montgomery_step n z a b c d x))
+  (get_c (montgomery_step n z a b c d x))
+  (get_d (montgomery_step n z a b c d x))
   x.
 Proof.
 rewrite /montgomery_rec /montgomery_step.
