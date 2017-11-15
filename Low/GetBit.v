@@ -9,6 +9,20 @@ Open Scope Z.
 
 Definition getbit (i:Z) (l : list Z) := Z.land ((Z.shiftr (nth (Z.to_nat (Z.shiftr i 3)) l 0)  (Z.land i 7))) 1.
 
+Lemma and_0_or_1 : forall a , 0 <= Z.land a 1 <= 1.
+Proof.
+intros.
+induction a ; try destruct p ; simpl ; flatten; go.
+Qed.
+
+Lemma getbit_0_or_1 : forall i l,
+  0 <= getbit i l <= 1.
+Proof.
+intros.
+unfold getbit.
+apply and_0_or_1.
+Qed.
+
 Lemma getbit_repr : forall l i,
   0 <= i->
   i / 8 <= Zlength l ->
