@@ -63,7 +63,6 @@ replace 1 with ((1 ≪ i) ≫ i).
 Focus 2.
 rewrite Z.shiftr_shiftl_l ; try omega.
 rewrite -Zminus_diag_reverse ; reflexivity.
-Search Z.land Z.shiftr.
 rewrite -?Z.shiftr_land.
 rewrite -Z.land_ones.
 2: omega.
