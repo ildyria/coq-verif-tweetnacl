@@ -176,7 +176,6 @@ Qed.
 
 Lemma ZofList_take_nth_drop' : forall l (m:nat), (ℤ.lst take m l) + 2^(n * ℤ.ℕ length (take m l)) * nth m l 0 + 2^(n * ℤ.ℕ length (take (S m) l)) * (ℤ.lst drop (S m) l) = ℤ.lst l.
 Proof.
-  Proof.
   intros l m.
   rewrite ZofList_take_nth'.
   by rewrite ZofList_take_drop'.
@@ -184,7 +183,6 @@ Qed.
 
 Lemma ZofList_take_nth_drop : forall l (m:nat), (ℤ.lst take m l) + 2^(n * Zlength (take m l)) * nth m l 0 + 2^(n * Zlength (take (S m) l)) * (ℤ.lst drop (S m) l) = ℤ.lst l.
 Proof.
-  Proof.
   intros l m.
   rewrite ZofList_take_nth.
   by rewrite ZofList_take_drop.

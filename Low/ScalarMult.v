@@ -66,20 +66,23 @@ Require Import Tweetnacl.Low.Constant.
 Open Scope Z.
 
 
-Definition get_a (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d) => a
+Definition get_a (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d,e,f) => a
 end.
-
-Definition get_b (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d) => b
+Definition get_b (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d,e,f) => b
 end.
-
-Definition get_c (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d) => c
+Definition get_c (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d,e,f) => c
 end.
-
-Definition get_d (t:(list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d) => d
+Definition get_d (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d,e,f) => d
+end.
+Definition get_e (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d,e,f) => e
+end.
+Definition get_f (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
+  (a,b,c,d,e,f) => f
 end.
 
 Section ScalarRec.
@@ -92,9 +95,9 @@ Variable _121665: list Z.
 Variable Sel25519 : Z -> list Z -> list Z -> list Z.
 Variable getbit : Z -> list Z -> Z.
 
-Fixpoint montgomery_rec_gen (m : nat) (z a b c d x : list Z) : (list Z * list Z * list Z * list Z) :=
+Fixpoint montgomery_rec_gen (m : nat) (z a b c d e f x : list Z) : (list Z * list Z * list Z * list Z * list Z * list Z) :=
   match m with
-  | 0%nat => (a,b,c,d)
+  | 0%nat => (a,b,c,d,e,f)
   | S n => 
       let r := getbit (Z.of_nat (254 - n)) z in
       let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
@@ -120,10 +123,10 @@ Fixpoint montgomery_rec_gen (m : nat) (z a b c d x : list Z) : (list Z * list Z 
       let r := 0 in
       let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
       let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
-      montgomery_rec_gen n z a b c d x
+      montgomery_rec_gen n z a b c d e f x
     end.
 
-Definition montgomery_step_gen (m:nat) (z a b c d x: list Z) : (list Z * list Z * list Z * list Z) :=
+Definition montgomery_step_gen (m:nat) (z a b c d e f x : list Z) : (list Z * list Z * list Z * list Z * list Z * list Z)  :=
       let r := getbit (Z.of_nat (254 - m)) z in
       let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
       let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
@@ -148,17 +151,19 @@ Definition montgomery_step_gen (m:nat) (z a b c d x: list Z) : (list Z * list Z 
       let r := 0 in
       let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
       let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
-      (a,b,c,d)
+      (a,b,c,d,e,f)
 (*     end. *)
 .
 
-Lemma opt_montgomery_rec_step_gen : forall z a b c d x n,
-  montgomery_rec_gen (S n) z a b c d x = 
+Lemma opt_montgomery_rec_step_gen : forall z a b c d e f x n,
+  montgomery_rec_gen (S n) z a b c d e f x = 
   montgomery_rec_gen n z 
-  (get_a (montgomery_step_gen n z a b c d x))
-  (get_b (montgomery_step_gen n z a b c d x))
-  (get_c (montgomery_step_gen n z a b c d x))
-  (get_d (montgomery_step_gen n z a b c d x))
+  (get_a (montgomery_step_gen n z a b c d e f x))
+  (get_b (montgomery_step_gen n z a b c d e f x))
+  (get_c (montgomery_step_gen n z a b c d e f x))
+  (get_d (montgomery_step_gen n z a b c d e f x))
+  (get_e (montgomery_step_gen n z a b c d e f x))
+  (get_f (montgomery_step_gen n z a b c d e f x))
   x.
 Proof.
 intros.
@@ -171,13 +176,15 @@ End ScalarRec.
 Definition montgomery_step := montgomery_step_gen A M Zub Sq _121665 Sel25519 getbit.
 Definition montgomery_rec := montgomery_rec_gen A M Zub Sq _121665 Sel25519 getbit.
 
-Lemma opt_montgomery_rec_step : forall z a b c d x n,
-  montgomery_rec (S n) z a b c d x = 
+Lemma opt_montgomery_rec_step : forall z a b c d e f x n,
+  montgomery_rec (S n) z a b c d e f x = 
   montgomery_rec n z 
-  (get_a (montgomery_step n z a b c d x))
-  (get_b (montgomery_step n z a b c d x))
-  (get_c (montgomery_step n z a b c d x))
-  (get_d (montgomery_step n z a b c d x))
+  (get_a (montgomery_step n z a b c d e f x))
+  (get_b (montgomery_step n z a b c d e f x))
+  (get_c (montgomery_step n z a b c d e f x))
+  (get_d (montgomery_step n z a b c d e f x))
+  (get_e (montgomery_step n z a b c d e f x))
+  (get_f (montgomery_step n z a b c d e f x))
   x.
 Proof.
 rewrite /montgomery_rec /montgomery_step.

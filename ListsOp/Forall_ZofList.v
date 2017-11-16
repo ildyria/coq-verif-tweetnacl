@@ -242,7 +242,81 @@ Proof.
     apply pown2 ; omega.
 Qed.
 
-
+Lemma ZofList_nth_mod_div : forall l (m:nat), Forall (fun x => 0 <= x < 2^n) l ->
+  m < length l ->
+  nth m l 0 = (ℤ.lst l) mod 2^(n*(S m)) / 2 ^ (n * m).
+Proof.
+  intros l m Hl Hlm.
+  assert(length (take m l) = m).
+    apply firstn_length_le ; omega.
+  assert(Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ n) (take m l)).
+    by apply Forall_take.
+  assert((ℤ.lst take m l) < 2 ^ (n * m)).
+    by apply ZofList_n_nn_bound_length.
+  assert(0 <= ℤ.lst take m l).
+  {
+    apply ZofList_pos.
+    unfold ZList_pos.
+    eapply list.Forall_impl ; eauto.
+    intros x Hx; simpl in Hx; omega.
+  }
+  assert(0 < 2 ^ (m*n)).
+  {
+    apply Z.pow_pos_nonneg. done.
+    apply Z.mul_nonneg_nonneg; omega.
+  }
+  assert( 0 <= (ℤ.lst take m l) + nth m l 0 * 2 ^ (n * m)).
+  {
+    apply OMEGA2. done.
+    apply Zmult_gt_0_le_0_compat.
+    omega.
+    apply Forall_nth_d.
+    omega.
+    eapply Forall_impl ; eauto ; intros x Hx ; simpl in Hx ; omega.
+  }
+  replace (ℤ.lst l) with ((ℤ.lst take m l) + 2^(n * Zlength (take m l)) * nth m l 0 + 2^(n * Zlength (take (S m) l)) * (ℤ.lst drop (S m) l)).
+  2: by rewrite ZofList_take_nth_drop.
+  replace (Zlength (take m l)) with (Z.of_nat m).
+  2: rewrite Zlength_correct ; omega.
+  replace (Zlength (take (S m) l)) with (Z.of_nat (S m)).
+  2: rewrite Zlength_correct ; symmetry ; apply inj_eq ; apply firstn_length_le ; omega.
+  rewrite -Zplus_mod_idemp_r.
+  replace ((2 ^ (n * S m) * (ℤ.lst drop (S m) l)) `mod` 2 ^ (n * S m)) with 0.
+  2: symmetry; rewrite Z.mul_comm ; apply Z_mod_mult.
+  rewrite Z.add_0_r.
+  rewrite Z.mod_small.
+  Focus 2.
+    split.
+      rewrite Z.mul_comm; omega.
+    - assert((ℤ.lst (take m l)) + 2 ^ (n * m) * nth m l 0 < 2 ^ (n * m) + 2 ^ (n * m) * nth m l 0).
+        apply Zplus_lt_compat_r. omega.
+      assert(2 ^ (n * m) + 2 ^ (n * m) * nth m l 0 <= 2 ^ (n * S m)).
+        replace (n * S m) with (n * m + n).
+        rewrite Zred_factor2 Z.pow_add_r ; try omega.
+        apply Zmult_le_compat_l ; try omega.
+        
+        assert(minilemma : forall a b, a < b -> 1 + a <= b).
+          intros ; omega.
+        apply minilemma.
+        eapply Forall_nth_d.
+        apply Z.gt_lt.
+        apply pown0.
+        omega.
+        eapply Forall_impl ; eauto ; intros x Hx ; simpl in Hx ; omega.
+        apply Z.mul_nonneg_nonneg; omega.
+        replace (Z.of_nat (S m)) with (Z.of_nat (m + 1)).
+        rewrite Nat2Z.inj_add.
+        ring.
+        rewrite -plus_n_Sm.
+        rewrite Nat.add_0_r.
+        reflexivity.
+      omega.
+  rewrite Z.mul_comm.
+  rewrite Z.Private_NZDiv.div_add ; try omega.
+  rewrite Zdiv_small.
+  omega.
+  omega.
+Qed.
 
 End Integer.
 
