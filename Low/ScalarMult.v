@@ -170,7 +170,6 @@ intros.
 simpl ; reflexivity.
 Qed.
 
-
 End ScalarRec.
 
 Definition montgomery_step := montgomery_step_gen A M Zub Sq _121665 Sel25519 getbit.
@@ -192,5 +191,247 @@ apply opt_montgomery_rec_step_gen.
 Qed.
 
 Close Scope Z.
+
+Local Ltac solve_montgomery_step_length :=
+  intros;
+  rewrite /montgomery_step /montgomery_step_gen;
+  rewrite /get_a /get_b /get_c /get_d /get_e /get_f;
+  repeat match goal with
+    | _ => orewrite Sel25519_length
+    | _ => orewrite M_length
+    | _ => orewrite Sq_length
+    | _ => orewrite A_length
+    | _ => orewrite Zub_length
+    | _ => orewrite Sel25519_length
+  end ; reflexivity.
+
+Lemma get_a_montgomery_step_length : forall z a b c d e f x n,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_a (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_length. Qed.
+
+Lemma get_b_montgomery_step_length : forall z a b c d e f x n,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_b (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_length. Qed.
+
+Lemma get_c_montgomery_step_length : forall z a b c d e f x n,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_c (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_length. Qed.
+
+Lemma get_d_montgomery_step_length : forall z a b c d e f x n,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_d (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_length. Qed.
+
+Lemma get_e_montgomery_step_length : forall z a b c d e f x n,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_e (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_length. Qed.
+
+Lemma get_f_montgomery_step_length : forall z a b c d e f x n,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_f (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_length. Qed.
+
+Open Scope Z.
+
+Local Ltac solve_montgomery_step_Zlength :=
+  intros;
+  rewrite /montgomery_step /montgomery_step_gen;
+  rewrite /get_a /get_b /get_c /get_d /get_e /get_f;
+  repeat match goal with
+    | _ => orewrite Sel25519_Zlength
+    | _ => orewrite M_Zlength
+    | _ => orewrite Sq_Zlength
+    | _ => orewrite A_Zlength
+    | _ => orewrite Zub_Zlength
+    | _ => orewrite Sel25519_Zlength
+  end ; reflexivity.
+
+Lemma get_a_montgomery_step_Zlength : forall z a b c d e f x n,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
+  Zlength x = 16 ->
+  Zlength (get_a (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_Zlength. Qed.
+
+Lemma get_b_montgomery_step_Zlength : forall z a b c d e f x n,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
+  Zlength x = 16 ->
+  Zlength (get_b (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_Zlength. Qed.
+
+Lemma get_c_montgomery_step_Zlength : forall z a b c d e f x n,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
+  Zlength x = 16 ->
+  Zlength (get_c (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_Zlength. Qed.
+
+Lemma get_d_montgomery_step_Zlength : forall z a b c d e f x n,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
+  Zlength x = 16 ->
+  Zlength (get_d (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_Zlength. Qed.
+
+Lemma get_e_montgomery_step_Zlength : forall z a b c d e f x n,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
+  Zlength x = 16 ->
+  Zlength (get_e (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_Zlength. Qed.
+
+Lemma get_f_montgomery_step_Zlength : forall z a b c d e f x n,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
+  Zlength x = 16 ->
+  Zlength (get_f (montgomery_step n z a b c d e f x)) = 16.
+Proof. solve_montgomery_step_Zlength. Qed.
+
+Close Scope Z.
+
+
+
+Lemma get_a_montgomery_get_length : forall n z a b c d e f x,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_a (montgomery_rec n z a b c d e f x)) = 16.
+Proof. induction n; intros ; [assumption|] ; simpl.
+apply IHn ; try assumption ; solve_montgomery_step_length.
+Qed.
+
+Lemma get_b_montgomery_get_length : forall n z a b c d e f x,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_b (montgomery_rec n z a b c d e f x)) = 16.
+Proof. induction n; intros ; [assumption|] ; simpl.
+apply IHn ; try assumption ; solve_montgomery_step_length.
+Qed.
+
+Lemma get_c_montgomery_get_length : forall n z a b c d e f x,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_c (montgomery_rec n z a b c d e f x)) = 16.
+Proof. induction n; intros ; [assumption|] ; simpl.
+apply IHn ; try assumption ; solve_montgomery_step_length.
+Qed.
+
+Lemma get_d_montgomery_get_length : forall n z a b c d e f x,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_d (montgomery_rec n z a b c d e f x)) = 16.
+Proof. induction n; intros ; [assumption|] ; simpl.
+apply IHn ; try assumption ; solve_montgomery_step_length.
+Qed.
+
+Lemma get_e_montgomery_get_length : forall n z a b c d e f x,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_e (montgomery_rec n z a b c d e f x)) = 16.
+Proof. induction n; intros ; [assumption|] ; simpl.
+apply IHn ; try assumption ; solve_montgomery_step_length.
+Qed.
+
+Lemma get_f_montgomery_get_length : forall n z a b c d e f x,
+  length a = 16 ->
+  length b = 16 ->
+  length c = 16 ->
+  length d = 16 ->
+  length e = 16 ->
+  length f = 16 ->
+  length x = 16 ->
+  length (get_f (montgomery_rec n z a b c d e f x)) = 16.
+Proof. induction n; intros ; [assumption|] ; simpl.
+apply IHn ; try assumption ; solve_montgomery_step_length.
+Qed.
 
 

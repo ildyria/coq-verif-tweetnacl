@@ -103,3 +103,19 @@ End Integer.
 Close Scope Z.
 
 Definition A a b := ZsumList a b.
+
+Lemma A_length : forall a b,
+  length a = 16 ->
+  length b = 16 ->
+  length (A a b) = 16.
+Proof. intros; rewrite /A ZsumList_length_max H H0 //. Qed.
+
+Open Scope Z.
+
+Lemma A_Zlength : forall a b,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength (A a b) = 16.
+Proof. intros; rewrite /A ZsumList_Zlength_max H H0 //. Qed.
+
+Close Scope Z.

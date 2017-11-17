@@ -107,3 +107,19 @@ End Integer.
 Close Scope Z.
 
 Definition Zub a b := ZsubList a b.
+
+Lemma Zub_length : forall a b,
+  length a = 16 ->
+  length b = 16 ->
+  length (Zub a b) = 16.
+Proof. intros; rewrite /Zub ZsubList_length_max H H0 //. Qed.
+
+Open Scope Z.
+
+Lemma Zub_Zlength : forall a b,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength (Zub a b) = 16.
+Proof. intros; rewrite /Zub ZsubList_Zlength_max H H0 //. Qed.
+
+Close Scope Z.

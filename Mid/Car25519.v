@@ -247,3 +247,4 @@ Proof.
       rewrite getCarry_1; omega.
 Qed.
 
+Close Scope Z.

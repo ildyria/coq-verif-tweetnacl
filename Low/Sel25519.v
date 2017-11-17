@@ -77,10 +77,23 @@ Definition Sel25519 b p q := list_cswap b p q.
 Lemma Sel25519_length_eq: forall b p q, length p = length q -> length p = length (Sel25519 b p q).
 Proof. rewrite /Sel25519 ; apply list_cswap_length_eq. Qed.
 
-Lemma Sel25519_Zlength_eq: forall b p q, Zlength p = Zlength q -> Zlength p = Zlength (list_cswap b p q).
+Lemma Sel25519_Zlength_eq: forall b p q, Zlength p = Zlength q -> Zlength p = Zlength (Sel25519 b p q).
 Proof. rewrite /Sel25519 ; apply list_cswap_Zlength_eq. Qed.
 
+Lemma Sel25519_length: forall b p q,
+  length p = 16 ->
+  length q = 16 ->
+  length (Sel25519 b p q) = 16.
+Proof. intros; rewrite -Sel25519_length_eq; omega. Qed.
+
+
 Open Scope Z.
+
+Lemma Sel25519_Zlength: forall b p q,
+  Zlength p = 16 ->
+  Zlength q = 16 ->
+  Zlength (Sel25519 b p q) = 16.
+Proof. intros; rewrite -Sel25519_Zlength_eq; omega. Qed.
 
 Lemma Sel25519_bound_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin <= x <= pmax) p ->
