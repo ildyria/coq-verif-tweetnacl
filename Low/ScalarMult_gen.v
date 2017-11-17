@@ -370,9 +370,7 @@ Lemma get_f_montgomery_rec_gen_Zlength : forall n z a b c d e f x,
 Proof. induction n; intros ; [assumption|] ; simpl.
 apply IHn ; try assumption ; solve_montgomery_step_gen_Zlength. Qed.
 
-
-
-
+Close Scope Z.
 End ScalarRec.
 
 
