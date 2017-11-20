@@ -96,7 +96,7 @@ Proof.
 Qed.
 
 Lemma ZsubList_bound_Zlength_le: forall m1 n1 m2 n2 a b, 
-  length a = length b ->
+  Zlength a = Zlength b ->
   Forall (fun x => m1 <= x <= n1) a -> 
   Forall (fun x => m2 <= x <= n2) b -> 
   Forall (fun x => m1 - n2 <= x <= n1 - m2) (a ⊖ b).
@@ -121,5 +121,26 @@ Lemma Zub_Zlength : forall a b,
   Zlength b = 16 ->
   Zlength (Zub a b) = 16.
 Proof. intros; rewrite /Zub ZsubList_Zlength_max H H0 //. Qed.
+
+Lemma Zub_bound_length_le : forall m1 n1 m2 n2 a b,
+  length a = length b ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 - n2 <= x <= n1 - m2) (Zub a b).
+Proof. intros; rewrite /Zub ; apply ZsubList_bound_length_le ; auto. Qed.
+
+Lemma Zub_bound_Zlength_le : forall m1 n1 m2 n2 a b,
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 - n2 <= x <= n1 - m2) (Zub a b).
+Proof. intros; rewrite /Zub ; apply ZsubList_bound_Zlength_le ; auto. Qed.
+
+Lemma Zub_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 < x < n1) a -> 
+  Forall (fun x => m2 < x < n2) b -> 
+  Forall (fun x => m1 - n2 < x < n1 - m2) (Zub a b).
+Proof. intros; rewrite /Zub ; apply ZsubList_bound_Zlength_lt ; auto. Qed.
 
 Close Scope Z.

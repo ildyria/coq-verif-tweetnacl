@@ -303,35 +303,34 @@ Local Ltac solve_montgomery_step_gen_Zlength :=
 
 Lemma get_a_montgomery_step_gen_Zlength : forall z a b c d e f x n,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
+  Zlength d = 16 -> Zlength x = 16 ->
   Zlength (get_a (montgomery_step_gen n z a b c d e f x)) = 16.
 Proof. solve_montgomery_step_gen_Zlength. Qed.
 Lemma get_b_montgomery_step_gen_Zlength : forall z a b c d e f x n,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
+  Zlength d = 16 -> Zlength x = 16 ->
   Zlength (get_b (montgomery_step_gen n z a b c d e f x)) = 16.
 Proof. solve_montgomery_step_gen_Zlength. Qed.
 Lemma get_c_montgomery_step_gen_Zlength : forall z a b c d e f x n,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
+  Zlength d = 16 -> Zlength x = 16 ->
   Zlength (get_c (montgomery_step_gen n z a b c d e f x)) = 16.
 Proof. solve_montgomery_step_gen_Zlength. Qed.
 Lemma get_d_montgomery_step_gen_Zlength : forall z a b c d e f x n,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
+  Zlength d = 16 -> Zlength x = 16 ->
   Zlength (get_d (montgomery_step_gen n z a b c d e f x)) = 16.
 Proof. solve_montgomery_step_gen_Zlength. Qed.
 Lemma get_e_montgomery_step_gen_Zlength : forall z a b c d e f x n,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
+  Zlength d = 16 -> Zlength x = 16 ->
   Zlength (get_e (montgomery_step_gen n z a b c d e f x)) = 16.
 Proof. solve_montgomery_step_gen_Zlength. Qed.
 Lemma get_f_montgomery_step_gen_Zlength : forall z a b c d e f x n,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
+  Zlength d = 16 -> Zlength x = 16 ->
   Zlength (get_f (montgomery_step_gen n z a b c d e f x)) = 16.
 Proof. solve_montgomery_step_gen_Zlength. Qed.
-
 
 Lemma get_a_montgomery_rec_gen_Zlength : forall n z a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
@@ -369,6 +368,780 @@ Lemma get_f_montgomery_rec_gen_Zlength : forall n z a b c d e f x,
   Zlength (get_f (montgomery_rec_gen n z a b c d e f x)) = 16.
 Proof. induction n; intros ; [assumption|] ; simpl.
 apply IHn ; try assumption ; solve_montgomery_step_gen_Zlength. Qed.
+
+Variable M_bound_Zlength : forall a b,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) a ->
+  Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) b ->
+  Forall (fun x => -38 <= x < Z.pow 2 16 + 38) (M a b).
+Variable Sq_bound_Zlength : forall a,
+  Zlength a = 16 ->
+  Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) a ->
+  Forall (fun x => -38 <= x < Z.pow 2 16 + 38) (Sq a).
+Variable A_bound_Zlength_le : forall m1 n1 m2 n2 a b,
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 + m2 <= x <= n1 + n2) (A a b).
+Variable A_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 < x < n1) a -> 
+  Forall (fun x => m2 < x < n2) b -> 
+  Forall (fun x => m1 + m2 < x < n1 + n2) (A a b).
+Variable Zub_bound_Zlength_le : forall m1 n1 m2 n2 a b,
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 - n2 <= x <= n1 - m2) (Zub a b).
+Variable Zub_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 < x < n1) a -> 
+  Forall (fun x => m2 < x < n2) b -> 
+  Forall (fun x => m1 - n2 < x < n1 - m2) (Zub a b).
+Variable Sel25519_bound_le : forall p pmin pmax q qmin qmax,
+  Forall (fun x => pmin <= x <= pmax) p ->
+  Forall (fun x => qmin <= x <= qmax) q -> forall b,
+  Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
+Variable Sel25519_bound_lt_trans_le : forall p pmin pmax q qmin qmax,
+  Forall (fun x => pmin < x < pmax) p ->
+  Forall (fun x => qmin < x < qmax) q -> forall b,
+  Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
+Variable Sel25519_bound_lt : forall p pmin pmax q qmin qmax,
+  Forall (fun x => pmin < x < pmax) p ->
+  Forall (fun x => qmin < x < qmax) q -> forall b,
+  Forall (fun x => Z.min pmin qmin < x < Z.max pmax qmax) (Sel25519 b p q).
+Variable Sel25519_bound_lt_le_id : forall pmin pmax p q,
+  Forall (fun x => pmin <= x < pmax) p ->
+  Forall (fun x => pmin <= x < pmax) q -> forall b,
+  Forall (fun x => pmin <= x < pmax) (Sel25519 b p q).
+Variable Sel25519_bound_lt_lt_id : forall pmin pmax p q,
+  Forall (fun x => pmin < x < pmax) p ->
+  Forall (fun x => pmin < x < pmax) q -> forall b,
+  Forall (fun x => pmin < x < pmax) (Sel25519 b p q).
+Variable Sel25519_bound_le_le_id : forall pmin pmax p q,
+  Forall (fun x => pmin <= x <= pmax) p ->
+  Forall (fun x => pmin <= x <= pmax) q -> forall b,
+  Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q).
+Variable Sel25519_bound_le_lt_trans_le_id : forall pmin pmax p q,
+  Forall (fun x => pmin <= x < pmax) p ->
+  Forall (fun x => pmin <= x < pmax) q -> forall b,
+  Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q).
+Variable _121665_bound : Forall (fun x => 0 <= x < 2 ^16) _121665.
+
+Local Ltac Simplify_this :=
+change (2^16) with 65536 in *;
+change (2^26) with 67108864 in *.
+
+Lemma get_a_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_a (montgomery_step_gen  n z a b c d e f x)).
+Proof.
+  intros ; simpl.
+  apply Sel25519_bound_lt_le_id.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply A_bound_Zlength_le.
+  solve_montgomery_step_gen_Zlength.
+  apply Sel25519_bound_le_lt_trans_le_id ; eauto.
+  apply Sel25519_bound_le_lt_trans_le_id ; eauto.
+  intros h Hh; simpl in Hh; Simplify_this; omega.
+  intros h Hh; simpl in Hh; Simplify_this; omega.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Zub_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply A_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply Zub_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  eapply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Zub_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply A_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+Qed.
+
+Lemma get_b_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_b (montgomery_step_gen  n z a b c d e f x)).
+Proof.
+  intros.
+  simpl.
+  apply Sel25519_bound_lt_le_id.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply A_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply Zub_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Zub_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply A_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+Qed.
+
+
+Lemma get_c_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_c (montgomery_step_gen  n z a b c d e f x)).
+Proof.
+  intros.
+  simpl.
+  apply Sel25519_bound_lt_le_id.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply A_bound_Zlength_le.
+  solve_montgomery_step_gen_Zlength.
+  apply Sel25519_bound_le_lt_trans_le_id ; eauto.
+  apply Sel25519_bound_le_lt_trans_le_id ; eauto.
+  intros h Hh; simpl in Hh; Simplify_this; omega.
+  intros h Hh; simpl in Hh; Simplify_this; omega.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Zub_bound_Zlength_lt.
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  assumption.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  eapply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply _121665_bound.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  assumption.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl ; eauto.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+Qed.
+
+Lemma get_d_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_d (montgomery_step_gen  n z a b c d e f x)).
+Proof.
+  intros.
+  simpl.
+  apply Sel25519_bound_lt_le_id.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  assumption.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; simpl in Hh; Simplify_this; omega.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl ; eauto.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply M_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  apply _121665_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply _121665_bound.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  eapply list.Forall_impl.
+  apply Sq_bound_Zlength.
+  solve_montgomery_step_gen_Zlength.
+  eapply list.Forall_impl.
+  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
+  solve_montgomery_step_gen_Zlength.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)).
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  eapply list.Forall_impl ; eauto ; simpl ; intros ; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+  intros h Hh; Simplify_this; simpl in Hh; omega.
+Qed.
+
+Lemma get_e_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) x ->
+    Forall (fun x => -76 <= x < 2^17 + 76) (get_e (montgomery_step_gen  n z a b c d e f x)).
+Proof.
+  intros.
+  simpl.
+  
+
+Admitted.
+
+Lemma get_f_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) x ->
+    Forall (fun x => -76 <= x < 2^17 + 76) (get_f (montgomery_step_gen  n z a b c d e f x)).
+Proof.
+  intros.
+  simpl.
+
+
+Admitted.
+
+
+Lemma get_a_montgomery_rec_gen_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => 0 <= x < 2^16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_a (montgomery_rec_gen  n z a b c d e f x)).
+Proof.
+induction n ; intros.
+simpl ; auto.
+rewrite opt_montgomery_rec_step_gen.
+apply IHn ; try assumption.
+apply get_a_montgomery_step_gen_Zlength ; auto.
+apply get_b_montgomery_step_gen_Zlength ; auto.
+apply get_c_montgomery_step_gen_Zlength ; auto.
+apply get_d_montgomery_step_gen_Zlength ; auto.
+apply get_a_montgomery_step_bound ; auto.
+apply get_b_montgomery_step_bound ; auto.
+apply get_c_montgomery_step_bound ; auto.
+eapply list.Forall_impl ; eauto.
+intros h Hh; Simplify_this; simpl in Hh; omega.
+apply get_d_montgomery_step_bound ; auto.
+eapply list.Forall_impl ; eauto.
+intros h Hh; Simplify_this; simpl in Hh; omega.
+Qed.
+
+Lemma get_b_montgomery_rec_gen_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => 0 <= x < 2^16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_b (montgomery_rec_gen  n z a b c d e f x)).
+Proof.
+induction n ; intros.
+simpl ; auto.
+rewrite opt_montgomery_rec_step_gen.
+apply IHn ; try assumption.
+apply get_a_montgomery_step_gen_Zlength ; auto.
+apply get_b_montgomery_step_gen_Zlength ; auto.
+apply get_c_montgomery_step_gen_Zlength ; auto.
+apply get_d_montgomery_step_gen_Zlength ; auto.
+apply get_a_montgomery_step_bound ; auto.
+apply get_b_montgomery_step_bound ; auto.
+apply get_c_montgomery_step_bound ; auto.
+eapply list.Forall_impl ; eauto.
+intros h Hh; Simplify_this; simpl in Hh; omega.
+apply get_d_montgomery_step_bound ; auto.
+eapply list.Forall_impl ; eauto.
+intros h Hh; Simplify_this; simpl in Hh; omega.
+Qed.
+
+Lemma get_c_montgomery_rec_gen_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => 0 <= x < 2^16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_c (montgomery_rec_gen  n z a b c d e f x)).
+Proof.
+induction n ; intros.
+simpl ; auto.
+rewrite opt_montgomery_rec_step_gen.
+apply IHn ; try assumption.
+apply get_a_montgomery_step_gen_Zlength ; auto.
+apply get_b_montgomery_step_gen_Zlength ; auto.
+apply get_c_montgomery_step_gen_Zlength ; auto.
+apply get_d_montgomery_step_gen_Zlength ; auto.
+apply get_a_montgomery_step_bound ; auto.
+apply get_b_montgomery_step_bound ; auto.
+apply get_c_montgomery_step_bound ; auto.
+eapply list.Forall_impl ; eauto.
+intros h Hh; Simplify_this; simpl in Hh; omega.
+apply get_d_montgomery_step_bound ; auto.
+eapply list.Forall_impl ; eauto.
+intros h Hh; Simplify_this; simpl in Hh; omega.
+Qed.
+Lemma get_d_montgomery_rec_gen_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => 0 <= x < 2^16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_d (montgomery_rec_gen  n z a b c d e f x)).
+Proof.
+induction n ; intros.
+simpl ; auto.
+rewrite opt_montgomery_rec_step_gen.
+apply IHn ; try assumption.
+apply get_a_montgomery_step_gen_Zlength ; auto.
+apply get_b_montgomery_step_gen_Zlength ; auto.
+apply get_c_montgomery_step_gen_Zlength ; auto.
+apply get_d_montgomery_step_gen_Zlength ; auto.
+apply get_a_montgomery_step_bound ; auto.
+apply get_b_montgomery_step_bound ; auto.
+apply get_c_montgomery_step_bound ; auto.
+eapply list.Forall_impl ; eauto.
+intros h Hh; Simplify_this; simpl in Hh; omega.
+apply get_d_montgomery_step_bound ; auto.
+eapply list.Forall_impl ; eauto.
+intros h Hh; Simplify_this; simpl in Hh; omega.
+Qed.
 
 Close Scope Z.
 End ScalarRec.

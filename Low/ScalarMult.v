@@ -304,4 +304,86 @@ Lemma get_f_montgomery_get_Zlength : forall n z a b c d e f x,
   Zlength (get_f (montgomery_rec n z a b c d e f x)) = 16.
 Proof. solve_montgomery_rec_Zlength. Qed.
 
+Local Ltac solve_montgomery_step_bound := 
+match goal with
+  | _ => reflexivity
+  | _ => apply A_Zlength
+  | _ => apply M_Zlength
+  | _ => apply Zub_Zlength
+  | _ => apply Sq_Zlength
+  | _ => apply Sel25519_Zlength
+  | _ => apply M_bound_Zlength
+  | _ => apply Sq_bound_Zlength
+  | _ => apply A_bound_Zlength_le
+  | _ => apply A_bound_Zlength_lt
+  | _ => apply Zub_bound_Zlength_lt
+  | _ => apply Sel25519_bound_lt_le_id ; assumption
+  | _ => apply Sel25519_bound_lt_lt_id ; assumption
+  | _ => apply Sel25519_bound_le_lt_trans_le_id ; assumption
+end.
+
+Lemma get_a_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_a (montgomery_step  n z a b c d e f x)).
+Proof.
+apply get_a_montgomery_step_bound ; solve_montgomery_step_bound.
+Qed.
+
+Lemma get_b_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_b (montgomery_step  n z a b c d e f x)).
+Proof.
+apply get_b_montgomery_step_bound ; solve_montgomery_step_bound.
+Qed.
+
+Lemma get_c_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_c (montgomery_step  n z a b c d e f x)).
+Proof.
+apply get_c_montgomery_step_bound ; try solve_montgomery_step_bound.
+change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
+Qed.
+
+Lemma get_d_montgomery_step_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_d (montgomery_step  n z a b c d e f x)).
+Proof.
+apply get_d_montgomery_step_bound ; try solve_montgomery_step_bound.
+change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
+Qed.
+
 Close Scope Z.

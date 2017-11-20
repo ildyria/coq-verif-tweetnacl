@@ -98,10 +98,10 @@ Proof. intros; rewrite -Sel25519_Zlength_eq; omega. Qed.
 Lemma Sel25519_bound_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin <= x <= pmax) p ->
   Forall (fun x => qmin <= x <= qmax) q -> forall b,
-  Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (list_cswap b p q).
+  Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
 Proof. rewrite /Sel25519 ; apply list_cswap_bound_le. Qed.
 
-Lemma Sel25519_bound_lt_le : forall p pmin pmax q qmin qmax,
+Lemma Sel25519_bound_lt_trans_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => qmin < x < qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
@@ -112,5 +112,32 @@ Lemma Sel25519_bound_lt : forall p pmin pmax q qmin qmax,
   Forall (fun x => qmin < x < qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin < x < Z.max pmax qmax) (Sel25519 b p q).
 Proof. rewrite /Sel25519 ; apply list_cswap_bound_lt. Qed.
+
+Lemma Sel25519_bound_lt_le_id : forall pmin pmax p q,
+  Forall (fun x => pmin <= x < pmax) p ->
+  Forall (fun x => pmin <= x < pmax) q -> forall b,
+  Forall (fun x => pmin <= x < pmax) (Sel25519 b p q).
+Proof. rewrite /Sel25519 ; intros; unfold list_cswap; destruct (Z.eqb b 0); go. Qed.
+
+Lemma Sel25519_bound_lt_lt_id : forall pmin pmax p q,
+  Forall (fun x => pmin < x < pmax) p ->
+  Forall (fun x => pmin < x < pmax) q -> forall b,
+  Forall (fun x => pmin < x < pmax) (Sel25519 b p q).
+Proof. rewrite /Sel25519 ; intros; unfold list_cswap; destruct (Z.eqb b 0); go. Qed.
+
+Lemma Sel25519_bound_le_le_id : forall pmin pmax p q,
+  Forall (fun x => pmin <= x <= pmax) p ->
+  Forall (fun x => pmin <= x <= pmax) q -> forall b,
+  Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q).
+Proof. rewrite /Sel25519 ; intros; unfold list_cswap; destruct (Z.eqb b 0); go. Qed.
+
+Lemma Sel25519_bound_le_lt_trans_le_id : forall pmin pmax p q,
+  Forall (fun x => pmin <= x < pmax) p ->
+  Forall (fun x => pmin <= x < pmax) q -> forall b,
+  Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q).
+Proof. rewrite /Sel25519 ; intros; unfold list_cswap; destruct (Z.eqb b 0).
+eapply list.Forall_impl ; eauto ; intros x Hx ; simpl in Hx ; omega.
+eapply list.Forall_impl ; eauto ; intros x Hx ; simpl in Hx ; omega.
+Qed.
 
 Close Scope Z.

@@ -247,4 +247,16 @@ Proof.
       rewrite getCarry_1; omega.
 Qed.
 
+Theorem Zcar25519_bounds_Zlength_2:
+  forall l1 l2,
+    Zlength l1 = 16 ->
+    Zlength l2 = 16 ->
+    Forall (fun x => -2^62 < x < 2^62) l1 ->
+    l2 = car25519 l1 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (car25519 l2).
+Proof.
+move=> l1 l2 ; rewrite ?Zlength_correct => Hll1 Hll2 Hl1 Hl2;
+eapply Zcar25519_bounds_length_2 ; eauto; omega.
+Qed.
+
 Close Scope Z.

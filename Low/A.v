@@ -92,7 +92,7 @@ Proof.
 Qed.
 
 Lemma ZsumList_bound_Zlength_le: forall m1 n1 m2 n2 a b, 
-  length a = length b ->
+  Zlength a = Zlength b ->
   Forall (fun x => m1 <= x <= n1) a -> 
   Forall (fun x => m2 <= x <= n2) b -> 
   Forall (fun x => m1 + m2 <= x <= n1 + n2) (a ⊕ b).
@@ -117,5 +117,26 @@ Lemma A_Zlength : forall a b,
   Zlength b = 16 ->
   Zlength (A a b) = 16.
 Proof. intros; rewrite /A ZsumList_Zlength_max H H0 //. Qed.
+
+Lemma A_bound_length_le : forall m1 n1 m2 n2 a b,
+  length a = length b ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 + m2 <= x <= n1 + n2) (A a b).
+Proof. intros; rewrite /A ; apply ZsumList_bound_length_le ; auto. Qed.
+
+Lemma A_bound_Zlength_le : forall m1 n1 m2 n2 a b,
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 <= x <= n1) a -> 
+  Forall (fun x => m2 <= x <= n2) b -> 
+  Forall (fun x => m1 + m2 <= x <= n1 + n2) (A a b).
+Proof. intros; rewrite /A ; apply ZsumList_bound_Zlength_le ; auto. Qed.
+
+Lemma A_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
+  Zlength a = Zlength b ->
+  Forall (fun x => m1 < x < n1) a -> 
+  Forall (fun x => m2 < x < n2) b -> 
+  Forall (fun x => m1 + m2 < x < n1 + n2) (A a b).
+Proof. intros; rewrite /A ; apply ZsumList_bound_Zlength_lt ; auto. Qed.
 
 Close Scope Z.
