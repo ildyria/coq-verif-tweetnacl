@@ -386,4 +386,72 @@ apply get_d_montgomery_step_bound ; try solve_montgomery_step_bound.
 change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
 Qed.
 
+Lemma get_a_montgomery_rec_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => 0 <= x < 2^16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_a (montgomery_rec  n z a b c d e f x)).
+Proof.
+apply get_a_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
+change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
+Qed.
+
+Lemma get_b_montgomery_rec_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => 0 <= x < 2^16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_b (montgomery_rec  n z a b c d e f x)).
+Proof.
+apply get_b_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
+change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
+Qed.
+
+Lemma get_c_montgomery_rec_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => 0 <= x < 2^16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_c (montgomery_rec  n z a b c d e f x)).
+Proof.
+apply get_c_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
+change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
+Qed.
+
+Lemma get_d_montgomery_rec_bound : forall n z a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => 0 <= x < 2^16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_d (montgomery_rec  n z a b c d e f x)).
+Proof.
+apply get_d_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
+change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
+Qed.
+
 Close Scope Z.
