@@ -214,7 +214,6 @@ Local Ltac solve_montgomery_step_gen_length :=
     | _ => orewrite Sq_length
     | _ => orewrite A_length
     | _ => orewrite Zub_length
-    | _ => orewrite Sel25519_length
   end ; reflexivity.
 
 Lemma get_a_montgomery_step_gen_length : forall z a b c d e f x n,
@@ -298,7 +297,6 @@ Local Ltac solve_montgomery_step_gen_Zlength :=
     | _ => orewrite Sq_Zlength
     | _ => orewrite A_Zlength
     | _ => orewrite Zub_Zlength
-    | _ => orewrite Sel25519_Zlength
   end ; reflexivity.
 
 Lemma get_a_montgomery_step_gen_Zlength : forall z a b c d e f x n,

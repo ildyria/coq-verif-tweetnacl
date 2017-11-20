@@ -53,16 +53,16 @@ int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
 *)
 
 Require Import Tweetnacl.Libs.Export.
-Require Export Tweetnacl.Low.Car25519.
-Require Export Tweetnacl.Low.Unpack25519.
-Require Export Tweetnacl.Low.Sel25519.
+Require Import Tweetnacl.Low.Car25519.
+Require Import Tweetnacl.Low.Unpack25519.
+Require Import Tweetnacl.Low.Sel25519.
 Require Import Tweetnacl.Low.A.
 Require Import Tweetnacl.Low.Z.
 Require Import Tweetnacl.Low.M.
 Require Import Tweetnacl.Low.S.
 Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Constant.
-Require Export Tweetnacl.Low.ScalarMult_gen.
+Require Import Tweetnacl.Low.ScalarMult_gen.
 
 Open Scope Z.
 
@@ -85,6 +85,18 @@ apply opt_montgomery_rec_step_gen.
 Qed.
 
 Close Scope Z.
+
+Ltac solve_montgomery_op_Zlength :=
+  repeat match goal with
+    | _ => rewrite Zlength_map
+    | _ => rewrite Sel25519_Zlength
+    | _ => rewrite M_Zlength
+    | _ => rewrite Sq_Zlength
+    | _ => rewrite A_Zlength
+    | _ => rewrite Zub_Zlength
+    | _ => omega
+  end ; reflexivity.
+
 
 Local Ltac solve_montgomery_step_length := 
   intros; rewrite /montgomery_step;
