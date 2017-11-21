@@ -66,8 +66,8 @@ Require Import Tweetnacl.Low.ScalarMult_gen.
 
 Open Scope Z.
 
-Definition montgomery_step := montgomery_step_gen A M Zub Sq _121665 Sel25519 getbit.
-Definition montgomery_rec := montgomery_rec_gen A M Zub Sq _121665 Sel25519 getbit.
+Definition montgomery_step := montgomery_step_gen A M Zub Sq c_121665 Sel25519 getbit.
+Definition montgomery_rec := montgomery_rec_gen A M Zub Sq c_121665 Sel25519 getbit.
 
 Lemma opt_montgomery_rec_step : forall z a b c d e f x n,
   montgomery_rec (S n) z a b c d e f x = 
