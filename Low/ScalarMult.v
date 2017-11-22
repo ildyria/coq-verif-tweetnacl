@@ -86,7 +86,7 @@ Qed.
 
 Close Scope Z.
 
-Ltac solve_montgomery_op_Zlength :=
+Local Ltac Local_solve_montgomery_op_Zlength :=
   repeat match goal with
     | _ => rewrite Zlength_map
     | _ => rewrite Sel25519_Zlength
@@ -279,37 +279,37 @@ Local Ltac solve_montgomery_rec_Zlength :=
     | _ => apply Sel25519_Zlength
   end.
 
-Lemma get_a_montgomery_get_Zlength : forall n z a b c d e f x,
+Lemma get_a_montgomery_rec_Zlength : forall n z a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 ->
   Zlength x = 16 ->
   Zlength (get_a (montgomery_rec n z a b c d e f x)) = 16.
 Proof. solve_montgomery_rec_Zlength. Qed.
-Lemma get_b_montgomery_get_Zlength : forall n z a b c d e f x,
+Lemma get_b_montgomery_rec_Zlength : forall n z a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 ->
   Zlength x = 16 ->
   Zlength (get_b (montgomery_rec n z a b c d e f x)) = 16.
 Proof. solve_montgomery_rec_Zlength. Qed.
-Lemma get_c_montgomery_get_Zlength : forall n z a b c d e f x,
+Lemma get_c_montgomery_rec_Zlength : forall n z a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 ->
   Zlength x = 16 ->
   Zlength (get_c (montgomery_rec n z a b c d e f x)) = 16.
 Proof. solve_montgomery_rec_Zlength. Qed.
-Lemma get_d_montgomery_get_Zlength : forall n z a b c d e f x,
+Lemma get_d_montgomery_rec_Zlength : forall n z a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 ->
   Zlength x = 16 ->
   Zlength (get_d (montgomery_rec n z a b c d e f x)) = 16.
 Proof. solve_montgomery_rec_Zlength. Qed.
-Lemma get_e_montgomery_get_Zlength : forall n z a b c d e f x,
+Lemma get_e_montgomery_rec_Zlength : forall n z a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 ->
   Zlength x = 16 ->
   Zlength (get_e (montgomery_rec n z a b c d e f x)) = 16.
 Proof. solve_montgomery_rec_Zlength. Qed.
-Lemma get_f_montgomery_get_Zlength : forall n z a b c d e f x,
+Lemma get_f_montgomery_rec_Zlength : forall n z a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 ->
   Zlength x = 16 ->
@@ -465,5 +465,28 @@ Proof.
 apply get_d_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
 change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
 Qed.
+
+Ltac solve_montgomery_op_Zlength :=
+  repeat match goal with
+    | _ => rewrite Zlength_map
+    | _ => rewrite Sel25519_Zlength
+    | _ => rewrite M_Zlength
+    | _ => rewrite Sq_Zlength
+    | _ => rewrite A_Zlength
+    | _ => rewrite Zub_Zlength
+    | _ => rewrite get_a_montgomery_step_Zlength
+    | _ => rewrite get_b_montgomery_step_Zlength
+    | _ => rewrite get_c_montgomery_step_Zlength
+    | _ => rewrite get_d_montgomery_step_Zlength
+    | _ => rewrite get_e_montgomery_step_Zlength
+    | _ => rewrite get_f_montgomery_step_Zlength
+    | _ => rewrite get_a_montgomery_rec_Zlength
+    | _ => rewrite get_b_montgomery_rec_Zlength
+    | _ => rewrite get_c_montgomery_rec_Zlength
+    | _ => rewrite get_d_montgomery_rec_Zlength
+    | _ => rewrite get_e_montgomery_rec_Zlength
+    | _ => rewrite get_f_montgomery_rec_Zlength
+    | _ => omega
+  end ; reflexivity.
 
 Close Scope Z.
