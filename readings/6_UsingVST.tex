@@ -24,33 +24,59 @@ $
   These are common to all proofs done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
-\subsection{Feelings of a VST user}
-
-This approach is \textbf{slow}, \textbf{tedious} and \textbf{frustrating}.
-The time cost way to big for such a proof and definitively not applicable for a
-cryptographic engineer.
-
-Necessity to prove everything at least 3 to 4 times.
+\subsection{Aliasing and Memory collision}
 
 Necessity to go back into your specification multiple times to refine your model.
 e.g. prove \texttt{M(o,a,b)} later notice that you can have aliasing, need to redifine
 your theorem to prove \texttt{M(o,a,a)} (\textit{squaring}) and other variants such as:
 \texttt{M(a,a,b)} and \texttt{M(b,a,b)}.
 
+\textbf{PICTURE with memory and arrow and SAME share}
+
 Prove \texttt{M(o,a,b)} where o is a \texttt{list $\Z$} and then realize that
-\texttt{o} can be a list of \textit{undefined}. Thus needs to reprove the above
-theorem again.
+\texttt{o} can be a list of \textit{undefined} (\texttt{list val}). Thus needs
+to reprove the above theorem again.
+
+\textbf{PICTURE with memory and arrow and DIFFERENT SHARE}
+
+\subsection{How to be efficient with VST?}
+
+This approach is \textbf{slow}, \textbf{tedious} and \textbf{frustrating}.
+The time cost way to big for such a proof and definitively not applicable for a
+cryptographic engineer.
+
+Necessity to prove everything at least 3 to 4 times (high level, low level, C-link).
 
 The \texttt{forward} and \texttt{entailer} tactics are slow.
 
 Specification and proofs does not need to be in the same file (as initially \textit{implied}
 by the examples provided by the VST repository). Putting the specification of each
 functions in separate file reduce the amount of dependencies. One does not need
-to wait for the proof of \texttt{M(b,a,b)} to compile the proof of \texttt{crypto\_scalarmult(q,n,p)}.
+to wait for the proof of correctness of \texttt{M(o,a,b)} to compile the proof of \texttt{crypto\_scalarmult(q,n,p)}.
 This separation allows a high degree of parallelism during compilation \texttt{make -j},
 greatly reducing the amount of time required.
 
-
-Two years ago:
+Three years ago:
 \url{https://www.imperialviolet.org/2014/09/11/moveprovers.html}
 \url{https://www.imperialviolet.org/2014/09/07/provers.html}
+
+\subsection{Pointers arithmetic and arrays}
+
+VST does not support the verification of \texttt{o[i] = a[i] + b[i]},
+the \texttt{forward} tactic will simply not work. This initially required us to
+rewrite the lines into:\\
+\texttt{aux1 = a[i];\\
+aux2 = b[i];\\
+aux1 = aux1 + aux2;\\
+o[i] = aux1;}\\
+The trust of the proof relied on the trust of a correct translation from the
+initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
+
+While this problem is still present, the Compcert developpers provided us with
+the \texttt{-normalize} option for \texttt{clightgen} which takes care of
+generating auxiliary variables in order to automatically derive these steps.
+The changes required for a C-code to make it Verifiable are now minimals.
+
+It is to be noted that the \texttt{clightgen} tool has not been formally verified.
+
+\texttt{clightgen -normalize}
