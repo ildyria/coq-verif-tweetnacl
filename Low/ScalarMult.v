@@ -468,6 +468,7 @@ Qed.
 
 Ltac solve_montgomery_op_Zlength :=
   repeat match goal with
+    | _ => omega
     | _ => rewrite Zlength_map
     | _ => rewrite Sel25519_Zlength
     | _ => rewrite M_Zlength
@@ -486,7 +487,6 @@ Ltac solve_montgomery_op_Zlength :=
     | _ => rewrite get_d_montgomery_rec_Zlength
     | _ => rewrite get_e_montgomery_rec_Zlength
     | _ => rewrite get_f_montgomery_rec_Zlength
-    | _ => omega
   end ; reflexivity.
 
 Close Scope Z.
