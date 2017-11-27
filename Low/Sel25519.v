@@ -8,21 +8,21 @@ Definition list_cswap (b:Z) (p q : list Z) : list Z :=
     p
   else q.
 
-Lemma list_cswap_nth_true: forall i d p q,
+Local Lemma list_cswap_nth_true: forall i d p q,
   nth i (list_cswap 1 p q) d = nth i q d.
 Proof. go. Qed.
 
-Lemma list_cswap_nth_false: forall i d p q,
+Local Lemma list_cswap_nth_false: forall i d p q,
   nth i (list_cswap 0 p q) d = nth i p d.
 Proof. go. Qed.
 
-Lemma list_cswap_length_eq: forall b p q, length p = length q -> length p = length (list_cswap b p q).
+Local Lemma list_cswap_length_eq: forall b p q, length p = length q -> length p = length (list_cswap b p q).
 Proof. intros; unfold list_cswap; destruct (Z.eqb b 0); go. Qed.
 
-Lemma list_cswap_Zlength_eq: forall b p q, Zlength p = Zlength q -> Zlength p = Zlength (list_cswap b p q).
+Local Lemma list_cswap_Zlength_eq: forall b p q, Zlength p = Zlength q -> Zlength p = Zlength (list_cswap b p q).
 Proof. intros; unfold list_cswap; destruct (Z.eqb b 0); go. Qed.
 
-Lemma list_cswap_bound_le : forall p pmin pmax q qmin qmax,
+Local Lemma list_cswap_bound_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin <= x <= pmax) p ->
   Forall (fun x => qmin <= x <= qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (list_cswap b p q).
@@ -36,7 +36,7 @@ eapply Z.le_trans ; eauto;
 try apply Z.le_min_l;try apply Z.le_min_r;try apply Z.le_max_l;try apply Z.le_max_r.
 Qed.
 
-Lemma list_cswap_bound_lt_le : forall p pmin pmax q qmin qmax,
+Local Lemma list_cswap_bound_lt_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => qmin < x < qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (list_cswap b p q).
@@ -53,7 +53,7 @@ eapply Z.lt_le_trans ; eauto;
 try apply Z.le_min_l;try apply Z.le_min_r;try apply Z.le_max_l;try apply Z.le_max_r.
 Qed.
 
-Lemma list_cswap_bound_lt : forall p pmin pmax q qmin qmax,
+Local Lemma list_cswap_bound_lt : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => qmin < x < qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin < x < Z.max pmax qmax) (list_cswap b p q).

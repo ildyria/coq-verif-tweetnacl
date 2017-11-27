@@ -74,22 +74,14 @@ Definition fd := fd A M Zub Sq c_121665 Sel25519.
 Definition fe := fe A M Zub Sel25519.
 Definition ff := ff Zub Sq Sel25519.
 
-Local Lemma length_c_121665 : length c_121665 = 16.
-Proof. go. Qed.
-
-Open Scope Z.
-Local Lemma Zlength_c_121665 : Zlength c_121665 = 16.
-Proof. go. Qed.
-Close Scope Z.
-
 Local Ltac solve_dependencies_length :=
   match goal with
-    | _ => apply Sel25519_length
+(*     | _ => apply Sel25519_length
     | _ => apply M_length
     | _ => apply Sq_length
     | _ => apply A_length
     | _ => apply Zub_length
-    | _ => apply length_c_121665
+    | _ => apply length_c_121665 *)
     | _ => apply Sel25519_Zlength
     | _ => apply M_Zlength
     | _ => apply Sq_Zlength
@@ -98,6 +90,28 @@ Local Ltac solve_dependencies_length :=
     | _ => apply Zlength_c_121665
   end.
 
+Local Ltac solve_dependencies_bound := 
+repeat match goal with
+  | _ => assumption
+  | _ => reflexivity
+  | _ => solve_dependencies_length
+  | _ => apply M_bound_Zlength
+  | _ => apply Sq_bound_Zlength
+  | _ => apply A_bound_Zlength_le
+  | _ => apply A_bound_Zlength_lt
+  | _ => apply Zub_bound_Zlength_lt
+  | _ => apply Zub_bound_Zlength_le
+  | _ => apply Sel25519_bound_le
+(*   | _ => apply Sel25519_bound_lt_trans_le *)
+(*   | _ => apply Sel25519_bound_lt *)
+  | _ => apply Sel25519_bound_lt_le_id
+  | _ => apply Sel25519_bound_lt_lt_id
+(*   | _ => apply Sel25519_bound_le_le_id *)
+  | _ => apply Sel25519_bound_le_lt_trans_le_id
+  | _ => apply c_121665_bounds
+end.
+
+(* 
 Lemma fa_length : forall r a b c d e f x,
   length a = 16 -> length b = 16 -> length c = 16 ->
   length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
@@ -128,7 +142,7 @@ Lemma ff_length : forall r a b c d e f x,
   length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
   length (ff r a b c d e f x) = 16.
 Proof. apply (ff_length _ _ c_121665) ; solve_dependencies_length. Qed.
-
+*)
 Open Scope Z.
 
 Lemma fa_Zlength : forall r a b c d e f x,
@@ -161,6 +175,57 @@ Lemma ff_Zlength : forall r a b c d e f x,
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (ff r a b c d e f x) = 16.
 Proof. apply (ff_Zlength _ _ c_121665) ; solve_dependencies_length. Qed.
+
+Lemma fa_bound : forall r a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (fa r a b c d e f x).
+Proof. apply (fa_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
+Lemma fb_bound : forall r a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (fb r a b c d e f x).
+Proof. apply (fb_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
+Lemma fc_bound : forall r a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (fc r a b c d e f x).
+Proof. apply (fc_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
+Lemma fd_bound : forall r a b c d e f x,
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Zlength c = 16 ->
+  Zlength d = 16 ->
+  Zlength x = 16 ->
+    Forall (fun x => -38 <= x < 2^16 + 38) a ->
+    Forall (fun x => -38 <= x < 2^16 + 38) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) c ->
+    Forall (fun x => -38 <= x < 2^16 + 38) d ->
+    Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
+Proof. apply (fd_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
 
 Close Scope Z.
 
@@ -230,6 +295,7 @@ Lemma ff_step : forall p n z a b c d e f x ,
    get_f (montgomery_rec_rev (S n) p z a b c d e f x).
 Proof. solve_eq_gen_rec. Qed.
 
+(*
 Lemma montgomery_rec_rev_length : forall n p z a b c d e f x a' b' c' d' e' f',
   length a = 16 -> length b = 16 -> length c = 16 ->
   length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
@@ -272,7 +338,7 @@ Lemma get_f_montgomery_rec_rev_length : forall n p z a b c d e f x,
   length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
   length (get_f (montgomery_rec_rev n p z a b c d e f x)) = 16.
 Proof. apply get_f_abstract_rec_length ; solve_dependencies_length. Qed.
-
+*)
 
 Open Scope Z.
 
@@ -307,159 +373,71 @@ Lemma get_f_montgomery_rec_rev_Zlength : forall n p z a b c d e f x,
   Zlength (get_f (montgomery_rec_rev n p z a b c d e f x)) = 16.
 Proof. apply get_f_abstract_rec_Zlength ; solve_dependencies_length. Qed.
 
-Close Scope Z.
-
-Local Ltac solve_montgomery_rec_bound := 
-match goal with
-  | _ => reflexivity
-  | _ => apply A_Zlength
-  | _ => apply M_Zlength
-  | _ => apply Zub_Zlength
-  | _ => apply Sq_Zlength
-  | _ => apply Sel25519_Zlength
-  | _ => apply M_bound_Zlength
-  | _ => apply Sq_bound_Zlength
-  | _ => apply A_bound_Zlength_le
-  | _ => apply A_bound_Zlength_lt
-  | _ => apply Zub_bound_Zlength_lt
-  | _ => apply Sel25519_bound_lt_le_id ; assumption
-  | _ => apply Sel25519_bound_lt_lt_id ; assumption
-  | _ => apply Sel25519_bound_le_lt_trans_le_id ; assumption
-end.
-
-Lemma get_a_montgomery_step_bound : forall n z a b c d e f x,
+Lemma get_a_montgomery_rec_rev_bound : forall n p z a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
   Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (get_a (montgomery_step  n z a b c d e f x)).
-Proof.
-apply get_a_montgomery_step_bound ; solve_montgomery_step_bound.
-Qed.
-
-Lemma get_b_montgomery_step_bound : forall n z a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (get_b (montgomery_step  n z a b c d e f x)).
-Proof.
-apply get_b_montgomery_step_bound ; solve_montgomery_step_bound.
-Qed.
-
-Lemma get_c_montgomery_step_bound : forall n z a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (get_c (montgomery_step  n z a b c d e f x)).
-Proof.
-apply get_c_montgomery_step_bound ; try solve_montgomery_step_bound.
-change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
-Qed.
-
-Lemma get_d_montgomery_step_bound : forall n z a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (get_d (montgomery_step  n z a b c d e f x)).
-Proof.
-apply get_d_montgomery_step_bound ; try solve_montgomery_step_bound.
-change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
-Qed.
-
-Lemma get_a_montgomery_rec_bound : forall n z a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
   Zlength x = 16 ->
     Forall (fun x => -38 <= x < 2^16 + 38) a ->
     Forall (fun x => -38 <= x < 2^16 + 38) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => 0 <= x < 2^16) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (get_a (montgomery_rec  n z a b c d e f x)).
-Proof.
-apply get_a_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
-change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
-Qed.
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_a (montgomery_rec_rev n p z a b c d e f x)).
+Proof. apply get_a_abstract_rec_rev_bound; solve_dependencies_bound. Qed.
 
-Lemma get_b_montgomery_rec_bound : forall n z a b c d e f x,
+Lemma get_b_montgomery_rec_rev_bound : forall n p z a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
   Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
   Zlength x = 16 ->
     Forall (fun x => -38 <= x < 2^16 + 38) a ->
     Forall (fun x => -38 <= x < 2^16 + 38) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => 0 <= x < 2^16) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (get_b (montgomery_rec  n z a b c d e f x)).
-Proof.
-apply get_b_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
-change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
-Qed.
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_b (montgomery_rec_rev n p z a b c d e f x)).
+Proof. apply get_b_abstract_rec_rev_bound; solve_dependencies_bound. Qed.
 
-Lemma get_c_montgomery_rec_bound : forall n z a b c d e f x,
+Lemma get_c_montgomery_rec_rev_bound : forall n p z a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
   Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
   Zlength x = 16 ->
     Forall (fun x => -38 <= x < 2^16 + 38) a ->
     Forall (fun x => -38 <= x < 2^16 + 38) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => 0 <= x < 2^16) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (get_c (montgomery_rec  n z a b c d e f x)).
-Proof.
-apply get_c_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
-change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
-Qed.
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_c (montgomery_rec_rev n p z a b c d e f x)).
+Proof. apply get_c_abstract_rec_rev_bound ; solve_dependencies_bound. Qed.
 
-Lemma get_d_montgomery_rec_bound : forall n z a b c d e f x,
+Lemma get_d_montgomery_rec_rev_bound : forall n p z a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
   Zlength d = 16 ->
+  Zlength e = 16 ->
+  Zlength f = 16 ->
   Zlength x = 16 ->
     Forall (fun x => -38 <= x < 2^16 + 38) a ->
     Forall (fun x => -38 <= x < 2^16 + 38) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => 0 <= x < 2^16) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (get_d (montgomery_rec  n z a b c d e f x)).
-Proof.
-apply get_d_montgomery_rec_gen_bound ; try solve_montgomery_step_bound.
-change (2^16) with 65536; repeat apply Forall_cons; try omega ; apply Forall_nil.
-Qed.
+    Forall (fun x => -38 <= x < 2^16 + 38) (get_d (montgomery_rec_rev n p z a b c d e f x)).
+Proof. apply get_d_abstract_rec_rev_bound ; solve_dependencies_bound. Qed.
 
-Ltac solve_montgomery_op_Zlength :=
+Ltac solve_montgomery_rec_rev_Zlength :=
   repeat match goal with
     | _ => omega
     | _ => rewrite Zlength_map
@@ -468,18 +446,18 @@ Ltac solve_montgomery_op_Zlength :=
     | _ => rewrite Sq_Zlength
     | _ => rewrite A_Zlength
     | _ => rewrite Zub_Zlength
-    | _ => rewrite get_a_montgomery_step_Zlength
-    | _ => rewrite get_b_montgomery_step_Zlength
-    | _ => rewrite get_c_montgomery_step_Zlength
-    | _ => rewrite get_d_montgomery_step_Zlength
-    | _ => rewrite get_e_montgomery_step_Zlength
-    | _ => rewrite get_f_montgomery_step_Zlength
-    | _ => rewrite get_a_montgomery_rec_Zlength
-    | _ => rewrite get_b_montgomery_rec_Zlength
-    | _ => rewrite get_c_montgomery_rec_Zlength
-    | _ => rewrite get_d_montgomery_rec_Zlength
-    | _ => rewrite get_e_montgomery_rec_Zlength
-    | _ => rewrite get_f_montgomery_rec_Zlength
+    | _ => rewrite fa_Zlength
+    | _ => rewrite fb_Zlength
+    | _ => rewrite fc_Zlength
+    | _ => rewrite fd_Zlength
+    | _ => rewrite fe_Zlength
+    | _ => rewrite ff_Zlength
+    | _ => rewrite get_a_montgomery_rec_rev_Zlength
+    | _ => rewrite get_b_montgomery_rec_rev_Zlength
+    | _ => rewrite get_c_montgomery_rec_rev_Zlength
+    | _ => rewrite get_d_montgomery_rec_rev_Zlength
+    | _ => rewrite get_e_montgomery_rec_rev_Zlength
+    | _ => rewrite get_f_montgomery_rec_rev_Zlength
   end ; reflexivity.
 
 Close Scope Z.

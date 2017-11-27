@@ -19,6 +19,7 @@ Definition fd := fd A M Zub Sq _121665 Sel25519.
 Definition fe := fe A M Zub Sel25519.
 Definition ff := ff Zub Sq Sel25519.
 
+(*
 Definition step_abstract n z (a b c d e f x:list Z) := let r := getbit (Z.of_nat n) z in
   (fa r a b c d e f x,
   fb r a b c d e f x,
@@ -26,7 +27,7 @@ Definition step_abstract n z (a b c d e f x:list Z) := let r := getbit (Z.of_nat
   fd r a b c d e f x,
   fe r a b c d e f x,
   ff r a b c d e f x).
-
+ *)
 Fixpoint abstract_rec_rev m p (z a b c d e f x : list Z) : (list Z * list Z * list Z * list Z * list Z * list Z)
   :=
   match m with
@@ -141,14 +142,14 @@ destruct k as (((((a0,b0),c0),d0),e0),f0); reflexivity.
 Qed.
 
 Close Scope Z.
-
+(* 
 Variable A_length : forall a b, length a = 16 -> length b = 16 -> length (A a b) = 16.
 Variable M_length : forall a b, length a = 16 -> length b = 16 -> length (M a b) = 16.
 Variable Zub_length : forall a b, length a = 16 -> length b = 16 -> length (Zub a b) = 16.
 Variable Sq_length : forall a, length a = 16 -> length (Sq a) = 16.
 Variable Sel25519_length : forall b p q, length p = 16 -> length q = 16 -> length (Sel25519 b p q) = 16.
 Variable _121665_length : length _121665 = 16.
-
+ *)
 Open Scope Z.
 
 Variable A_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (A a b) = 16.
@@ -164,11 +165,11 @@ Local Ltac solve_dependencies_length :=
   intros;
   repeat match goal with
     | _ => omega
-    | _ => apply Sel25519_length
-    | _ => apply M_length
-    | _ => apply Sq_length
-    | _ => apply A_length
-    | _ => apply Zub_length
+(*     | _ => apply Sel25519_length *)
+(*     | _ => apply M_length *)
+(*     | _ => apply Sq_length *)
+(*     | _ => apply A_length *)
+(*     | _ => apply Zub_length *)
     | _ => apply Sel25519_Zlength
     | _ => apply M_Zlength
     | _ => apply Sq_Zlength
@@ -176,7 +177,7 @@ Local Ltac solve_dependencies_length :=
     | _ => apply Zub_Zlength
   end ; reflexivity.
 
-Lemma fa_length : forall r a b c d e f x,
+(* Lemma fa_length : forall r a b c d e f x,
   length a = 16 -> length b = 16 -> length c = 16 ->
   length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
   length (fa r a b c d e f x) = 16.
@@ -206,7 +207,7 @@ Lemma ff_length : forall r a b c d e f x,
   length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
   length (ff r a b c d e f x) = 16.
 Proof. apply (ff_length _ _ _121665) ; solve_dependencies_length. Qed.
-
+ *)
 Open Scope Z.
 
 Lemma fa_Zlength : forall r a b c d e f x,
@@ -242,7 +243,7 @@ Proof. apply (ff_Zlength _ _ _121665) ; solve_dependencies_length. Qed.
 
 Close Scope Z.
 
-Lemma abstract_rec_length : forall n p z a b c d e f x a' b' c' d' e' f',
+(* Lemma abstract_rec_length : forall n p z a b c d e f x a' b' c' d' e' f',
   length a = 16 -> length b = 16 -> length c = 16 ->
   length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
   (a',b',c',d',e',f') = (abstract_rec_rev n p z a b c d e f x) -> 
@@ -343,7 +344,7 @@ assert(He: exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_rec_rev n p
 destruct He as [a' [b' [c' [d' [e' [f' He]]]]]].
 assert(Ht := abstract_rec_length n p z a b c d e f x a' b' c' d' e' f' H H0 H1 H2 H3 H4 H5 He).
 rewrite -He; jauto_set; go.
-Qed.
+Qed. *)
 
 Open Scope Z.
 
@@ -484,14 +485,18 @@ Variable Sel25519_bound_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin <= x <= pmax) p ->
   Forall (fun x => qmin <= x <= qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
+(*
 Variable Sel25519_bound_lt_trans_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => qmin < x < qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
+*)
+(*
 Variable Sel25519_bound_lt : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => qmin < x < qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin < x < Z.max pmax qmax) (Sel25519 b p q).
+*)
 Variable Sel25519_bound_lt_le_id : forall pmin pmax p q,
   Forall (fun x => pmin <= x < pmax) p ->
   Forall (fun x => pmin <= x < pmax) q -> forall b,
@@ -500,17 +505,19 @@ Variable Sel25519_bound_lt_lt_id : forall pmin pmax p q,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => pmin < x < pmax) q -> forall b,
   Forall (fun x => pmin < x < pmax) (Sel25519 b p q).
+(*
 Variable Sel25519_bound_le_le_id : forall pmin pmax p q,
   Forall (fun x => pmin <= x <= pmax) p ->
   Forall (fun x => pmin <= x <= pmax) q -> forall b,
   Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q).
+*)
 Variable Sel25519_bound_le_lt_trans_le_id : forall pmin pmax p q,
   Forall (fun x => pmin <= x < pmax) p ->
   Forall (fun x => pmin <= x < pmax) q -> forall b,
   Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q).
 Variable _121665_bound : Forall (fun x => 0 <= x < 2 ^16) _121665.
 
-Local Ltac solve_abstract_rec_bound := 
+Local Ltac solve_fx_bound := 
 match goal with
   | _ => solve_dependencies_length
   | _ => apply M_bound_Zlength
@@ -521,9 +528,10 @@ match goal with
   | _ => apply Sel25519_bound_lt_le_id ; assumption
   | _ => apply Sel25519_bound_lt_lt_id ; assumption
   | _ => apply Sel25519_bound_le_lt_trans_le_id ; assumption
+  | _ => apply _121665_bound
 end.
 
-Lemma fa_step_bound : forall r a b c d e f x,
+Lemma fa_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -534,8 +542,8 @@ Lemma fa_step_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fa r a b c d e f x).
-Proof. apply (fa_step_bound _ _ _ _ _121665) ; solve_abstract_rec_bound. Qed.
-Lemma fb_step_bound : forall r a b c d e f x,
+Proof. apply (fa_bound _ _ _ _ _121665) ; solve_fx_bound. Qed.
+Lemma fb_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -546,8 +554,8 @@ Lemma fb_step_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fb r a b c d e f x).
-Proof. apply (fb_step_bound _ _ _ _ _121665) ; solve_abstract_rec_bound. Qed.
-Lemma fc_step_bound : forall r a b c d e f x,
+Proof. apply (fb_bound _ _ _ _ _121665) ; solve_fx_bound. Qed.
+Lemma fc_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -559,10 +567,8 @@ Lemma fc_step_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fc r a b c d e f x).
-Proof. intros. apply (fc_step_bound _ _ _ _ _121665) ; try solve_abstract_rec_bound ; auto.
-eapply list.Forall_impl ; eauto ; intros x0 Hx0 ; simpl in Hx0 ; omega.
-Qed.
-Lemma fd_step_bound : forall r a b c d e f x,
+Proof. apply (fc_bound _ _ _ _ _121665) ; solve_fx_bound. Qed.
+Lemma fd_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -574,9 +580,7 @@ Lemma fd_step_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
-Proof. intros. apply (fd_step_bound _ _ _ _ _121665) ; try solve_abstract_rec_bound ; auto.
-eapply list.Forall_impl ; eauto ; intros x0 Hx0 ; simpl in Hx0 ; omega.
-Qed.
+Proof. apply (fd_bound _ _ _ _ _121665) ; solve_fx_bound. Qed.
 
 Lemma abstract_rec_rev_bound : forall n p z a b c d e f x a' b' c' d' e' f',
   Zlength a = 16 ->
@@ -604,10 +608,10 @@ inversion H11.
 assert(Ht:= IHn p z a b c d e f x a0 b0 c0 d0 e0 f0 H H0 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 Heqk) ; auto.
 assert(Htt := abstract_rec_Zlength n p z a b c d e f x a0 b0 c0 d0 e0 f0 H H0 H1 H2 H3 H4 H5 Heqk).
 jauto_set.
-apply fa_step_bound ; go.
-apply fb_step_bound ; go.
-apply fc_step_bound ; go.
-apply fd_step_bound ; go.
+apply fa_bound ; go.
+apply fb_bound ; go.
+apply fc_bound ; go.
+apply fd_bound ; go.
 Qed.
 
 Lemma get_a_abstract_rec_rev_bound : forall n p z a b c d e f x,

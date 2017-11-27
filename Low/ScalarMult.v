@@ -62,6 +62,7 @@ Require Import Tweetnacl.Low.M.
 Require Import Tweetnacl.Low.S.
 Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Constant.
+Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Tweetnacl.Low.ScalarMult_gen.
 
 Open Scope Z.
@@ -69,7 +70,7 @@ Open Scope Z.
 Definition montgomery_step := montgomery_step_gen A M Zub Sq c_121665 Sel25519 getbit.
 Definition montgomery_rec := montgomery_rec_gen A M Zub Sq c_121665 Sel25519 getbit.
 
-Lemma opt_montgomery_rec_step : forall z a b c d e f x n,
+Lemma opt_montgomery_rec_step : forall n z a b c d e f x,
   montgomery_rec (S n) z a b c d e f x = 
   montgomery_rec n z 
   (get_a (montgomery_step n z a b c d e f x))
@@ -84,7 +85,7 @@ rewrite /montgomery_rec /montgomery_step.
 apply opt_montgomery_rec_step_gen.
 Qed.
 
-Lemma opt_montgomery_rec_step_ext : forall z a b c d e f e' f' x n,
+Lemma opt_montgomery_rec_step_ext : forall n z a b c d e f e' f' x,
   montgomery_rec (S n) z a b c d e' f' x = 
   montgomery_rec n z 
   (get_a (montgomery_step n z a b c d e f x))

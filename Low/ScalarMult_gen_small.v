@@ -80,12 +80,12 @@ Definition ff r (a b c d e f x:list Z) :=
 
 Close Scope Z.
 
-Variable A_length : forall a b, length a = 16 -> length b = 16 -> length (A a b) = 16.
+(* Variable A_length : forall a b, length a = 16 -> length b = 16 -> length (A a b) = 16.
 Variable M_length : forall a b, length a = 16 -> length b = 16 -> length (M a b) = 16.
 Variable Zub_length : forall a b, length a = 16 -> length b = 16 -> length (Zub a b) = 16.
 Variable Sq_length : forall a, length a = 16 -> length (Sq a) = 16.
 Variable Sel25519_length : forall b p q, length p = 16 -> length q = 16 -> length (Sel25519 b p q) = 16.
-Variable _121665_length : length _121665 = 16.
+Variable _121665_length : length _121665 = 16. *)
 
 Open Scope Z.
 
@@ -97,7 +97,7 @@ Variable Sel25519_Zlength : forall b p q, Zlength p = 16 -> Zlength q = 16 -> Zl
 Variable _121665_Zlength : Zlength _121665 = 16.
 
 Close Scope Z.
-
+(* 
 Local Ltac solve_small_montgomery_step_gen_length :=
   intros;
   rewrite /fa /fb /fc /fd /fe /ff;
@@ -138,7 +138,7 @@ Lemma ff_length : forall r a b c d e f x,
   length a = 16 -> length b = 16 -> length c = 16 ->
   length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
   length (ff r a b c d e f x) = 16.
-Proof. solve_small_montgomery_step_gen_length. Qed.
+Proof. solve_small_montgomery_step_gen_length. Qed. *)
 
 Open Scope Z.
 
@@ -218,14 +218,17 @@ Variable Sel25519_bound_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin <= x <= pmax) p ->
   Forall (fun x => qmin <= x <= qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
-Variable Sel25519_bound_lt_trans_le : forall p pmin pmax q qmin qmax,
+(* Variable Sel25519_bound_lt_trans_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => qmin < x < qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
+ *)
+(*
 Variable Sel25519_bound_lt : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => qmin < x < qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin < x < Z.max pmax qmax) (Sel25519 b p q).
+*)
 Variable Sel25519_bound_lt_le_id : forall pmin pmax p q,
   Forall (fun x => pmin <= x < pmax) p ->
   Forall (fun x => pmin <= x < pmax) q -> forall b,
@@ -234,10 +237,12 @@ Variable Sel25519_bound_lt_lt_id : forall pmin pmax p q,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => pmin < x < pmax) q -> forall b,
   Forall (fun x => pmin < x < pmax) (Sel25519 b p q).
+(*
 Variable Sel25519_bound_le_le_id : forall pmin pmax p q,
   Forall (fun x => pmin <= x <= pmax) p ->
   Forall (fun x => pmin <= x <= pmax) q -> forall b,
-  Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q).
+  Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q). 
+*)
 Variable Sel25519_bound_le_lt_trans_le_id : forall pmin pmax p q,
   Forall (fun x => pmin <= x < pmax) p ->
   Forall (fun x => pmin <= x < pmax) q -> forall b,
@@ -248,7 +253,7 @@ Local Ltac Simplify_this :=
 change (2^16) with 65536 in *;
 change (2^26) with 67108864 in *.
 
-Lemma fa_step_bound : forall r a b c d e f x,
+Lemma fa_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -347,7 +352,7 @@ Proof.
   intros h Hh; Simplify_this; simpl in Hh; omega.
 Qed.
 
-Lemma fb_step_bound : forall r a b c d e f x,
+Lemma fb_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -452,7 +457,7 @@ Proof.
 Qed.
 
 
-Lemma fc_step_bound : forall r a b c d e f x,
+Lemma fc_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -462,7 +467,7 @@ Lemma fc_step_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) x ->
+    Forall (fun x => 0 <= x < 2^16) x ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fc r a b c d e f x).
 Proof.
   intros.
@@ -622,7 +627,7 @@ Proof.
   intros h Hh; Simplify_this; simpl in Hh; omega.
 Qed.
 
-Lemma fd_step_bound : forall r a b c d e f x,
+Lemma fd_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -632,7 +637,7 @@ Lemma fd_step_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) x ->
+    Forall (fun x => 0 <= x < 2^16) x ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
 Proof.
   intros.
