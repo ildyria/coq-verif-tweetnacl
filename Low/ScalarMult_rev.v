@@ -63,9 +63,10 @@ Require Import Tweetnacl.Low.S.
 Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Constant.
 Require Import Tweetnacl.Low.Get_abcdef.
-Require Import Tweetnacl.Low.ScalarMult_rev_gen.
+(* Require Import Tweetnacl.Low.ScalarMult_rev_gen. *)
+Require Import Tweetnacl.Low.ScalarMult_rev_gen_fn.
 
-Definition montgomery_rec_rev := abstract_rec_rev A M Zub Sq c_121665 Sel25519 getbit.
+Definition montgomery_rec_rev := abstract_fn_rev A M Zub Sq c_121665 Sel25519 getbit.
 
 Definition fa := fa A M Zub Sq Sel25519.
 Definition fb := fb A M Zub Sq Sel25519.
@@ -76,12 +77,6 @@ Definition ff := ff Zub Sq Sel25519.
 
 Local Ltac solve_dependencies_length :=
   match goal with
-(*     | _ => apply Sel25519_length
-    | _ => apply M_length
-    | _ => apply Sq_length
-    | _ => apply A_length
-    | _ => apply Zub_length
-    | _ => apply length_c_121665 *)
     | _ => apply Sel25519_Zlength
     | _ => apply M_Zlength
     | _ => apply Sq_Zlength
@@ -102,47 +97,12 @@ repeat match goal with
   | _ => apply Zub_bound_Zlength_lt
   | _ => apply Zub_bound_Zlength_le
   | _ => apply Sel25519_bound_le
-(*   | _ => apply Sel25519_bound_lt_trans_le *)
-(*   | _ => apply Sel25519_bound_lt *)
   | _ => apply Sel25519_bound_lt_le_id
   | _ => apply Sel25519_bound_lt_lt_id
-(*   | _ => apply Sel25519_bound_le_le_id *)
   | _ => apply Sel25519_bound_le_lt_trans_le_id
   | _ => apply c_121665_bounds
 end.
 
-(* 
-Lemma fa_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fa r a b c d e f x) = 16.
-Proof. apply (fa_length _ _ _ _ c_121665); solve_dependencies_length. Qed.
-Lemma fb_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fb r a b c d e f x) = 16.
-Proof. apply (fb_length _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
-Lemma fc_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fc r a b c d e f x) = 16.
-Proof. apply (fc_length _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
-Lemma fd_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fd r a b c d e f x) = 16.
-Proof. apply (fd_length _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
-Lemma fe_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fe r a b c d e f x) = 16.
-Proof. apply (fe_length _ _ _ c_121665) ; solve_dependencies_length. Qed.
-Lemma ff_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (ff r a b c d e f x) = 16.
-Proof. apply (ff_length _ _ c_121665) ; solve_dependencies_length. Qed.
-*)
 Open Scope Z.
 
 Lemma fa_Zlength : forall r a b c d e f x,
@@ -227,153 +187,119 @@ Lemma fd_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
 Proof. apply (fd_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
 
-Close Scope Z.
-
 Local Ltac solve_eq_gen_rec := 
   intros; by rewrite /fa /fb /fc /fd /fe /ff /montgomery_rec_rev 
-  ?abstract_step_rev_a  ?abstract_step_rev_b  ?abstract_step_rev_c
-   ?abstract_step_rev_d  ?abstract_step_rev_e  ?abstract_step_rev_f.
+  ?abstract_fn_a  ?abstract_fn_b  ?abstract_fn_c
+   ?abstract_fn_d  ?abstract_fn_e  ?abstract_fn_f ; try omega.
 
 Lemma fa_step : forall p n z a b c d e f x ,
-   fa (getbit (ℤ.ℕ p - n) z)
+  0 <= n ->
+   fa (getbit (p - n) z)
      (get_a (montgomery_rec_rev n p z a b c d e f x))
      (get_b (montgomery_rec_rev n p z a b c d e f x))
      (get_c (montgomery_rec_rev n p z a b c d e f x))
      (get_d (montgomery_rec_rev n p z a b c d e f x))
      (get_e (montgomery_rec_rev n p z a b c d e f x))
      (get_f (montgomery_rec_rev n p z a b c d e f x)) x =
-   get_a (montgomery_rec_rev (S n) p z a b c d e f x).
+   get_a (montgomery_rec_rev (n + 1) p z a b c d e f x).
 Proof. solve_eq_gen_rec. Qed.
 Lemma fb_step : forall p n z a b c d e f x ,
-   fb (getbit (ℤ.ℕ p - n) z)
+  0 <= n ->
+   fb (getbit (p - n) z)
      (get_a (montgomery_rec_rev n p z a b c d e f x))
      (get_b (montgomery_rec_rev n p z a b c d e f x))
      (get_c (montgomery_rec_rev n p z a b c d e f x))
      (get_d (montgomery_rec_rev n p z a b c d e f x))
      (get_e (montgomery_rec_rev n p z a b c d e f x))
      (get_f (montgomery_rec_rev n p z a b c d e f x)) x =
-   get_b (montgomery_rec_rev (S n) p z a b c d e f x).
+   get_b (montgomery_rec_rev (n + 1) p z a b c d e f x).
 Proof. solve_eq_gen_rec. Qed.
 Lemma fc_step : forall p n z a b c d e f x ,
-   fc (getbit (ℤ.ℕ p - n) z)
+  0 <= n ->
+   fc (getbit (p - n) z)
      (get_a (montgomery_rec_rev n p z a b c d e f x))
      (get_b (montgomery_rec_rev n p z a b c d e f x))
      (get_c (montgomery_rec_rev n p z a b c d e f x))
      (get_d (montgomery_rec_rev n p z a b c d e f x))
      (get_e (montgomery_rec_rev n p z a b c d e f x))
      (get_f (montgomery_rec_rev n p z a b c d e f x)) x =
-   get_c (montgomery_rec_rev (S n) p z a b c d e f x).
+   get_c (montgomery_rec_rev (n + 1) p z a b c d e f x).
 Proof. solve_eq_gen_rec. Qed.
 Lemma fd_step : forall p n z a b c d e f x ,
-   fd (getbit (ℤ.ℕ p - n) z)
+  0 <= n ->
+   fd (getbit (p - n) z)
      (get_a (montgomery_rec_rev n p z a b c d e f x))
      (get_b (montgomery_rec_rev n p z a b c d e f x))
      (get_c (montgomery_rec_rev n p z a b c d e f x))
      (get_d (montgomery_rec_rev n p z a b c d e f x))
      (get_e (montgomery_rec_rev n p z a b c d e f x))
      (get_f (montgomery_rec_rev n p z a b c d e f x)) x =
-   get_d (montgomery_rec_rev (S n) p z a b c d e f x).
+   get_d (montgomery_rec_rev (n + 1) p z a b c d e f x).
 Proof. solve_eq_gen_rec. Qed.
 Lemma fe_step : forall p n z a b c d e f x ,
-   fe (getbit (ℤ.ℕ p - n) z)
+  0 <= n ->
+   fe (getbit (p - n) z)
      (get_a (montgomery_rec_rev n p z a b c d e f x))
      (get_b (montgomery_rec_rev n p z a b c d e f x))
      (get_c (montgomery_rec_rev n p z a b c d e f x))
      (get_d (montgomery_rec_rev n p z a b c d e f x))
      (get_e (montgomery_rec_rev n p z a b c d e f x))
      (get_f (montgomery_rec_rev n p z a b c d e f x)) x =
-   get_e (montgomery_rec_rev (S n) p z a b c d e f x).
+   get_e (montgomery_rec_rev (n + 1) p z a b c d e f x).
 Proof. solve_eq_gen_rec. Qed.
 Lemma ff_step : forall p n z a b c d e f x ,
-   ff (getbit (ℤ.ℕ p - n) z)
+  0 <= n ->
+   ff (getbit (p - n) z)
      (get_a (montgomery_rec_rev n p z a b c d e f x))
      (get_b (montgomery_rec_rev n p z a b c d e f x))
      (get_c (montgomery_rec_rev n p z a b c d e f x))
      (get_d (montgomery_rec_rev n p z a b c d e f x))
      (get_e (montgomery_rec_rev n p z a b c d e f x))
      (get_f (montgomery_rec_rev n p z a b c d e f x)) x =
-   get_f (montgomery_rec_rev (S n) p z a b c d e f x).
+   get_f (montgomery_rec_rev (n + 1) p z a b c d e f x).
 Proof. solve_eq_gen_rec. Qed.
 
-(*
-Lemma montgomery_rec_rev_length : forall n p z a b c d e f x a' b' c' d' e' f',
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  (a',b',c',d',e',f') = (montgomery_rec_rev n p z a b c d e f x) -> 
-  length a' = 16 
-  /\ length b' = 16
-   /\ length c' = 16
-    /\ length d' = 16
-     /\ length e' = 16
-      /\ length f' = 16.
-Proof. apply abstract_rec_length ; solve_dependencies_length. Qed.
-
-Lemma get_a_montgomery_rec_rev_length : forall n p z a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (get_a (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_a_abstract_rec_length ; solve_dependencies_length. Qed.
-Lemma get_b_montgomery_rec_rev_length : forall n p z a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (get_b (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_b_abstract_rec_length ; solve_dependencies_length. Qed.
-Lemma get_c_montgomery_rec_rev_length : forall n p z a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (get_c (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_c_abstract_rec_length ; solve_dependencies_length. Qed.
-Lemma get_d_montgomery_rec_rev_length : forall n p z a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (get_d (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_d_abstract_rec_length ; solve_dependencies_length. Qed.
-Lemma get_e_montgomery_rec_rev_length : forall n p z a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (get_e (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_e_abstract_rec_length ; solve_dependencies_length. Qed.
-Lemma get_f_montgomery_rec_rev_length : forall n p z a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (get_f (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_f_abstract_rec_length ; solve_dependencies_length. Qed.
-*)
-
-Open Scope Z.
-
 Lemma get_a_montgomery_rec_rev_Zlength : forall n p z a b c d e f x,
+  0 <= n ->
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (get_a (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_a_abstract_rec_Zlength ; solve_dependencies_length. Qed.
+Proof. apply get_a_abstract_fn_Zlength ; solve_dependencies_length. Qed.
 Lemma get_b_montgomery_rec_rev_Zlength : forall n p z a b c d e f x,
+  0 <= n ->
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (get_b (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_b_abstract_rec_Zlength ; solve_dependencies_length. Qed.
+Proof. apply get_b_abstract_fn_Zlength ; solve_dependencies_length. Qed.
 Lemma get_c_montgomery_rec_rev_Zlength : forall n p z a b c d e f x,
+  0 <= n ->
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (get_c (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_c_abstract_rec_Zlength ; solve_dependencies_length. Qed.
+Proof. apply get_c_abstract_fn_Zlength ; solve_dependencies_length. Qed.
 Lemma get_d_montgomery_rec_rev_Zlength : forall n p z a b c d e f x,
+  0 <= n ->
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (get_d (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_d_abstract_rec_Zlength ; solve_dependencies_length. Qed.
+Proof. apply get_d_abstract_fn_Zlength ; solve_dependencies_length. Qed.
 Lemma get_e_montgomery_rec_rev_Zlength : forall n p z a b c d e f x,
+  0 <= n ->
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (get_e (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_e_abstract_rec_Zlength ; solve_dependencies_length. Qed.
+Proof. apply get_e_abstract_fn_Zlength ; solve_dependencies_length. Qed.
 Lemma get_f_montgomery_rec_rev_Zlength : forall n p z a b c d e f x,
+  0 <= n ->
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (get_f (montgomery_rec_rev n p z a b c d e f x)) = 16.
-Proof. apply get_f_abstract_rec_Zlength ; solve_dependencies_length. Qed.
+Proof. apply get_f_abstract_fn_Zlength ; solve_dependencies_length. Qed.
 
 Lemma get_a_montgomery_rec_rev_bound : forall n p z a b c d e f x,
+  0 <= n ->
+  0 <= p ->
+  n <= p + 1 ->
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -390,6 +316,9 @@ Lemma get_a_montgomery_rec_rev_bound : forall n p z a b c d e f x,
 Proof. apply get_a_abstract_rec_rev_bound; solve_dependencies_bound. Qed.
 
 Lemma get_b_montgomery_rec_rev_bound : forall n p z a b c d e f x,
+  0 <= n ->
+  0 <= p ->
+  n <= p + 1 ->
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -406,6 +335,9 @@ Lemma get_b_montgomery_rec_rev_bound : forall n p z a b c d e f x,
 Proof. apply get_b_abstract_rec_rev_bound; solve_dependencies_bound. Qed.
 
 Lemma get_c_montgomery_rec_rev_bound : forall n p z a b c d e f x,
+  0 <= n ->
+  0 <= p ->
+  n <= p + 1 ->
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -422,6 +354,9 @@ Lemma get_c_montgomery_rec_rev_bound : forall n p z a b c d e f x,
 Proof. apply get_c_abstract_rec_rev_bound ; solve_dependencies_bound. Qed.
 
 Lemma get_d_montgomery_rec_rev_bound : forall n p z a b c d e f x,
+  0 <= n ->
+  0 <= p ->
+  n <= p + 1 ->
   Zlength a = 16 ->
   Zlength b = 16 ->
   Zlength c = 16 ->
@@ -458,6 +393,6 @@ Ltac solve_montgomery_rec_rev_Zlength :=
     | _ => rewrite get_d_montgomery_rec_rev_Zlength
     | _ => rewrite get_e_montgomery_rec_rev_Zlength
     | _ => rewrite get_f_montgomery_rec_rev_Zlength
-  end ; reflexivity.
+  end ; try reflexivity.
 
 Close Scope Z.

@@ -734,4 +734,84 @@ Qed.
   end ; reflexivity.
  *)
 
+Require Recdef.
+Function abstract_fn_rev (m p:Z) (z a b c d e f x : list Z) {measure Z.to_nat m} : (list Z * list Z * list Z * list Z * list Z * list Z) :=
+  if (m <=? 0)
+    then (a,b,c,d,e,f)
+    else 
+    match (abstract_fn_rev (m - 1) p z a b c d e f x) with
+        | (a,b,c,d,e,f) =>
+        let r := getbit (p - (m - 1)) z in
+        (fa r a b c d e f x,
+        fb r a b c d e f x,
+        fc r a b c d e f x,
+        fd r a b c d e f x,
+        fe r a b c d e f x,
+        ff r a b c d e f x)
+      end.
+Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
+
+Lemma abstract_fn_rev_eq : forall m p z a b c d e f x,
+  0 <= m ->
+  0 <= p ->
+  m <= p ->
+  abstract_rec_rev (Z.to_nat m) (Z.to_nat p) z a b c d e f x = 
+  abstract_fn_rev m p z a b c d e f x.
+Proof.
+  clear A_Zlength M_Zlength Zub_Zlength Sq_Zlength Sel25519_Zlength.
+  clear M_bound_Zlength Sq_bound_Zlength A_bound_Zlength_le A_bound_Zlength_lt.
+  clear Zub_bound_Zlength_le Zub_bound_Zlength_lt Sel25519_bound_le Sel25519_bound_lt_le_id.
+  clear Sel25519_bound_lt_lt_id Sel25519_bound_le_lt_trans_le_id _121665_bound _121665_Zlength.
+  intros m p z a b c d e f x Hm.
+  gen p z a b c d e f x.
+  gen m.
+  apply (natlike_ind (fun m => forall (p : ℤ) (z a b c d e f x : list ℤ),
+0 <= p -> m <= p -> abstract_rec_rev (Z.to_nat m) (Z.to_nat p) z a b c d e f x = abstract_fn_rev m p z a b c d e f x)).
+  - intros; rewrite abstract_fn_rev_equation Zle_imp_le_bool ; try omega ; reflexivity.
+  - intros m Hm IHm p z a b c d e f x Hp Hmpp.
+    sort. (* sort the hypothesises *)
+  assert(Hmp: m <= p) by omega.
+  change (Z.succ m) with (m + 1).
+  replace (Z.to_nat (m + 1)) with (S (Z.to_nat m)).
+  2:   rewrite Z2Nat.inj_add ; try replace (Z.to_nat 1) with 1%nat by reflexivity ; omega.
+  rewrite abstract_fn_rev_equation; simpl.
+  remember (abstract_rec_rev (Z.to_nat m) (Z.to_nat p) z a b c d e f x) as k ; destruct k as (((((a0,b0),c0),d0),e0),f0).
+  replace (m + 1 - 1) with m by omega.
+  remember (abstract_fn_rev m p z a b c d e f x) as k' ; destruct k' as (((((a0',b0'),c0'),d0'),e0'),f0').
+  flatten.
+  apply Zle_bool_imp_le in Eq ; omega. (* silly case *)
+  apply Z.leb_gt in Eq.
+  assert((a0, b0, c0, d0, e0, f0) = (a0', b0', c0', d0', e0', f0')).
+  rewrite Heqk' Heqk.
+  apply IHm ; omega.
+  inversion H ; subst.
+  do 7 f_equal ; rewrite -Z2Nat.inj_sub ; try omega ; apply Z2Nat.id; omega.
+Qed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 End ScalarRec.
