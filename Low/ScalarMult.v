@@ -1,4 +1,4 @@
-(*
+(* (*
 int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
 {
   u8 z[32];
@@ -63,14 +63,81 @@ Require Import Tweetnacl.Low.S.
 Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Constant.
 Require Import Tweetnacl.Low.Get_abcdef.
-Require Import Tweetnacl.Low.ScalarMult_gen.
+Require Import Tweetnacl.Low.ScalarMult_gen_small.
+Require Import Tweetnacl.Low.ScalarMult_rev_fn_gen.
+
+Definition fa := fa A M Zub Sq Sel25519.
+Definition fb := fb A M Zub Sq Sel25519.
+Definition fc := fc A M Zub Sq c_121665 Sel25519.
+Definition fd := fd A M Zub Sq c_121665 Sel25519.
+Definition fe := fe A M Zub Sel25519.
+Definition ff := ff Zub Sq Sel25519.
+
+Local Ltac solve_dependencies_length :=
+  match goal with
+    | _ => apply Sel25519_Zlength
+    | _ => apply M_Zlength
+    | _ => apply Sq_Zlength
+    | _ => apply A_Zlength
+    | _ => apply Zub_Zlength
+    | _ => apply Zlength_c_121665
+  end.
+
+Local Ltac solve_dependencies_bound := 
+repeat match goal with
+  | _ => assumption
+  | _ => reflexivity
+  | _ => solve_dependencies_length
+  | _ => apply M_bound_Zlength
+  | _ => apply Sq_bound_Zlength
+  | _ => apply A_bound_Zlength_le
+  | _ => apply A_bound_Zlength_lt
+  | _ => apply Zub_bound_Zlength_lt
+  | _ => apply Zub_bound_Zlength_le
+  | _ => apply Sel25519_bound_le
+  | _ => apply Sel25519_bound_lt_le_id
+  | _ => apply Sel25519_bound_lt_lt_id
+  | _ => apply Sel25519_bound_le_lt_trans_le_id
+  | _ => apply c_121665_bounds
+end.
 
 Open Scope Z.
 
-Definition montgomery_step := montgomery_step_gen A M Zub Sq c_121665 Sel25519 getbit.
-Definition montgomery_rec := montgomery_rec_gen A M Zub Sq c_121665 Sel25519 getbit.
+Definition montgomery_fn := abstract_fn_rev fa fb fc fd fe ff getbit.
 
-Lemma opt_montgomery_rec_step : forall n z a b c d e f x,
+Lemma montgomery_fn_equation: forall (m p : ℤ) (z a b c d e f x : list ℤ),
+       montgomery_fn m p z a b c d e f x =
+       (if m <=? 0
+        then (a, b, c, d, e, f)
+        else
+         let (p0, f0) := montgomery_fn (m - 1) p z a b c d e f x in
+         let (p1, e0) := p0 in
+         let (p2, d0) := p1 in
+         let (p3, c0) := p2 in
+         let (a0, b0) := p3 in
+         (fa (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fb (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         fc (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fd (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         fe (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x)).
+Proof. apply abstract_fn_rev_equation. Qed.
+
+Lemma montgomery_fn_0 : forall p z a b c d e f x,
+  montgomery_fn 0 p z a b c d e f x = (a,b,c,d,e,f).
+Proof. apply abstract_fn_rev_0. Qed.
+
+Lemma montgomery_fn_n : forall (m p : ℤ) (z a b c d e f x : list ℤ),
+       0 < m ->
+       montgomery_fn m p z a b c d e f x =
+         let (p0, f0) := montgomery_fn (m - 1) p z a b c d e f x in
+         let (p1, e0) := p0 in
+         let (p2, d0) := p1 in
+         let (p3, c0) := p2 in
+         let (a0, b0) := p3 in
+         (fa (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fb (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         fc (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fd (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         fe (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x).
+Proof. apply abstract_fn_rev_n. Qed.
+
+(* Lemma opt_montgomery_rec_step : forall n z a b c d e f x,
   montgomery_rec (S n) z a b c d e f x = 
   montgomery_rec n z 
   (get_a (montgomery_step n z a b c d e f x))
@@ -85,6 +152,7 @@ rewrite /montgomery_rec /montgomery_step.
 apply opt_montgomery_rec_step_gen.
 Qed.
 
+ *)
 Lemma opt_montgomery_rec_step_ext : forall n z a b c d e f e' f' x,
   montgomery_rec (S n) z a b c d e' f' x = 
   montgomery_rec n z 
@@ -505,4 +573,4 @@ Ltac solve_montgomery_op_Zlength :=
     | _ => rewrite get_f_montgomery_rec_Zlength
   end ; reflexivity.
 
-Close Scope Z.
+Close Scope Z. *)
