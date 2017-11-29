@@ -1,5 +1,7 @@
 Require Import Tweetnacl.Libs.Export.
+Require Import Tweetnacl.Libs.HeadTailRec.
 Require Import Tweetnacl.Low.Get_abcdef.
+Require Import Tweetnacl.Low.ScalarMult_step_gen.
 
 Section ScalarRec.
 
@@ -27,6 +29,42 @@ Fixpoint abstract_rec_rev m p (z a b c d e f x : list Z) : (list Z * list Z * li
         ff r a b c d e f x)
       end
   end.
+
+
+(* Proof of the Currying of the function  *)
+Definition step_gen :=  step_gen fa fb fc fd fe ff getbit.
+
+Arguments rec_fn_rev_acc [T] _ _ _.
+Arguments rec_fn_rev [T] _ _.
+
+Definition abstract_rec_fn (z x:list Z) (n:nat) (a b c d e f : list Z) := rec_fn_rev (step_gen z x) n (a,b,c,d,e,f).
+
+Lemma abstract_rec_rev_equiv_recfn_p: forall n p z a b c d e f x,
+  abstract_rec_rev n (p - 1) z a b c d e f x = rec_fn_rev_acc (step_gen z x) n p (a,b,c,d,e,f).
+Proof.
+  induction n => p z x a b c d e f.
+  reflexivity.
+  simpl.
+  replace (p - n - 1) with (p - 1 - n).
+  2: omega.
+  remember((rec_fn_rev_acc (step_gen z f) n p (x, a, b, c, d, e))) as k.
+  destruct k as (((((a0,b0),c0),d0),e0),f0).
+  remember (abstract_rec_rev n (p - 1) z x a b c d e f ) as k'.
+  destruct k' as (((((a1,b1),c1),d1),e1),f1).
+  assert(IH := IHn p z x a b c d e f).
+  go.
+Qed.
+
+Corollary abstract_rec_rev_equiv_rec_fn : forall n z a b c d e f x,
+  abstract_rec_rev (S n) n z a b c d e f x = abstract_rec_fn z x (S n) a b c d e f.
+Proof. intros. rewrite /abstract_rec_fn /rec_fn_rev -abstract_rec_rev_equiv_recfn_p.
+replace (S n - 1) with n ; go.
+Qed.
+
+
+
+
+
 
 Lemma abstract_step_rev_a : forall n p (z a b c d e f x : list Z),
   fa (getbit (Z.of_nat (p - n)) z)

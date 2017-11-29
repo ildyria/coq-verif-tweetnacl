@@ -123,7 +123,6 @@ Definition montgomery_step_gen (m:nat) (z a b c d e f x : list Z) : (list Z * li
       (a,b,c,d,e,f).
 (*     end. *)
 
-
 Lemma opt_montgomery_rec_step_gen : forall n z a b c d e f x,
   montgomery_rec_gen (S n) z a b c d e f x = 
   montgomery_rec_gen n z 

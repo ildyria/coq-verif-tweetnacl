@@ -1,7 +1,9 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Low.Get_abcdef.
+Require Import Tweetnacl.Low.ScalarMult_rec_gen.
 Require Import Tweetnacl.Low.ScalarMult_rev_rec_gen.
 Require Import Tweetnacl.Low.ScalarMult_rev_fn_gen.
+Require Import Tweetnacl.Libs.HeadTailRec.
 
 Section EquivFnRec.
 
@@ -13,6 +15,7 @@ Variable fe : Z -> list Z -> list Z -> list Z -> list Z -> list Z -> list Z -> l
 Variable ff : Z -> list Z -> list Z -> list Z -> list Z -> list Z -> list Z -> list Z -> list Z.
 Variable getbit : Z -> list Z -> Z.
 
+Definition abstract_rec := abstract_rec fa fb fc fd fe ff getbit.
 Definition abstract_rec_rev := abstract_rec_rev fa fb fc fd fe ff getbit.
 Definition abstract_fn_rev := abstract_fn_rev fa fb fc fd fe ff getbit.
 
@@ -51,5 +54,17 @@ Proof.
 Qed.
 
 Close Scope Z.
+
+Lemma abstract_rec_rev_eq : forall n z a b c d e f x,
+  abstract_rec (S n) z a b c d e f x = abstract_rec_rev (S n) n z a b c d e f x.
+Proof.
+intros.
+rewrite /abstract_rec /abstract_rec_rev.
+rewrite abstract_rec_equiv_rec_fn.
+rewrite abstract_rec_rev_equiv_rec_fn.
+rewrite /abstract_rec_fn /ScalarMult_rec_gen.abstract_rec_fn.
+rewrite Tail_Head_equiv.
+f_equal.
+Qed.
 
 End EquivFnRec.
