@@ -70,8 +70,7 @@ the \texttt{forward} tactic will simply not work. This initially required us to
 rewrite the lines into:\\
 \texttt{aux1 = a[i];\\
 aux2 = b[i];\\
-aux1 = aux1 + aux2;\\
-o[i] = aux1;}\\
+o[i] = aux1 + aux2;}\\
 The trust of the proof relied on the trust of a correct translation from the
 initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
 
