@@ -58,13 +58,8 @@ Close Scope Z.
 Lemma abstract_rec_rev_eq : forall n z a b c d e f x,
   abstract_rec (S n) z a b c d e f x = abstract_rec_rev (S n) n z a b c d e f x.
 Proof.
-intros.
-rewrite /abstract_rec /abstract_rec_rev.
-rewrite abstract_rec_equiv_rec_fn.
-rewrite abstract_rec_rev_equiv_rec_fn.
-rewrite /abstract_rec_fn /ScalarMult_rec_gen.abstract_rec_fn.
-rewrite Tail_Head_equiv.
-f_equal.
+intros ; rewrite /abstract_rec /abstract_rec_rev abstract_rec_equiv_rec_fn abstract_rec_rev_equiv_rec_fn
+ /abstract_rec_fn /ScalarMult_rec_gen.abstract_rec_fn Tail_Head_equiv ;f_equal.
 Qed.
 
 End EquivFnRec.
