@@ -17,11 +17,14 @@ $
   ( \forall x : A , f(x) = g(x) ) \implies f = g
 \end{array}
 $
-  \item \textbf{Specification, model...}
+  \item \textbf{CompCert} Clight model
 
-  \item The last part of the trusted base is about the \textbf{Coq kernel}, the
-  \textbf{Ocaml compiler}, the \textbf{Ocaml Runtime} and the \textbf{CPU}.
-  These are common to all proofs done with this architecture \cite{2015-Appel,coq-faq}.
+  \item \textbf{\texttt{clightgen}} translation from \textbf{C} to
+  \textbf{Clight}.
+
+  \item The \textbf{Coq kernel}, the \textbf{Ocaml compiler},
+  the \textbf{Ocaml Runtime} and the \textbf{CPU}. These are common to all proofs
+  done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
 \subsection{Aliasing and Memory collision}
@@ -67,8 +70,7 @@ the \texttt{forward} tactic will simply not work. This initially required us to
 rewrite the lines into:\\
 \texttt{aux1 = a[i];\\
 aux2 = b[i];\\
-aux1 = aux1 + aux2;\\
-o[i] = aux1;}\\
+o[i] = aux1 + aux2;}\\
 The trust of the proof relied on the trust of a correct translation from the
 initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
 
@@ -80,3 +82,13 @@ The changes required for a C-code to make it Verifiable are now minimals.
 It is to be noted that the \texttt{clightgen} tool has not been formally verified.
 
 \texttt{clightgen -normalize}
+
+\subsection{Verifiying for loops: head and tail recursion}
+
+While the final state of a For loops can be computed by a simple recursive function,
+we must define invariants that are true for each step of the iteration.
+
+
+
+In order to prove the for loops, we must define invariants.
+Those have to be
