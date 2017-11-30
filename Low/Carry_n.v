@@ -12,7 +12,7 @@ Hypothesis Hn: n > 0.
 
 Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
-Fixpoint Carrying_n (p:nat) (a:Z) (l:list Z) : list Z := match p,a,l with 
+Fixpoint Carrying_n (p:nat) (a:Z) (l:list Z) : list Z := match p,a,l with
 | _,  0,[]     => []
 | _,  a,[]     => [a]
 | 0%nat,  a,h::q   => (h + a) :: q
