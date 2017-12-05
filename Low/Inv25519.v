@@ -452,7 +452,7 @@ intros.
     }
     apply H ; clear H.
     apply decide_formula_inv_impl.
-    (* at this point we don't need any hypothesis *)
+    (* at this point we don't need any hypothesis, this is purely computatinal *)
     subst f.
     clears.
     compute.
