@@ -1,6 +1,6 @@
-default_target: .loadpath Libs ListsOp Mid Low
+default_target: .loadpath Libs ListsOp Mid Low 
 
-all: default_target High
+all: default_target Field High
 
 #Note3: for SSReflect, one solution is to install MathComp 1.6
 # somewhere add this line to a CONFIGURE file
@@ -12,7 +12,7 @@ SHOW := $(if $(VERBOSE),@true "",@echo "")
 HIDE := $(if $(VERBOSE),,@)
 
 
-DIRS= Libs ListsOp Mid Low High 
+DIRS= Libs ListsOp Mid Low High Field
 INCLUDE= $(foreach a,$(DIRS),$(if $(wildcard $(a)), -Q $(a) $(a)))
 
 COQFLAGS=$(foreach d, $(DIRS), $(if $(wildcard $(d)), -Q $(d) $(d))) $(EXTFLAGS)
@@ -39,6 +39,7 @@ LISTSOP_FILES = $(wildcard ListsOp/*.v)
 MID_FILES = $(wildcard Mid/*.v)
 LOW_FILES = $(wildcard Low/*.v)
 HIGH_FILES = $(wildcard High/*.v)
+FIELD_FILES = $(wildcard Field/*.v)
 
 COUNTFILES = $(LIBS_FILES) $(LISTSOP_FILES) $(MID_FILES) $(LOW_FILES) \
 $(UNPACK_FILES)
@@ -87,6 +88,7 @@ ListsOp:	.loadpath $(LISTSOP_FILES:%.v=%.vo)
 Mid:		.loadpath $(MID_FILES:%.v=%.vo)
 Low:		.loadpath $(LOW_FILES:%.v=%.vo)
 High:		.loadpath $(HIGH_FILES:%.v=%.vo)
+Field:		.loadpath $(FIELD_FILES:%.v=%.vo)
 
 _CoqProject: Makefile
 	$(SHOW)Generate _CoqProject

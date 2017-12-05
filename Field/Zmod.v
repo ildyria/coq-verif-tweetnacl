@@ -1,3 +1,4 @@
+Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrbool eqtype seq ssrfun ssrnat ssralg ssrint.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
