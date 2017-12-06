@@ -59,4 +59,64 @@ We also show that TweetNaCl's code is \textbf{correct}:
 
 \subsection{Correctness Theorem}
 
-The soundness is implied by the functionnal definition of the theorem.
+The soundness is implied by the functionnal definition of the following theorem.
+Indeed, showing equivalence between the Clight representation and a Coq
+definition of the ladder garantees us the soundness.
+
+\begin{lstlisting}
+Definition crypto_scalarmult_spec :=
+ DECLARE _crypto_scalarmult_curve25519_tweet
+ WITH
+  q: val, n: val, p: val, c121665:val,
+  sh : share,
+  qq : list Z,
+  nn : list Z,
+  pp : list Z
+
+ (* Preconditions *)
+ PRE [ _q OF (tptr tuchar),
+       _n OF (tptr tuchar),
+       _p OF (tptr tuchar) ]
+  PROP  (writable_share sh;
+    Forall (fun x => 0 <= x < Z.pow 2 8) pp;
+    Forall (fun x => 0 <= x < Z.pow 2 8) nn;
+    Zlength qq = 32;
+    Zlength nn = 32;
+    Zlength pp = 32)
+  LOCAL(temp _q q; temp _n n; temp _p p;
+        gvar __121665 c121665)
+ SEP  (sh [{ q }] <<(uch32)-- mVI qq;
+    sh [{ n }] <<(uch32)-- mVI nn;
+    sh [{ p }] <<(uch32)-- mVI pp;
+    Ews [{ c121665 }] <<(uch32)-- mVI64 c_121665)
+
+ (* Resulting Postconditions *)
+ POST [ tint ]
+  PROP (
+    Forall (fun x => 0 <= x < Z.pow 2 8)
+      (sc_mult nn pp);
+      (* WE CAN ADD MORE LEMMAS HERE *)
+    Zlength (sc_mult nn pp) = 32)
+  LOCAL()
+  SEP (sh [{ q }] <<(uch32)-- mVI (sc_mult nn pp);
+    sh [{ n }] <<(uch32)-- mVI nn;
+    sh [{ p }] <<(uch32)-- mVI pp;
+    Ews [{ c121665 }] <<(uch32)-- mVI64 c_121665).
+\end{lstlisting}
+
+In this theorem we declare that the function \texttt{crypto_scalarmult} takes as
+input three pointers to arrays of unsigned bytes (\texttt{tptr tuchar}) \texttt{p},
+\texttt{q} and \texttt{n}.
+Each of them respectively points to the values \texttt{pp},  \texttt{qq} and  \texttt{nn}
+represented by a list of integers in Coq. In order to guarantee the equivalence
+we assume the values in \texttt{pp} and \texttt{nn} being bounded by $0$ included
+and $2^8$ excluded.
+
+This function computes: $$Q \leftarrow n \times P$$
+
+\texttt{pp} represent the x-coordinate of $P$, \texttt{nn} represent the
+scalar by which it is be multiplied $n$.
+
+As a result of the excution of \texttt{crypto_scalarmult}, the value \texttt{0} is returned,
+\texttt{p} and \texttt{n} points to the same locations containing the same values \texttt{pp} and \texttt{nn}.
+The pointer \texttt{q} points to the same location, but contain the x coordinate of $Q$.
