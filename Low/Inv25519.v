@@ -124,6 +124,10 @@ Qed.
 
 Definition Inv25519 (x:list Z) : (list Z) := pow_fn_rev 254 254 x x.
 
+Lemma Inv25519_pow_fn_rev : forall p o,
+  p = pow_fn_rev 254 254 o o -> p = Inv25519 o.
+Proof. by rewrite /Inv25519. Qed.
+
 Lemma Inv25519_bound_Zlength : forall g,
   Zlength g = 16 ->
   Forall (fun x => -38 <= x < Z.pow 2 16 + 38) g ->
