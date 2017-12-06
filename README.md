@@ -1,19 +1,27 @@
 # TweetNaCl verification
 -------------------------------
 
-## Setting up your environment (Debian 9.0)
+## Setting up your environment
 
-##### 1. download & install GCC and OPAM and initialize it.
+##### 1. download & install GCC and OPAM.
+
+[Install OPAM][1], e.g. for Debian:
 
 ```bash
-  sudo apt-get install gcc
-  sudo apt-get install opam
+  sudo apt-get install gcc opam
   opam init
-  opam switch -A 4.05.0 Tweetnacl
   eval `opam config env`
+  opam update
 ```
 
-##### 2. Dependencies (coq 8.7, coqide, ssreflect, stdpp, coqprime, VST)
+##### 2. Set OPAM for Tweetnacl so it does not pollute other projects.
+
+```bash
+opam switch -A 4.05.0 Tweetnacl
+eval `opam config env`
+```
+
+##### 3. Dependencies (coq 8.7, coqide, ssreflect, stdpp, coqprime, VST)
 
 ```bash
   opam repo add coq-released https://coq.inria.fr/opam/released
@@ -27,7 +35,10 @@
   opam install --deps-only coq-tweetnacl
 ```
 
-##### 3. Install TweetNacl math model
+##### 4. Install TweetNacl Mathematical model
+
+This will create a coq-tweetnacl.dev repo in your current directory
+(equivalent of `git clone`).
 
 ```bash
   opam source coq-tweetnacl --pin
@@ -37,7 +48,7 @@
   opam install coq-tweetnacl
 ```
 
-##### 4. Install TweetNacl_verif
+##### 5. Install TweetNacl_verif (optional)
 
 ```bash
   git clone https://gitlab.science.ru.nl/benoit/Tweetnacl_verif.git
@@ -46,3 +57,4 @@
   make -j
 ```
 
+[1]: https://opam.ocaml.org/doc/Install.html
