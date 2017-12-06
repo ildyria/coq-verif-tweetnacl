@@ -104,7 +104,7 @@ Definition crypto_scalarmult_spec :=
     Ews [{ c121665 }] <<(uch32)-- mVI64 c_121665).
 \end{lstlisting}
 
-In this theorem we declare that the function \texttt{crypto_scalarmult} takes as
+In this theorem we declare that the function \texttt{crypto\_scalarmult} takes as
 input three pointers to arrays of unsigned bytes (\texttt{tptr tuchar}) \texttt{p},
 \texttt{q} and \texttt{n}.
 Each of them respectively points to the values \texttt{pp},  \texttt{qq} and  \texttt{nn}
@@ -117,6 +117,6 @@ This function computes: $$Q \leftarrow n \times P$$
 \texttt{pp} represent the x-coordinate of $P$, \texttt{nn} represent the
 scalar by which it is be multiplied $n$.
 
-As a result of the excution of \texttt{crypto_scalarmult}, the value \texttt{0} is returned,
+As a result of the excution of \texttt{crypto\_scalarmult}, the value \texttt{0} is returned,
 \texttt{p} and \texttt{n} points to the same locations containing the same values \texttt{pp} and \texttt{nn}.
 The pointer \texttt{q} points to the same location, but contain the x coordinate of $Q$.
