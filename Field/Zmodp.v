@@ -153,7 +153,38 @@ Section ZmodpField.
 Variable p : Z.
 Hypothesis Hp : prime p.
 
-Check FieldUnitMixin.
+Lemma prime_pgt_1 : p > 1.
+Proof. by case: Hp => H _; apply: Z.lt_gt. Qed.
+
+(* FIXME: probably first spec, then extract definition *)
+Definition Zinv (x : Z) : Z :=
+  let: Euclid_intro u _ _ _ _ := euclid x p in u.
+
+Lemma Zinv_spec (x : Z) : 1 <= x < p -> (Zinv x * x) mod p = 1.
+Proof.
+move=> Hx.
+have [u v d Euv Hgcd]: Euclid x p by apply: euclid.
+have Hd: d = 1.
+  apply: esym.
+  have <-: Z.gcd x p = 1.
+    rewrite Zgcd_1_rel_prime.
+    exact: rel_prime_le_prime.
+  apply: Zis_gcd_gcd. admit. by [].
+have Hu: u = Zinv x.
+  admit.
+rewrite Zmod_eq; last first. admit.
+Admitted.
+
+Notation type := (type p).
+Notation pi := (pi (pgt_0 prime_pgt_1)).
+Notation zero := (zero (pgt_0 prime_pgt_1)).
+Notation one := (one (prime_pgt_1)).
+Notation add := (add (pgt_0 prime_pgt_1)).
+Notation mul := (mul (prime_pgt_1)).
+
+Definition inv (x : type) : type := pi (Zinv x).
+
+(* Lemma field_axiom : GRing.Field.axiom inv. *)
 
 End ZmodpField.
 End Zmodp.
