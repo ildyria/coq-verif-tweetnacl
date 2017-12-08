@@ -239,7 +239,27 @@ Definition list_ind_by_2 :
                           end.
 
 
-
+Lemma upd_nth_comm: forall A i j (l:list A) ni nj, i < length l -> j < length l -> i <> j ->  upd_nth i (upd_nth j l nj) ni = upd_nth j (upd_nth i l ni) nj.
+Proof.
+  induction i.
+  destruct j; intros.
+  tryfalse.
+  destruct l.
+  simpl in H0 ; omega.
+  reflexivity.
+  intros.
+  destruct l.
+  simpl in H ; omega.
+  destruct j.
+  reflexivity.
+  simpl.
+  f_equal.
+  apply IHi.
+  move: H ; simpl; apply lt_S_n.
+  move: H0 ; simpl; apply lt_S_n.
+  intros H'.
+  apply H1; subst; trivial.
+Qed.
 
 (*
 Lemma app_nill_r : forall (A:Type) (l:list A), l ++ nil = l.
