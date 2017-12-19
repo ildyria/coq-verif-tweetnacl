@@ -17,7 +17,7 @@
 ##### 2. Set OPAM for Tweetnacl so it does not pollute other projects.
 
 ```bash
-opam switch -A 4.05.0 Tweetnacl
+opam switch -A 4.06.0 Tweetnacl
 eval `opam config env`
 ```
 
