@@ -1,5 +1,6 @@
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat choice generic_quotient ssralg.
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat choice ssralg.
 Require Import ZArith ZArith.Znumtheory.
+From Tweetnacl.High Require Import curve25519_prime_cert.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -33,10 +34,33 @@ Canonical Structure Z_choiceType := Eval hnf in ChoiceType Z Z_choiceMixin.
 Canonical Structure Z_countType := Eval hnf in CountType Z Z_countMixin.
 
 Module Zmodp.
-Section Zmodp.
 
-Variable p : Z.
-Hypothesis Hp : p > 0.
+(* First we prove that Z/pZ forms a [ZmodType]. We only need that p > 0 for
+ * this. Then, we prove that Z/pZ forms a [RingType], which in mathcomp cannot
+ * be the trivial ring. Hence, we assume p > 1. Finally, we show that Z/pZ forms
+ * a finite field, and consequently we assume that p is prime.
+ *
+ * We could use Coq's [Section]s to nicely divide the theory into pieces using
+ * only the minimal hypothesis. However, this makes it hard for Coq to infer
+ * canonical structures. We could pack the proofs of these hypotheses along the
+ * type. However, not all statements have proof irrelevance, complicating
+ * matters again.
+ *
+ * Hence, we choose the simplest solution: just develop this theory for this
+ * specific [p]. Note that, besides the three facts [Hp_gt0], [Hp_gt1], and
+ * [Hp_prime], we never look at the value of [p] itself. We enforce this through
+ * locking [p]. *)
+
+Definition p := locked (2^255 - 19).
+
+Fact Hp_gt0 : p > 0.
+Proof. by unlock p; rewrite Z.gt_lt_iff; apply/Z.ltb_spec0. Qed.
+(* Faster proof:
+unlock p.
+rewrite Z.gt_lt_iff Z.lt_0_sub.
+apply: (@Z.lt_trans _ (2^5)); first by apply/Z.ltb_spec0.
+by apply: Z.pow_lt_mono_r; do [apply/Z.ltb_spec0 | apply/Z.leb_spec0].
+*)
 
 Definition betweenb x y z := (x <=? z) && (z <? y).
 
@@ -48,7 +72,7 @@ Proof. by apply/(iffP andP); case=> /Z.leb_spec0 H1 /Z.ltb_spec0 H2. Qed.
 Lemma Z_mod_betweenb x y : y > 0 -> betweenb 0 y (x mod y).
 Proof. by move=> H; apply/betweenbP; apply: Z_mod_lt. Qed.
 
-Definition pi (x : Z) : type := Zmodp (Z_mod_betweenb x Hp).
+Definition pi (x : Z) : type := Zmodp (Z_mod_betweenb x Hp_gt0).
 Coercion repr (x : type) : Z := let: @Zmodp x _ := x in x.
 
 Canonical Structure subType := [subType for repr].
@@ -87,27 +111,15 @@ Proof. exact: reprK. Qed.
 Lemma add_left_inv : left_inverse zero opp add.
 Proof.
 move=> x; apply: val_inj.
-by rewrite /= Zplus_mod_idemp_l Z.sub_add Z_mod_same.
+rewrite /= Zplus_mod_idemp_l Z.sub_add Z_mod_same; first by [].
+exact: Hp_gt0.
 Qed.
 
 Definition zmodMixin := ZmodMixin add_assoc add_comm add_left_id add_left_inv.
 Canonical Structure zmodType := Eval hnf in ZmodType type zmodMixin.
 
-End Zmodp.
-
-Section ZmodpRing.
-
-Variable p : Z.
-Hypothesis Hp : p > 1.
-
-Lemma pgt_0 : p > 0.
-Proof. by apply: (Zgt_trans _ 1). Qed.
-
-(* TODO: Local Notations? *)
-Notation type := (type p).
-Notation pi := (pi pgt_0).
-Notation zero := (zero pgt_0).
-Notation add := (add pgt_0).
+Fact Hp_gt1 : p > 1.
+Proof. by unlock p; rewrite Z.gt_lt_iff; apply/Z.ltb_spec0. Qed.
 
 Definition one : type := pi 1.
 Definition mul (x y : type) : type := pi (x * y).
@@ -124,7 +136,7 @@ Proof. by move=> x y; apply: val_inj; rewrite /= Zmult_comm. Qed.
 Lemma mul_left_id : left_id one mul.
 Proof.
 move=> x; apply: val_inj. rewrite /=.
-rewrite Z.mod_1_l; last exact: Z.gt_lt.
+rewrite Z.mod_1_l; last exact: Z.gt_lt Hp_gt1.
 by rewrite Z.mul_1_l; apply: modZp.
 Qed.
 
@@ -138,7 +150,7 @@ Qed.
 Lemma one_neq_zero : one != zero.
 Proof.
 rewrite -(eqtype.inj_eq val_inj) /=.
-by rewrite Zmod_0_l Zmod_1_l; last exact: Z.gt_lt.
+by rewrite Zmod_0_l Zmod_1_l; last exact: Z.gt_lt Hp_gt1.
 Qed.
 
 Definition ringMixin := Eval hnf in
@@ -146,45 +158,37 @@ Definition ringMixin := Eval hnf in
 Canonical Structure ringType := Eval hnf in RingType type ringMixin.
 Canonical Structure comRingType := Eval hnf in ComRingType type mul_comm.
 
-End ZmodpRing.
+Fact Hp_prime : prime p.
+Proof. by unlock p; apply: primo. Qed.
 
-Section ZmodpField.
+Inductive Zinv_spec (x : Z) : Set :=
+| Zinv_spec_zero : x mod p = 0 -> Zinv_spec x
+| Zinv_spec_unit : x mod p <> 0 -> forall y, (y * x) mod p = 1 -> Zinv_spec x.
 
-Variable p : Z.
-Hypothesis Hp : prime p.
-
-Lemma prime_pgt_1 : p > 1.
-Proof. by case: Hp => H _; apply: Z.lt_gt. Qed.
-
-(* FIXME: probably first spec, then extract definition *)
-Definition Zinv (x : Z) : Z :=
-  let: Euclid_intro u _ _ _ _ := euclid x p in u.
-
-Lemma Zinv_spec (x : Z) : 1 <= x < p -> (Zinv x * x) mod p = 1.
+(* TODO: I don't like the use of the opaque [euclid]. *)
+Lemma Zinv x : Zinv_spec x.
 Proof.
+case: (Z.eqb_spec (x mod p) 0); first exact: Zinv_spec_zero.
 move=> Hx.
 have [u v d Euv Hgcd]: Euclid x p by apply: euclid.
-have Hd: d = 1.
-  apply: esym.
-  have <-: Z.gcd x p = 1.
-    rewrite Zgcd_1_rel_prime.
-    exact: rel_prime_le_prime.
-  apply: Zis_gcd_gcd. admit. by [].
-have Hu: u = Zinv x.
-  admit.
-rewrite Zmod_eq; last first. admit.
+apply: (@Zinv_spec_unit _ Hx u).
+apply: Zdivide_mod_minus. admit.
+rewrite /Z.divide; exists (-v).
+rewrite Z.mul_opp_l -Z.add_move_0_r -Z.add_sub_swap Z.sub_move_0_r Euv.
+rewrite -(Zis_gcd_gcd _ _ _ _ Hgcd).
+(* Strategy:
+Use: Zis_gcd_gcd [rewrite -(Zis_gcd_gcd _ _ _ _ Hgcd).]
+-> Needs that 0 <= d. However, with Zis_gcd_opp this is wlog
+Then use Zgcd_1_rel_prime and rel_prime_le_prime to prove Z.gcd x p = 1. *)
+admit.
 Admitted.
 
-Notation type := (type p).
-Notation pi := (pi (pgt_0 prime_pgt_1)).
-Notation zero := (zero (pgt_0 prime_pgt_1)).
-Notation one := (one (prime_pgt_1)).
-Notation add := (add (pgt_0 prime_pgt_1)).
-Notation mul := (mul (prime_pgt_1)).
-
-Definition inv (x : type) : type := pi (Zinv x).
+Definition inv (x : type) : type :=
+  match Zinv x with
+  | Zinv_spec_zero _ => pi 0
+  | @Zinv_spec_unit _ _ y _ => pi y
+  end.
 
 (* Lemma field_axiom : GRing.Field.axiom inv. *)
 
-End ZmodpField.
 End Zmodp.
