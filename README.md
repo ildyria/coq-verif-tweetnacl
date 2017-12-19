@@ -37,8 +37,20 @@ eval `opam config env`
 
 ##### 4. Install TweetNacl Mathematical model
 
-This will create a coq-tweetnacl.dev repo in your current directory
+```bash
+  git clone https://gitlab.science.ru.nl/benoit/Tweetnacl.git Tweetnacl
+  cd Tweetnacl
+  # create a pin of Tweetnacl
+  opam pin add -n coq-tweetnacl .
+  make -j
+  cd ..
+  opam install coq-tweetnacl
+```
+
+Another possibility is to use `opam source`. This will create a
+`coq-tweetnacl.dev` repo in your current directory
 (equivalent of `git clone`).
+
 
 ```bash
   opam source coq-tweetnacl --pin
@@ -51,7 +63,7 @@ This will create a coq-tweetnacl.dev repo in your current directory
 ##### 5. Install TweetNacl_verif (optional)
 
 ```bash
-  git clone https://gitlab.science.ru.nl/benoit/Tweetnacl_verif.git
+  git clone https://gitlab.science.ru.nl/benoit/Tweetnacl_verif.git Tweetnacl_verif
   cd Tweetnacl_verif
   ./configure.sh
   make -j
