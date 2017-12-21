@@ -276,4 +276,7 @@ End Exports.
 
 End Zmodp_field.
 
+(* Useful tactic to compute boolean equalities. *)
+Ltac zmodp_compute := rewrite ?(Zmodp_addE, Zmodp_mulE) eqE /=; unlock p=> /=.
+
 Export Zmodp_zmod.Exports Zmodp_ring.Exports Zmodp_field.Exports.
