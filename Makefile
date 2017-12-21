@@ -1,6 +1,6 @@
 default_target: .loadpath Libs ListsOp Mid Low 
 
-all: default_target Field High
+all: default_target High
 
 #Note3: for SSReflect, one solution is to install MathComp 1.6
 # somewhere add this line to a CONFIGURE file
@@ -12,7 +12,7 @@ SHOW := $(if $(VERBOSE),@true "",@echo "")
 HIDE := $(if $(VERBOSE),,@)
 
 
-DIRS= Libs ListsOp Mid Low High Field
+DIRS= Libs ListsOp Mid Low High
 INCLUDE= $(foreach a,$(DIRS),$(if $(wildcard $(a)), -Q $(a) $(a)))
 
 COQFLAGS=$(foreach d, $(DIRS), $(if $(wildcard $(d)), -Q $(d) $(d))) $(EXTFLAGS)
