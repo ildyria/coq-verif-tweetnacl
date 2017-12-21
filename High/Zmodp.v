@@ -138,6 +138,12 @@ End Exports.
 End Zmodp_zmod.
 Import Zmodp_zmod.Exports.
 
+Lemma Zmodp_addE x y : (pi x + pi y)%R = pi (x + y).
+Proof.
+apply/eqP; rewrite eqE; apply/eqP=> /=.
+by apply: esym; apply: Z.add_mod; apply: Hp_neq0.
+Qed.
+
 Fact Hp_gt1 : p > 1.
 Proof. by unlock p; rewrite Z.gt_lt_iff; apply/Z.ltb_spec0. Qed.
 
@@ -181,6 +187,12 @@ End Exports.
 
 End Zmodp_ring.
 Import Zmodp_ring.Exports.
+
+Lemma Zmodp_mulE x y : (pi x * pi y)%R = pi (x * y).
+Proof.
+apply/eqP; rewrite eqE; apply/eqP=> /=.
+by apply: esym; apply: Z.mul_mod; apply: Hp_neq0.
+Qed.
 
 Fact Hp_prime : prime p.
 Proof. by unlock p; apply: primo. Qed.
