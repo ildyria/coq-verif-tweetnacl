@@ -62,6 +62,9 @@ apply: (@Z.lt_trans _ (2^5)); first by apply/Z.ltb_spec0.
 by apply: Z.pow_lt_mono_r; do [apply/Z.ltb_spec0 | apply/Z.leb_spec0].
 *)
 
+Lemma Hp_neq0 : p <> 0.
+Proof. move: Hp_gt0=> ?; omega. Qed.
+
 Definition betweenb x y z := (x <=? z) && (z <? y).
 
 Inductive type := Zmodp x of betweenb 0 p x.
@@ -170,25 +173,64 @@ Lemma Zinv x : Zinv_spec x.
 Proof.
 case: (Z.eqb_spec (x mod p) 0); first exact: Zinv_spec_zero.
 move=> Hx.
-have [u v d Euv Hgcd]: Euclid x p by apply: euclid.
+have [u v d Euv Hgcd]: Euclid (x mod p) p by apply: euclid.
+wlog: u v d Euv Hgcd / (0 <= d) => [|Hd].
+  case: (Z.leb_spec0 0 d) => Hd; first by apply; first exact: Euv.
+  apply Z.nle_gt in Hd.
+  have Hd2 : 0 <= -d by omega.
+  have Hgcd2 : Zis_gcd (x mod p) p (-d)
+    by apply: Zis_gcd_opp; apply: Zis_gcd_sym.
+  apply; [| exact: Hgcd2 | exact: Hd2].
+  rewrite -Euv Z.opp_add_distr -!Z.mul_opp_l.
+  by congr (_ + _).
 apply: (@Zinv_spec_unit _ Hx u).
-apply: Zdivide_mod_minus. admit.
+rewrite -Z.mul_mod_idemp_r; last exact: Hp_neq0.
+apply: Zdivide_mod_minus; first by move: Hp_gt1=> ?; omega.
 rewrite /Z.divide; exists (-v).
 rewrite Z.mul_opp_l -Z.add_move_0_r -Z.add_sub_swap Z.sub_move_0_r Euv.
-rewrite -(Zis_gcd_gcd _ _ _ _ Hgcd).
-(* Strategy:
-Use: Zis_gcd_gcd [rewrite -(Zis_gcd_gcd _ _ _ _ Hgcd).]
--> Needs that 0 <= d. However, with Zis_gcd_opp this is wlog
-Then use Zgcd_1_rel_prime and rel_prime_le_prime to prove Z.gcd x p = 1. *)
-admit.
-Admitted.
+rewrite -(Zis_gcd_gcd _ _ _ _ Hgcd); last exact: Hd.
+rewrite Zgcd_1_rel_prime.
+apply: rel_prime_le_prime; first exact: Hp_prime.
+suff: 0 <= x mod p < p
+  by move=> ?; omega.
+by apply: Z.mod_pos_bound; apply: Z.gt_lt; apply: Hp_gt0.
+Qed.
 
 Definition inv (x : type) : type :=
   match Zinv x with
-  | Zinv_spec_zero _ => pi 0
+  | Zinv_spec_zero _ => zero
   | @Zinv_spec_unit _ _ y _ => pi y
   end.
 
-(* Lemma field_axiom : GRing.Field.axiom inv. *)
+Lemma modZp0 (x : type) : x mod p = 0 -> x == 0%R.
+Proof. by rewrite modZp => Hx_eq0; rewrite -[x]reprK Hx_eq0. Qed.
+
+Lemma mulVx : GRing.Field.axiom inv.
+Proof.
+move=> x Hx_neq0.
+rewrite /inv; case: (Zinv x); first by move/modZp0/eqP; move/eqP: Hx_neq0.
+move=> Hxmodp_neq0 y Exy.
+apply/eqP; rewrite eqE; apply/eqP=> /=.
+rewrite Z.mul_mod_idemp_l; last exact: Hp_neq0.
+by rewrite [1 mod p]Z.mod_small; last by move: Hp_gt1=> ?; omega.
+Qed.
+
+Lemma inv0 : inv 0%R = 0%R.
+Proof.
+rewrite /inv; case: (Zinv 0); first done.
+have : 0 mod p = 0 by apply: Z.mod_0_l; exact: Hp_neq0.
+done.
+Qed.
+
+Definition unitRingMixin := Eval hnf in FieldUnitMixin mulVx inv0.
+Canonical Structure unitRingType := Eval hnf in UnitRingType type unitRingMixin.
+Canonical Structure comUnitRingType := Eval hnf in [comUnitRingType of type].
+
+Lemma fieldMixin : GRing.Field.mixin_of unitRingType.
+Proof. by move=> x Hx_neq0; rewrite qualifE /=. Qed.
+
+Definition idomainMixin := FieldIdomainMixin fieldMixin.
+Canonical Structure idomainType := Eval hnf in IdomainType type idomainMixin.
+Canonical Structure fieldType := Eval hnf in FieldType type fieldMixin.
 
 End Zmodp.
