@@ -34,7 +34,10 @@ Canonical Structure Z_eqType := Eval hnf in EqType Z Z_eqMixin.
 Canonical Structure Z_choiceType := Eval hnf in ChoiceType Z Z_choiceMixin.
 Canonical Structure Z_countType := Eval hnf in CountType Z Z_countMixin.
 
-Module Zmodp.
+Definition betweenb x y z := (x <=? z) && (z <? y).
+
+Lemma betweenbP x y z : reflect (x <= y < z) (betweenb x z y).
+Proof. by apply/(iffP andP); case=> /Z.leb_spec0 H1 /Z.ltb_spec0 H2. Qed.
 
 (* First we prove that Z/pZ forms a [ZmodType]. We only need that p > 0 for
  * this. Then, we prove that Z/pZ forms a [RingType], which in mathcomp cannot
@@ -66,12 +69,9 @@ by apply: Z.pow_lt_mono_r; do [apply/Z.ltb_spec0 | apply/Z.leb_spec0].
 Lemma Hp_neq0 : p <> 0.
 Proof. move: Hp_gt0=> ?; omega. Qed.
 
-Definition betweenb x y z := (x <=? z) && (z <? y).
+Module Zmodp.
 
 Inductive type := Zmodp x of betweenb 0 p x.
-
-Lemma betweenbP x y z : reflect (x <= y < z) (betweenb x z y).
-Proof. by apply/(iffP andP); case=> /Z.leb_spec0 H1 /Z.ltb_spec0 H2. Qed.
 
 Lemma Z_mod_betweenb x y : y > 0 -> betweenb 0 y (x mod y).
 Proof. by move=> H; apply/betweenbP; apply: Z_mod_lt. Qed.
@@ -79,13 +79,24 @@ Proof. by move=> H; apply/betweenbP; apply: Z_mod_lt. Qed.
 Definition pi (x : Z) : type := Zmodp (Z_mod_betweenb x Hp_gt0).
 Coercion repr (x : type) : Z := let: @Zmodp x _ := x in x.
 
-Canonical Structure subType := [subType for repr].
-Definition eqMixin := Eval hnf in [eqMixin of type by <:].
-Canonical Structure eqType := Eval hnf in EqType type eqMixin.
-Definition choiceMixin := Eval hnf in [choiceMixin of type by <:].
-Canonical Structure choiceType := Eval hnf in ChoiceType type choiceMixin.
-Definition countMixin := Eval hnf in [countMixin of type by <:].
-Canonical Structure countType := Eval hnf in CountType type countMixin.
+Definition zero : type := pi 0.
+Definition one : type := pi 1.
+Definition opp (x : type) : type := pi (p - x).
+Definition add (x y : type) : type := pi (x + y).
+Definition mul (x y : type) : type := pi (x * y).
+
+End Zmodp.
+Import Zmodp.
+
+Canonical Structure Zmodp_subType := [subType for repr].
+Definition Zmodp_eqMixin := Eval hnf in [eqMixin of type by <:].
+Canonical Structure Zmodp_eqType := Eval hnf in EqType type Zmodp_eqMixin.
+Definition Zmodp_choiceMixin := Eval hnf in [choiceMixin of type by <:].
+Canonical Structure Zmodp_choiceType :=
+  Eval hnf in ChoiceType type Zmodp_choiceMixin.
+Definition Zmodp_countMixin := Eval hnf in [countMixin of type by <:].
+Canonical Structure Zmodp_countType :=
+  Eval hnf in CountType type Zmodp_countMixin.
 
 Lemma modZp (x : type) : x mod p = x.
 Proof. by apply: Zmod_small; apply/betweenbP; case: x. Qed.
@@ -96,9 +107,7 @@ Proof. by apply: val_inj; apply: modZp. Qed.
 Lemma piK (x : Z) : betweenb 0 p x -> repr (pi x) = x.
 Proof. by move/betweenbP=> Hx /=; apply: Zmod_small. Qed.
 
-Definition zero : type := pi 0.
-Definition opp (x : type) : type := pi (p - x).
-Definition add (x y : type) : type := pi (x + y).
+Module Zmodp_zmod.
 
 Lemma add_assoc : associative add.
 Proof.
@@ -119,14 +128,20 @@ rewrite /= Zplus_mod_idemp_l Z.sub_add Z_mod_same; first by [].
 exact: Hp_gt0.
 Qed.
 
-Definition zmodMixin := ZmodMixin add_assoc add_comm add_left_id add_left_inv.
-Canonical Structure zmodType := Eval hnf in ZmodType type zmodMixin.
+Module Exports.
+Definition Zmodp_zmodMixin :=
+  ZmodMixin add_assoc add_comm add_left_id add_left_inv.
+Canonical Structure Zmodp_zmodType :=
+  Eval hnf in ZmodType type Zmodp_zmodMixin.
+End Exports.
+
+End Zmodp_zmod.
+Import Zmodp_zmod.Exports.
 
 Fact Hp_gt1 : p > 1.
 Proof. by unlock p; rewrite Z.gt_lt_iff; apply/Z.ltb_spec0. Qed.
 
-Definition one : type := pi 1.
-Definition mul (x y : type) : type := pi (x * y).
+Module Zmodp_ring.
 
 Lemma mul_assoc : associative mul.
 Proof.
@@ -157,10 +172,15 @@ rewrite -(eqtype.inj_eq val_inj) /=.
 by rewrite Zmod_0_l Zmod_1_l; last exact: Z.gt_lt Hp_gt1.
 Qed.
 
-Definition ringMixin := Eval hnf in
+Module Exports.
+Definition Zmodp_ringMixin := Eval hnf in
   ComRingMixin mul_assoc mul_comm mul_left_id mul_left_distr one_neq_zero.
-Canonical Structure ringType := Eval hnf in RingType type ringMixin.
-Canonical Structure comRingType := Eval hnf in ComRingType type mul_comm.
+Canonical Structure Zmodp_ringType := Eval hnf in RingType type Zmodp_ringMixin.
+Canonical Structure Zmodp_comRingType := Eval hnf in ComRingType type mul_comm.
+End Exports.
+
+End Zmodp_ring.
+Import Zmodp_ring.Exports.
 
 Fact Hp_prime : prime p.
 Proof. by unlock p; apply: primo. Qed.
@@ -197,7 +217,7 @@ suff: 0 <= x mod p < p
 by apply: Z.mod_pos_bound; apply: Z.gt_lt; apply: Hp_gt0.
 Qed.
 
-Definition inv (x : type) : type :=
+Definition Zmodp_inv (x : type) : type :=
   match Zinv x with
   | Zinv_spec_zero _ => zero
   | @Zinv_spec_unit _ _ y _ => pi y
@@ -206,32 +226,42 @@ Definition inv (x : type) : type :=
 Lemma modZp0 (x : type) : x mod p = 0 -> x == 0%R.
 Proof. by rewrite modZp => Hx_eq0; rewrite -[x]reprK Hx_eq0. Qed.
 
-Lemma mulVx : GRing.Field.axiom inv.
+Module Zmodp_field.
+
+Lemma mulVx : GRing.Field.axiom Zmodp_inv.
 Proof.
 move=> x Hx_neq0.
-rewrite /inv; case: (Zinv x); first by move/modZp0/eqP; move/eqP: Hx_neq0.
+rewrite /Zmodp_inv; case: (Zinv x); first by move/modZp0/eqP; move/eqP: Hx_neq0.
 move=> Hxmodp_neq0 y Exy.
 apply/eqP; rewrite eqE; apply/eqP=> /=.
 rewrite Z.mul_mod_idemp_l; last exact: Hp_neq0.
 by rewrite [1 mod p]Z.mod_small; last by move: Hp_gt1=> ?; omega.
 Qed.
 
-Lemma inv0 : inv 0%R = 0%R.
+Lemma inv0 : Zmodp_inv 0%R = 0%R.
 Proof.
-rewrite /inv; case: (Zinv 0); first done.
+rewrite /Zmodp_inv; case: (Zinv 0); first done.
 have : 0 mod p = 0 by apply: Z.mod_0_l; exact: Hp_neq0.
 done.
 Qed.
 
-Definition unitRingMixin := Eval hnf in FieldUnitMixin mulVx inv0.
-Canonical Structure unitRingType := Eval hnf in UnitRingType type unitRingMixin.
-Canonical Structure comUnitRingType := Eval hnf in [comUnitRingType of type].
+Module Exports.
+Definition Zmodp_unitRingMixin := Eval hnf in FieldUnitMixin mulVx inv0.
+Canonical Structure Zmodp_unitRingType :=
+  Eval hnf in UnitRingType type Zmodp_unitRingMixin.
+Canonical Structure Zmodp_comUnitRingType :=
+  Eval hnf in [comUnitRingType of type].
 
-Lemma fieldMixin : GRing.Field.mixin_of unitRingType.
+Lemma Zmodp_fieldMixin : GRing.Field.mixin_of Zmodp_unitRingType.
 Proof. by move=> x Hx_neq0; rewrite qualifE /=. Qed.
 
-Definition idomainMixin := FieldIdomainMixin fieldMixin.
-Canonical Structure idomainType := Eval hnf in IdomainType type idomainMixin.
-Canonical Structure fieldType := Eval hnf in FieldType type fieldMixin.
+Definition Zmodp_idomainMixin := FieldIdomainMixin Zmodp_fieldMixin.
+Canonical Structure Zmodp_idomainType :=
+  Eval hnf in IdomainType type Zmodp_idomainMixin.
+Canonical Structure Zmodp_fieldType :=
+  Eval hnf in FieldType type Zmodp_fieldMixin.
+End Exports.
 
-End Zmodp.
+End Zmodp_field.
+
+Export Zmodp_zmod.Exports Zmodp_ring.Exports Zmodp_field.Exports.
