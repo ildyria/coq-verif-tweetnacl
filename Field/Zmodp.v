@@ -1,3 +1,4 @@
+Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat choice ssralg.
 Require Import ZArith ZArith.Znumtheory.
 From Tweetnacl.High Require Import curve25519_prime_cert.
