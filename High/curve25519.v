@@ -26,3 +26,5 @@ Definition curve25519_ecuFieldMixin :=
   ECUFieldMixin curve25519_chi2 curve25519_chi3.
 Canonical Structure curve25519_ecuFieldType :=
   Eval hnf in ECUFieldType Zmodp.type curve25519_ecuFieldMixin.
+Canonical Structure curve25519_finECUFieldType :=
+  Eval hnf in [finECUFieldType of Zmodp.type].

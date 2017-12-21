@@ -1,5 +1,6 @@
 Set Warnings "-notation-overridden,-parsing".
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat choice ssralg.
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
+From mathcomp Require Import fintype ssralg finalg.
 Require Import ZArith ZArith.Znumtheory.
 From Tweetnacl.High Require Import curve25519_prime_cert.
 
@@ -106,6 +107,47 @@ Proof. by apply: val_inj; apply: modZp. Qed.
 
 Lemma piK (x : Z) : betweenb 0 p x -> repr (pi x) = x.
 Proof. by move/betweenbP=> Hx /=; apply: Zmod_small. Qed.
+
+Module Zmodp_finite.
+
+Definition pn := Z.to_nat p.
+Lemma pn_to_p : Z.of_nat pn = p.
+Proof. by rewrite Z2Nat.id //; move: Hp_gt0=> ?; omega. Qed.
+
+Lemma ord_of_Zmodp_ok x : betweenb 0 p x -> (Z.to_nat x < pn)%nat.
+Proof.
+move/betweenbP=> [Hx1 Hx2].
+by apply/ltP/Nat2Z.inj_lt; rewrite pn_to_p Z2Nat.id.
+Qed.
+
+Lemma Zmodp_of_ord_ok n : (n < pn)%nat -> betweenb 0 p (Z.of_nat n).
+Proof.
+move/ltP/Nat2Z.inj_lt; rewrite pn_to_p => H1.
+have H2: 0 <= Z.of_nat n by apply: Nat2Z.is_nonneg.
+by apply/betweenbP.
+Qed.
+
+Definition ord_of_Zmodp (x : type) : 'I_pn :=
+  let: @Zmodp _ Hx := x in Ordinal (ord_of_Zmodp_ok Hx).
+
+Definition Zmodp_of_ord (n : 'I_pn) : type :=
+  let: @Ordinal _ _ Hn := n in Zmodp (Zmodp_of_ord_ok Hn).
+
+Lemma ord_of_ZmodpK : cancel ord_of_Zmodp Zmodp_of_ord.
+Proof.
+move=> [x Hx] /=.
+apply/eqP; rewrite eqE; apply/eqP=> /=.
+by apply: Z2Nat.id; move/betweenbP: Hx=> [].
+Qed.
+
+Module Exports.
+Definition Zmodp_finMixin := CanFinMixin ord_of_ZmodpK.
+Canonical Structure Zmodp_finType := Eval hnf in FinType type Zmodp_finMixin.
+Canonical Structure Zmodp_subFinType := Eval hnf in [subFinType of type].
+End Exports.
+
+End Zmodp_finite.
+Import Zmodp_finite.Exports.
 
 Module Zmodp_zmod.
 
@@ -275,8 +317,23 @@ Canonical Structure Zmodp_fieldType :=
 End Exports.
 
 End Zmodp_field.
+Import Zmodp_field.Exports.
 
 (* Useful tactic to compute boolean equalities. *)
 Ltac zmodp_compute := rewrite ?(Zmodp_addE, Zmodp_mulE) eqE /=; unlock p=> /=.
 
-Export Zmodp_zmod.Exports Zmodp_ring.Exports Zmodp_field.Exports.
+(* Now create the finalg variants too. *)
+Canonical Structure Zmodp_finZmodType := Eval hnf in [finZmodType of type].
+Canonical Structure Zmodp_finRingType := Eval hnf in [finRingType of type].
+Canonical Structure Zmodp_finComRingType :=
+  Eval hnf in [finComRingType of type].
+Canonical Structure Zmodp_finUnitRingType :=
+  Eval hnf in [finUnitRingType of type].
+Canonical Structure Zmodp_finComUnitRingType :=
+  Eval hnf in [finComUnitRingType of type].
+Canonical Structure Zmodp_finIdomainType :=
+  Eval hnf in [finIdomainType of type].
+Canonical Structure Zmodp_finFieldType := Eval hnf in [finFieldType of type].
+
+Export Zmodp_finite.Exports Zmodp_zmod.Exports Zmodp_ring.Exports.
+Export Zmodp_field.Exports.
