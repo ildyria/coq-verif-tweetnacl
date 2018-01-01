@@ -63,7 +63,7 @@ Three years ago:
 \url{https://www.imperialviolet.org/2014/09/11/moveprovers.html}
 \url{https://www.imperialviolet.org/2014/09/07/provers.html}
 
-\subsection{Pointers arithmetic and arrays}
+\subsection{Pointers arithmetic, arrays and types}
 
 VST does not support the verification of \texttt{o[i] = a[i] + b[i]},
 the \texttt{forward} tactic will simply not work. This initially required us to
@@ -82,6 +82,18 @@ The changes required for a C-code to make it Verifiable are now minimals.
 It is to be noted that the \texttt{clightgen} tool has not been formally verified.
 
 \texttt{clightgen -normalize}
+
+Assuming that \texttt{b} is of type \texttt{long long}, the following expression
+will not be type-checked by VST.
+
+\texttt{b = 1 - b;}
+
+\texttt{1} is interpreted by cligthgen as \texttt{Vint} (\textit{Value of int})
+while \texttt{b} is interpreted as \texttt{Vlong} (\textit{Value of long}),
+resulting in an error. To solve this, we need to prefix \texttt{1} by an
+explicit cast in C into the correct type. As a result, any constants used in this
+implementation had to be casted to the correct type
+(in \textit{TweetNaclVerificable}) to pass typecheck.
 
 \subsection{Verifiying for loops: head and tail recursion}
 
