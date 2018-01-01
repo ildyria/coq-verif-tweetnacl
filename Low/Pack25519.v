@@ -3,6 +3,7 @@ From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Low.Reduce_by_P.
 From Tweetnacl Require Import Low.Car25519.
 From Tweetnacl Require Import Low.Pack.
+From Tweetnacl Require Import Low.Pack.
 From stdpp Require Import prelude.
 Require Import Recdef.
 

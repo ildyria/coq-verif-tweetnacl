@@ -48,3 +48,45 @@ assert(Hnn:=forall_nat_refl (P n) n').
 destruct Hnn as [Hinv Hdirect].
 go.
 Qed.
+
+Open Scope Z.
+
+Ltac gen_goals H P j n := match n with 
+  | 0 => idtac
+  | n => 
+    let n'' := (eval compute in (j - n)) in
+    assert(P n'');
+     [change (n'') with ((n'' - 1) + 1) ;
+     simpl Z.sub ; apply H ; go|];
+   let n' := (eval compute in (n - 1)) in
+   gen_goals H P j n'
+  end.
+
+Ltac gen_hyp i nmax dec := 
+    let n := (eval compute in (nmax - dec)) in
+    match dec with
+    | 0 => constr:(i = n)
+    | dec =>
+      let ndec := (eval compute in (dec - 1)) in 
+      let tail_rec := gen_hyp i nmax ndec in
+      constr:(i = n \/ tail_rec)
+    end.
+
+Ltac assert_gen_hyp i nmax dec :=
+  let v := gen_hyp i nmax dec in 
+  assert(v).
+
+Lemma P016_impl : forall (P : Z -> Prop) , P 1 -> 
+  (forall i, 0 < i < 16 -> P i -> P (i + 1)) -> 
+  forall i, 0 < i < 16 -> P i.
+Proof.
+intros P HP1 HPInd i Hi.
+gen_goals HPInd P 16 14.
+assert_gen_hyp i 15 14. omega.
+repeat match goal with
+  | _ => subst i ; assumption
+  | [ H : _ \/ _ |- _ ] => destruct H
+end.
+Qed.
+
+Close Scope Z.
