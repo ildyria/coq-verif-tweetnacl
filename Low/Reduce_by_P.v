@@ -105,7 +105,7 @@ replace ( i + 1 - 1) with i by omega.
 apply subst_select_step_Zlength=> //.
 Qed.
 
-Lemma sub_fn_rev_val_Zlength : forall i m t,
+Lemma sub_fn_rev_Zlength : forall i m t,
   0 < i < 16 -> 
   Zlength m = 16 ->
   Zlength (sub_fn_rev sub_step i m t) = 16.
