@@ -71,4 +71,33 @@ apply reduce_pos ; omega.
 apply reduce_max ; omega.
 Qed.
 
+Lemma sub_div_256_pos : forall n, 0 <= n < 2 ^256 -> 
+  0 <= n - (2^255 - 19) ->
+  0 <= (n - (2^255 - 19)) / 2 ^ 256 .
+Proof.
+intros.
+apply Z_div_pos.
+compute ; go.
+assumption.
+Qed.
+
+Lemma sub_div_256_neg : forall n, 0 <= n < 2 ^256 -> 
+  n - (2^255 - 19) < 0 ->
+  (n - (2^255 - 19)) / 2 ^ 256 = -1.
+Proof.
+intros.
+assert((n - (2 ^ 255 - 19)) / 2 ^ 256 < 0).
+apply Zdiv_lt_upper_bound.
+compute ; go.
+change(0 * 2^256) with 0.
+assumption.
+assert(-1 <= (n - (2 ^ 255 - 19)) / 2 ^ 256).
+apply Z.div_le_lower_bound.
+compute ; go.
+change (2 ^ 256) with 115792089237316195423570985008687907853269984665640564039457584007913129639936 in *.
+change (2^255 - 19) with 57896044618658097711785492504343953926634992332820282019728792003956564819949 in *.
+omega.
+omega.
+Qed.
+
 Close Scope Z.

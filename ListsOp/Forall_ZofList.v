@@ -191,7 +191,7 @@ Lemma ZofList_bounds_Zlength: forall l (m:nat) (a b:Z),
 Proof. convert_length_to_Zlength ZofList_bounds. Qed.
 
 (* the following lemma is useless! *)
-Lemma ZofList_bounds': forall l (m:nat) a b,
+(* Lemma ZofList_bounds': forall l (m:nat) a b,
   (length l = m)%nat -> 
   a < 0 < b ->
   Forall (fun x => a < x < b) l -> 
@@ -241,7 +241,7 @@ Proof.
     apply Zmult_le_compat_l ; try omega.
     apply pown2 ; omega.
 Qed.
-
+ *)
 Lemma ZofList_nth_mod_div : forall l (m:nat), Forall (fun x => 0 <= x < 2^n) l ->
   m < length l ->
   nth m l 0 = (ℤ.lst l) mod 2^(n*(S m)) / 2 ^ (n * m).
@@ -316,6 +316,40 @@ Proof.
   rewrite Zdiv_small.
   omega.
   omega.
+Qed.
+
+Lemma ZofList_nth_last_div : forall l (m:nat), 
+  S m = length l ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ n) (take m l) ->
+  nth m l 0 = (ℤ.lst l) / 2 ^ (n * m).
+Proof.
+  intros.
+  assert(length (take m l) = m).
+    apply firstn_length_le ; omega.
+  assert((ℤ.lst take m l) < 2 ^ (n * m)).
+    by apply ZofList_n_nn_bound_length.
+  assert(0 <= ℤ.lst take m l).
+  {
+    apply ZofList_pos.
+    unfold ZList_pos.
+    eapply list.Forall_impl ; eauto.
+    intros x Hx; simpl in Hx; omega.
+  }
+  assert(0 < 2 ^ (m*n)).
+  {
+    apply Z.pow_pos_nonneg. done.
+    apply Z.mul_nonneg_nonneg; omega.
+  }
+  replace (ℤ.lst l) with ((ℤ.lst take m l) + 2^(n * Zlength (take m l)) * nth m l 0 + 2^(n * Zlength (take (S m) l)) * (ℤ.lst drop (S m) l)).
+  2: by rewrite ZofList_take_nth_drop.
+  replace (Zlength (take m l)) with (Z.of_nat m).
+  2: rewrite Zlength_correct ; omega.
+  replace (Zlength (take (S m) l)) with (Z.of_nat (S m)).
+  2: rewrite Zlength_correct ; symmetry ; apply inj_eq ; apply firstn_length_le ; omega.
+  replace (2 ^ (n * S m) * (ℤ.lst drop (S m) l)) with 0.
+  2: rewrite drop_ge ; simpl ; try omega; ring.
+  rewrite -Zplus_0_r_reverse Z.mul_comm Z_div_plus ; try omega.
+  rewrite Zdiv_small ; omega.
 Qed.
 
 End Integer.

@@ -2,6 +2,8 @@ From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Mid.SubList.
 From Tweetnacl Require Import Low.Get_abcdef.
+From Tweetnacl Require Import Low.GetBit_pack25519.
+From Tweetnacl Require Import Low.Sel25519.
 From stdpp Require Import prelude.
 Require Import Recdef.
 
@@ -121,31 +123,13 @@ Qed.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Function subst_select (f:Z -> list Z -> list Z -> list Z*list Z) (a:Z) (m t: list Z) {measure Z.to_nat a} : (list Z*list Z) :=
+Function subst_select (f: list Z -> list Z -> list Z*list Z) (a:Z) (m t: list Z) {measure Z.to_nat a} : (list Z*list Z) :=
   if (a <=? 0)
     then (m,t)
     else
       let m_prev := get_m (subst_select f (a - 1) m t) in 
       let t_prev := get_t (subst_select f (a - 1) m t) in 
-        (f a m_prev t_prev).
+        (f m_prev t_prev).
 Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
 
 Lemma subst_select_0 : forall f m t,
@@ -154,14 +138,21 @@ Proof. go. Qed.
 
 Lemma subst_select_n : forall a m t f,
   0 < a ->
-  subst_select f a m t = (f a (get_m (subst_select f (a - 1) m t)) (get_t (subst_select f (a - 1) m t))).
+  subst_select f a m t = (f (get_m (subst_select f (a - 1) m t)) (get_t (subst_select f (a - 1) m t))).
 Proof. intros. rewrite subst_select_equation.
 flatten ; apply Zle_bool_imp_le in Eq; omega.
 Qed.
 
+Definition subst_P_to_m (m t : list Z) : list Z := 
+  let m0 := (upd_nth 0 m (nth 0 t 0 - 65517)) in
+  let mn := sub_fn_rev sub_step 15 m0 t in
+  let m15 := (upd_nth 15 mn (nth 15 t 0 - 32767 - Z.land (nth 14 mn 0 / two_p 16) 1)) in
+  (upd_nth 14 m15 (Z.land (nth 14 m15 0) 65535)).
 
-
-
+Definition select_m_t m t : (list Z * list Z) :=
+  let new_m := subst_P_to_m m t in 
+  let b := getbit_25519 new_m in
+    (Sel25519 b new_m t, Sel25519 b t new_m).
 
 End val_sec.
 
