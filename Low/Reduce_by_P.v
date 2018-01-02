@@ -144,10 +144,10 @@ flatten ; apply Zle_bool_imp_le in Eq; omega.
 Qed.
 
 Definition subst_P_to_m (m t : list Z) : list Z := 
-  let m0 := (upd_nth 0 m (nth 0 t 0 - 65517)) in
-  let mn := sub_fn_rev sub_step 15 m0 t in
-  let m15 := (upd_nth 15 mn (nth 15 t 0 - 32767 - Z.land (nth 14 mn 0 / two_p 16) 1)) in
-  (upd_nth 14 m15 (Z.land (nth 14 m15 0) 65535)).
+  let m0 := (upd_nth (Z.to_nat 0) m (nth 0 t 0 - 65517)) in
+  let mn := sub_fn_rev sub_step (Z.to_nat 15) m0 t in
+  let m15 := (upd_nth (Z.to_nat 15) mn (nth (Z.to_nat 15) t 0 - 32767 - Z.land (nth (Z.to_nat 14) mn 0 / two_p 16) 1)) in
+  (upd_nth (Z.to_nat 14) m15 (Z.land (nth (Z.to_nat 14) m15 0) 65535)).
 
 Definition select_m_t m t : (list Z * list Z) :=
   let new_m := subst_P_to_m m t in 
