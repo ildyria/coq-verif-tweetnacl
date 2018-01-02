@@ -54,7 +54,44 @@ Ltac convert_length_to_Zlength L:=
 
 Open Scope Z.
 
-Ltac Grind_add_Z :=
+Ltac is_Z n := match n with
+  | Z0 => true
+  | Z.pos _ => true
+  | Z.neg _ => true
+  | _ => false
+  end.
+
+Ltac Grind_add_Z_ :=
+  repeat match goal with
+    | |- context[Z.add ?A ?B] =>
+    match is_Z A with
+      | false => Grind_add_Z_ A
+      | true  =>
+      match is_Z B with
+      | false => Grind_add_Z_ B
+      | true  => let C := (eval compute in (Z.add A B)) in
+        change (Z.add A B) with C
+      end
+    end
+  end.
+
+Ltac Grind_sub_Z_ :=
+  repeat match goal with
+    | |- context[Z.sub ?A ?B] =>
+    match is_Z A with
+      | false => Grind_sub_Z_ A
+      | true  =>
+      match is_Z B with
+      | false => Grind_sub_Z_ B
+      | true  => let C := (eval compute in (Z.add A B)) in
+        change (Z.sub A B) with C
+      end
+    end
+  end.
+
+Ltac Grind_add_Z := Grind_add_Z_ ; Grind_sub_Z_.
+
+(* Ltac Grind_add_Z :=
   try change (0 + 0)  with 0;
   try change (0 + 1)  with 1;
   try change (0 + 2)  with 2;
@@ -326,8 +363,20 @@ Ltac Grind_add_Z :=
   try change (13 - 1) with 12;
   try change (14 - 1) with 13;
   try change (15 - 1) with 14;
-  try change (16 - 1) with 15.
+  try change (16 - 1) with 15. *)
 
+Ltac change_Z_to_nat :=
+  match goal with 
+  |- context[Z.to_nat ?A] => 
+      match is_Z A with
+      | false => idtac
+      | true  => let C := (eval compute in (Z.to_nat A)) in
+        change (Z.to_nat A) with C
+      end
+   end.
+
+
+(*
 Ltac change_Z_to_nat :=
   try change (Z.to_nat 0) with 0%nat;
   try change (Z.to_nat 1) with 1%nat;
@@ -361,7 +410,7 @@ Ltac change_Z_to_nat :=
   try change (Z.to_nat 29) with 29%nat;
   try change (Z.to_nat 30) with 30%nat;
   try change (Z.to_nat 31) with 31%nat.
-
+*)
 Ltac gen_i H i :=
   assert(H: i = 0 \/ i = 1 \/ i = 2 \/ i = 3 \/ i = 4 \/ i = 5 \/ i = 6 \/ i = 7
     \/ i = 8 \/ i = 9 \/ i = 10 \/ i = 11 \/ i = 12 \/ i = 13 \/ i = 14 \/ i = 15) by omega

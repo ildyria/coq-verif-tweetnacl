@@ -74,13 +74,7 @@ Proof.
   assert(Hi': exists i', Z.to_nat i = i') by eauto.
   destruct Hi' as [i' Hi'].
     assert(Hi'': 0 <= i' < 16).
-    (* brute force because I'm lazy with conversion *)
-    assert(Hii: i = 0 \/ i = 1 \/ i = 2 \/ i = 3 \/ i = 4 \/ i = 5 \/ i = 6 \/ i = 7 \/ i = 8 \/ i = 9 \/
-           i = 10 \/ i = 11 \/ i = 12 \/ i = 13 \/ i = 14 \/ i = 15) by omega.
-    repeat match goal with
-      | [H : _ \/ _ |- _ ] => destruct H ; subst
-      | _ => compute ; split ; try intro ; try reflexivity ; tryfalse
-      end.
+    subst ; rewrite Z2Nat.id ; omega.
   apply destruct_length_16 in H ; do 16 destruct H.
   rewrite Hi'.
   subst l.
@@ -100,7 +94,11 @@ Proof.
   clear Hi Hi' i Hi''' H17.
   rename H into Hi'.
   assert(HH : forall k, 0 ≤ getResidue 16 k ∧ getResidue 16 k < 2 ^ 16) by (clear ; intro; eapply getResidue_bounds ; omega).
-  repeat match goal with
+(*   change (2^62) with 4611686018427387904 in *.
+  change (2^63) with 9223372036854775808 in *.
+  change (2^16) with 65536 in *.
+ *)
+   repeat match goal with
     | _ => rewrite Carry_n_step
     | _ => rewrite Carry_n_step_0
     | [H : _ \/ _ |- _ ] => destruct H ; try subst i'

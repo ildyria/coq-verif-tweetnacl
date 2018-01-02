@@ -149,9 +149,21 @@ Definition subst_P_to_m (m t : list Z) : list Z :=
   let m15 := (upd_nth (Z.to_nat 15) mn (nth (Z.to_nat 15) t 0 - 32767 - Z.land (nth (Z.to_nat 14) mn 0 / two_p 16) 1)) in
   (upd_nth (Z.to_nat 14) m15 (Z.land (nth (Z.to_nat 14) m15 0) 65535)).
 
+(* Lemma subst_P_to_m_does_not_require_m : forall m' m t, 
+Zlength m = 16 ->
+Zlength m' = 16 ->
+Zlength t = 16 ->
+subst_P_to_m m t = subst_P_to_m m' t.
+Proof.
+intros.
+
+
+Admitted.
+ *)
+
 Definition select_m_t m t : (list Z * list Z) :=
   let new_m := subst_P_to_m m t in 
-  let b := getbit_25519 new_m in
+  let b := 1 - getbit_25519 new_m in
     (Sel25519 b new_m t, Sel25519 b t new_m).
 
 End val_sec.
