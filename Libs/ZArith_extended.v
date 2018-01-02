@@ -3,6 +3,9 @@ Require Import Psatz.
 
 Open Scope Z.
 
+Lemma and_0_or_1 : forall a , 0 <= Z.land a 1 <= 1.
+Proof. intros [|[]|[|[]|]] ; cbv ; split ; discriminate. Qed.
+
 Lemma Zred_factor6 : forall m n, (1 + m) * n = n + n * m.
 Proof. intros ; Psatz.nia. Qed.
 
