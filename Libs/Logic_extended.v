@@ -62,20 +62,6 @@ Ltac gen_goals H P j n := match n with
    gen_goals H P j n'
   end.
 
-Ltac gen_hyp i nmax dec := 
-    let n := (eval compute in (nmax - dec)) in
-    match dec with
-    | 0 => constr:(i = n)
-    | dec =>
-      let ndec := (eval compute in (dec - 1)) in 
-      let tail_rec := gen_hyp i nmax ndec in
-      constr:(i = n \/ tail_rec)
-    end.
-
-Ltac assert_gen_hyp i nmax dec :=
-  let v := gen_hyp i nmax dec in 
-  assert(v).
-
 Lemma P016_impl : forall (P : Z -> Prop) , P 1 -> 
   (forall i, 0 < i < 16 -> P i -> P (i + 1)) -> 
   forall i, 0 < i < 16 -> P i.

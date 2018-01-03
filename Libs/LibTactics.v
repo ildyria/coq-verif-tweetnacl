@@ -411,10 +411,31 @@ Ltac change_Z_to_nat :=
   try change (Z.to_nat 30) with 30%nat;
   try change (Z.to_nat 31) with 31%nat.
 *)
+
+Ltac gen_hyp i nmax dec := 
+    let n := (eval compute in (nmax - dec)) in
+    match dec with
+    | 0 => constr:(i = n)
+    | dec =>
+      let ndec := (eval compute in (dec - 1)) in 
+      let tail_rec := gen_hyp i nmax ndec in
+      constr:(i = n \/ tail_rec)
+    end.
+
+Ltac assert_gen_hyp i nmax dec :=
+  let v := gen_hyp i nmax dec in 
+  assert(v).
+
+Ltac assert_gen_hyp_ H i nmax dec :=
+  let v := gen_hyp i nmax dec in 
+  assert(H : v).
+
 Ltac gen_i H i :=
-  assert(H: i = 0 \/ i = 1 \/ i = 2 \/ i = 3 \/ i = 4 \/ i = 5 \/ i = 6 \/ i = 7
-    \/ i = 8 \/ i = 9 \/ i = 10 \/ i = 11 \/ i = 12 \/ i = 13 \/ i = 14 \/ i = 15) by omega
-    ; repeat match goal with
-      | [ H : ?i = _ \/ _ |- _ ] => destruct H ; try subst i
-      end.
+  assert_gen_hyp_ H i 15 15; [omega|];
+(* assert(H: i = 0 \/ i = 1 \/ i = 2 \/ i = 3 \/ i = 4 \/ i = 5 \/ i = 6 \/ i = 7
+    \/ i = 8 \/ i = 9 \/ i = 10 \/ i = 11 \/ i = 12 \/ i = 13 \/ i = 14 \/ i = 15) by omega; *)
+  repeat match goal with
+    | [ H : ?i = _ \/ _ |- _ ] => destruct H ; try subst i
+  end.
+
 Close Scope Z.

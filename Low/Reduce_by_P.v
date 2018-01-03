@@ -43,8 +43,6 @@ Open Scope Z.
 0x7fff = 32767
 *)
 
-Section val_sec.
-
 Definition subst_0xffed t := t - 65517.
 Definition subst_0xffff t m := t - 65535 - (Z.land (Z.shiftr m 16) 1).
 Definition subst_0x7fff t m := t - 32767 - (Z.land (Z.shiftr m 16) 1).
@@ -121,6 +119,51 @@ intros ; by apply sub_fn_rev_Zlength_ind_step.
 trivial.
 Qed.
 
+Definition subst_P_to_m (m t : list Z) : list Z := 
+  let m0 := (upd_nth (Z.to_nat 0) m (nth 0 t 0 - 65517)) in
+  let mn := sub_fn_rev sub_step (Z.to_nat 15) m0 t in
+  let m15 := (upd_nth (Z.to_nat 15) mn (nth (Z.to_nat 15) t 0 - 32767 - Z.land (nth (Z.to_nat 14) mn 0 / two_p 16) 1)) in
+  (upd_nth (Z.to_nat 14) m15 (Z.land (nth (Z.to_nat 14) m15 0) 65535)).
+
+Definition select_m_t m t : (list Z * list Z) :=
+  let new_m := subst_P_to_m m t in 
+  let b := 1 - getbit_25519 new_m in
+    (Sel25519 b new_m t, Sel25519 b t new_m).
+
+Lemma subst_P_to_m_length : forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Zlength (subst_P_to_m m t) = 16.
+Proof.
+  intros m t Hm Ht.
+  rewrite /subst_P_to_m.
+  repeat match goal with 
+    | _ => omega
+    | _ => rewrite sub_fn_rev_Zlength
+    | _ => rewrite upd_nth_Zlength
+    | _ => rewrite Z2Nat.id
+  end.
+Qed.
+
+Lemma get_m_select_m_t_Zlength : forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Zlength (get_m (select_m_t m t)) = 16.
+Proof.
+  intros m t Hm Ht;
+  rewrite /select_m_t /get_m /get_t;
+  apply Sel25519_Zlength ; try apply subst_P_to_m_length; assumption.
+Qed.
+
+Lemma get_t_select_m_t_Zlength : forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Zlength (get_t (select_m_t m t)) = 16.
+Proof.
+  intros m t Hm Ht;
+  rewrite /select_m_t /get_m /get_t;
+  apply Sel25519_Zlength ; try apply subst_P_to_m_length; assumption.
+Qed.
 
 
 Function subst_select (f: list Z -> list Z -> list Z*list Z) (a:Z) (m t: list Z) {measure Z.to_nat a} : (list Z*list Z) :=
@@ -143,17 +186,54 @@ Proof. intros. rewrite subst_select_equation.
 flatten ; apply Zle_bool_imp_le in Eq; omega.
 Qed.
 
-Definition subst_P_to_m (m t : list Z) : list Z := 
-  let m0 := (upd_nth (Z.to_nat 0) m (nth 0 t 0 - 65517)) in
-  let mn := sub_fn_rev sub_step (Z.to_nat 15) m0 t in
-  let m15 := (upd_nth (Z.to_nat 15) mn (nth (Z.to_nat 15) t 0 - 32767 - Z.land (nth (Z.to_nat 14) mn 0 / two_p 16) 1)) in
-  (upd_nth (Z.to_nat 14) m15 (Z.land (nth (Z.to_nat 14) m15 0) 65535)).
+Lemma get_m_subst_select_f_Zlength : forall i (m t:list Z) (f: list Z -> list Z -> list Z * list Z),
+  0 <= i <= 2->
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  (forall (m' t':list Z), Zlength m' = 16 -> Zlength t' = 16 -> Zlength (get_m (f m' t')) = 16) ->
+  (forall (m' t':list Z), Zlength m' = 16 -> Zlength t' = 16 -> Zlength (get_t (f m' t')) = 16) ->
+    Zlength (get_m (subst_select f i m t)) = 16.
+Proof.
+  intros i m t f Hi Hm Ht Hfm Hft.
+  assert_gen_hyp i 2 2; [omega|].
+  destruct H as [H|[H|H]] ; subst i;
+  try solve [rewrite subst_select_n ; go] ; go.
+Qed.
 
-Definition select_m_t m t : (list Z * list Z) :=
-  let new_m := subst_P_to_m m t in 
-  let b := 1 - getbit_25519 new_m in
-    (Sel25519 b new_m t, Sel25519 b t new_m).
+Lemma get_t_subst_select_f_Zlength : forall i (m t:list Z) (f: list Z -> list Z -> list Z * list Z),
+  0 <= i <= 2->
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  (forall (m' t':list Z), Zlength m' = 16 -> Zlength t' = 16 -> Zlength (get_m (f m' t')) = 16) ->
+  (forall (m' t':list Z), Zlength m' = 16 -> Zlength t' = 16 -> Zlength (get_t (f m' t')) = 16) ->
+    Zlength (get_t (subst_select f i m t)) = 16.
+Proof.
+  intros i m t f Hi Hm Ht Hfm Hft.
+  assert_gen_hyp i 2 2; [omega|].
+  destruct H as [H|[H|H]] ; subst i;
+  try solve [rewrite subst_select_n ; go] ; go.
+Qed.
 
-End val_sec.
+Lemma get_m_subst_select_Zlength : forall i (m t:list Z),
+  0 <= i <= 2->
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+    Zlength (get_m (subst_select select_m_t i m t)) = 16.
+Proof.
+  intros. apply get_m_subst_select_f_Zlength ; auto.
+  apply get_m_select_m_t_Zlength.
+  apply get_t_select_m_t_Zlength.
+Qed.
+
+Lemma get_t_subst_select_Zlength : forall i (m t:list Z),
+  0 <= i <= 2->
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+    Zlength (get_t (subst_select select_m_t i m t)) = 16.
+Proof.
+  intros. apply get_t_subst_select_f_Zlength ; auto.
+  apply get_m_select_m_t_Zlength.
+  apply get_t_select_m_t_Zlength.
+Qed.
 
 Close Scope Z.
