@@ -154,6 +154,22 @@ Lemma Zipp_nth_length : forall f (n : nat) (a b : list Z),
   nth n (Zipp f a b) (f 0 0) = f (nth n a 0) (nth n b 0).
 Proof. induction n; destruct a,b ; simpl ; intros ; flatten ; go. Qed.
 
+Lemma Zipp_nth_Zlength : forall f (n : Z) (a b : list Z),
+  0 <= n ->
+  Zlength a = Zlength b ->
+  n < Zlength a ->
+  nth (Z.to_nat n) (Zipp f a b) (f 0 0) = f (nth (Z.to_nat n) a 0) (nth (Z.to_nat n) b 0).
+Proof. intros f n a b Hn Hab Hna ; apply Zipp_nth_length ; auto.
+rewrite ?Zlength_correct in Hab; omega.
+rewrite ?Zlength_correct in Hna.
+apply Z2Nat.inj_lt in Hna.
+rewrite Nat2Z.id in Hna.
+assumption.
+omega.
+omega.
+Qed.
+
+
 Definition f_comm (f: Z -> Z -> Z) := forall x y, f x y = f y x.
 Definition f_0_neutral (f: Z -> Z -> Z) := forall x, f x 0%Z = x.
 Definition f_neutral_0 (f: Z -> Z -> Z) := forall x, f 0%Z x = x.

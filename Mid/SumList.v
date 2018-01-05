@@ -27,6 +27,13 @@ Lemma ZsumList_nth : forall (n:nat) (a b : list Z),
   nth n (a ⊕ b) 0 = (nth n a 0) + (nth n b 0).
 Proof. intros; rewrite ?ZsumList_Zipp_eq; apply Zipp_nth_length ; auto. Qed.
 
+Lemma ZsubList_nth_Zlength : forall (n:Z) (a b : list Z),
+  0 <= n ->
+  Zlength a = Zlength b ->
+  n < Zlength a ->
+  nth (Z.to_nat n) (a ⊕ b) 0 = (nth (Z.to_nat n) a 0) + (nth (Z.to_nat n) b 0).
+Proof. intros; rewrite ?ZsumList_Zipp_eq; apply Zipp_nth_Zlength ; auto. Qed.
+
 Lemma ZsumList_comm: forall a b, a ⊕ b = b ⊕ a.
 Proof.
   move => a b.
