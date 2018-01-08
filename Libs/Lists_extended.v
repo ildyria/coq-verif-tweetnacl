@@ -286,4 +286,15 @@ Lemma upd_nth_Zlength:
   0 <= i < Zlength l -> Zlength (upd_nth i l v) = Zlength l.
 Proof. convert_length_to_Zlength upd_nth_length. Qed.
 
+Lemma upd_nth_same_Zlength:
+  forall (A : Type) (i : nat) (l : list A) (u d : A),
+  0 <= i < Zlength l -> nth i (upd_nth i l u) d = u.
+Proof. convert_length_to_Zlength upd_nth_same. Qed.
+
+Lemma upd_nth_diff_Zlength:
+  forall (A : Type) (i j : nat) (l : list A) (u d : A),
+  0 <= i < Zlength l ->
+  0 <= j < Zlength l -> i <> j -> nth i (upd_nth j l u) d = nth i l d.
+Proof. convert_length_to_Zlength upd_nth_diff. Qed.
+
 Close Scope Z.

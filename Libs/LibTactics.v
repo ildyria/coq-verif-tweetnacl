@@ -366,7 +366,7 @@ Ltac Grind_add_Z := Grind_add_Z_ ; Grind_sub_Z_.
   try change (16 - 1) with 15. *)
 
 Ltac change_Z_to_nat :=
-  match goal with 
+  match goal with
   |- context[Z.to_nat ?A] => 
       match is_Z A with
       | false => idtac
@@ -375,6 +375,21 @@ Ltac change_Z_to_nat :=
       end
    end.
 
+Ltac is_nat n := match n with
+  | 0%nat => true
+  | (S _)%nat => true
+  | _ => false
+  end.
+
+Ltac change_Z_of_nat :=
+  match goal with
+  |- context[Z.of_nat ?A] => 
+      match is_nat A with
+      | false => idtac
+      | true  => let C := (eval compute in (Z.of_nat A)) in
+        change (Z.of_nat A) with C
+      end
+   end.
 
 (*
 Ltac change_Z_to_nat :=
