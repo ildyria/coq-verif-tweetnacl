@@ -30,4 +30,6 @@ Lemma list_of_P: forall l,
   (ZofList 16 l) = Z.pow 2 255 - 19.
 Proof. intros; subst; compute ; reflexivity. Qed.
 
+Definition nul16 := [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
+
 Close Scope Z.

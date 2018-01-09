@@ -4,6 +4,7 @@ From Tweetnacl Require Import Mid.SubList.
 From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.GetBit_pack25519.
 From Tweetnacl Require Import Low.Sel25519.
+From Tweetnacl Require Import Low.Constant.
 From stdpp Require Import prelude.
 Require Import Recdef.
 
@@ -54,13 +55,6 @@ Definition sub_step (a:Z) (m t:list Z) : list Z :=
     let t' := nth (Z.to_nat a) t 0 in
       upd_nth (Z.to_nat (a-1)) (upd_nth (Z.to_nat a) m (subst_0xffff t' m')) (mod0xffff m').
 
-Variable f : Z -> Z.
-
-(*
-Lemma forall i m t,
-  length m = length t ->
-  ZofList 16 (sub_step i m t) = f (ZofList 
-*)
 Local Lemma nth_i_1_substep: forall i m t, 
   Zlength m = Zlength t ->
   0 < i < Zlength m ->
@@ -119,14 +113,41 @@ destruct HZland as [HZland|HZland]; rewrite HZland.
 all: change (2^16) with 65536 in * ; omega.
 Qed.
 
+
+Definition sub_step_1 (a:Z) (m t:list Z) : list Z :=
+    let t' := nth (Z.to_nat a) t 0 in
+      (upd_nth (Z.to_nat a) m (t' - 65535)).
+
+Definition sub_step_2 (a:Z) (m:list Z) : list Z :=
+    let m' := nth (Z.to_nat (a - 1)) m 0 in
+    let t' := nth (Z.to_nat a) m 0 in
+      upd_nth (Z.to_nat (a-1)) (upd_nth (Z.to_nat a) m (t' - (Z.land (Z.shiftr m' 16) 1))) (mod0xffff m').
+
+Lemma subst_step_1_2 : forall a m t,
+  0 < a < Zlength m ->
+  sub_step a m t = sub_step_2 a (sub_step_1 a m t).
+Proof.
+  intros.
+  rewrite /sub_step /sub_step_1 /sub_step_2 /subst_0xffff /mod0xffff.
+  rewrite ?upd_nth_same_Zlength.
+  rewrite ?upd_nth_diff_Zlength.
+  f_equal.
+  rewrite upd_nth_upd_nth_Zlength.
+  reflexivity.
+  all: try (rewrite Z2Nat.id ; omega).
+  clear t.
+  intro Ha.
+  apply (f_equal Z.of_nat) in Ha.
+  rewrite ?Z2Nat.id in Ha ; omega.
+Qed.
+
 Lemma subst_select_step_Zlength : forall i m t,
-  0 < i < 16->
-  Zlength m = 16 ->
-  Zlength (sub_step i m t) = 16.
+  0 < i < Zlength m->
+  Zlength (sub_step i m t) = Zlength m.
 Proof.
   intros.
   rewrite /sub_step.
-  assert(0 < Z.to_nat i /\ Z.to_nat i < 16) by (rewrite ?Z2Nat.id ; omega).
+  assert(0 < Z.to_nat i /\ Z.to_nat i < Zlength m) by (rewrite ?Z2Nat.id ; omega).
   assert(Z.of_nat (Z.to_nat (i - 1)) = (Z.of_nat (Z.to_nat i)) - 1) by (rewrite ?Z2Nat.id ; omega).
   rewrite ?upd_nth_Zlength ; omega.
 Qed.
@@ -151,6 +172,62 @@ Proof. intros. rewrite sub_fn_rev_equation.
 flatten ; apply Zle_bool_imp_le in Eq; omega.
 Qed.
 
+(* Definition of the for loop : 1 -> 15 *)
+Function sub_fn_rev_s (f:Z -> list Z -> list Z) (a:Z) (m: list Z) {measure Z.to_nat a} : (list Z) :=
+  if (a <=? 1)
+    then m
+    else
+      let prev := sub_fn_rev_s f (a - 1) m in 
+        f (a - 1) prev.
+Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
+
+Lemma sub_fn_rev_s_1 : forall f m,
+  sub_fn_rev_s f 1 m = m.
+Proof. go. Qed.
+
+Lemma sub_fn_rev_s_n : forall a m f,
+  1 < a ->
+  sub_fn_rev_s f a m = f (a - 1) (sub_fn_rev_s f (a - 1) m).
+Proof. intros. rewrite sub_fn_rev_s_equation.
+flatten ; apply Zle_bool_imp_le in Eq; omega.
+Qed.
+
+Lemma sub_fn_rev_f_g :  forall a m t,
+  (length m = 16)%nat ->
+  (length t = 16)%nat ->
+  0 < a < 16 ->
+  sub_fn_rev sub_step a m t = sub_fn_rev_s sub_step_2 a (sub_fn_rev sub_step_1 a m t).
+Proof.
+intros a m t Hm Ht Ha.
+intros.
+do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
+do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
+assert_gen_hyp_ H a 15 14 ; try omega.
+destruct H.
+subst. compute. reflexivity.
+destruct H.
+subst;
+match goal with 
+  | [ |- context[sub_fn_rev _ ?v _ _] ] => 
+      let n'' := (eval compute in (v - 1)) in
+      change (v) with (n'' + 1)
+  end.
+  subst;
+
+      end.
+
+
+      ;
+   let n' := (eval compute in (n - 1)) in
+change (
+subst. compute. reflexivity.
+
+unfold sub_fn_rev.
+simpl nth; simpl upd_nth.
+  reflexivity.
+
+Admitted.
+
 Definition m_from_t (m t:list Z) : list Z := 
   let m0 := upd_nth 0 m (subst_0xffed (nth 0 t 0)) in
   let m14 := sub_fn_rev sub_step 15 m0 t in
@@ -168,7 +245,7 @@ Proof.
   do 17 (destruct m' ; [tryfalse |]) ; [|tryfalse].
   do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
   rewrite /m_from_t.
-  simpl nth ; simpl upd_nth.
+  simpl nth; simpl upd_nth.
   reflexivity.
 Qed.
 
@@ -178,6 +255,57 @@ Lemma m_from_t_dep_Zlength : forall m m' t,
   Zlength t = 16 ->
   m_from_t m' t = m_from_t m t.
 Proof. convert_length_to_Zlength m_from_t_dep_length. Qed.
+
+Lemma Zlandshift1 : forall a, (Z.land (a ≫ 16) 1) = Z.modulo (a / 2^16) 2.
+Proof. intros. change 1 with (Z.ones 1) ; rewrite Z.shiftr_div_pow2 ?Z.land_ones ;  try omega.
+reflexivity.
+Qed.
+
+Lemma sub_step_ZofList : forall i t m,
+  1 < i < Zlength t ->
+  Zlength m = Zlength t ->
+  ZofList 16 (sub_step i m t) = ZofList 16 m - (2*(16 *i) * nth (Z.to_nat i) m 0) + (2*(16 * i) * nth (Z.to_nat i) t 0) - (2^(16 * i) * 65535).
+Proof.
+intros.
+rewrite /sub_step.
+
+Lemma m_from_t_Z_of_list : forall t,
+  (length t = 16)%nat ->
+  ZofList 16 (m_from_t nul16 t) = ZofList 16 (ZsubList t list25519).
+Proof.
+intros t Ht; rewrite /nul16 /list25519.
+do 17 (destruct t; [tryfalse|]) ; [|tryfalse].
+simpl.
+rewrite /subst_0xffed /mod0xffff.
+change 65535 with (Z.ones 16).
+rewrite ?Z.land_ones /subst_0xffff.
+all: try omega.
+assert(Hmodsub: forall a b c, (a - b - c) mod 2^16 = (((a - b) mod 2^16) - (c mod 2^16)) mod 2^16).
+{ intros a b c ; rewrite Zminus_mod ; reflexivity. }
+rewrite ?Hmodsub.
+rewrite ?Zlandshift1.
+assert(Hmultdist: forall a b,
+2 ^ 16 *
+((a `mod` 2 ^ 16 - ((b `div` 2 ^ 16) `mod` 2) `mod` 2 ^ 16) `mod` 2 ^ 16) =
+(- (((b `div` 2 ^ 16) `mod` 2) `mod` 2 ^ 16) * 2 ^ 16 + 2^16 * (a `mod` 2 ^ 16  `mod` 2 ^ 16)) `mod` 2 ^ 16).
+{ intros.
+rewrite Z.mul_comm.
+assert(2 ^ 16 > 0) by (apply pown0 ; omega).
+rewrite -Z.mul_mod_distr_r ; try omega.
+rewrite Z.mul_sub_distr_r.
+rewrite -Z.add_opp_l.
+Search Z.add Z.modulo.
+
+ 2^16 * (Z.modulo (a - b) 2^16) = - 2^16 * (Z.modulo b 2^16) + 2 ^ 16 * (Z.modulo a 2^16)).
+{ intros.
+ ; ring. }
+rewrite ?Hmultdist.
+
+
+
+
+
+
 
 Local Lemma sub_fn_rev_Zlength_ind_step : forall i m t,
   0 < i < 16 ->
@@ -206,18 +334,6 @@ intros ; by apply sub_fn_rev_Zlength_ind_step.
 trivial.
 Qed.
 
-(* Definition subst_P_to_m (m t : list Z) : list Z := 
-  let m0 := (upd_nth (Z.to_nat 0) m (nth 0 t 0 - 65517)) in
-  let mn := sub_fn_rev sub_step (Z.to_nat 15) m0 t in
-  let m15 := (upd_nth (Z.to_nat 15) mn (nth (Z.to_nat 15) t 0 - 32767 - Z.land (nth (Z.to_nat 14) mn 0 / two_p 16) 1)) in
-  (upd_nth (Z.to_nat 14) m15 (Z.land (nth (Z.to_nat 14) m15 0) 65535)).
- *)
-
-(* Definition select_m_t m t : (list Z * list Z) :=
-  let new_m := subst_P_to_m m t in 
-  let b := 1 - getbit_25519 new_m in
-    (Sel25519 b new_m t, Sel25519 b t new_m).
- *)
 Definition select_m_t m t : (list Z * list Z) :=
   let new_m := m_from_t m t in 
   let b := 1 - getbit_25519 new_m in
@@ -328,5 +444,7 @@ Proof.
   apply get_m_select_m_t_Zlength.
   apply get_t_select_m_t_Zlength.
 Qed.
+
+
 
 Close Scope Z.

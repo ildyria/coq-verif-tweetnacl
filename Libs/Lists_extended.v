@@ -261,6 +261,20 @@ Proof.
   apply H1; subst; trivial.
 Qed.
 
+Lemma upd_nth_upd_nth: forall A i (l:list A) ni nj, i < length l -> upd_nth i (upd_nth i l nj) ni = upd_nth i l ni.
+Proof.
+  induction i; intros.
+  destruct l.
+  simpl in H ; omega.
+  reflexivity.
+  destruct l.
+  simpl in H ; omega.
+  simpl.
+  f_equal.
+  apply IHi.
+  move: H ; simpl; apply lt_S_n.
+Qed.
+
 Lemma length_pos : forall (A:Type) (l:list A), 0 <= length l.
 Proof. boum. Qed.
 
@@ -296,5 +310,8 @@ Lemma upd_nth_diff_Zlength:
   0 <= i < Zlength l ->
   0 <= j < Zlength l -> i <> j -> nth i (upd_nth j l u) d = nth i l d.
 Proof. convert_length_to_Zlength upd_nth_diff. Qed.
+
+Lemma upd_nth_upd_nth_Zlength : forall A (i:nat) (l:list A) ni nj, i < Zlength l -> upd_nth i (upd_nth i l nj) ni = upd_nth i l ni.
+Proof. convert_length_to_Zlength upd_nth_upd_nth. Qed.
 
 Close Scope Z.

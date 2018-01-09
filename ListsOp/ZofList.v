@@ -188,6 +188,41 @@ Proof.
   by rewrite ZofList_take_drop.
 Qed.
 
+Lemma ZofList_upd_nth_length : forall l (m:nat) v,
+      (m < length l)%nat ->
+      ℤ.lst (upd_nth m l v) = (ℤ.lst l) + 2^(n*m) * (-nth m l 0 + v).
+Proof.
+  elim => [| z l IHl]  [|m] v Hml.
+  1,3: change_Z_of_nat ; rewrite -?Zmult_0_r_reverse.
+  1: simpl ; rewrite -?Zmult_0_r_reverse.
+  all: rewrite ?Z.pow_0_r.
+  omega.
+  simpl; omega.
+  simpl in Hml; omega.
+  simpl in Hml.
+  assert((m < length l)%nat).
+  omega.
+  simpl upd_nth; simpl ZofList.
+  rewrite IHl //.
+  rewrite -Zred_factor4.
+  rewrite Z.add_assoc.
+  f_equal.
+  rewrite Z.mul_assoc.
+  f_equal.
+  rewrite -Z.pow_add_r ; try omega.
+  f_equal.
+  replace (Z.of_nat (S m)%nat) with (1 + Z.of_nat m).
+  ring.
+  simpl ; rewrite Zpos_P_of_succ_nat ; omega.
+  rewrite Z.mul_comm.
+  apply Zmult_gt_0_le_0_compat ; try omega.
+Qed.
+
+Lemma ZofList_upd_nth_Zlength : forall l (m:nat) v,
+      m < Zlength l ->
+      ℤ.lst (upd_nth m l v) = (ℤ.lst l) + 2^(n*m) * (-nth m l 0 + v).
+Proof. convert_length_to_Zlength ZofList_upd_nth_length. Qed.
+
 End Integer.
 
 Lemma destruct_length_16 : forall (l:list Z), (length l = 16)%nat -> exists z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14,
@@ -204,6 +239,16 @@ rewrite Zlength_correct in Hl.
 apply destruct_length_16.
 omega.
 Qed.
+
+
+
+
+
+
+
+
+
+
 
 Close Scope Z.
 
