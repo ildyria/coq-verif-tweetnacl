@@ -192,43 +192,7 @@ Proof. intros. rewrite sub_fn_rev_s_equation.
 flatten ; apply Zle_bool_imp_le in Eq; omega.
 Qed.
 
-Lemma sub_fn_rev_f_g :  forall a m t,
-  (length m = 16)%nat ->
-  (length t = 16)%nat ->
-  0 < a < 16 ->
-  sub_fn_rev sub_step a m t = sub_fn_rev_s sub_step_2 a (sub_fn_rev sub_step_1 a m t).
-Proof.
-intros a m t Hm Ht Ha.
-intros.
-do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
-do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
-assert_gen_hyp_ H a 15 14 ; try omega.
-destruct H.
-subst. compute. reflexivity.
-destruct H.
-subst;
-match goal with 
-  | [ |- context[sub_fn_rev _ ?v _ _] ] => 
-      let n'' := (eval compute in (v - 1)) in
-      change (v) with (n'' + 1)
-  end.
-  subst;
-
-      end.
-
-
-      ;
-   let n' := (eval compute in (n - 1)) in
-change (
-subst. compute. reflexivity.
-
-unfold sub_fn_rev.
-simpl nth; simpl upd_nth.
-  reflexivity.
-
-Admitted.
-
-Definition m_from_t (m t:list Z) : list Z := 
+Definition m_from_t (m t:list Z) : list Z :=
   let m0 := upd_nth 0 m (subst_0xffed (nth 0 t 0)) in
   let m14 := sub_fn_rev sub_step 15 m0 t in
   let m15 := upd_nth 15 m14 (subst_0x7fff (nth 15 t 0) (nth 14 m14 0)) in
@@ -261,6 +225,7 @@ Proof. intros. change 1 with (Z.ones 1) ; rewrite Z.shiftr_div_pow2 ?Z.land_ones
 reflexivity.
 Qed.
 
+(*
 Lemma sub_step_ZofList : forall i t m,
   1 < i < Zlength t ->
   Zlength m = Zlength t ->
@@ -300,38 +265,36 @@ Search Z.add Z.modulo.
 { intros.
  ; ring. }
 rewrite ?Hmultdist.
-
-
-
-
-
-
+*)
 
 Local Lemma sub_fn_rev_Zlength_ind_step : forall i m t,
-  0 < i < 16 ->
-  Zlength m = 16 ->
-  Zlength (sub_fn_rev sub_step i m t) = 16 ->
-  Zlength (sub_fn_rev sub_step (i+1) m t) = 16.
+  0 < i < Zlength m ->
+  Zlength (sub_fn_rev sub_step i m t) = Zlength m ->
+  Zlength (sub_fn_rev sub_step (i+1) m t) = Zlength m.
 Proof.
-intros.
+intros i m t Him Hind.
 rewrite sub_fn_rev_equation.
 flatten.
 replace ( i + 1 - 1) with i by omega.
-apply subst_select_step_Zlength=> //.
+rewrite -Hind.
+apply subst_select_step_Zlength.
+rewrite Hind.
+assumption.
 Qed.
 
 Lemma sub_fn_rev_Zlength : forall i m t,
-  0 < i < 16 -> 
   Zlength m = 16 ->
-  Zlength (sub_fn_rev sub_step i m t) = 16.
+  0 < i < Zlength m ->
+  Zlength (sub_fn_rev sub_step i m t) = Zlength m.
 Proof.
 intros.
-change(Zlength (sub_fn_rev sub_step i m t) = 16) with
-  ((fun x => Zlength (sub_fn_rev sub_step x m t) = 16) i).
+change(Zlength (sub_fn_rev sub_step i m t) = Zlength m) with
+  ((fun x => Zlength (sub_fn_rev sub_step x m t) = Zlength m) i).
 apply P016_impl.
 by rewrite sub_fn_rev_1.
-intros ; by apply sub_fn_rev_Zlength_ind_step.
-trivial.
+intros ; apply sub_fn_rev_Zlength_ind_step.
+2: apply H2.
+all: omega.
 Qed.
 
 Definition select_m_t m t : (list Z * list Z) :=
@@ -444,6 +407,64 @@ Proof.
   apply get_m_select_m_t_Zlength.
   apply get_t_select_m_t_Zlength.
 Qed.
+
+Lemma sub_fn_rev_f_g :  forall a m t,
+  (length m = 16)%nat ->
+  (length t = 16)%nat ->
+  0 < a < 16 ->
+  sub_fn_rev sub_step a m t = sub_fn_rev_s sub_step_2 a (sub_fn_rev sub_step_1 a m t).
+Proof.
+intros a m t Hm Ht Ha.
+intros.
+do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
+do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
+assert_gen_hyp_ H a 15 14 ; try omega.
+do 14 (destruct H; [subst ; reflexivity| ]).
+subst.
+reflexivity.
+destruct H.
+subst.
+reflexivity.
+
+match goal with 
+  | [ |- context[sub_fn_rev _ ?v _ _] ] => 
+      let n'' := (eval compute in (v - 1)) in
+      change (v) with (n'' + 1)
+end.
+rewrite ?(sub_fn_rev_n (1+1)).
+rewrite (sub_fn_rev_s_n (1+1)).
+change (1+1-1) with 1.
+reflexivity.
+omega.
+omega.
+omega.
+destruct H.
+subst.
+match goal with 
+  | [ |- context[sub_fn_rev _ ?v _ _] ] => 
+      let n'' := (eval compute in (v - 1)) in
+      change (v) with (n'' + 1)
+end.
+rewrite ?(sub_fn_rev_n (2+1)).
+rewrite (sub_fn_rev_s_n (2+1)).
+change (2+1-1) with 2.
+reflexivity.
+rewrite sub_fn_rev_n.
+  subst.
+
+      end.
+
+
+      ;
+   let n' := (eval compute in (n - 1)) in
+change (
+subst. compute. reflexivity.
+
+unfold sub_fn_rev.
+simpl nth; simpl upd_nth.
+  reflexivity.
+
+Admitted.
 
 
 
