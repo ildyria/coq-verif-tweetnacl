@@ -453,4 +453,10 @@ Ltac gen_i H i :=
     | [ H : ?i = _ \/ _ |- _ ] => destruct H ; try subst i
   end.
 
+(* I would like something like that... *)
+Ltac nat_indify i :=
+  match goal with
+    | [ |- ?A ] => let A' := constr:(fun (i:Z) => A) in eapply (natlike_ind A')
+  end.
+
 Close Scope Z.

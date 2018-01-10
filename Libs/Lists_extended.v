@@ -314,4 +314,7 @@ Proof. convert_length_to_Zlength upd_nth_diff. Qed.
 Lemma upd_nth_upd_nth_Zlength : forall A (i:nat) (l:list A) ni nj, i < Zlength l -> upd_nth i (upd_nth i l nj) ni = upd_nth i l ni.
 Proof. convert_length_to_Zlength upd_nth_upd_nth. Qed.
 
+Lemma upd_nth_comm_Zlength : forall A (i j:nat) (l:list A) ni nj, i < Zlength l -> j < Zlength l -> i <> j ->  upd_nth i (upd_nth j l nj) ni = upd_nth j (upd_nth i l ni) nj.
+Proof. convert_length_to_Zlength upd_nth_comm. Qed.
+
 Close Scope Z.
