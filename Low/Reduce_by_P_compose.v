@@ -1,14 +1,19 @@
-(* From Tweetnacl Require Import Libs.Export.
-From Tweetnacl Require Import ListsOp.Export. *)
+From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import ListsOp.Export.
 (* From Tweetnacl Require Import Mid.SubList. *)
 (* From Tweetnacl Require Import Low.Get_abcdef. *)
 (* From Tweetnacl Require Import Low.GetBit_pack25519. *)
 (* From Tweetnacl Require Import Low.Sel25519. *)
 (* From Tweetnacl Require Import Low.Constant. *)
-From Tweetnacl Require Import Libs.Lists_extended.
+(* From Tweetnacl Require Import Libs.Lists_extended.
 From Tweetnacl Require Import Libs.List_Ltac.
 From Tweetnacl Require Import Libs.LibTactics_SF.
 From Tweetnacl Require Import Libs.LibTactics.
+From Tweetnacl Require Import Libs.LibTactics.
+ *)
+From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
 From stdpp Require Import prelude.
 Require Import Recdef.
 
@@ -53,125 +58,6 @@ sv pack25519(u8 *o,const gf n)
 *)
 
 Open Scope Z.
-(*
-0xffff = 65535
-0xffed = 65517
-0x7fff = 32767
-*)
-
-Definition subst_0xffed t := t - 65517.
-Definition subst_0xffffc t m := t - 65535 - (Z.land (Z.shiftr m 16) 1).
-Definition subst_0xffff t := t - 65535.
-Definition subst_0x7fffc t m := t - 32767 - (Z.land (Z.shiftr m 16) 1).
-Definition subst_0x7fff t := t - 32767.
-Definition subst_c t m := t - (Z.land (Z.shiftr m 16) 1).
-Definition mod0xffff m := Z.land m 65535.
-
-Definition sub_step (a:Z) (m t:list Z) : list Z :=
-    let m' := nth (Z.to_nat (a - 1)) m 0 in
-    let t' := nth (Z.to_nat a) t 0 in
-      upd_nth (Z.to_nat (a-1)) (upd_nth (Z.to_nat a) m (subst_0xffffc t' m')) (mod0xffff m').
-
-Lemma nth_i_1_substep: forall i m t, 
-  Zlength m = Zlength t ->
-  0 < i < Zlength m ->
-  nth (Z.to_nat (i - 1)) (sub_step i m t) 0 = mod0xffff (nth (Z.to_nat (i - 1)) m 0).
-Proof.
-  intros i m t Hmt Him.
-  unfold sub_step, mod0xffff.
-  rewrite upd_nth_same_Zlength ; try reflexivity.
-  split ; try omega ; rewrite upd_nth_Zlength ; rewrite Z2Nat.id ; try omega.
-Qed.
-
-Lemma nth_i_substep: forall i m t, 
-  Zlength m = Zlength t ->
-  0 < i < Zlength m ->
-  nth (Z.to_nat (i)) (sub_step i m t) 0 = subst_0xffffc (nth (Z.to_nat i) t 0) (nth (Z.to_nat (i - 1)) m 0).
-Proof.
-  intros i m t Hmt Him.
-  unfold sub_step.
-  rewrite upd_nth_diff_Zlength.
-  2: split ; try omega ; rewrite upd_nth_Zlength ; rewrite Z2Nat.id ; try omega.
-  2: split ; try omega ; rewrite upd_nth_Zlength ; rewrite Z2Nat.id ; try omega.
-  2: intros H ; apply (f_equal Z.of_nat) in H ; rewrite ?Z2Nat.id in H ; omega.
-  rewrite upd_nth_same_Zlength ; try reflexivity.
-  rewrite Z2Nat.id ; try omega.
-Qed.
-
-Definition sub_step_1 (a:Z) (m t:list Z) : list Z :=
-    let t' := nth (Z.to_nat a) t 0 in
-      (upd_nth (Z.to_nat a) m (subst_0xffff t')).
-
-Definition sub_step_2 (a:Z) (m:list Z) : list Z :=
-    let m' := nth (Z.to_nat (a - 1)) m 0 in
-    let t' := nth (Z.to_nat a) m 0 in
-      upd_nth (Z.to_nat (a-1)) (upd_nth (Z.to_nat a) m (subst_c t' m')) (mod0xffff m').
-
-Lemma subst_step_1_2 : forall a m t,
-  0 < a < Zlength m ->
-  sub_step a m t = sub_step_2 a (sub_step_1 a m t).
-Proof.
-  intros.
-  unfold sub_step, sub_step_1, sub_step_2, subst_0xffff, mod0xffff, subst_0xffffc.
-  rewrite ?upd_nth_same_Zlength.
-  rewrite ?upd_nth_diff_Zlength.
-  f_equal.
-  rewrite upd_nth_upd_nth_Zlength.
-  reflexivity.
-  all: try (rewrite Z2Nat.id ; omega).
-  clear t.
-  intro Ha.
-  apply (f_equal Z.of_nat) in Ha.
-  rewrite ?Z2Nat.id in Ha ; omega.
-Qed.
-
-(* Definition of the for loop : 1 -> 15 *)
-Function sub_fn_rev {A} (f:Z -> list A -> list A -> list A) (a:Z) (m t: list A) {measure Z.to_nat a} : (list A) :=
-  if (a <=? 1)
-    then m
-    else
-      let prev := sub_fn_rev f (a - 1) m t in 
-        f (a - 1) prev t.
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
-
-Arguments sub_fn_rev [_] _ _ _.
-
-Lemma sub_fn_rev_1 : forall A f (m t:list A),
-  sub_fn_rev f 1 m t = m.
-Proof. intros. reflexivity. Qed.
-
-Lemma sub_fn_rev_n : forall A f (m t:list A) a,
-  1 < a ->
-  sub_fn_rev f a m t = f (a - 1) (sub_fn_rev f (a - 1) m t) t.
-Proof. intros. rewrite sub_fn_rev_equation.
-destruct (a <=? 1) eqn:Eq.
-apply Zle_bool_imp_le in Eq; omega.
-reflexivity.
-Qed.
-
-(* Definition of the for loop : 1 -> 15 *)
-Function sub_fn_rev_s {A} (f:Z -> list A -> list A) (a:Z) (m: list A) {measure Z.to_nat a} : (list A) :=
-  if (a <=? 1)
-    then m
-    else
-      let prev := sub_fn_rev_s f (a - 1) m in 
-        f (a - 1) prev.
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
-
-Arguments sub_fn_rev_s [_] _ _ _.
-
-Lemma sub_fn_rev_s_1 : forall A f (m: list A),
-  sub_fn_rev_s f 1 m = m.
-Proof. intros. reflexivity. Qed.
-
-Lemma sub_fn_rev_s_n : forall A a (m: list A) f,
-  1 < a ->
-  sub_fn_rev_s f a m = f (a - 1) (sub_fn_rev_s f (a - 1) m).
-Proof. intros. rewrite sub_fn_rev_s_equation.
-destruct (a <=? 1) eqn:Eq.
-apply Zle_bool_imp_le in Eq; omega.
-reflexivity.
-Qed.
 
 (*****************************************************************************************
  *   DEFINE SEMANTIC
@@ -412,17 +298,23 @@ Ltac allVars_red xs e :=
   | ?X  = ?Y =>
     let xs := allVars_red xs X in
     allVars_red xs Y
-  | sub_fn_rev_s _ ?a ?X =>
+  | sub_fn_rev_s _ _ ?X =>
     allVars_red xs X
-  | sub_fn_rev _ ?a ?X ?Y =>
+  | sub_fn_rev _ _ ?X ?Y =>
+    let xs := allVars_red xs X in
+    allVars_red xs Y
+  | upd_nth _ ?X ?Y =>
+    let xs := allVars_red xs X in
+    allVars_red xs Y
+  | nth _ ?X ?Y =>
     let xs := allVars_red xs X in
     allVars_red xs Y
   | ?X :: ?Y =>
-(*     idtac X; *)
-    let xs := allVar xs X in
+    let xs := allVars_red xs X in
     allVars_red xs Y
-  | _ => 
-  xs
+  | nil => xs
+  | ?X => allVar xs X
+  | _ => xs
   end.
 
 Ltac gather_vars_red :=
@@ -453,11 +345,22 @@ Ltac reifyExpr_red env t :=
     let x := reifyExpr_red env X in
     let y := reifyExpr_red env Y in
     constr:(sub_fn_rev sub_red_step a x y)
+  | upd_nth ?a ?X ?Y =>
+    let x := reifyExpr_red env X in
+    let y := reifyExpr_red env Y in
+    constr:(upd_nth a x y)
+  | nth ?a ?X ?Y =>
+    let x := reifyExpr_red env X in
+    let y := reifyExpr_red env Y in
+    constr:(nth a x y)
   | ?X :: ?Y =>
-    let x := reifyValue_red env X in
+    let x := reifyExpr_red env X in
     let y := reifyExpr_red env Y in
     constr:((R_red x) :: y)
   | nil => constr:(nil:list red_expr)
+  | ?X =>
+    let x := reifyValue_red env X in
+    constr:(x)
   end.
 
 Ltac reifyTerm_red env t :=

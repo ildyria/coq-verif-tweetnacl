@@ -1,5 +1,8 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
 From Tweetnacl Require Import Low.Reduce_by_P_compose.
 From Tweetnacl Require Import Mid.SubList.
 From Tweetnacl Require Import Low.Get_abcdef.
@@ -8,6 +11,7 @@ From Tweetnacl Require Import Low.Sel25519.
 From Tweetnacl Require Import Low.Constant.
 From stdpp Require Import prelude.
 Require Import Recdef.
+Require Import ssreflect.
 
 (*
 sv pack25519(u8 *o,const gf n)
@@ -45,50 +49,11 @@ Open Scope Z.
 0x7fff = 32767
 *)
 
+Definition subst_0xffed t := t - 65517.
+Definition subst_0x7fffc t m := t - 32767 - (Z.land (Z.shiftr m 16) 1).
+Definition subst_0x7fff t := t - 32767.
+
 Definition getBit256 l := Z.land (Z.shiftr (nth 15%nat l 0) 16) 1.
-
-Lemma nth_i_1_substep_bounds: forall i m t,
-  Zlength m = Zlength t ->
-  0 < i < Zlength m ->
-  0 <= nth (Z.to_nat (i - 1)) (sub_step i m t) 0 < 2^16.
-Proof.
-  intros.
-  rewrite nth_i_1_substep //.
-  rewrite /mod0xffff.
-  change 65535 with (Z.ones 16).
-  rewrite Z.land_ones ; try omega.
-  apply Z_mod_lt.
-  apply pown0 ; omega.
-Qed.
-
-Lemma nth_i_substep_bounds: forall i m t,
-  Zlength m = Zlength t ->
-  0 < i < Zlength m ->
-  Forall (fun x => 0 <= x < 2^16) t ->
-  -2^16 <= nth (Z.to_nat i) (sub_step i m t) 0 <= 0.
-Proof.
-intros i m t Hmt Him HPt.
-rewrite nth_i_substep //.
-rewrite /subst_0xffffc.
-assert(HP0: 0 ≤ 0 ∧ 0 < 2 ^ 16) by (split ; try omega ; apply Z.gt_lt ; apply pown0 ; omega).
-assert(0 ≤ (nth (Z.to_nat i) t 0) ∧ (nth (Z.to_nat i) t 0) < 2 ^ 16).
-apply Forall_nth_d; assumption.
-assert(HZlandminmax:= and_0_or_1 (nth (Z.to_nat (i - 1)) m 0 ≫ 16)).
-assert(HZland: Z.land (nth (Z.to_nat (i - 1)) m 0 ≫ 16) 1 = 0 \/ Z.land (nth (Z.to_nat (i - 1)) m 0 ≫ 16) 1 = 1) by omega.
-destruct HZland as [HZland|HZland]; rewrite HZland.
-all: change (2^16) with 65536 in * ; omega.
-Qed.
-
-Lemma subst_select_step_Zlength : forall i m t,
-  0 < i < Zlength m->
-  Zlength (sub_step i m t) = Zlength m.
-Proof.
-  intros.
-  rewrite /sub_step.
-  assert(0 < Z.to_nat i /\ Z.to_nat i < Zlength m) by (rewrite ?Z2Nat.id ; omega).
-  assert(Z.of_nat (Z.to_nat (i - 1)) = (Z.of_nat (Z.to_nat i)) - 1) by (rewrite ?Z2Nat.id ; omega).
-  rewrite ?upd_nth_Zlength ; omega.
-Qed.
 
 Definition m_from_t (m t:list Z) : list Z :=
   let m0 := upd_nth 0 m (subst_0xffed (nth 0 t 0)) in
@@ -106,7 +71,7 @@ Proof.
   do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
   do 17 (destruct m' ; [tryfalse |]) ; [|tryfalse].
   do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
-  rewrite /m_from_t.
+  unfold m_from_t.
   simpl nth; simpl upd_nth.
   reflexivity.
 Qed.
@@ -117,83 +82,6 @@ Lemma m_from_t_dep_Zlength : forall m m' t,
   Zlength t = 16 ->
   m_from_t m' t = m_from_t m t.
 Proof. convert_length_to_Zlength m_from_t_dep_length. Qed.
-
-Lemma Zlandshift1 : forall a, (Z.land (a ≫ 16) 1) = Z.modulo (a / 2^16) 2.
-Proof. intros. change 1 with (Z.ones 1) ; rewrite Z.shiftr_div_pow2 ?Z.land_ones ;  try omega.
-reflexivity.
-Qed.
-
-(*
-Lemma sub_step_ZofList : forall i t m,
-  1 < i < Zlength t ->
-  Zlength m = Zlength t ->
-  ZofList 16 (sub_step i m t) = ZofList 16 m - (2*(16 *i) * nth (Z.to_nat i) m 0) + (2*(16 * i) * nth (Z.to_nat i) t 0) - (2^(16 * i) * 65535).
-Proof.
-intros.
-rewrite /sub_step.
-
-Lemma m_from_t_Z_of_list : forall t,
-  (length t = 16)%nat ->
-  ZofList 16 (m_from_t nul16 t) = ZofList 16 (ZsubList t list25519).
-Proof.
-intros t Ht; rewrite /nul16 /list25519.
-do 17 (destruct t; [tryfalse|]) ; [|tryfalse].
-simpl.
-rewrite /subst_0xffed /mod0xffff.
-change 65535 with (Z.ones 16).
-rewrite ?Z.land_ones /subst_0xffff.
-all: try omega.
-assert(Hmodsub: forall a b c, (a - b - c) mod 2^16 = (((a - b) mod 2^16) - (c mod 2^16)) mod 2^16).
-{ intros a b c ; rewrite Zminus_mod ; reflexivity. }
-rewrite ?Hmodsub.
-rewrite ?Zlandshift1.
-assert(Hmultdist: forall a b,
-2 ^ 16 *
-((a `mod` 2 ^ 16 - ((b `div` 2 ^ 16) `mod` 2) `mod` 2 ^ 16) `mod` 2 ^ 16) =
-(- (((b `div` 2 ^ 16) `mod` 2) `mod` 2 ^ 16) * 2 ^ 16 + 2^16 * (a `mod` 2 ^ 16  `mod` 2 ^ 16)) `mod` 2 ^ 16).
-{ intros.
-rewrite Z.mul_comm.
-assert(2 ^ 16 > 0) by (apply pown0 ; omega).
-rewrite -Z.mul_mod_distr_r ; try omega.
-rewrite Z.mul_sub_distr_r.
-rewrite -Z.add_opp_l.
-Search Z.add Z.modulo.
-
- 2^16 * (Z.modulo (a - b) 2^16) = - 2^16 * (Z.modulo b 2^16) + 2 ^ 16 * (Z.modulo a 2^16)).
-{ intros.
- ; ring. }
-rewrite ?Hmultdist.
-*)
-
-Local Lemma sub_fn_rev_Zlength_ind_step : forall i m t,
-  0 < i < Zlength m ->
-  Zlength (sub_fn_rev sub_step i m t) = Zlength m ->
-  Zlength (sub_fn_rev sub_step (i+1) m t) = Zlength m.
-Proof.
-intros i m t Him Hind.
-rewrite sub_fn_rev_equation.
-flatten.
-replace ( i + 1 - 1) with i by omega.
-rewrite -Hind.
-apply subst_select_step_Zlength.
-rewrite Hind.
-assumption.
-Qed.
-
-Lemma sub_fn_rev_Zlength : forall i m t,
-  Zlength m = 16 ->
-  0 < i < Zlength m ->
-  Zlength (sub_fn_rev sub_step i m t) = Zlength m.
-Proof.
-intros.
-change(Zlength (sub_fn_rev sub_step i m t) = Zlength m) with
-  ((fun x => Zlength (sub_fn_rev sub_step x m t) = Zlength m) i).
-apply P016_impl.
-by rewrite sub_fn_rev_1.
-intros ; apply sub_fn_rev_Zlength_ind_step.
-2: apply H2.
-all: omega.
-Qed.
 
 Definition select_m_t m t : (list Z * list Z) :=
   let new_m := m_from_t m t in 

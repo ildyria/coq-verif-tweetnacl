@@ -7,7 +7,7 @@ From Tweetnacl Require Export Libs.List_Ltac.
 From Tweetnacl Require Export Libs.Forall_extended.
 From Tweetnacl Require Export Libs.ZArith_extended.
 From Tweetnacl Require Export Libs.Relations.
-Require Export mathcomp.ssreflect.ssreflect.
+(* Require Export mathcomp.ssreflect.ssreflect. *)
 Require Export Coq.ZArith.BinInt.
 Require Export Coq.ZArith.Zdiv.
 

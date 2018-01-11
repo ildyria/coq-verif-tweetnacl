@@ -1,4 +1,5 @@
 Require Import Tweetnacl.Libs.Export.
+Require Import ssreflect.
 Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Tweetnacl.Low.ScalarMult_rec_gen.
 Require Import Tweetnacl.Low.ScalarMult_rev_rec_gen.

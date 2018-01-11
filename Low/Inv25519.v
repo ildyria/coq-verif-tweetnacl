@@ -4,6 +4,7 @@ Require Import Tweetnacl.Low.Inv25519_gen.
 Require Import Tweetnacl.Low.M.
 Require Import Tweetnacl.Low.S.
 Require Import Tweetnacl.Mid.Inv25519.
+Require Import ssreflect.
 
 Open Scope Z.
 

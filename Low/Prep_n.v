@@ -1,4 +1,5 @@
 Require Import stdpp.prelude.
+Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 Local Open Scope Z.

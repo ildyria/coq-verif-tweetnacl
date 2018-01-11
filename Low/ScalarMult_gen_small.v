@@ -1,6 +1,8 @@
 Require Import Tweetnacl.Libs.Export.
+Require Import ssreflect.
 
 Section ScalarRec.
+Open Scope Z.
 
 Variable A : list Z -> list Z -> list Z.
 Variable M : list Z -> list Z -> list Z.
@@ -78,69 +80,12 @@ A
 Definition ff r (a b c d e f x:list Z) :=
   Sq (Zub (Sel25519 r a b) (Sel25519 r c d)).
 
-Close Scope Z.
-
-(* Variable A_length : forall a b, length a = 16 -> length b = 16 -> length (A a b) = 16.
-Variable M_length : forall a b, length a = 16 -> length b = 16 -> length (M a b) = 16.
-Variable Zub_length : forall a b, length a = 16 -> length b = 16 -> length (Zub a b) = 16.
-Variable Sq_length : forall a, length a = 16 -> length (Sq a) = 16.
-Variable Sel25519_length : forall b p q, length p = 16 -> length q = 16 -> length (Sel25519 b p q) = 16.
-Variable _121665_length : length _121665 = 16. *)
-
-Open Scope Z.
-
 Variable A_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (A a b) = 16.
 Variable M_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (M a b) = 16.
 Variable Zub_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (Zub a b) = 16.
 Variable Sq_Zlength : forall a, Zlength a = 16 -> Zlength (Sq a) = 16.
 Variable Sel25519_Zlength : forall b p q, Zlength p = 16 -> Zlength q = 16 -> Zlength (Sel25519 b p q) = 16.
 Variable _121665_Zlength : Zlength _121665 = 16.
-
-Close Scope Z.
-(* 
-Local Ltac solve_small_montgomery_step_gen_length :=
-  intros;
-  rewrite /fa /fb /fc /fd /fe /ff;
-  repeat match goal with
-    | _ => orewrite Sel25519_length
-    | _ => orewrite M_length
-    | _ => orewrite Sq_length
-    | _ => orewrite A_length
-    | _ => orewrite Zub_length
-  end ; reflexivity.
-
-Lemma fa_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fa r a b c d e f x) = 16.
-Proof. solve_small_montgomery_step_gen_length. Qed.
-Lemma fb_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fb r a b c d e f x) = 16.
-Proof. solve_small_montgomery_step_gen_length. Qed.
-Lemma fc_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fc r a b c d e f x) = 16.
-Proof. solve_small_montgomery_step_gen_length. Qed.
-Lemma fd_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fd r a b c d e f x) = 16.
-Proof. solve_small_montgomery_step_gen_length. Qed.
-Lemma fe_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (fe r a b c d e f x) = 16.
-Proof. solve_small_montgomery_step_gen_length. Qed.
-Lemma ff_length : forall r a b c d e f x,
-  length a = 16 -> length b = 16 -> length c = 16 ->
-  length d = 16 -> length e = 16 -> length f = 16 -> length x = 16 ->
-  length (ff r a b c d e f x) = 16.
-Proof. solve_small_montgomery_step_gen_length. Qed. *)
-
-Open Scope Z.
 
 Local Ltac solve_small_step_Zlength :=
   intros;
@@ -218,17 +163,6 @@ Variable Sel25519_bound_le : forall p pmin pmax q qmin qmax,
   Forall (fun x => pmin <= x <= pmax) p ->
   Forall (fun x => qmin <= x <= qmax) q -> forall b,
   Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
-(* Variable Sel25519_bound_lt_trans_le : forall p pmin pmax q qmin qmax,
-  Forall (fun x => pmin < x < pmax) p ->
-  Forall (fun x => qmin < x < qmax) q -> forall b,
-  Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
- *)
-(*
-Variable Sel25519_bound_lt : forall p pmin pmax q qmin qmax,
-  Forall (fun x => pmin < x < pmax) p ->
-  Forall (fun x => qmin < x < qmax) q -> forall b,
-  Forall (fun x => Z.min pmin qmin < x < Z.max pmax qmax) (Sel25519 b p q).
-*)
 Variable Sel25519_bound_lt_le_id : forall pmin pmax p q,
   Forall (fun x => pmin <= x < pmax) p ->
   Forall (fun x => pmin <= x < pmax) q -> forall b,
@@ -237,12 +171,6 @@ Variable Sel25519_bound_lt_lt_id : forall pmin pmax p q,
   Forall (fun x => pmin < x < pmax) p ->
   Forall (fun x => pmin < x < pmax) q -> forall b,
   Forall (fun x => pmin < x < pmax) (Sel25519 b p q).
-(*
-Variable Sel25519_bound_le_le_id : forall pmin pmax p q,
-  Forall (fun x => pmin <= x <= pmax) p ->
-  Forall (fun x => pmin <= x <= pmax) q -> forall b,
-  Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q). 
-*)
 Variable Sel25519_bound_le_lt_trans_le_id : forall pmin pmax p q,
   Forall (fun x => pmin <= x < pmax) p ->
   Forall (fun x => pmin <= x < pmax) q -> forall b,

@@ -1,4 +1,5 @@
 Require Import stdpp.prelude.
+Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 
 (* Some definitions relating to the functional spec of this particular program.  *)

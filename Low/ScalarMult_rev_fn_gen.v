@@ -1,6 +1,7 @@
 Set Warnings "-funind-cannot-define-graph".
 Set Warnings "-funind".
 
+Require Import ssreflect.
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Recdef.

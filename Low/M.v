@@ -1,4 +1,5 @@
 Require Import Tweetnacl.Libs.Export.
+Require Import ssreflect.
 From Tweetnacl Require Import ListsOp.Export.
 Require Export Tweetnacl.Low.M_low_level_compute.
 Require Export Tweetnacl.Low.Inner_M1.

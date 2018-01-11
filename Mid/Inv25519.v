@@ -2,6 +2,7 @@ Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
 Require Import Tweetnacl.Low.M.
 Require Import Tweetnacl.Low.S.
+Require Import ssreflect.
 Open Scope Z.
 
 Definition step_pow_Z a c g := let c0 := c*c in if Zneq_bool a 1 && Zneq_bool a 3 then c0*g else c0.

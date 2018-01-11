@@ -1,4 +1,5 @@
 From Tweetnacl Require Import Libs.Export.
+Require Import ssreflect.
 
 Open Scope Z.
 

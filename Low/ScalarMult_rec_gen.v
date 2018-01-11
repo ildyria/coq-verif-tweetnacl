@@ -1,6 +1,7 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Libs.HeadTailRec.
 Require Import Tweetnacl.Low.ScalarMult_step_gen.
+Require Import ssreflect.
 
 Section ScalarRec.
 

@@ -28,6 +28,11 @@ Lemma nth_take: forall A (n:nat) (l l':list A) d,
 Proof. induction n ; destr_boum l. Qed.
 Arguments nth_take [A] _ _ _ _ _.
 
+Lemma nth_take_full: forall A (n m:nat) (l:list A) d,
+  n < m -> nth n (take m l) d = nth n l d.
+Proof. induction n ; destruct m; destr_boum l. Qed.
+Arguments nth_take_full [A] _ _ _ _.
+
 Lemma nth_drop_2 : forall A (n:nat) (l:list A) (d:A), n <= length l -> nth n l d = nth 0 (drop n l) d.
 Proof. induction n ; destr_boum l. Qed.
 Arguments nth_drop [A] _ _ _.
