@@ -1,10 +1,14 @@
-From Tweetnacl Require Import Libs.Export.
-From Tweetnacl Require Import ListsOp.Export.
+(* From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import ListsOp.Export. *)
 (* From Tweetnacl Require Import Mid.SubList. *)
 (* From Tweetnacl Require Import Low.Get_abcdef. *)
 (* From Tweetnacl Require Import Low.GetBit_pack25519. *)
 (* From Tweetnacl Require Import Low.Sel25519. *)
 (* From Tweetnacl Require Import Low.Constant. *)
+From Tweetnacl Require Import Libs.Lists_extended.
+From Tweetnacl Require Import Libs.List_Ltac.
+From Tweetnacl Require Import Libs.LibTactics_SF.
+From Tweetnacl Require Import Libs.LibTactics.
 From stdpp Require Import prelude.
 Require Import Recdef.
 
@@ -24,6 +28,17 @@ sv pack25519(u8 *o,const gf n)
       m[i]=t[i]-0xffff-((m[i-1]>>16)&1);
       m[i-1]&=0xffff;
     }
+
+    for(i=1;i<15;i++) {
+      m[i]=t[i];
+    }
+    for(i=1;i<15;i++) {
+      m[i]=m[i]-((m[i-1]>>16)&1);
+      m[i-1]&=0xffff;
+    }
+
+
+
 
     m[15]=t[15]-0x7fff-((m[14]>>16)&1);
     b=(m[15]>>16)&1;
@@ -63,7 +78,7 @@ Lemma nth_i_1_substep: forall i m t,
   nth (Z.to_nat (i - 1)) (sub_step i m t) 0 = mod0xffff (nth (Z.to_nat (i - 1)) m 0).
 Proof.
   intros i m t Hmt Him.
-  rewrite /sub_step /mod0xffff.
+  unfold sub_step, mod0xffff.
   rewrite upd_nth_same_Zlength ; try reflexivity.
   split ; try omega ; rewrite upd_nth_Zlength ; rewrite Z2Nat.id ; try omega.
 Qed.
@@ -74,7 +89,7 @@ Lemma nth_i_substep: forall i m t,
   nth (Z.to_nat (i)) (sub_step i m t) 0 = subst_0xffffc (nth (Z.to_nat i) t 0) (nth (Z.to_nat (i - 1)) m 0).
 Proof.
   intros i m t Hmt Him.
-  rewrite /sub_step.
+  unfold sub_step.
   rewrite upd_nth_diff_Zlength.
   2: split ; try omega ; rewrite upd_nth_Zlength ; rewrite Z2Nat.id ; try omega.
   2: split ; try omega ; rewrite upd_nth_Zlength ; rewrite Z2Nat.id ; try omega.
@@ -97,7 +112,7 @@ Lemma subst_step_1_2 : forall a m t,
   sub_step a m t = sub_step_2 a (sub_step_1 a m t).
 Proof.
   intros.
-  rewrite /sub_step /sub_step_1 /sub_step_2 /subst_0xffff /mod0xffff /subst_0xffffc.
+  unfold sub_step, sub_step_1, sub_step_2, subst_0xffff, mod0xffff, subst_0xffffc.
   rewrite ?upd_nth_same_Zlength.
   rewrite ?upd_nth_diff_Zlength.
   f_equal.
@@ -117,19 +132,21 @@ Function sub_fn_rev {A} (f:Z -> list A -> list A -> list A) (a:Z) (m t: list A) 
     else
       let prev := sub_fn_rev f (a - 1) m t in 
         f (a - 1) prev t.
-Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
+Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
 
 Arguments sub_fn_rev [_] _ _ _.
 
 Lemma sub_fn_rev_1 : forall A f (m t:list A),
   sub_fn_rev f 1 m t = m.
-Proof. go. Qed.
+Proof. intros. reflexivity. Qed.
 
 Lemma sub_fn_rev_n : forall A f (m t:list A) a,
   1 < a ->
   sub_fn_rev f a m t = f (a - 1) (sub_fn_rev f (a - 1) m t) t.
 Proof. intros. rewrite sub_fn_rev_equation.
-flatten ; apply Zle_bool_imp_le in Eq; omega.
+destruct (a <=? 1) eqn:Eq.
+apply Zle_bool_imp_le in Eq; omega.
+reflexivity.
 Qed.
 
 (* Definition of the for loop : 1 -> 15 *)
@@ -139,33 +156,22 @@ Function sub_fn_rev_s {A} (f:Z -> list A -> list A) (a:Z) (m: list A) {measure Z
     else
       let prev := sub_fn_rev_s f (a - 1) m in 
         f (a - 1) prev.
-Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
+Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
 
 Arguments sub_fn_rev_s [_] _ _ _.
 
 Lemma sub_fn_rev_s_1 : forall A f (m: list A),
   sub_fn_rev_s f 1 m = m.
-Proof. go. Qed.
+Proof. intros. reflexivity. Qed.
 
 Lemma sub_fn_rev_s_n : forall A a (m: list A) f,
   1 < a ->
   sub_fn_rev_s f a m = f (a - 1) (sub_fn_rev_s f (a - 1) m).
 Proof. intros. rewrite sub_fn_rev_s_equation.
-flatten ; apply Zle_bool_imp_le in Eq; omega.
+destruct (a <=? 1) eqn:Eq.
+apply Zle_bool_imp_le in Eq; omega.
+reflexivity.
 Qed.
-
-Lemma sub_fn_rev_f_g :  forall a m t,
-  (length m = 16)%nat ->
-  (length t = 16)%nat ->
-  0 < a < 16 ->
-  sub_fn_rev sub_step a m t = sub_fn_rev_s sub_step_2 a (sub_fn_rev sub_step_1 a m t).
-Proof.
-intros a m t Hm Ht Ha.
-intros.
-do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
-do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
-assert_gen_hyp_ H a 15 14 ; try omega.
-Admitted.
 
 (*****************************************************************************************
  *   DEFINE SEMANTIC
@@ -271,7 +277,7 @@ Definition decide_formula_red_expr (f : formula_red_expr) : bool := match f with
   end.
 
 Lemma decide_formula_red_impl : forall env f, decide_formula_red_expr f = true -> formula_red_expr_denote env f.
-Proof. move=> env [? ?]. by apply decide_red_expr_list_eq_impl. Qed.
+Proof. intros env [? ?]. by apply decide_red_expr_list_eq_impl. Qed.
 
 (* Weaponize our expression so we can translate functions *)
 
@@ -314,11 +320,11 @@ rewrite sub_fn_rev_n.
 symmetry.
 replace (i + 1 - 1) with i.
 all: try omega.
-rewrite /sub_red_step.
+unfold sub_red_step.
 rewrite ?red_expr_list_denote_upd_nth.
-rewrite /sub_step.
+unfold sub_step.
 rewrite ?red_expr_list_denote_nth. simpl.
-rewrite /subst_0xffffc /subst_c /subst_0xffff.
+unfold subst_0xffffc, subst_c, subst_0xffff.
 rewrite IH.
 rewrite ?red_expr_list_denote_nth.
 reflexivity.
@@ -349,11 +355,11 @@ rewrite sub_fn_rev_n.
 symmetry.
 replace (i + 1 - 1) with i.
 all: try omega.
-rewrite /sub_red_step.
+unfold sub_red_step_1.
 rewrite ?red_expr_list_denote_upd_nth.
-rewrite /sub_step.
+unfold sub_step_1.
 rewrite ?red_expr_list_denote_nth. simpl.
-rewrite /subst_0xffffc /subst_c /subst_0xffff.
+unfold subst_0xffffc, subst_c, subst_0xffff.
 rewrite IH.
 rewrite ?red_expr_list_denote_nth.
 reflexivity.
@@ -384,11 +390,11 @@ rewrite sub_fn_rev_s_n.
 symmetry.
 replace (i + 1 - 1) with i.
 all: try omega.
-rewrite /sub_red_step.
+unfold sub_red_step_2.
 rewrite ?red_expr_list_denote_upd_nth.
-rewrite /sub_step.
+unfold sub_step_2.
 rewrite ?red_expr_list_denote_nth. simpl.
-rewrite /subst_0xffffc /subst_c /subst_0xffff.
+unfold subst_0xffffc, subst_c, subst_0xffff.
 rewrite IH.
 rewrite ?red_expr_list_denote_nth.
 reflexivity.
@@ -401,94 +407,171 @@ Close Scope Z.
  * Reflection tactics
  *)
 
-(*
-Ltac reifyValue env t :=
+
+(* Ltac inList x xs :=
+  match xs with
+  | tt => false
+  | (x, _) => true
+  | (_, ?xs') => inList x xs'
+  end.
+
+Ltac addToList x xs :=
+  let b := inList x xs in
+  match b with
+  | true => xs
+  | false => constr:((x, xs))
+  end.
+
+Ltac lookup x xs :=
+  match xs with
+  | (x, _) => constr:(1%positive)
+  | (_, ?xs') =>
+    let n := lookup x xs' in
+    constr:(Pos.succ n)
+  end.
+ *)
+(* Ltac allVar xs e :=
+  match e with
+  | Z0 => xs
+  | Zpos _ => xs
+  | Zneg _ => xs
+  | _ => addToList e xs
+  end.
+ *)
+Ltac allVars_red xs e :=
+  match e with
+  | ?X  = ?Y =>
+    let xs := allVars_red xs X in
+    allVars_red xs Y
+  | sub_fn_rev_s _ ?a ?X =>
+    allVars_red xs X
+  | sub_fn_rev _ ?a ?X ?Y =>
+    let xs := allVars_red xs X in
+    allVars_red xs Y
+  | ?X :: ?Y =>
+(*     idtac X; *)
+    let xs := allVar xs X in
+    allVars_red xs Y
+  | _ => 
+  xs
+  end.
+
+Ltac gather_vars_red :=
+  match goal with
+  | [ |- ?X ] =>
+    let xs  := allVars_red tt X in
+     pose xs
+  end.
+
+Ltac reifyValue_red env t :=
   match t with
   | ?X =>
     let v := lookup X env in
-    constr:(R_inv)
-  | _ => constr:(R_inv)
+    constr:(Var v)
+  | _ => constr:(Val t)
+(*   | Zneg _ =>
+    constr:(Val t)
+  | Zpos _ =>
+    constr:(Val t) *)
   end.
 
-Ltac reifyExpr env t :=
+Ltac reifyExpr_red env t :=
   lazymatch t with
-  | pow_fn_rev_Z ?a ?b ?X ?Y =>
-    let x := reifyValue env X in
-    let y := reifyValue env Y in
-    constr:(pow_inv (Z.to_nat a) (Z.to_nat b) x y)
-  | ?X * ?Y =>
-    let x := reifyValue env X in
-    let y := reifyValue env Y in
-    constr:(M_inv x y)
-  | Z.pow ?X ?Y =>
-    let x := reifyValue env X in
-    match Y with
-      | Z.pos ?p => constr:(P_inv x p)
-      | _ => constr:(P_inv x 1%positive)
-    end
-  | ?X =>
-    let x := reifyValue env X in
-    constr:(R_inv)
+  | sub_fn_rev_s sub_step_2 ?a ?X =>
+    let x := reifyExpr_red env X in
+    constr:(sub_fn_rev_s sub_red_step_2 a x)
+  | sub_fn_rev sub_step_1 ?a ?X ?Y =>
+    let x := reifyExpr_red env X in
+    let y := reifyExpr_red env Y in
+    constr:(sub_fn_rev sub_red_step_1 a x y)
+  | sub_fn_rev sub_step ?a ?X ?Y =>
+    let x := reifyExpr_red env X in
+    let y := reifyExpr_red env Y in
+    constr:(sub_fn_rev sub_red_step a x y)
+  | ?X :: ?Y =>
+    let x := reifyValue_red env X in
+    let y := reifyExpr_red env Y in
+    constr:((R_red x) :: y)
+  | nil => constr:(nil:list red_expr)
   end.
 
-Ltac reifyTerm env t :=
+Ltac reifyTerm_red env t :=
   lazymatch t with
    | ?X = ?Y =>
-      let x := reifyExpr env X in
-      let y := reifyExpr env Y in
-      constr:(Eq_inv x y)
+      let x := reifyExpr_red env X in
+      let y := reifyExpr_red env Y in
+      constr:(Eq_red x y)
   end.
 
-Ltac functionalize xs :=
-  let rec loop n xs' :=
+Ltac functionalize_red xs :=
+  let rec loop_red n xs' :=
     lazymatch xs' with
     | tt => constr:(fun _ : positive => 0%Z)
     | (?x, tt) => constr:(fun _ : positive => x)
     | (?x, ?xs'') =>
-      let f := loop (Pos.succ n) xs'' in
+      let f := loop_red (Pos.succ n) xs'' in
       constr:(fun m : positive => if (m =? n)%positive then x else f m)
     end in
-  loop (1%positive) xs.
+  loop_red (1%positive) xs.
 
 (**************************************************************************
  * User interface tactics
  *)
 
 Open Scope Z.
-(* 
-Eval compute in Z.pow 2 255 - 21.
-Z.pow 2 255 - 21 = 57896044618658097711785492504343953926634992332820282019728792003956564819947
-*)
 
-Theorem Inv25519_Z_correct : forall x, Inv25519_Z x = Z.pow x 57896044618658097711785492504343953926634992332820282019728792003956564819947.
+Lemma sub_fn_rev_f_g :  forall a m t,
+  (length m = 16)%nat ->
+  (length t = 16)%nat ->
+  0 < a < 16 ->
+  sub_fn_rev sub_step a m t = sub_fn_rev_s sub_step_2 a (sub_fn_rev sub_step_1 a m t).
 Proof.
+intros a m t Hm Ht Ha.
 intros.
-  rewrite /Inv25519_Z.
-  match goal with
+do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
+do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
+(* gather_vars_red. *)
+assert_gen_hyp_ H a 15 14 ; try omega.
+match goal with
   | [ |- ?X ] =>
-    let xss := constr:((x, tt)) in
-    let envv := functionalize xss in
-    let r1  := reifyTerm xss X in
-    pose xs := xss;
-    pose env := envv;
-    pose reif := r1
+    let xss  := allVars_red tt X in
+    let envv := functionalize_red xss in
+    let r1  := reifyTerm_red xss X in
+    pose xss;
+    pose envv;
+    pose r1
     end.
+    rename p into xs.
+    rename z31 into env.
+    rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
-    assert (
-      formula_inv_denote (Var 1) {| vars := env |} reif ->
-      pow_fn_rev_Z 254 254 x x =
-      x ^ 57896044618658097711785492504343953926634992332820282019728792003956564819947).
+    assert (Hsubst:
+      formula_red_expr_denote {| vars := env |} reif ->
+      sub_fn_rev sub_step a [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14]
+  [z15; z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30] =
+sub_fn_rev_s sub_step_2 a
+  (sub_fn_rev sub_step_1 a [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14]
+     [z15; z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30])).
     {
-    subst env reif.
-    rewrite /formula_inv_denote pow_inv_pow_fn_rev_eq.
-    simpl. trivial.
+    subst reif.
+    unfold formula_red_expr_denote.
+    rewrite <- step_fn_red_expr.
+    rewrite <- step_fn_red_expr_2.
+    rewrite <- step_fn_red_expr_1.
+    subst env.
+    trivial.
     }
-    apply H ; clear H.
-    apply decide_formula_inv_impl.
-    (* at this point we don't need any hypothesis, this is purely computational *)
-    subst reif ; clears.
-    compute.
-    reflexivity.
+apply Hsubst.
+apply decide_formula_red_impl.
+clear Hsubst.
+clear xs.
+clear env.
+subst reif.
+clear Hm Ht. clears.
+repeat match goal with
+  | [ H : ?a = _ |- _ ] => subst a ; compute ; reflexivity
+  | [ H : _ \/ _ |- _ ] => destruct H
+end.
 Qed.
 
-Close Scope Z. *)
+Close Scope Z.
