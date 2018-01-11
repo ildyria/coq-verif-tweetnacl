@@ -407,37 +407,6 @@ Close Scope Z.
  * Reflection tactics
  *)
 
-
-(* Ltac inList x xs :=
-  match xs with
-  | tt => false
-  | (x, _) => true
-  | (_, ?xs') => inList x xs'
-  end.
-
-Ltac addToList x xs :=
-  let b := inList x xs in
-  match b with
-  | true => xs
-  | false => constr:((x, xs))
-  end.
-
-Ltac lookup x xs :=
-  match xs with
-  | (x, _) => constr:(1%positive)
-  | (_, ?xs') =>
-    let n := lookup x xs' in
-    constr:(Pos.succ n)
-  end.
- *)
-(* Ltac allVar xs e :=
-  match e with
-  | Z0 => xs
-  | Zpos _ => xs
-  | Zneg _ => xs
-  | _ => addToList e xs
-  end.
- *)
 Ltac allVars_red xs e :=
   match e with
   | ?X  = ?Y =>
@@ -469,10 +438,6 @@ Ltac reifyValue_red env t :=
     let v := lookup X env in
     constr:(Var v)
   | _ => constr:(Val t)
-(*   | Zneg _ =>
-    constr:(Val t)
-  | Zpos _ =>
-    constr:(Val t) *)
   end.
 
 Ltac reifyExpr_red env t :=

@@ -69,7 +69,7 @@ Lemma nth_i_substep_bounds: forall i m t,
 Proof.
 intros i m t Hmt Him HPt.
 rewrite nth_i_substep //.
-rewrite /subst_0xffff.
+rewrite /subst_0xffffc.
 assert(HP0: 0 ≤ 0 ∧ 0 < 2 ^ 16) by (split ; try omega ; apply Z.gt_lt ; apply pown0 ; omega).
 assert(0 ≤ (nth (Z.to_nat i) t 0) ∧ (nth (Z.to_nat i) t 0) < 2 ^ 16).
 apply Forall_nth_d; assumption.
@@ -93,7 +93,7 @@ Qed.
 Definition m_from_t (m t:list Z) : list Z :=
   let m0 := upd_nth 0 m (subst_0xffed (nth 0 t 0)) in
   let m14 := sub_fn_rev sub_step 15 m0 t in
-  let m15 := upd_nth 15 m14 (subst_0x7fff (nth 15 t 0) (nth 14 m14 0)) in
+  let m15 := upd_nth 15 m14 (subst_0x7fffc (nth 15 t 0) (nth 14 m14 0)) in
   upd_nth 14 m15 (mod0xffff (nth 14 m15 0)).
 
 Local Lemma m_from_t_dep_length : forall m m' t,

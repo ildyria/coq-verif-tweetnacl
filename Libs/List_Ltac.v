@@ -164,8 +164,7 @@ Local Example example1 : forall x y, x * y = y * x.
 Proof. intros ; reify; apply decide_formula_impl; vm_compute; auto. Qed.
 
 Local Example example2 : forall x y z, x*y :: 0 * z :: nil = y * x :: 0 :: nil.
-Proof. intros. reify.
-mini_ring. Qed.
+Proof. mini_ring. Qed.
 
 Local Example example3 : forall x, (2*3*4*x = 3*4*2*x)%Z.
 Proof. mini_ring. Qed.
