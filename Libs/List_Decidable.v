@@ -4,6 +4,8 @@ Require Export Coq.Lists.List.
 Require Import Tweetnacl.Libs.Decidable.
 Require Import Tweetnacl.Libs.Expr_Decidable.
 Require Import Tweetnacl.Libs.Term_Decidable.
+Require Import Tweetnacl.Libs.Formula_Decidable.
+Require Import Tweetnacl.Libs.Lists_extended.
 Require Import ssreflect.
 
 Open Scope Z_scope.
@@ -47,9 +49,32 @@ Proof.
   by apply IHa.
 Qed.
 
+Lemma list_denote_nth :
+  forall i env (l: list T) (d:T), denote env (nth i l d) = nth i (list_denote env l) (denote env d).
+Proof.
+intros i env l. revert i. induction l as [|h l IHl] ; intros [|i] ; try reflexivity.
+simpl. apply IHl.
+Qed.
+
+Lemma list_denote_map :
+  forall env (l: list T), map (denote env) l = (list_denote env l).
+Proof.
+induction l as [|h l IHl] ; try reflexivity.
+simpl. rewrite IHl ; reflexivity.
+Qed.
+
+Lemma list_denote_upd_nth :
+  forall i env (l: list T) (v:T), list_denote env (upd_nth i l v) = upd_nth i (list_denote env l) (denote env v).
+Proof.
+intros i env m. revert i. induction m as [|h m IHm] ; intros [|i] v ; try reflexivity.
+simpl. f_equal. apply IHm.
+Qed.
+
 End list_denote.
 
+
 (********************************************************************************)
+
 
 Local Definition ta := Var 1%positive.
 Local Definition tb := Var 2%positive.
@@ -62,30 +87,16 @@ Local Definition tg := Var 7%positive.
 Local Definition expr1 := A (M ta tb) (A (R tc) (R tb)).
 Local Definition expr2 := A (A (R tc) (R tb)) (M ta tb).
 
-Inductive formula :=
-  | Eq : expr -> expr -> formula
-  | LEq : list expr -> list expr -> formula.
-
-Definition formula_denote env (t : formula) : Prop :=
-  match t with
-  | Eq x y     => denote env x = denote env y
-  | LEq x y    => list_denote expr_dec env x = list_denote expr_dec env y
-  end.
-
-Definition formula_decide (f : formula) : bool := match f with
-  | Eq x y => decide x y
-  | LEq x y => list_decide expr_dec x y
-  end.
-
-Lemma formula_decide_impl : forall env f, formula_decide f = true -> formula_denote env f.
-Proof. move=> env [? ?| ? ?]. by apply decide_impl. by apply list_decide_impl. Qed.
-
-Local Example test2: formula_decide (Eq expr1 expr2) = true.
+Local Example test2: formula_decide expr_dec (Eq expr1 expr2) = true.
 Proof.
 by compute.
 Qed.
 
-Local Example test3: formula_decide (LEq (expr1::nil) (expr2::nil)) = true.
+Instance list_expr_dec : Decidable := Build_Decidable
+  (list expr) (list Z) 
+  (list_decide expr_dec) (list_denote expr_dec) (list_decide_impl expr_dec).
+
+Local Example test3: formula_decide list_expr_dec (Eq (expr1::nil) (expr2::nil)) = true.
 Proof.
 by compute.
 Qed.

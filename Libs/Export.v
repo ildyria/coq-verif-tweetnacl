@@ -8,6 +8,8 @@ From Tweetnacl Require Export Libs.Term_Decidable.
 From Tweetnacl Require Export Libs.Expr_Decidable.
 From Tweetnacl Require Export Libs.List_Decidable.
 From Tweetnacl Require Export Libs.List_ext_Decidable.
+From Tweetnacl Require Export Libs.Fun_Decidable.
+From Tweetnacl Require Export Libs.Formula_Decidable.
 From Tweetnacl Require Export Libs.List_Ltac.
 From Tweetnacl Require Export Libs.Forall_extended.
 From Tweetnacl Require Export Libs.ZArith_extended.

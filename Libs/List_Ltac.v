@@ -4,6 +4,7 @@ From Tweetnacl Require Export Libs.Term_Decidable.
 From Tweetnacl Require Export Libs.Expr_Decidable.
 From Tweetnacl Require Export Libs.List_Decidable.
 From Tweetnacl Require Export Libs.List_ext_Decidable.
+From Tweetnacl Require Export Libs.Formula_Decidable.
 
 (**************************************************************************
  * Environment management tactics
@@ -92,26 +93,18 @@ Ltac reifyExpr env t :=
     let x := reifyExpr env X in
     let y := reifyExpr env Y in
     constr:(A x y)
+  | nil => constr:(nil:list expr)
+  | cons ?X ?Y =>
+    let x := reifyExpr env X in
+    let y := reifyExpr env Y in
+    constr:(x :: y)
   | ?X =>
     let x := reifyValue env X in
     constr:(R x)
   end.
 
-Ltac reifyList env t :=
-  match t with
-  | nil => constr:(nil:list expr)
-  | cons ?X ?Y =>
-    let x := reifyExpr env X in
-    let y := reifyList env Y in
-    constr:(x :: y)
-  end.
-
 Ltac reifyTerm env t :=
   lazymatch t with
-  | cons ?X ?X' = cons ?Y ?Y' => 
-      let x := reifyList env (cons X X') in
-      let y := reifyList env (cons Y Y') in
-      constr:(LEq x y)
    | ?X = ?Y =>
       let x := reifyExpr env X in
       let y := reifyExpr env Y in
@@ -154,7 +147,7 @@ Ltac reify :=
     let xs  := allVars tt X in
     let env := functionalize xs in
     let r1  := reifyTerm xs X in
-    change (formula_denote {| vars := env |} r1)
+    change (formula_denote _ {| vars := env |} r1)
   end.
 
 

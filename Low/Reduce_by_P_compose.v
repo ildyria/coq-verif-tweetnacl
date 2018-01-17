@@ -80,14 +80,15 @@ Lemma red_expr_indp : forall (P : red_expr -> Prop),
 Proof.
 intros P HR HS HC HM HN.
 fix 1.
-destruct l ;
+destruct l;
 first [
    apply HR 
   | apply HS
   | apply HC
   | apply HM
-  | apply HN] ; try apply red_expr_indp.
-induction l ; intros. inversion H.
+  | apply HN ] ; try apply red_expr_indp.
+induction l ; intros.
+inversion H.
 simpl in H ; destruct H.
 rewrite <- H.
 apply red_expr_indp.
@@ -291,30 +292,7 @@ Instance  red_expr_dec : Decidable :=
   decide_impl := red_expr_decide_impl
 }.
 
-(*
-Fixpoint red_expr_list_denote env (m: list red_expr) : list Z :=
-  match m with
-  | nil => nil
-  | h :: q => (red_expr_denote env h) :: red_expr_list_denote env q
-  end.
-*)
 
-(*
-Lemma red_expr_list_denote_nth :
-  forall i env l, red_expr_denote env (nth i l (R_red (Val 0))) = nth i (red_expr_list_denote env l) 0.
-Proof.
-intros i env l. gen i. induction l as [|h l IHl] ; intros [|i] ; try reflexivity.
-simpl. apply IHl.
-Qed.
-*)
-(* 
-Lemma red_expr_list_denote_upd_nth :
-  forall i env l v, red_expr_list_denote env (upd_nth i l v) = upd_nth i (red_expr_list_denote env l) (red_expr_denote env v).
-Proof.
-intros i env m. gen i. induction m as [|h m IHm] ; intros [|i] v ; try reflexivity.
-simpl. f_equal. apply IHm.
-Qed.
- *)
 (* Definition formula_red_expr_denote env (t : formula_red_expr) : Prop :=
   match t with
   | Eq_red x y     => red_expr_list_denote env x = red_expr_list_denote env y
@@ -374,13 +352,28 @@ Qed. *)
 Proof. intros env [? ?]. by apply decide_red_expr_list_eq_impl. Qed.
  *)
 (* Weaponize our expression so we can translate functions *)
-
 Instance list_red_expr : Decidable :=
 {
-  decide := list_upd_ext_decide red_expr_dec;
-  denote := list_upd_ext_denote red_expr_dec;
-  decide_impl := list_upd_ext_decide_impl red_expr_dec
+  decide := list_decide red_expr_dec;
+  denote := list_denote red_expr_dec;
+  decide_impl := list_decide_impl red_expr_dec
 }.
+
+(* Lemma list_denote_nth :
+  forall i env l, denote env (nth i l (R_red (Val 0))) = nth i (denote env l) 0.
+Proof.
+intros i env l. gen i. induction l as [|h l IHl] ; intros [|i] ; try reflexivity.
+simpl. apply IHl.
+Qed.
+
+
+Lemma list_denote_upd_nth :
+  forall i env l v, list_denote env (upd_nth i l v) = upd_nth i (red_expr_list_denote env l) (red_expr_denote env v).
+Proof.
+intros i env m. gen i. induction m as [|h m IHm] ; intros [|i] v ; try reflexivity.
+simpl. f_equal. apply IHm.
+Qed.
+ *)
 
 Definition sub_red_step (a:Z) (m t:list red_expr) : list red_expr :=
     let m' := nth (Z.to_nat (a - 1)) m (R_red (Val 0)) in
@@ -391,132 +384,81 @@ Definition sub_red_step_1 (a:Z) (m t:list red_expr) : list red_expr :=
     let t' := nth (Z.to_nat a) t (R_red (Val 0)) in
       (upd_nth (Z.to_nat a) m (Sub_red t')).
 
-Definition sub_red_step_2 (a:Z) (m:list red_expr) : @list_upd_ext red_expr :=
-    let m' := Nth_red (Z.to_nat (a - 1)) m (R_red (Val 0)) in
-    let t' := Nth_red (Z.to_nat a) m (R_red (Val 0)) in
-      Upd (Z.to_nat (a-1)) (Upd (Z.to_nat a) m (SubC_red t' m')) (Mod_red m').
+Definition sub_red_step_2 (a:Z) (m:list red_expr) : list red_expr :=
+    let m' := nth (Z.to_nat (a - 1)) m (R_red (Val 0)) in
+    let t' := nth (Z.to_nat a) m (R_red (Val 0)) in
+      upd_nth (Z.to_nat (a-1)) (upd_nth (Z.to_nat a) m (SubC_red t' m')) (Mod_red m').
 
 
-Lemma step_fn_red_expr : forall env a m t,
-  sub_fn_rev sub_step a (red_expr_list_denote env m) (red_expr_list_denote env t) =
-  red_expr_list_denote env (sub_fn_rev sub_red_step a m t).
-Proof.
-intros env [ | p | p] m t.
-all: try reflexivity.
-assert(Hi:= Pos2Z.is_nonneg p).
-remember (Z.pos p) as i.
-clears p.
-gen m t.
-apply (natlike_ind (fun i => ∀ m t : list red_expr,
-sub_fn_rev sub_step i (red_expr_list_denote env m) (red_expr_list_denote env t) =
-red_expr_list_denote env (sub_fn_rev sub_red_step i m t))) ; try omega.
-intros ; reflexivity.
-clears i.
-intros i Hi IH m t.
-assert(Hii: i = 0 \/ 0 < i) by omega.
-change (Z.succ i) with (i + 1).
-destruct Hii as [Hii|Hii] ; try (subst i ; reflexivity).
-rewrite sub_fn_rev_n.
-symmetry.
-rewrite sub_fn_rev_n.
-symmetry.
-replace (i + 1 - 1) with i.
-all: try omega.
-unfold sub_red_step.
-rewrite ?red_expr_list_denote_upd_nth.
-unfold sub_step.
-rewrite ?red_expr_list_denote_nth. simpl.
-unfold subst_0xffffc, subst_c, subst_0xffff.
-rewrite IH.
-rewrite ?red_expr_list_denote_nth.
+Local Ltac solve_this_3_goals H1 H2 :=
+intros env [ | p | p] m t;
+try reflexivity;
+gen m t;
+induction p using Pos.peano_ind;intros m t ; try reflexivity;
+rewrite Pos2Z.inj_succ;
+change (Z.succ (Z.pos p)) with (Z.pos p + 1);
+assert(Hi := Pos2Z.is_nonneg p);
+remember (Z.pos p) as i ; match goal with | [ Heqi : _ = Z.pos _ |- _ ] => clear Heqi end;
+assert(Hii: i = 0 \/ 0 < i) by omega;
+destruct Hii as [Hii|Hii]; try (subst i ; reflexivity);
+rewrite sub_fn_rev_n ; try omega;
+symmetry;
+rewrite sub_fn_rev_n ; try omega;
+symmetry;
+replace (i + 1 - 1) with i; try omega;
+unfold H1 ; fold H1;
+match goal with | [ |- context[denote _ (upd_nth ?A ?B ?C)] ] => 
+change (denote _ (upd_nth A B C)) with (list_denote _ env (upd_nth A B C)) end;
+rewrite ?list_denote_upd_nth;
+unfold H1 ; fold H1; simpl;
+match goal with | [ |- context[red_expr_denote _ (nth ?A ?B ?C)] ] => 
+change (red_expr_denote _ (nth ?A ?B ?C)) with (denote env (nth A B C)) end;
+rewrite ?list_denote_nth;
+match goal with | [ H : context[sub_fn_rev] |- _ ] => rewrite H end;
 reflexivity.
-Qed.
+
+
+
+Lemma step_fn_red_expr : forall env (a:Z) (m:list red_expr) (t:list red_expr),
+  sub_fn_rev sub_step a (denote env m) (denote env t) =
+  denote env (sub_fn_rev sub_red_step a m t).
+Proof. solve_this_3_goals sub_red_step sub_step. Qed.
 
 Lemma step_fn_red_expr_1 : forall env a m t,
-  sub_fn_rev sub_step_1 a (red_expr_list_denote env m) (red_expr_list_denote env t) =
-  red_expr_list_denote env (sub_fn_rev sub_red_step_1 a m t).
-Proof.
-intros env [ | p | p] m t.
-all: try reflexivity.
-(* pattern p. *)
-(* induction p using Pos.peano_ind. *)
-assert(Hi:= Pos2Z.is_nonneg p).
-remember (Z.pos p) as i.
-clears p.
-gen m t.
-(* Check nat_ind.
-About natlike_ind.
-Locate natlike_ind.
-SearchAbout positive "peano".
-Axiom natlike_ind' : forall P : forall (z : Z) (pf : 0 <= z), Prop, (forall pf, P 0 pf) -> (forall z pf pf', P z pf -> P (Z.succ z) pf') -> forall z pf, P z pf.
-induction i,Hi using natlike_ind'.
-induction i,Hi using natlike_ind.
-induction Hi,i using natlike_ind. *)
-(* gen Hi. *)
-pattern i.
-apply natlike_ind ;try omega.
-(* match goal with 
-  | [ |- ?f p ] => apply (natlike_ind f)
-end.
-
-apply (natlike_ind (fun i => ∀ m t : list red_expr,
-sub_fn_rev sub_step_1 i (red_expr_list_denote env m) (red_expr_list_denote env t) =
-red_expr_list_denote env (sub_fn_rev sub_red_step_1 i m t))) ; try omega.
- *)
-intros ; reflexivity.
-clears i.
-intros i Hi IH m t.
-assert(Hii: i = 0 \/ 0 < i) by omega.
-change (Z.succ i) with (i + 1).
-destruct Hii as [Hii|Hii] ; try (subst i ; reflexivity).
-rewrite sub_fn_rev_n.
-symmetry.
-rewrite sub_fn_rev_n.
-symmetry.
-replace (i + 1 - 1) with i.
-all: try omega.
-unfold sub_red_step_1.
-rewrite ?red_expr_list_denote_upd_nth.
-unfold sub_step_1.
-rewrite ?red_expr_list_denote_nth. simpl.
-unfold subst_0xffffc, subst_c, subst_0xffff.
-rewrite IH.
-rewrite ?red_expr_list_denote_nth.
-reflexivity.
-Qed.
+  sub_fn_rev sub_step_1 a (denote env m) (denote env t) =
+  denote env (sub_fn_rev sub_red_step_1 a m t).
+Proof. solve_this_3_goals sub_red_step_1 sub_step_1. Qed.
 
 Lemma step_fn_red_expr_2 : forall env a m,
-  sub_fn_rev_s sub_step_2 a (red_expr_list_denote env m) =
-  red_expr_list_denote env (sub_fn_rev_s sub_red_step_2 a m).
+  sub_fn_rev_s sub_step_2 a (denote env m) =
+  denote env (sub_fn_rev_s sub_red_step_2 a m).
 Proof.
-intros env [ | p | p] m.
-all: try reflexivity.
-assert(Hi:= Pos2Z.is_nonneg p).
-remember (Z.pos p) as i.
-clears p.
-gen m.
-apply (natlike_ind (fun i => ∀ m : list red_expr,
-sub_fn_rev_s sub_step_2 i (red_expr_list_denote env m) =
-red_expr_list_denote env (sub_fn_rev_s sub_red_step_2 i m))) ; try omega.
-intros ; reflexivity.
-clears i.
-intros i Hi IH m.
-assert(Hii: i = 0 \/ 0 < i) by omega.
-change (Z.succ i) with (i + 1).
-destruct Hii as [Hii|Hii] ; try (subst i ; reflexivity).
-rewrite sub_fn_rev_s_n.
-symmetry.
-rewrite sub_fn_rev_s_n.
-symmetry.
-replace (i + 1 - 1) with i.
-all: try omega.
-unfold sub_red_step_2.
-rewrite ?red_expr_list_denote_upd_nth.
-unfold sub_step_2.
-rewrite ?red_expr_list_denote_nth. simpl.
-unfold subst_0xffffc, subst_c, subst_0xffff.
-rewrite IH.
-rewrite ?red_expr_list_denote_nth.
+intros env [ | p | p] m;
+try reflexivity;
+gen m;
+induction p using Pos.peano_ind;intros m ; try reflexivity;
+rewrite Pos2Z.inj_succ;
+change (Z.succ (Z.pos p)) with (Z.pos p + 1);
+assert(Hi := Pos2Z.is_nonneg p);
+remember (Z.pos p) as i ; match goal with | [ Heqi : _ = Z.pos _ |- _ ] => clear Heqi end;
+assert(Hii: i = 0 \/ 0 < i) by omega;
+destruct Hii as [Hii|Hii]; try (subst i ; reflexivity);
+rewrite sub_fn_rev_s_n ; try omega;
+symmetry;
+rewrite sub_fn_rev_s_n ; try omega;
+symmetry;
+replace (i + 1 - 1) with i; try omega;
+unfold sub_red_step_2; fold sub_red_step_2;
+match goal with | [ |- context[denote _ (upd_nth ?A ?B ?C)] ] => 
+change (denote _ (upd_nth A B C)) with (list_denote _ env (upd_nth A B C)) end;
+rewrite ?list_denote_upd_nth;
+unfold sub_step_2 ; fold sub_step_2.
+match goal with | [ H : context[sub_fn_rev_s] |- _ ] => rewrite H end.
+simpl.
+repeat match goal with | [ |- context[red_expr_denote _ (nth ?A ?B ?C)] ] => 
+change (red_expr_denote _ (nth A B C)) with (denote env (nth A B C)) end.
+rewrite ?list_denote_nth.
+rewrite -list_denote_map.
 reflexivity.
 Qed.
 
@@ -602,7 +544,7 @@ Ltac reifyTerm_red env t :=
    | ?X = ?Y =>
       let x := reifyExpr_red env X in
       let y := reifyExpr_red env Y in
-      constr:(Eq_red x y)
+      constr:(Eq x y)
   end.
 
 Ltac functionalize_red xs :=
@@ -647,29 +589,21 @@ match goal with
     rename z31 into env.
     rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
-    assert (Hsubst:
-      formula_red_expr_denote {| vars := env |} reif ->
-      sub_fn_rev sub_step a [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14]
-  [z15; z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30] =
-sub_fn_rev_s sub_step_2 a
-  (sub_fn_rev sub_step_1 a [z; z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14]
-     [z15; z16; z17; z18; z19; z20; z21; z22; z23; z24; z25; z26; z27; z28; z29; z30])).
+    match goal with 
+      |- ?P => assert( Hsubst: formula_denote _ {| vars := env |} reif -> P) end.
     {
     subst reif.
-    unfold formula_red_expr_denote.
-    rewrite <- step_fn_red_expr.
-    rewrite <- step_fn_red_expr_2.
-    rewrite <- step_fn_red_expr_1.
-    subst env.
+    unfold formula_denote;
+    rewrite <- step_fn_red_expr;
+    rewrite <- step_fn_red_expr_2;
+    rewrite <- step_fn_red_expr_1;
     trivial.
     }
 apply Hsubst.
-apply decide_formula_red_impl.
-clear Hsubst.
-clear xs.
-clear env.
+apply formula_decide_impl.
+clear Hsubst xs env Hm Ht.
 subst reif.
-clear Hm Ht. clears.
+clears.
 repeat match goal with
   | [ H : ?a = _ |- _ ] => subst a ; compute ; reflexivity
   | [ H : _ \/ _ |- _ ] => destruct H

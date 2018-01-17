@@ -324,11 +324,6 @@ Local Definition tg := Var 7%positive.
 
 Local Definition expr1 := A (M ta tb) (A (R tc) (R tb)).
 Local Definition expr2 := A (A (R tc) (R tb)) (M ta tb).
-(* Eval compute in flatten_expr expr1. *)
-(* Eval compute in flatten_eq (flatten_expr expr1). *)
-(* Eval compute in (flatten_expr expr2). *)
-(* Eval compute in flatten_eq (flatten_expr expr2). *)
-
 
 Instance expr_dec : Decidable := Build_Decidable expr Z expr_decide (expr_denote) expr_decide_impl.
 
