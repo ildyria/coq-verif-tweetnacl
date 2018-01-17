@@ -1,4 +1,5 @@
 From Tweetnacl Require Export Libs.LibTactics.
+Require Import Coq.micromega.Lia.
 Require Import ssreflect.
 
 Lemma orFalse : forall (P:Prop), P \/ False <-> P.
@@ -51,7 +52,7 @@ Qed.
 
 Open Scope Z.
 
-Ltac gen_goals H P j n := match n with 
+(* Ltac gen_goals H P j n := match n with 
   | 0 => idtac
   | n => 
     let n'' := (eval compute in (j - n)) in
@@ -61,18 +62,23 @@ Ltac gen_goals H P j n := match n with
    let n' := (eval compute in (n - 1)) in
    gen_goals H P j n'
   end.
-
+ *)
 Lemma P016_impl : forall (P : Z -> Prop) , P 1 -> 
   (forall i, 0 < i < 16 -> P i -> P (i + 1)) -> 
   forall i, 0 < i < 16 -> P i.
 Proof.
-intros P HP1 HPInd i Hi.
-gen_goals HPInd P 16 14.
-assert_gen_hyp i 15 14. omega.
-repeat match goal with
-  | _ => subst i ; assumption
-  | [ H : _ \/ _ |- _ ] => destruct H
-end.
+intros P P1 Hind i.
+pattern i.
+destruct i.
+try omega.
+2: assert(Hp:= Zlt_neg_0 p) ; try omega.
+induction p using Pos.peano_ind.
+intros ; assumption.
+replace ((Z.pos (Pos.succ p))) with (Z.pos p + 1) by lia.
+intros Hp1.
+apply Hind.
+lia.
+apply IHp ; lia.
 Qed.
 
 Close Scope Z.

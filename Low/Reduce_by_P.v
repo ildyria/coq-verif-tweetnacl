@@ -95,12 +95,11 @@ Lemma m_from_t_Zlength : forall m t,
 Proof.
   intros m t Hm Ht.
   rewrite /m_from_t.
-  repeat match goal with 
-    | _ => omega
-    | _ => rewrite sub_fn_rev_Zlength
-    | _ => rewrite upd_nth_Zlength
-    | _ => change_Z_of_nat ; omega
-  end.
+  repeat first[
+    omega
+    | rewrite sub_fn_rev_Zlength 
+    | rewrite upd_nth_Zlength
+    | change_Z_of_nat ; omega].
 Qed.
 
 Lemma get_m_select_m_t_Zlength : forall m t,

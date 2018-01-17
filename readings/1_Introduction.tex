@@ -3,9 +3,37 @@
 Implementing cryptographic primitives without any bugs is hard. While tests
 provides a decent code coverage, they don't cover 100\% of the possible values.
 
-Using the \textit{clightgen} tool from compcert \cite{Leroy-backend}, we can
+We verify the implementation in C of Curve25519 in Tweetnacl\cite{BGJ+15}.
+
+
+
+
+Using the \textit{clightgen} tool from Compcert\cite{Leroy-backend}, we can
 generate the \textit{semantic version} (Clight\cite{Blazy-Leroy-Clight-09}) of
 the C code. Using the Floyd–Hoare logic\cite{1969-Hoare} with the Verifiable
 Software Toolchain (VST)\cite{2012-Appel} we can show that the semantic of the
-program is equivalent to some functions in Coq. We can then prove that these
-\textit{equivalent functions} do respect the semantic of the arithmetic.
+program is equivalent to a functionnal specification in Coq.
+We can then prove that this specification is represent the scalar multiplication
+on Curve25519\cite{}.
+
+\subsection{Meet-in-the-middle Approach}
+
+In order to prove that \texttt{crypto\_scalarmult} is computing a scalar
+multiplication over the x-coordinate of a point P, we need to define multiples
+levels of specifications and show equivalence between them.
+
+\begin{enumerate}
+  \item Write a high level specification (over a generic field $\mathbb{F}$).
+  \item Show that the high level specification is equivalent to the
+  computation of a montgomery ladder.
+  \item Write a low level specification (e.g. over lists of $\mathbb{Z}$).
+  \item Show that the low level specification represent the operations of
+  defined C code.
+  \item Show that the low level specification are equivalent to simple
+  operations in $\mathbb{Z}_{2^{255}-19}$ (middle level specification).
+  \item Show that the middle level specification is an instance of the high
+  level one.
+\end{enumerate}
+
+The equivalence between each level, garantees us the correctness of the
+implementation.

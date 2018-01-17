@@ -1,15 +1,5 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-(* From Tweetnacl Require Import Mid.SubList. *)
-(* From Tweetnacl Require Import Low.Get_abcdef. *)
-(* From Tweetnacl Require Import Low.GetBit_pack25519. *)
-(* From Tweetnacl Require Import Low.Sel25519. *)
-(* From Tweetnacl Require Import Low.Constant. *)
-(* From Tweetnacl Require Import Libs.Lists_extended.
-From Tweetnacl Require Import Libs.List_Ltac.
-From Tweetnacl Require Import Libs.LibTactics_SF.
-From Tweetnacl Require Import Libs.LibTactics.
- *)
 From stdpp Require Import prelude.
 Require Import Recdef.
 
@@ -60,12 +50,7 @@ Open Scope Z.
 0x7fff = 32767
 *)
 
-(* Definition subst_0xffed t := t - 65517. *)
 Definition subst_0xffffc t m := t - 65535 - (Z.land (Z.shiftr m 16) 1).
-(* Definition subst_0xffff t := t - 65535. *)
-(* Definition subst_0x7fffc t m := t - 32767 - (Z.land (Z.shiftr m 16) 1). *)
-(* Definition subst_0x7fff t := t - 32767. *)
-(* Definition subst_c t m := t - (Z.land (Z.shiftr m 16) 1). *)
 Definition mod0xffff m := Z.land m 65535.
 
 Definition sub_step (a:Z) (m t:list Z) : list Z :=

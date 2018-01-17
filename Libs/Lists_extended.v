@@ -3,6 +3,22 @@ From Tweetnacl Require Import Libs.LibTactics.
 From Tweetnacl Require Import Libs.LibTactics_SF.
 Require Import mathcomp.ssreflect.ssreflect.
 
+Section nth_f.
+Context {I} {O} (f:I -> O) (v:I).
+
+Fixpoint nth_f (n:nat) (x:list I) {struct x} : O := match n,x with 
+  | _, [] => f v
+  | 0 , h :: q => f h
+  | S n, h :: q => nth_f n q
+end.
+
+Lemma nth_f_ext: forall n x,
+  f (nth n x v) = nth_f n x.
+Proof.
+  move=> n l; gen n ; induction l ; destruct n ; simpl ; auto.
+Qed.
+End nth_f.
+
 Lemma ListSame : forall A (h1 h2: A) (q1 q2:list A), h1 :: q1 = h2 :: q2 <-> h1 = h2 /\ q1 = q2.
 Proof. boum. Qed.
 
@@ -32,6 +48,11 @@ Lemma nth_take_full: forall A (n m:nat) (l:list A) d,
   n < m -> nth n (take m l) d = nth n l d.
 Proof. induction n ; destruct m; destr_boum l. Qed.
 Arguments nth_take_full [A] _ _ _ _.
+
+Lemma take_cons: forall A (n:nat) (l:list A) d,
+  n < length l -> (take n l) ++ nth n l d :: nil = take (S n) l.
+Proof. induction n ; destr_boum l ; simpl in * ; f_equal ; apply IHn ; omega. Qed.
+Arguments take_cons [A] _ _ _ _.
 
 Lemma nth_drop_2 : forall A (n:nat) (l:list A) (d:A), n <= length l -> nth n l d = nth 0 (drop n l) d.
 Proof. induction n ; destr_boum l. Qed.
@@ -321,5 +342,18 @@ Proof. convert_length_to_Zlength upd_nth_upd_nth. Qed.
 
 Lemma upd_nth_comm_Zlength : forall A (i j:nat) (l:list A) ni nj, i < Zlength l -> j < Zlength l -> i <> j ->  upd_nth i (upd_nth j l nj) ni = upd_nth j (upd_nth i l ni) nj.
 Proof. convert_length_to_Zlength upd_nth_comm. Qed.
+
+Lemma take_cons_Zlength: forall A n (l:list A) d,
+  0 <= n < Zlength l -> (take (Z.to_nat n) l) ++ nth (Z.to_nat n) l d :: nil = take (Z.to_nat (n + 1)) l.
+Proof. intros. replace (Z.to_nat (n + 1)) with (S (Z.to_nat n)).
+apply take_cons.
+rewrite Zlength_correct in H.
+apply Nat2Z.inj_lt.
+rewrite Z2Nat.id ; omega.
+rewrite Z2Nat.inj_add.
+change (Z.to_nat 1) with 1%nat.
+all: omega.
+Qed.
+Arguments take_cons_Zlength [A] _ _ _ _.
 
 Close Scope Z.

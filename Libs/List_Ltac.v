@@ -1,5 +1,9 @@
 Set Warnings "-notation-overridden".
+From Tweetnacl Require Export Libs.Decidable.
+From Tweetnacl Require Export Libs.Term_Decidable.
+From Tweetnacl Require Export Libs.Expr_Decidable.
 From Tweetnacl Require Export Libs.List_Decidable.
+From Tweetnacl Require Export Libs.List_ext_Decidable.
 
 (**************************************************************************
  * Environment management tactics
@@ -139,7 +143,8 @@ Local Ltac reify_debug :=
     let env := functionalize xs in
     let r1  := reifyTerm xs X in
     pose xs;
-    pose env;
+    pose env
+    ;
     pose r1
   end.
 
@@ -157,11 +162,11 @@ Ltac reify :=
  * User interface tactics
  *)
 
-Ltac mini_ring := intros; reify; apply decide_formula_impl; vm_compute; auto.
+Ltac mini_ring := intros; reify; apply formula_decide_impl; vm_compute; auto.
 
 Open Scope Z.
 Local Example example1 : forall x y, x * y = y * x.
-Proof. intros ; reify; apply decide_formula_impl; vm_compute; auto. Qed.
+Proof. intros ; reify. apply formula_decide_impl ; vm_compute; auto. Qed.
 
 Local Example example2 : forall x y z, x*y :: 0 * z :: nil = y * x :: 0 :: nil.
 Proof. mini_ring. Qed.
