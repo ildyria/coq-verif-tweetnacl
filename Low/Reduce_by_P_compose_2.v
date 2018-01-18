@@ -175,11 +175,6 @@ Qed. *)
  *)
 
 
-
-Print sub_fn_rev_s.
-Check sub_fn_rev_s_equation.
-Print sub_step_2.
-
 Lemma sub_fn_rev_s_sub_step_2_inv : forall a m,
   0 < a < 16 ->
   Zlength m = 16 ->

@@ -12,7 +12,7 @@ Open Scope Z_scope.
 
 Section list_denote.
 
-Context {T} {U} (inst : @Decidable T U).
+Context {T} {U} {inst : @Decidable T U}.
 
 Fixpoint list_denote env (l: list T) : list U :=
   match l with
@@ -63,6 +63,18 @@ induction l as [|h l IHl] ; try reflexivity.
 simpl. rewrite IHl ; reflexivity.
 Qed.
 
+Lemma list_denote_length:
+  forall env (l:list T), length (list_denote env l) = length l.
+Proof.
+intros. rewrite -list_denote_map map_length ; reflexivity.
+Qed.
+
+Lemma list_denote_Zlength:
+  forall env (l:list T), Zlength (list_denote env l) = Zlength l.
+Proof.
+intros. rewrite -list_denote_map Zlength_map ; reflexivity.
+Qed.
+
 Lemma list_denote_upd_nth :
   forall i env (l: list T) (v:T), list_denote env (upd_nth i l v) = upd_nth i (list_denote env l) (denote env v).
 Proof.
@@ -87,16 +99,20 @@ Local Definition tg := Var 7%positive.
 Local Definition expr1 := A (M ta tb) (A (R tc) (R tb)).
 Local Definition expr2 := A (A (R tc) (R tb)) (M ta tb).
 
-Local Example test2: formula_decide expr_dec (Eq expr1 expr2) = true.
+Local Instance term_dec : Decidable := Build_Decidable _ _ term_decide term_denote term_decide_impl.
+Local Instance list_term_dec : Decidable := Build_Decidable (list term) (list Z)
+  list_decide list_denote list_decide_impl.
+
+Local Instance expr_dec : Decidable := Build_Decidable _ _ expr_decide expr_denote expr_decide_impl.
+Local Instance list_expr_dec : Decidable := Build_Decidable (list expr) (list Z)
+  list_decide list_denote list_decide_impl.
+
+Local Example test2: formula_decide (Eq expr1 expr2) = true.
 Proof.
 by compute.
 Qed.
 
-Instance list_expr_dec : Decidable := Build_Decidable
-  (list expr) (list Z) 
-  (list_decide expr_dec) (list_denote expr_dec) (list_decide_impl expr_dec).
-
-Local Example test3: formula_decide list_expr_dec (Eq (expr1::nil) (expr2::nil)) = true.
+Local Example test3: formula_decide (Eq (expr1::nil) (expr2::nil)) = true.
 Proof.
 by compute.
 Qed.

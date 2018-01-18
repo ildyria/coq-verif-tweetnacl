@@ -64,7 +64,7 @@ Lemma term_decide_impl : forall (env : environment) (a b : term),
 term_decide a b = true -> term_denote env a = term_denote env b.
 Proof. intros. apply term_eqb_refl in H. subst a. reflexivity. Qed.
 
-Instance term_dec : Decidable := 
+Local Instance term_dec : Decidable := 
 {
   decide := term_decide;
   denote := term_denote;

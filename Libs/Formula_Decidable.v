@@ -2,7 +2,7 @@ Require Import Tweetnacl.Libs.Decidable.
 
 Section formula_denote.
 
-Context {T} {U} (inst : @Decidable T U).
+Context {T} {U} {inst : @Decidable T U}.
 
 Inductive formula :=
   | Eq : T -> T -> formula.

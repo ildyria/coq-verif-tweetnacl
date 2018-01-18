@@ -86,6 +86,13 @@ End ListTermOrder.
 Module Import TermSort := Sort TermOrder.
 Module Import ListTermSort := Sort ListTermOrder.
 
+Local Instance term_dec : Decidable := 
+{
+  decide := term_decide;
+  denote := term_denote;
+  decide_impl := term_decide_impl
+}.
+
 Section Expr.
   Inductive expr :=
     | R : term -> expr
@@ -325,7 +332,7 @@ Local Definition tg := Var 7%positive.
 Local Definition expr1 := A (M ta tb) (A (R tc) (R tb)).
 Local Definition expr2 := A (A (R tc) (R tb)) (M ta tb).
 
-Instance expr_dec : Decidable := Build_Decidable expr Z expr_decide (expr_denote) expr_decide_impl.
+Local Instance expr_dec : Decidable := Build_Decidable expr Z expr_decide (expr_denote) expr_decide_impl.
 
 Local Example test1 : expr_decide expr1 expr2 = true.
 Proof.

@@ -54,12 +54,7 @@ Open Scope Z.
 
 Section red_expr.
 
-Instance  term_dec : Decidable := 
-{
-  decide := term_decide;
-  denote := term_denote;
-  decide_impl := term_decide_impl
-}.
+Local Instance term_dec : Decidable := Build_Decidable _ _ term_decide term_denote term_decide_impl.
 
 Inductive red_expr :=
   | R_red : term -> red_expr
@@ -131,7 +126,6 @@ Fixpoint red_expr_decide_rec (l1 l2:red_expr) := match l1, l2 with
   end.
 
 Definition red_expr_decide (l1 l2:red_expr) := red_expr_decide_rec (red_expr_simplify l1) (red_expr_simplify l2).
-Transparent red_expr_decide.
 
 Lemma red_expr_decide_trans : forall l l', red_expr_decide_rec l l' = true -> red_expr_decide l l' = true.
 Proof.
@@ -285,12 +279,14 @@ Qed.
 
 End red_expr.
 
-Instance  red_expr_dec : Decidable := 
+Local Instance  red_expr_dec : Decidable := 
 {
   decide := red_expr_decide;
   denote := red_expr_denote;
   decide_impl := red_expr_decide_impl
 }.
+Local Instance list_expr_dec : Decidable := Build_Decidable (list red_expr) (list Z)
+  list_decide list_denote list_decide_impl.
 
 
 (* Definition formula_red_expr_denote env (t : formula_red_expr) : Prop :=
@@ -309,71 +305,6 @@ Instance  red_expr_dec : Decidable :=
 
 (* Print red_expr_beq. *)
 (* Print list_beq. *)
-
-(* Fixpoint red_expr_decide (l1 l2:red_expr) := match l1, l2 with
-  | R_red v1 , R_red v2 => term_eqb v1 v2
-  | Sub_red v1, Sub_red v'1 => (decide_red_expr_eq v1 v'1)
-  | SubC_red v1 v2, SubC_red v'1 v'2 => andb (decide_red_expr_eq v1 v'1) (decide_red_expr_eq v2 v'2)
-  | Mod_red v1, Mod_red v2 => decide_red_expr_eq v1 v2
-  | _, _ => false
-  end.
-
-Fixpoint decide_red_expr_list_eq (l1 l2:list red_expr) := match l1, l2 with
-  | nil, nil => true
-  | h1 :: q1, h2 :: q2 => andb (decide_red_expr_eq h1 h2) (decide_red_expr_list_eq q1 q2)
-  | _, _ => false
-end.
-
- *)
-
-(* Lemma decide_red_expr_list_eq_impl:
-  forall env l l',
-  decide_red_expr_list_eq l l' = true ->
-  red_expr_list_denote env l = red_expr_list_denote env l'.
-Proof.
-intros env.
-induction l ; destruct l' ; intros ; simpl in *; 
-repeat match goal with
-  | _ => discriminate
-  | _ => reflexivity
-  | [ H : _ && _ = true |- _ ] => apply andb_prop in H; destruct H
-  | [ H : _ , H1 : _ |- _ ] => apply H in H1 (* why bother ? :D *)
-  | [ env: environment, H : decide_red_expr_eq _ _  = true |- _ ] => apply (decide_red_expr_eq_impl env) in H
-  | [ H : _ = _ |- _ ] => rewrite H
-  | [ H : False |- _ ] => destruct H
-end.
-Qed. *)
-
-(* Definition decide_formula_red_expr (f : formula_red_expr) : bool := match f with
-  | Eq_red x y => decide_red_expr_list_eq x y
-  end.
- *)
-(* Lemma decide_formula_red_impl : forall env f, decide_formula_red_expr f = true -> formula_red_expr_denote env f.
-Proof. intros env [? ?]. by apply decide_red_expr_list_eq_impl. Qed.
- *)
-(* Weaponize our expression so we can translate functions *)
-Instance list_red_expr : Decidable :=
-{
-  decide := list_decide red_expr_dec;
-  denote := list_denote red_expr_dec;
-  decide_impl := list_decide_impl red_expr_dec
-}.
-
-(* Lemma list_denote_nth :
-  forall i env l, denote env (nth i l (R_red (Val 0))) = nth i (denote env l) 0.
-Proof.
-intros i env l. gen i. induction l as [|h l IHl] ; intros [|i] ; try reflexivity.
-simpl. apply IHl.
-Qed.
-
-
-Lemma list_denote_upd_nth :
-  forall i env l v, list_denote env (upd_nth i l v) = upd_nth i (red_expr_list_denote env l) (red_expr_denote env v).
-Proof.
-intros i env m. gen i. induction m as [|h m IHm] ; intros [|i] v ; try reflexivity.
-simpl. f_equal. apply IHm.
-Qed.
- *)
 
 Definition sub_red_step (a:Z) (m t:list red_expr) : list red_expr :=
     let m' := nth (Z.to_nat (a - 1)) m (R_red (Val 0)) in
@@ -406,9 +337,10 @@ symmetry;
 rewrite sub_fn_rev_n ; try omega;
 symmetry;
 replace (i + 1 - 1) with i; try omega;
-unfold H1 ; fold H1;
-match goal with | [ |- context[denote _ (upd_nth ?A ?B ?C)] ] => 
-change (denote _ (upd_nth A B C)) with (list_denote _ env (upd_nth A B C)) end;
+unfold H2 ; fold H2;
+cbn;
+(* match goal with | [ |- context[denote _ (upd_nth ?A ?B ?C)] ] => 
+change (denote _ (upd_nth A B C)) with (list_denote _ env (upd_nth A B C)) end; *)
 rewrite ?list_denote_upd_nth;
 unfold H1 ; fold H1; simpl;
 match goal with | [ |- context[red_expr_denote _ (nth ?A ?B ?C)] ] => 
@@ -449,16 +381,15 @@ rewrite sub_fn_rev_s_n ; try omega;
 symmetry;
 replace (i + 1 - 1) with i; try omega;
 unfold sub_red_step_2; fold sub_red_step_2;
-match goal with | [ |- context[denote _ (upd_nth ?A ?B ?C)] ] => 
-change (denote _ (upd_nth A B C)) with (list_denote _ env (upd_nth A B C)) end;
+cbn;
 rewrite ?list_denote_upd_nth;
-unfold sub_step_2 ; fold sub_step_2.
-match goal with | [ H : context[sub_fn_rev_s] |- _ ] => rewrite H end.
-simpl.
+unfold sub_step_2 ; fold sub_step_2;
+match goal with | [ H : context[sub_fn_rev_s] |- _ ] => rewrite H end;
+simpl;
 repeat match goal with | [ |- context[red_expr_denote _ (nth ?A ?B ?C)] ] => 
-change (red_expr_denote _ (nth A B C)) with (denote env (nth A B C)) end.
-rewrite ?list_denote_nth.
-rewrite -list_denote_map.
+change (red_expr_denote _ (nth A B C)) with (denote env (nth A B C)) end;
+rewrite ?list_denote_nth;
+rewrite -list_denote_map;
 reflexivity.
 Qed.
 
@@ -567,7 +498,7 @@ Open Scope Z.
 Lemma sub_fn_rev_f_g :  forall a m t,
   (length m = 16)%nat ->
   (length t = 16)%nat ->
-  0 < a < 16 ->
+  1 <= a < 16 ->
   sub_fn_rev sub_step a m t = sub_fn_rev_s sub_step_2 a (sub_fn_rev sub_step_1 a m t).
 Proof.
 intros a m t Hm Ht Ha.
@@ -575,7 +506,7 @@ intros.
 do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
 do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
 (* gather_vars_red. *)
-assert_gen_hyp_ H a 15 14 ; try omega.
+(* assert_gen_hyp_ H a 15 14 ; try omega. *)
 match goal with
   | [ |- ?X ] =>
     let xss  := allVars_red tt X in
@@ -590,7 +521,7 @@ match goal with
     rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
     match goal with 
-      |- ?P => assert( Hsubst: formula_denote _ {| vars := env |} reif -> P) end.
+      |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
     {
     subst reif.
     unfold formula_denote;
@@ -604,10 +535,9 @@ apply formula_decide_impl.
 clear Hsubst xs env Hm Ht.
 subst reif.
 clears.
-repeat match goal with
-  | [ H : ?a = _ |- _ ] => subst a ; compute ; reflexivity
-  | [ H : _ \/ _ |- _ ] => destruct H
-end.
+revert a Ha.
+eapply forall_Z_refl. (* bruteforce *)
+compute ; reflexivity.
 Qed.
 
 Close Scope Z.

@@ -147,13 +147,21 @@ Ltac reify :=
     let xs  := allVars tt X in
     let env := functionalize xs in
     let r1  := reifyTerm xs X in
-    change (formula_denote _ {| vars := env |} r1)
+    change (formula_denote {| vars := env |} r1)
   end.
 
 
 (**************************************************************************
  * User interface tactics
  *)
+
+Local Instance term_dec : Decidable := Build_Decidable _ _ term_decide term_denote term_decide_impl.
+Local Instance list_term_dec : Decidable := Build_Decidable (list term) (list Z)
+  list_decide list_denote list_decide_impl.
+
+Local Instance expr_dec : Decidable := Build_Decidable _ _ expr_decide expr_denote expr_decide_impl.
+Local Instance list_expr_dec : Decidable := Build_Decidable (list expr) (list Z)
+  list_decide list_denote list_decide_impl.
 
 Ltac mini_ring := intros; reify; apply formula_decide_impl; vm_compute; auto.
 

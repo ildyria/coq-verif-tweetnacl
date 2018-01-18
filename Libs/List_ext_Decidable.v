@@ -12,12 +12,12 @@ Open Scope Z_scope.
 
 Section list_upd_denote.
 
-Context {T} {U} (inst : @Decidable T U).
+Context {T} {U} {inst : @Decidable T U}.
 Instance  list_dec : Decidable := 
 {
-  decide := list_decide inst;
-  denote := list_denote inst;
-  decide_impl := list_decide_impl inst
+  decide := list_decide;
+  denote := list_denote;
+  decide_impl := list_decide_impl
 }.
 
 Inductive list_upd_ext :=
@@ -30,7 +30,7 @@ Fixpoint list_upd_ext_denote (env:environment) (l:list_upd_ext) : list U := matc
 end.
 
 Local Lemma upd_nth_denote : forall (env:environment) n l v,
-  upd_nth n (list_denote inst env l) (denote env v) = denote env (upd_nth n l v).
+  upd_nth n (list_denote env l) (denote env v) = denote env (upd_nth n l v).
 Proof.
 induction n as [|n IHn] ; destruct l as [|h l] => v //.
 simpl. rewrite IHn.
@@ -52,7 +52,7 @@ Proof.
   intros env.
   fix 2.
   intros n l v.
-  destruct l ; simpl; change (list_denote _ ?A ?B) with (denote A B);
+  destruct l ; simpl; change (list_denote ?A ?B) with (denote A B);
   rewrite -upd_nth_denote ;  try reflexivity.
   specialize SomeListDenote with n0 l t;
   simpl in SomeListDenote;
@@ -77,9 +77,9 @@ Lemma list_upd_ext_decide_impl : forall (env:environment) (l l' : list_upd_ext),
   list_upd_ext_decide l l' = true -> list_upd_ext_denote env l = list_upd_ext_denote env l'.
 Proof.
   intros env; induction l as [|n l Hl];
-  destruct l' => Hll' ; simpl in *; apply (list_decide_impl inst env) in Hll';
-  repeat change (list_denote inst env ?A) with (list_upd_ext_denote env (List A)) in Hll';
-  change (list_denote inst env ?A) with (list_upd_ext_denote env (List A));
+  destruct l' => Hll' ; simpl in *; apply (list_decide_impl env) in Hll';
+  repeat change (list_denote env ?A) with (list_upd_ext_denote env (List A)) in Hll';
+  change (list_denote env ?A) with (list_upd_ext_denote env (List A));
   rewrite -?SomeListDenote in Hll';
   assumption.
 Qed.

@@ -357,4 +357,12 @@ all: omega.
 Qed.
 Arguments take_cons_Zlength [A] _ _ _ _.
 
+Lemma upd_nth_list_alter_Zlength: forall A (f : A -> A) (i:nat) (v:A) (l: list A), f = (fun x => v) -> 
+i < Zlength l -> upd_nth i l v = list_alter f i l.
+Proof. convert_length_to_Zlength upd_nth_list_alter. Qed.
+
+Lemma upd_nth_alter_Zlength: forall A (f : A -> A) (i: nat) (v:A) (l: list A), 0 <= i -> f = (fun x => v) -> 
+i < Zlength l -> upd_nth i l v = alter f i l.
+Proof. convert_length_to_Zlength upd_nth_alter. Qed.
+
 Close Scope Z.
