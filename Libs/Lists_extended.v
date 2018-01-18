@@ -134,7 +134,7 @@ Proof.
   destruct H as [Hij Hnth].
   subst i;
   flatten.
-  apply beq_nat_false in Eq ; tryfalse.
+  apply beq_nat_false in Eq; tryfalse.
   flatten.
   apply beq_nat_true in Eq ; tryfalse.
 Qed.
@@ -238,7 +238,7 @@ Proof.
   replace (i - length (firstn i a)) with 0.
   2: rewrite firstn_length_le; omega.
   rewrite upd_nth0.
-  f_equal.
+  f_equal_fixed.
   rewrite -(take_drop i a).
   oreplace (S i) (i + 1)%nat.
   rewrite take_plus_app.
@@ -279,7 +279,7 @@ Proof.
   destruct j.
   reflexivity.
   simpl.
-  f_equal.
+  f_equal_fixed.
   apply IHi.
   move: H ; simpl; apply lt_S_n.
   move: H0 ; simpl; apply lt_S_n.
@@ -346,7 +346,8 @@ Proof. convert_length_to_Zlength upd_nth_comm. Qed.
 Lemma take_cons_Zlength: forall A n (l:list A) d,
   0 <= n < Zlength l -> (take (Z.to_nat n) l) ++ nth (Z.to_nat n) l d :: nil = take (Z.to_nat (n + 1)) l.
 Proof. intros. replace (Z.to_nat (n + 1)) with (S (Z.to_nat n)).
-apply take_cons.
+rapply take_cons.
+(* apply take_cons. *)
 rewrite Zlength_correct in H.
 apply Nat2Z.inj_lt.
 rewrite Z2Nat.id ; omega.

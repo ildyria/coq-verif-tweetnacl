@@ -58,8 +58,8 @@ Tactic Notation "flatten" :=
 
 (*Tactic Notation "induction" ident(x) := dependent induction x.*)
 
-Definition admit {T: Type} : T.  Admitted.
-
+(* Definition admit {T: Type} : T. Admitted.
+ *)
 Tactic Notation "solve_by_inversion_step" tactic(t) :=
   match goal with
   | H : _ |- _ => solve [ inversion H; subst; t ]
