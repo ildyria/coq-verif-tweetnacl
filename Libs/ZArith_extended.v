@@ -191,6 +191,13 @@ Lemma Add_interval_mono3:
   c <= x + y < b + d.
 Proof. intros; change c with (0 + c) ; split ;[apply Z.add_le_mono | apply Z.add_lt_le_mono] ; omega. Qed.
 
+Lemma div_interval_mono:
+  forall a b c x: Z,
+  0 < c ->
+  a <= x <= b ->
+  a / c <= x / c <= b / c.
+Proof. intros ; split ; apply Z_div_le ; omega. Qed.
+
 Section Integer.
 
 Variable n:Z.

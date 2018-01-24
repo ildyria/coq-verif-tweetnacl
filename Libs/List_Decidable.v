@@ -56,6 +56,20 @@ intros i env l. revert i. induction l as [|h l IHl] ; intros [|i] ; try reflexiv
 simpl. apply IHl.
 Qed.
 
+Lemma list_denote_firstn :
+  forall i env (l: list T), list_denote env (firstn i l) = firstn i (list_denote env l).
+Proof.
+intros i env l. revert i. induction l as [|h l IHl] ; intros [|i] ; try reflexivity.
+simpl. rewrite IHl ; reflexivity.
+Qed.
+
+Lemma list_denote_skipn :
+  forall i env (l: list T), list_denote env (skipn i l) = skipn i (list_denote env l).
+Proof.
+intros i env l. revert i. induction l as [|h l IHl] ; intros [|i] ; try reflexivity.
+simpl. rewrite IHl ; reflexivity.
+Qed.
+
 Lemma list_denote_map :
   forall env (l: list T), map (denote env) l = (list_denote env l).
 Proof.

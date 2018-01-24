@@ -84,54 +84,6 @@ Proof.
   rewrite Z2Nat.id ; try omega.
 Qed.
 
-(* Definition of the for loop : 1 -> 15 *)
-Function sub_fn_rev {A} (f:Z -> list A -> list A -> list A) (a:Z) (m t: list A) {measure Z.to_nat a} : (list A) :=
-  if (a <=? 1)
-    then m
-    else
-      let prev := sub_fn_rev f (a - 1) m t in 
-        f (a - 1) prev t.
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
-
-Arguments sub_fn_rev [_] _ _ _.
-
-Lemma sub_fn_rev_1 : forall A f (m t:list A),
-  sub_fn_rev f 1 m t = m.
-Proof. intros. reflexivity. Qed.
-
-Lemma sub_fn_rev_n : forall A f (m t:list A) a,
-  1 < a ->
-  sub_fn_rev f a m t = f (a - 1) (sub_fn_rev f (a - 1) m t) t.
-Proof. intros. rewrite sub_fn_rev_equation.
-destruct (a <=? 1) eqn:Eq.
-apply Zle_bool_imp_le in Eq; omega.
-reflexivity.
-Qed.
-
-(* Definition of the for loop : 1 -> 15 *)
-Function sub_fn_rev_s {A} (f:Z -> list A -> list A) (a:Z) (m: list A) {measure Z.to_nat a} : (list A) :=
-  if (a <=? 1)
-    then m
-    else
-      let prev := sub_fn_rev_s f (a - 1) m in 
-        f (a - 1) prev.
-Proof. intros. apply Z2Nat.inj_lt ; rewrite Z.leb_gt in teq; omega. Defined.
-
-Arguments sub_fn_rev_s [_] _ _ _.
-
-Lemma sub_fn_rev_s_1 : forall A f (m: list A),
-  sub_fn_rev_s f 1 m = m.
-Proof. intros. reflexivity. Qed.
-
-Lemma sub_fn_rev_s_n : forall A a (m: list A) f,
-  1 < a ->
-  sub_fn_rev_s f a m = f (a - 1) (sub_fn_rev_s f (a - 1) m).
-Proof. intros. rewrite sub_fn_rev_s_equation.
-destruct (a <=? 1) eqn:Eq.
-apply Zle_bool_imp_le in Eq; omega.
-reflexivity.
-Qed.
-
 Lemma nth_i_1_substep_bounds: forall i m t,
   Zlength m = Zlength t ->
   0 < i < Zlength m ->
@@ -177,8 +129,8 @@ Qed.
 
 Local Lemma sub_fn_rev_Zlength_ind_step : forall i m t,
   0 < i < Zlength m ->
-  Zlength (sub_fn_rev sub_step i m t) = Zlength m ->
-  Zlength (sub_fn_rev sub_step (i+1) m t) = Zlength m.
+  Zlength (sub_fn_rev 1 sub_step i m t) = Zlength m ->
+  Zlength (sub_fn_rev 1 sub_step (i+1) m t) = Zlength m.
 Proof.
 intros i m t Him Hind.
 rewrite sub_fn_rev_equation.
@@ -193,11 +145,11 @@ Qed.
 Lemma sub_fn_rev_Zlength : forall i m t,
   Zlength m = 16 ->
   0 < i < Zlength m ->
-  Zlength (sub_fn_rev sub_step i m t) = Zlength m.
+  Zlength (sub_fn_rev 1 sub_step i m t) = Zlength m.
 Proof.
 intros.
-change(Zlength (sub_fn_rev sub_step i m t) = Zlength m) with
-  ((fun x => Zlength (sub_fn_rev sub_step x m t) = Zlength m) i).
+change(Zlength (sub_fn_rev 1 sub_step i m t) = Zlength m) with
+  ((fun x => Zlength (sub_fn_rev 1 sub_step x m t) = Zlength m) i).
 apply P016_impl.
 by rewrite sub_fn_rev_1.
 intros ; apply sub_fn_rev_Zlength_ind_step.

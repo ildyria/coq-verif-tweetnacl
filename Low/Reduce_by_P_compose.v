@@ -24,7 +24,7 @@ sv pack25519(u8 *o,const gf n)
     }
 
     for(i=1;i<15;i++) {
-      m[i]=t[i];
+      m[i]=t[i]-0xffff;
     }
     for(i=1;i<15;i++) {
       m[i]=m[i]-((m[i-1]>>16)&1);
@@ -352,18 +352,18 @@ reflexivity.
 
 
 Lemma step_fn_red_expr : forall env (a:Z) (m:list red_expr) (t:list red_expr),
-  sub_fn_rev sub_step a (denote env m) (denote env t) =
-  denote env (sub_fn_rev sub_red_step a m t).
+  sub_fn_rev 1 sub_step a (denote env m) (denote env t) =
+  denote env (sub_fn_rev 1 sub_red_step a m t).
 Proof. solve_this_3_goals sub_red_step sub_step. Qed.
 
 Lemma step_fn_red_expr_1 : forall env a m t,
-  sub_fn_rev sub_step_1 a (denote env m) (denote env t) =
-  denote env (sub_fn_rev sub_red_step_1 a m t).
+  sub_fn_rev 1 sub_step_1 a (denote env m) (denote env t) =
+  denote env (sub_fn_rev 1 sub_red_step_1 a m t).
 Proof. solve_this_3_goals sub_red_step_1 sub_step_1. Qed.
 
 Lemma step_fn_red_expr_2 : forall env a m,
-  sub_fn_rev_s sub_step_2 a (denote env m) =
-  denote env (sub_fn_rev_s sub_red_step_2 a m).
+  sub_fn_rev_s 1 sub_step_2 a (denote env m) =
+  denote env (sub_fn_rev_s 1 sub_red_step_2 a m).
 Proof.
 intros env [ | p | p] m;
 try reflexivity;
@@ -405,9 +405,9 @@ Ltac allVars_red xs e :=
   | ?X  = ?Y =>
     let xs := allVars_red xs X in
     allVars_red xs Y
-  | sub_fn_rev_s _ _ ?X =>
+  | sub_fn_rev_s _ _ _ ?X =>
     allVars_red xs X
-  | sub_fn_rev _ _ ?X ?Y =>
+  | sub_fn_rev _ _ _ ?X ?Y =>
     let xs := allVars_red xs X in
     allVars_red xs Y
   | upd_nth _ ?X ?Y =>
@@ -416,6 +416,8 @@ Ltac allVars_red xs e :=
   | nth _ ?X ?Y =>
     let xs := allVars_red xs X in
     allVars_red xs Y
+  | skipn _ ?X =>
+    allVars_red xs X
   | ?X :: ?Y =>
     let xs := allVars_red xs X in
     allVars_red xs Y
@@ -441,17 +443,17 @@ Ltac reifyValue_red env t :=
 
 Ltac reifyExpr_red env t :=
   lazymatch t with
-  | sub_fn_rev_s sub_step_2 ?a ?X =>
+  | sub_fn_rev_s ?n sub_step_2 ?a ?X =>
     let x := reifyExpr_red env X in
-    constr:(sub_fn_rev_s sub_red_step_2 a x)
-  | sub_fn_rev sub_step_1 ?a ?X ?Y =>
-    let x := reifyExpr_red env X in
-    let y := reifyExpr_red env Y in
-    constr:(sub_fn_rev sub_red_step_1 a x y)
-  | sub_fn_rev sub_step ?a ?X ?Y =>
+    constr:(sub_fn_rev_s n sub_red_step_2 a x)
+  | sub_fn_rev ?n sub_step_1 ?a ?X ?Y =>
     let x := reifyExpr_red env X in
     let y := reifyExpr_red env Y in
-    constr:(sub_fn_rev sub_red_step a x y)
+    constr:(sub_fn_rev n sub_red_step_1 a x y)
+  | sub_fn_rev ?n sub_step ?a ?X ?Y =>
+    let x := reifyExpr_red env X in
+    let y := reifyExpr_red env Y in
+    constr:(sub_fn_rev n sub_red_step a x y)
   | upd_nth ?a ?X ?Y =>
     let x := reifyExpr_red env X in
     let y := reifyExpr_red env Y in
@@ -460,6 +462,9 @@ Ltac reifyExpr_red env t :=
     let x := reifyExpr_red env X in
     let y := reifyExpr_red env Y in
     constr:(nth a x y)
+  | skipn ?a ?X =>
+    let x := reifyExpr_red env X in
+    constr:(skipn a x)
   | ?X :: ?Y =>
     let x := reifyExpr_red env X in
     let y := reifyExpr_red env Y in
@@ -499,7 +504,7 @@ Lemma sub_fn_rev_f_g :  forall a m t,
   (length m = 16)%nat ->
   (length t = 16)%nat ->
   1 <= a < 16 ->
-  sub_fn_rev sub_step a m t = sub_fn_rev_s sub_step_2 a (sub_fn_rev sub_step_1 a m t).
+  sub_fn_rev 1 sub_step a m t = sub_fn_rev_s 1 sub_step_2 a (sub_fn_rev 1 sub_step_1 a m t).
 Proof.
 intros a m t Hm Ht Ha.
 intros.
@@ -533,6 +538,47 @@ match goal with
 apply Hsubst.
 apply formula_decide_impl.
 clear Hsubst xs env Hm Ht.
+subst reif.
+clears.
+revert a Ha.
+eapply forall_Z_refl. (* bruteforce *)
+compute ; reflexivity.
+Qed.
+
+Lemma sub_fn_rev_f_skip : forall a m,
+  (length m = 16)%nat ->
+  1 <= a < 16 ->
+  skipn (Z.to_nat a) (sub_fn_rev_s 1 sub_step_2 a m) = skipn (Z.to_nat a) m.
+Proof.
+intros a m Hm Ha.
+do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
+match goal with
+  | [ |- ?X ] =>
+    let xss  := allVars_red tt X in
+    let envv := functionalize_red xss in
+    let r1  := reifyTerm_red xss X in
+    pose xss;
+    pose envv;
+    pose r1
+    end.
+    rename p into xs.
+    rename z15 into env.
+    rename f into reif.
+    (* in theory we would use change, but here we need to proceed slightly differently *)
+    match goal with 
+      |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
+    {
+    subst reif.
+    unfold formula_denote.
+    change (@denote _ _ list_expr_dec) with (@list_denote _ _ red_expr_dec).
+    rewrite ?list_denote_skipn.
+    change (@list_denote _ _ red_expr_dec) with (@denote _ _ list_expr_dec).
+    rewrite <- step_fn_red_expr_2;
+    trivial.
+    }
+apply Hsubst.
+apply formula_decide_impl.
+clear Hsubst xs env Hm.
 subst reif.
 clears.
 revert a Ha.

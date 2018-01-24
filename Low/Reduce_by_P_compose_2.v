@@ -27,8 +27,8 @@ Qed.
 
 Lemma sub_fn_rev_s_sub_step_2_ind_Zlength : forall a m,
   0 < a < Zlength m ->
-  Zlength (sub_fn_rev_s sub_step_2 a m) = Zlength m ->
-  Zlength (sub_fn_rev_s sub_step_2 (a+1) m) = Zlength m.
+  Zlength (sub_fn_rev_s 1 sub_step_2 a m) = Zlength m ->
+  Zlength (sub_fn_rev_s 1 sub_step_2 (a+1) m) = Zlength m.
 Proof.
   intros i m Ham Hind.
   rewrite sub_fn_rev_s_equation.
@@ -43,7 +43,7 @@ Qed.
 Lemma sub_fn_rev_s_sub_step_2_Zlength : forall a m,
   0 < a < 16 ->
   Zlength m = 16 ->
-  Zlength (sub_fn_rev_s sub_step_2 a m) = Zlength m.
+  Zlength (sub_fn_rev_s 1 sub_step_2 a m) = Zlength m.
 Proof.
   intros.
   pattern a.
@@ -132,103 +132,82 @@ Qed.
 Lemma sub_fn_rev_s_sub_step_2_ind_bound : forall a m,
   0 < a < 16 ->
   Zlength m = 16 ->
-  Forall (fun x => 0 <= x < 2^16) m ->
-  Forall (fun x => 0 <= x < 2^16) (take (Z.to_nat a - 1) (sub_fn_rev_s sub_step_2 a m)) ->
-  Forall (fun x => 0 <= x < 2^16) (take (Z.to_nat a) (sub_fn_rev_s sub_step_2 (a + 1) m)).
+  Forall (fun x => 0 <= x < 2^16) (take (Z.to_nat (a - 1)) (sub_fn_rev_s 1 sub_step_2 a m)) ->
+  Forall (fun x => 0 <= x < 2^16) (take (Z.to_nat a) (sub_fn_rev_s 1 sub_step_2 (a + 1) m)).
 Proof.
-Admitted.
-(*   intros i m Ham Hm.
-  rewrite sub_fn_rev_equation.
+  intros i m Ham Hm. intros.
+  rewrite sub_fn_rev_s_equation.
   flatten.
   apply Zle_bool_imp_le in Eq ; omega.
   replace ( i + 1 - 1) with i by omega.
+  replace (Z.to_nat i) with (Z.to_nat ((i - 1) + 1)).
+  2: fequals ; omega.
   rewrite -(take_cons_Zlength _ _ 0).
-  2: rewrite sub_step_1_Zlength sub_fn_rev_s_sub_step_1_Zlength; omega.
-  remember (sub_fn_rev sub_step_1 i m t) as m'.
+  2: rewrite sub_step_2_Zlength sub_fn_rev_s_sub_step_2_Zlength; omega.
+  remember (sub_fn_rev_s 1 sub_step_2 i m) as m'.
   apply Forall_app_2.
-  rewrite /sub_step_1.
-  rewrite (upd_nth_alter _ (fun x => (subst_0xffff (nth (Z.to_nat i) t 0)))).
+  rewrite /sub_step_2.
+  rewrite (upd_nth_alter _ (fun x => (mod0xffff (nth (Z.to_nat (i - 1)) m' 0)))).
   rewrite take_alter.
   2: reflexivity.
-  3: reflexivity.
+  2: omega.
+  2: reflexivity.
+
+  Focus 2.
+  rewrite upd_nth_length.
+  all: replace (length m')%nat with (Z.to_nat (Z.of_nat (length m')))%nat by (apply Nat2Z.id).
+  all: rewrite -Z2Nat.inj_lt ; subst.
+  all: rewrite -?Zlength_correct.
+  4: split.
+  all: try omega.
+  all: rewrite sub_fn_rev_s_sub_step_2_Zlength ; omega.
+
+
+  rewrite (upd_nth_alter _ (fun x => (subst_c (nth (Z.to_nat i) m' 0) (nth (Z.to_nat (i - 1)) m' 0)))).
+  2: omega.
+  2: reflexivity.
+
+  Focus 2.
+  replace (length m')%nat with (Z.to_nat (Z.of_nat (length m')))%nat by (apply Nat2Z.id).
+  all: rewrite -Z2Nat.inj_lt ; subst.
+  all: rewrite -?Zlength_correct.
+  all: try omega.
+  all: rewrite sub_fn_rev_s_sub_step_2_Zlength ; omega.
+
+  rewrite take_alter.
   assumption.
-  3: apply Forall_cons_2.
-  4: apply Forall_nil ; trivial.
-  3: rewrite /sub_step_1;
-  rewrite upd_nth_same_Zlength /subst_0xffff.
-  3: assert(- 2 ^ 16 + 1 + 65535 ≤ nth (Z.to_nat i) t 0 ∧ nth (Z.to_nat i) t 0 < 1 + 65535) by
-    (change(- 2 ^ 16 + 1 + 65535) with 0 ; change(1 + 65535) with (2^16);
-    apply Forall_nth_d; [compute ; split; go|assumption]).
-  all: try omega.
-  apply Nat2Z.inj_lt.
-  rewrite -Zlength_correct.
-  all: rewrite ?Z2Nat.id ?Heqm' ?sub_fn_rev_s_sub_step_1_Zlength.
-  all: try omega.
-Qed. *)
+  rewrite -Z2Nat.inj_le; omega.
+  apply Forall_cons_2.
+  2: apply Forall_nil ; trivial.
 
-(* Lemma sub_fn_rev_s_sub_step_1_bound : forall i m t,
-  Zlength m = 16 ->
-  0 < i < Zlength m ->
-  Forall (fun x => 0 <= x < 2 ^ 16) t ->
-  Forall (λ a : ℤ, - 2 ^ 16 + 1 ≤ a ∧ a < 1) (take (Z.to_nat 1) m) ->
-  Forall (fun x => -2^16 + 1 <= x < 1) (take (Z.to_nat i) (sub_fn_rev sub_step_1 i m t)).
- *)
+  rewrite /sub_step_2.
+  rewrite upd_nth_same_Zlength /mod0xffff.
+  change (65535) with (Z.ones 16).
+  rewrite Z.land_ones.
+  apply Z_mod_lt.
+  apply pown0.
+  omega.
+  omega.
+  rewrite upd_nth_Zlength.
+  all: subst m'.
+  all: rewrite sub_fn_rev_s_sub_step_2_Zlength.
+  all: rewrite ?Z2Nat.id; omega.
+Qed.
 
-
-Lemma sub_fn_rev_s_sub_step_2_inv : forall a m,
+Lemma sub_fn_rev_s_sub_step_2_bound : forall a m,
   0 < a < 16 ->
   Zlength m = 16 ->
-  Forall (fun x => - 2^16 <= x <= 0) (take 15 m) ->
-  ZofList 16 (sub_fn_rev_s sub_step_2 a m) = ZofList 16 m.
+  Forall (fun x => 0 <= x < 2^16) (take (Z.to_nat (a - 1)) (sub_fn_rev_s 1 sub_step_2 a m)).
 Proof.
-intros a m Ha Hm Hb.
-(* assert_gen_hyp_ H a 15 14 ; try omega. *)
-assert(Hbound: forall a, 0 < a /\ a < 16 -> - 2^16 <= nth (Z.to_nat (a - 1)) m 0 <= 0).
-{
-  intros x Hx.
-  replace(nth (Z.to_nat (x - 1)) m 0) with (nth (Z.to_nat (x - 1)) (take 15 m) 0).
-  apply Forall_nth_d.
-  compute ; split ; discriminate.
-  assumption.
-  apply nth_take_full.
-  change 15%nat with (Z.to_nat 15).
-  apply Z2Nat.inj_lt ; omega.
-}
-assert(H1: ℤ16.lst sub_fn_rev_s sub_step_2 1 m = ℤ16.lst m).
-  rewrite sub_fn_rev_s_1 ; reflexivity.
-assert(H2: ℤ16.lst sub_fn_rev_s sub_step_2 2 m = ℤ16.lst m).
-  rewrite sub_fn_rev_s_n ; try apply sub_step_2_Z_inv ; try apply Hbound ; try omega.
-assert(H3: ℤ16.lst sub_fn_rev_s sub_step_2 3 m = ℤ16.lst m).
-  admit.
-Admitted.
-(* assert(H4: ℤ16.lst sub_fn_rev_s sub_step_2 4 m = ℤ16.lst m).
-assert(H5: ℤ16.lst sub_fn_rev_s sub_step_2 5 m = ℤ16.lst m).
-assert(H6: ℤ16.lst sub_fn_rev_s sub_step_2 6 m = ℤ16.lst m).
-assert(H7: ℤ16.lst sub_fn_rev_s sub_step_2 7 m = ℤ16.lst m).
-assert(H8: ℤ16.lst sub_fn_rev_s sub_step_2 8 m = ℤ16.lst m).
-assert(H9: ℤ16.lst sub_fn_rev_s sub_step_2 9 m = ℤ16.lst m).
-assert(H10: ℤ16.lst sub_fn_rev_s sub_step_2 10 m = ℤ16.lst m).
-assert(H11: ℤ16.lst sub_fn_rev_s sub_step_2 11 m = ℤ16.lst m).
-assert(H12: ℤ16.lst sub_fn_rev_s sub_step_2 12 m = ℤ16.lst m).
-assert(H13: ℤ16.lst sub_fn_rev_s sub_step_2 13 m = ℤ16.lst m).
-assert(H14: ℤ16.lst sub_fn_rev_s sub_step_2 14 m = ℤ16.lst m).
-assert(H15: ℤ16.lst sub_fn_rev_s sub_step_2 15 m = ℤ16.lst m).
-destruct H ; [subst a|].
-reflexivity.
-destruct H ; [subst a|].
-
-destruct a.
-reflexivity.
-reflex
-induction a.
-rewrite 
- *)
-
-
-
-
-
-
+  intros.
+  pattern a.
+  apply P016_impl ; try omega.
+  change (Z.to_nat (1 - 1)) with 0%nat.
+  rewrite firstn_O ; apply Forall_nil ; trivial.
+  intros.
+  replace (i + 1 - 1) with i by omega.
+  apply sub_fn_rev_s_sub_step_2_ind_bound ; assumption.
+Qed.
 
 Close Scope Z.
 

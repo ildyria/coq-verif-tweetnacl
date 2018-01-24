@@ -83,7 +83,7 @@ Ltac Grind_sub_Z_ :=
       | true  =>
       match is_Z B with
       | false => Grind_sub_Z_ B
-      | true  => let C := (eval compute in (Z.add A B)) in
+      | true  => let C := (eval compute in (Z.sub A B)) in
         change (Z.sub A B) with C
       end
     end

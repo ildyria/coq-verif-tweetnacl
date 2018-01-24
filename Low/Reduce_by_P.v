@@ -57,7 +57,7 @@ Definition getBit256 l := Z.land (Z.shiftr (nth 15%nat l 0) 16) 1.
 
 Definition m_from_t (m t:list Z) : list Z :=
   let m0 := upd_nth 0 m (subst_0xffed (nth 0 t 0)) in
-  let m14 := sub_fn_rev sub_step 15 m0 t in
+  let m14 := sub_fn_rev 1 sub_step 15 m0 t in
   let m15 := upd_nth 15 m14 (subst_0x7fffc (nth 15 t 0) (nth 14 m14 0)) in
   upd_nth 14 m15 (mod0xffff (nth 14 m15 0)).
 
