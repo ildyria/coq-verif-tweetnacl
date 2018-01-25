@@ -57,7 +57,6 @@ Qed.
 Lemma sub_step_2_Z_inv : forall a m,
 0 < a < Zlength m ->
 - 2^16 <= nth (Z.to_nat (a - 1)) m 0 <= 0 ->
-(* nth (Z.to_nat (a - 1)) m 0 <= 0 -> *)
 ZofList 16 (sub_step_2 a m) = ZofList 16 m.
 Proof.
 intros a m Hm Hbm.
@@ -113,10 +112,90 @@ change ((-1) `mod` 2 ^ 1 ) with 1.
 ring.
 Qed.
 
+
+Lemma sub_step_2_Z_inv_lss : forall a m,
+0 < a < Zlength m ->
+- 2^16 <= nth (Z.to_nat (a - 1)) m 0 < 2^16 ->
+ZofList 16 (sub_step_2 a m) = ZofList 16 m.
+Proof.
+intros a m Hm Hbm.
+rewrite /sub_step_2 /mod0xffff /subst_c.
+rewrite ?ZofList_upd_nth_Zlength.
+5: rewrite upd_nth_Zlength.
+3,5,6: rewrite Z2Nat.id.
+all: try omega.
+rewrite Zplus_assoc_reverse.
+match goal with
+  | [ |- _ + ?A = _ ] => replace A with 0
+end.
+symmetry.
+apply Zplus_0_r_reverse.
+replace (16 * Z.to_nat a) with (16 * Z.to_nat (a - 1) + 16).
+2: rewrite ?Z2Nat.id ; omega.
+rewrite Z.pow_add_r.
+2: rewrite ?Z2Nat.id.
+2,3,4 : omega.
+rewrite Zmult_assoc_reverse.
+rewrite Zred_factor4.
+symmetry ; rewrite Z.mul_comm; apply Z_eq_mult.
+rewrite upd_nth_diff_Zlength.
+2,3: rewrite Z2Nat.id.
+all: try omega.
+2: intro H; apply (f_equal Z.of_nat) in H; rewrite ?Z2Nat.id in H; omega.
+change 65535 with (Z.ones 16).
+remember (nth _ _ _) as n ; clear Hm Heqn ; clears.
+ring_simplify.
+repeat match goal with
+  | [ |- context[Z.land ?A 1]] => change (Z.land A 1) with (Z.land A (Z.ones 1))
+  | _ => rewrite Z.land_ones
+  | [ |- ?A - _ + _ - _ = _ ] => replace A with 0 by omega
+  | _ => omega
+end.
+rewrite (Zmod_eq _ (2^16)).
+2: apply pown0 ; omega.
+rewrite Z.shiftr_div_pow2.
+2: omega.
+assert(Hn: n = 0 \/ n < 0 \/ n > 0) by omega.
+(* assert(Hn: n = 0 \/ n < 0) by omega. *)
+destruct Hn as [Hn|[Hn|Hn]].
+subst n ; reflexivity.
+assert(Hn': n `div` 2 ^ 16 = -1).
+  assert(H0: n `div` 2 ^ 16 < 0).
+    apply Z.div_lt_upper_bound ; omega.
+  assert(H2: (- 2 ^ 16) `div` 2 ^ 16 <= n `div` 2 ^ 16).
+    apply Z_div_le; try omega.
+  change ((- 2 ^ 16) `div` 2 ^ 16) with (-1) in H2.
+  omega.
+rewrite Hn'.
+change ((-1) `mod` 2 ^ 1 ) with 1.
+ring.
+assert(Hn': n `div` 2 ^ 16 = 0).
+apply Zdiv_small ; omega.
+rewrite Hn'.
+rewrite Zmod_0_l.
+ring.
+Qed.
+
 Lemma sub_step_2_Z_bound_nth : forall a m,
 0 < a < Zlength m ->
 - 2^16 < nth (Z.to_nat a) m 0 <= 0 ->
 - 2^16 <= nth (Z.to_nat a) (sub_step_2 a m) 0 <= 0.
+Proof.
+intros a m Hm Hbm.
+rewrite /sub_step_2 /mod0xffff /subst_c.
+rewrite upd_nth_diff_Zlength ?upd_nth_same_Zlength ?upd_nth_Zlength.
+all: try (intro H; apply (f_equal Z.of_nat) in H; rewrite ?Z2Nat.id in H).
+all: rewrite ?Z2Nat.id.
+assert(Hand: Z.land (nth (Z.to_nat (a - 1)) m 0 ≫ 16) 1 = 0 \/ Z.land (nth (Z.to_nat (a - 1)) m 0 ≫ 16) 1 = 1).
+  assert(H:= and_0_or_1 (nth (Z.to_nat (a - 1)) m 0 ≫ 16)) ; omega.
+destruct Hand as [Hand|Hand] ; rewrite Hand.
+all: try omega.
+Qed.
+
+Lemma sub_step_2_Z_bound_nth_lss : forall a m,
+0 < a < Zlength m ->
+- 2^16 < nth (Z.to_nat a) m 0 < 2^16 ->
+- 2^16 <= nth (Z.to_nat a) (sub_step_2 a m) 0 < 2^16.
 Proof.
 intros a m Hm Hbm.
 rewrite /sub_step_2 /mod0xffff /subst_c.

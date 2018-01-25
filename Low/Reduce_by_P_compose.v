@@ -3,6 +3,7 @@ From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
 From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
 From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
+From Tweetnacl Require Import Low.Z.
 Require Import ssreflect.
 Require Import Recdef.
 
@@ -35,8 +36,8 @@ sv pack25519(u8 *o,const gf n)
 
 
     m[15]=t[15]-0x7fff-((m[14]>>16)&1);
-    b=(m[15]>>16)&1;
     m[14]&=0xffff;
+    b=(m[15]>>16)&1;
     sel25519(t,m,1-b);
   }
   FOR(i,16) {
@@ -418,6 +419,15 @@ Ltac allVars_red xs e :=
     allVars_red xs Y
   | skipn _ ?X =>
     allVars_red xs X
+  | firstn _ ?X =>
+    allVars_red xs X
+  | subst_0xffff ?X =>
+    allVars_red xs X
+  | subst_c ?X ?Y =>
+    let xs := allVars_red xs X in
+    allVars_red xs Y
+  | mod0xffff ?X =>
+    allVars_red xs X
   | ?X :: ?Y =>
     let xs := allVars_red xs X in
     allVars_red xs Y
@@ -462,17 +472,30 @@ Ltac reifyExpr_red env t :=
     let x := reifyExpr_red env X in
     let y := reifyExpr_red env Y in
     constr:(nth a x y)
+  | firstn ?a ?X =>
+    let x := reifyExpr_red env X in
+    constr:(firstn a x)
   | skipn ?a ?X =>
     let x := reifyExpr_red env X in
     constr:(skipn a x)
+  | subst_0xffff ?X =>
+    let x := reifyExpr_red env X in
+    constr:(Sub_red x)
+  | subst_c ?X ?Y =>
+    let x := reifyExpr_red env X in
+    let y := reifyExpr_red env Y in
+    constr:(SubC_red x)
+  | mod0xffff ?X =>
+    let x := reifyExpr_red env X in
+    constr:(Mod_red x)
   | ?X :: ?Y =>
     let x := reifyExpr_red env X in
     let y := reifyExpr_red env Y in
-    constr:((R_red x) :: y)
+    constr:(x :: y)
   | nil => constr:(nil:list red_expr)
   | ?X =>
     let x := reifyValue_red env X in
-    constr:(x)
+    constr:(R_red x)
   end.
 
 Ltac reifyTerm_red env t :=
@@ -585,5 +608,138 @@ revert a Ha.
 eapply forall_Z_refl. (* bruteforce *)
 compute ; reflexivity.
 Qed.
+
+Lemma sub_fn_rev_g_take : forall a m t,
+  (length m = 16)%nat ->
+  (length t = 16)%nat ->
+  1 <= a < 16 ->
+  firstn 1 (sub_fn_rev 1 sub_step_1 a m t) = firstn 1 m.
+Proof.
+intros a m t Hm Ht Ha.
+do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
+do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
+match goal with
+  | [ |- ?X ] =>
+    let xss  := allVars_red tt X in
+    let envv := functionalize_red xss in
+    let r1  := reifyTerm_red xss X in
+    pose xss;
+    pose envv;
+    pose r1
+    end.
+    rename p into xs.
+    rename z31 into env.
+    rename f into reif.
+    (* in theory we would use change, but here we need to proceed slightly differently *)
+    match goal with 
+      |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
+    {
+    subst reif.
+    unfold formula_denote.
+    change (@denote _ _ list_expr_dec) with (@list_denote _ _ red_expr_dec).
+    rewrite ?list_denote_firstn.
+    change (@list_denote _ _ red_expr_dec) with (@denote _ _ list_expr_dec).
+    rewrite <- step_fn_red_expr_1;
+    trivial.
+    }
+apply Hsubst.
+apply formula_decide_impl.
+clear Hsubst xs env Hm.
+subst reif.
+clears.
+revert a Ha.
+eapply forall_Z_refl. (* bruteforce *)
+compute ; reflexivity.
+Qed.
+
+Lemma sub_fn_rev_step_g_first14 : forall m t,
+  (length m = 16)%nat ->
+  (length t = 16)%nat ->
+  firstn 14 (skipn 1 (sub_fn_rev 1 sub_step_1 15 t m)) =
+    firstn 14 (skipn 1 (m ⊖ (0 :: 65535 :: 65535 :: 65535 :: 65535 ::
+     65535 :: 65535 :: 65535 :: 65535 :: 65535 ::
+     65535 :: 65535 :: 65535 :: 65535 :: 65535 :: 0 :: nil))).
+Proof.
+intros m t Hm Ht.
+do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
+do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
+simpl ZsubList.
+rewrite -?Zminus_0_l_reverse.
+repeat match goal with
+  | |- context[?z - 65535] => change (z - 65535) with (subst_0xffff z)
+end.
+match goal with
+  | [ |- ?X ] =>
+    let xss  := allVars_red tt X in
+    let envv := functionalize_red xss in
+    let r1  := reifyTerm_red xss X in
+    pose xss;
+    pose envv;
+    pose r1
+    end.
+    rename p into xs.
+    rename z31 into env.
+    rename f into reif.
+    (* in theory we would use change, but here we need to proceed slightly differently *)
+    match goal with 
+      |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
+    {
+    subst reif.
+    unfold formula_denote.
+    change (@denote _ _ list_expr_dec) with (@list_denote _ _ red_expr_dec).
+    rewrite ?list_denote_firstn.
+    rewrite ?list_denote_skipn.
+    change (@list_denote _ _ red_expr_dec) with (@denote _ _ list_expr_dec).
+    rewrite <- step_fn_red_expr_1;
+    trivial.
+    }
+apply Hsubst.
+apply formula_decide_impl.
+clear Hsubst xs env Ht Hm.
+subst reif.
+clears.
+compute ; reflexivity.
+Qed.
+
+Lemma sub_fn_rev_step_g_last : forall m t,
+  (length m = 16)%nat ->
+  (length t = 16)%nat ->
+  skipn 15 (sub_fn_rev 1 sub_step_1 15 m t) = skipn 15 m.
+Proof.
+intros m t Hm Ht.
+do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
+do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
+match goal with
+  | [ |- ?X ] =>
+    let xss  := allVars_red tt X in
+    let envv := functionalize_red xss in
+    let r1  := reifyTerm_red xss X in
+    pose xss;
+    pose envv;
+    pose r1
+    end.
+    rename p into xs.
+    rename z31 into env.
+    rename f into reif.
+    (* in theory we would use change, but here we need to proceed slightly differently *)
+    match goal with 
+      |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
+    {
+    subst reif.
+    unfold formula_denote.
+    change (@denote _ _ list_expr_dec) with (@list_denote _ _ red_expr_dec).
+    rewrite ?list_denote_skipn.
+    change (@list_denote _ _ red_expr_dec) with (@denote _ _ list_expr_dec).
+    rewrite <- step_fn_red_expr_1;
+    trivial.
+    }
+apply Hsubst.
+apply formula_decide_impl.
+clear Hsubst xs env Ht Hm.
+subst reif.
+clears.
+compute ; reflexivity.
+Qed.
+
 
 Close Scope Z.

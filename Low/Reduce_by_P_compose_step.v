@@ -21,7 +21,7 @@ sv pack25519(u8 *o,const gf n)
     }
 
     for(i=1;i<15;i++) {
-      m[i]=t[i];
+      m[i]=t[i]-0xffff;
     }
     for(i=1;i<15;i++) {
       m[i]=m[i]-((m[i-1]>>16)&1);

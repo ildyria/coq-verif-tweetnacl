@@ -64,8 +64,8 @@ Local Lemma sub_fn_rev_s_sub_step_1_ind_bound : forall a m t,
   0 < a < 16 ->
   Zlength m = 16 ->
   Forall (fun x => 0 <= x < 2 ^ 16) t ->
-  Forall (fun x => -2^16 + 1 <= x < 1) (take (Z.to_nat a) (sub_fn_rev 1 sub_step_1 a m t)) ->
-  Forall (fun x => -2^16 + 1 <= x < 1) (take (Z.to_nat (a + 1)) (sub_fn_rev 1 sub_step_1 (a + 1) m t)).
+  Forall (fun x => -2^16 < x < 2^16) (take (Z.to_nat a) (sub_fn_rev 1 sub_step_1 a m t)) ->
+  Forall (fun x => -2^16 < x < 2^16) (take (Z.to_nat (a + 1)) (sub_fn_rev 1 sub_step_1 (a + 1) m t)).
 Proof.
   intros i m t Ham Hm Hbm Hind.
   rewrite sub_fn_rev_equation.
@@ -100,12 +100,11 @@ Lemma sub_fn_rev_s_sub_step_1_bound : forall i m t,
   Zlength m = 16 ->
   0 < i < Zlength m ->
   Forall (fun x => 0 <= x < 2 ^ 16) t ->
-  Forall (λ a : ℤ, - 2 ^ 16 + 1 ≤ a ∧ a < 1) (take (Z.to_nat 1) m) ->
-  Forall (fun x => -2^16 + 1 <= x < 1) (take (Z.to_nat i) (sub_fn_rev 1 sub_step_1 i m t)).
+  Forall (λ a : ℤ, - 2 ^ 16 < a ∧ a < 2^16) (take (Z.to_nat 1) m) ->
+  Forall (fun x => -2^16 < x < 2^16) (take (Z.to_nat i) (sub_fn_rev 1 sub_step_1 i m t)).
 Proof.
 intros.
-change(Forall (fun x => -2^16 + 1 <= x < 1) (take (Z.to_nat i) (sub_fn_rev 1 sub_step_1 i m t))) with
-  ((fun x => Forall (fun a => -2^16 + 1 <= a < 1) (take (Z.to_nat x) (sub_fn_rev 1 sub_step_1 x m t))) i).
+pattern i.
 apply P016_impl ; try omega.
 rewrite sub_fn_rev_1; assumption.
 intros ; apply sub_fn_rev_s_sub_step_1_ind_bound ; try omega ; try assumption.
