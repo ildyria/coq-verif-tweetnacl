@@ -104,47 +104,13 @@ Proof.
     | change_Z_of_nat ; omega].
 Qed.
 
-(*
-Lemma sub_fn_rev_s_sub_step_2_inv : forall a m,
-  0 < a < 16 ->
-  Zlength m = 16 ->
-  Forall (fun x => - 2^16 < x <= 0) (take 15 m) ->
-  ZofList 16 (sub_fn_rev_s 1 sub_step_2 a m) = ZofList 16 m.
-*)
-
-(*
-Lemma sub_fn_rev_s_sub_step_1_bound : forall i m t,
-  Zlength m = 16 ->
-  0 < i < Zlength m ->
-  Forall (fun x => 0 <= x < 2 ^ 16) t ->
-  Forall (λ a : ℤ, - 2 ^ 16 < a ∧ a < 2^16) (take (Z.to_nat 1) m) ->
-  Forall (fun x => -2^16 < x < 2^16) (take (Z.to_nat i) (sub_fn_rev 1 sub_step_1 i m t)).
-*)
-
-(*
-Lemma sub_fn_rev_s_sub_step_1_inv : forall m t,
-  Zlength m = 16 ->
-  Zlength t = 16 ->
-  ZofList 16 (sub_fn_rev 1 sub_step_1 15 m t) = nth 0 m 0 +
-  2^16 * (ZofList 16 (take 14 (skipn 1 t))) + 2^(16*15) * nth 15 m 0 - 1766847064778384329583297500742918515827483896875618958121606201292554240.
- *)
-
-
-Definition m_from_t_loops (m t:list Z) : list Z :=
-  let m0 := upd_nth 0 m (subst_0xffed (nth 0 t 0)) in
-  sub_fn_rev 1 sub_step 15 m0 t.
-
-Lemma ZofList_m_from_t: forall m t, 
+Local Lemma take_15_sub_fn_rev_1: forall m t,
   Zlength m = 16 ->
   Zlength t = 16 ->
   Forall (fun x => 0 <= x < 2^16) t ->
-  ZofList 16 (m_from_t m t) = ZofList 16 t - (2^255-19).
+  Forall (λ x : ℤ, - 2 ^ 16 < x ∧ x < 2 ^ 16) (take 15 (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t)).
 Proof.
   intros m t Hm Ht Hbt.
-  assert(Hm_nat: (length m = 16)%nat) by (rewrite Zlength_correct in Hm ; omega).
-  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
-  assert(HForall: Forall (λ x : ℤ, - 2 ^ 16 < x ∧ x < 2 ^ 16) (take 15 (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t))).
-  {
   change (15%nat) with (Z.to_nat 15).
   apply sub_fn_rev_s_sub_step_1_bound.
   rewrite upd_nth_Zlength Hm ; go.
@@ -156,46 +122,50 @@ Proof.
   unfold subst_0xffed.
   apply Forall_cons in Hbt; destruct Hbt.
   change (2^16) with 65536 in * ; omega.
-  }
-  assert(HZl: Zlength (sub_fn_rev_s 1 sub_step_2 15 (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0%Z))) t)) = 16).
-  {
+Qed.
+
+Local Lemma HZl : forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Zlength (sub_fn_rev_s 1 sub_step_2 15 (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0%Z))) t)) = 16.
+Proof.
+  intros m t Hm Ht.
   rewrite sub_fn_rev_s_sub_step_2_Zlength.
   all: rewrite ?sub_fn_rev_s_sub_step_1_Zlength.
   all: rewrite ?upd_nth_Zlength; go.
-  }
-  assert(HZl2: Zlength (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0%Z))) t) = 16).
-  {
+Qed.
+
+Local Lemma HZl2 : forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Zlength (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0%Z))) t) = 16.
+Proof.
+  intros m t Hm Ht.
   rewrite sub_fn_rev_s_sub_step_1_Zlength.
   all: rewrite ?upd_nth_Zlength; go.
-  }
-  rewrite /m_from_t.
-  rewrite upd_nth_diff_Zlength.
-  2,3,4: rewrite ?sub_fn_rev_Zlength ?upd_nth_Zlength ?Hm ; go.
-  rewrite ZofList_upd_nth_Zlength.
-  rewrite ZofList_upd_nth_Zlength.
-  2,4: omega.
-  3: rewrite upd_nth_Zlength.
-  2,3,4 : rewrite sub_fn_rev_Zlength.
-  2,3,4,5,6,7,8,9,10: rewrite upd_nth_Zlength Hm ;go.
-  rewrite sub_fn_rev_f_g ; try omega.
-  2: rewrite upd_nth_length ; try omega.
-  rewrite ?sub_fn_rev_s_sub_step_2_inv.
-  2,3,4: go.
+Qed.
 
-  rewrite sub_fn_rev_s_sub_step_1_inv.
-  rewrite upd_nth_same.
-  2,3,4: rewrite ?upd_nth_Zlength ?Hm ; go.
+Local Lemma HZl3 : forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Zlength (sub_fn_rev 1 sub_step 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t) = 16.
+Proof.
+  intros m t Hm Ht.
+  rewrite ?sub_fn_rev_Zlength ?upd_nth_Zlength ?Hm ; change_Z_of_nat ; omega.
+Qed.
 
-  rewrite upd_nth_diff.
-  2,3,4: go.
-
-  rewrite upd_nth_diff.
-  2,3: rewrite Zlength_correct in HZl.
-  2,3,4: omega.
-  replace (nth 15 (sub_fn_rev_s 1 sub_step_2 15 (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t)) 0) with 
-  (nth 15 m 0).
-
-  Focus 2.
+Local Lemma nth_15_m_0 : forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  nth 15 (sub_fn_rev_s 1 sub_step_2 15 (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t)) 0 = nth 15 m 0.
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(Hm_nat: (length m = 16)%nat) by (rewrite Zlength_correct in Hm ; omega).
+  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
+  assert(HForall:= take_15_sub_fn_rev_1 m t Hm Ht Hbt).
+  assert(HZl:= HZl m t Hm Ht).
+  assert(HZl2:= HZl2 m t Hm Ht).
   assert(nth 15 m 0 :: nil =
    nth 15 (sub_fn_rev_s 1 sub_step_2 15 (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t)) 0 ::
    drop (S 15) (sub_fn_rev_s 1 sub_step_2 15 (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t))).
@@ -217,43 +187,23 @@ Proof.
   rewrite drop_ge in H.
   2: rewrite Zlength_correct in HZl ; omega.
   apply ListSame in H ; destruct H.
-  assumption.
-  remember (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t) as t'.
-  repeat change_Z_of_nat.
-  unfold subst_0xffed.
-  ring_simplify.
+  symmetry ; assumption.
+Qed.
 
-  rewrite take_drop_commute.
-  simpl.
-  replace (nth 0 t 0 + 65536 * (ℤ16.lst drop 1 (take 15 t))) with (ℤ16.lst (take 15 t)).
-  2: destruct t ; [tryfalse|] ; reflexivity.
-  remember (nth 14 (sub_fn_rev_s 1 sub_step_2 15 t') 0) as n'.
-  assert(-2 ^16 <= n' < 2^16).
-  {
-  subst n'.
-  change 15 with (14 + 1).
-  change 14%nat with (Z.to_nat 14).
-  apply bound_a_subst_step_2_lss ; try omega ; assumption.
-  }
-  rewrite /subst_0x7fffc.
-  rewrite /mod0xffff.
-  change 65535 with (Z.ones 16).
-  rewrite Z.land_ones.
-  2: omega.
-  replace (2 ^ (16 * 15)) with (2 ^ (16 * 14) * 2^16).
-  2: reflexivity.
-  rewrite -Z.add_assoc.
-  rewrite -Z.add_assoc.
-  replace (2 ^ (16 * 14) * 2 ^ 16 * (nth 15 t 0 - 32767 - Z.land (n' ≫ 16) 1) + (- (2 ^ (16 * 14) * n') + 2 ^ (16 * 14) * n' `mod` 2 ^ 16))
-  with (2 ^ (16 * 14) * (2 ^ 16 * (nth 15 t 0 - 32767)) + 2 ^ (16 * 14) * (2 ^ 16 * (- Z.land (n' ≫ 16) 1) - n' +
-n' `mod` 2 ^ 16)).
-  2: ring.
-  replace (2 ^ 16 * - Z.land (n' ≫ 16) 1 - n' + n' `mod` 2 ^ 16) with 0.
-  ring_simplify.
-  change (2147418112* 2^(16*14)) with 57894277771593319327455909206843211008119164848923406400770670397755272200192.
-  ring_simplify.
-  replace ((ℤ16.lst take 15 t) + 65536 * 2 ^ (16 * 14) * nth 15 t 0) with (ℤ16.lst t).
-  reflexivity.
+Local Lemma ZofList_nth_take_cons: forall t,
+  (length t = 16)%nat ->
+  ℤ16.lst take 15 t = nth 0 t 0 + 65536 * (ℤ16.lst drop 1 (take 15 t)).
+Proof.
+  intros t Ht.
+  destruct t ; [tryfalse|] ; reflexivity.
+Qed.
+
+Local Lemma ZofList_take_nth_last:
+  forall t,
+  (length t = 16)%nat ->
+  ℤ16.lst t = (ℤ16.lst take 15 t) + 65536 * 2 ^ (16 * 14) * nth 15 t 0.
+Proof.
+  intros t Ht.
   rewrite -(ZofList_take_nth_drop _ _ _ 15).
   2: omega.
   rewrite -Z.add_assoc.
@@ -267,11 +217,17 @@ n' `mod` 2 ^ 16)).
   change (65536 * 2 ^ (16 * 14)) with (2 ^ (16 * 15)).
   omega.
   omega.
-  rewrite Z.shiftr_div_pow2 ; try omega.
-  clear Heqn' HZl2 HZl Heqt' Hm_nat Ht_nat Hm Ht Hbt.
-  clears.
-  rename n' into n.
+Qed.
+
+Local Lemma n_bounded_null :
+  forall n',
+  - 2 ^ 16 ≤ n' ∧ n' < 2 ^ 16 ->
+  0 = 2 ^ 16 * - Z.land (n' ≫ 16) 1 - n' + n' `mod` 2 ^ 16.
+Proof.
+  intros n Hbn.
   assert(Hn: n = 0 \/ n < 0 \/ n > 0) by omega.
+  rewrite Z.shiftr_div_pow2 ; try omega.
+
   destruct Hn as [Hn|[Hn|Hn]].
   subst n ; reflexivity.
   assert(Hn': n `div` 2 ^ 16 = -1).
@@ -302,6 +258,103 @@ n' `mod` 2 ^ 16)).
   omega.
   apply pown0 ; omega.
 Qed.
+
+Local Lemma nth_14_bound :
+  forall t',
+  Zlength t' = 16 ->
+  Forall (λ x : ℤ, - 2 ^ 16 < x ∧ x < 2 ^ 16) (take 15 t') ->
+  -2^16 <= nth 14 (sub_fn_rev_s 1 sub_step_2 15 t') 0 < 2^16.
+Proof.
+  intros.
+  change 15 with (14 + 1).
+  change 14%nat with (Z.to_nat 14).
+  apply bound_a_subst_step_2_lss ; try omega ; assumption.
+Qed.
+
+Local Lemma ZofList_m_from_t_sub1 : forall 
+m t t'',
+length m = 16%nat ->
+length t = 16%nat ->
+- 2 ^ 16 ≤ nth 14 t'' 0 ∧ nth 14 t'' 0 < 2 ^ 16 ->
+subst_0xffed (nth 0 t 0) + 2 ^ 16 * (ℤ16.lst take 14 (drop 1 t)) + 2 ^ (16 * 15) * nth 15 m 0 -
+1766847064778384329583297500742918515827483896875618958121606201292554240 +
+2 ^ (16 * 15%nat) * (- nth 15 m 0 + subst_0x7fffc (nth 15 t 0) (nth 14 t'' 0)) +
+2 ^ (16 * 14%nat) * (- nth 14 t'' 0 + mod0xffff (nth 14 t'' 0)) =
+(ℤ16.lst t) - (2 ^ 255 - 19).
+Proof.
+  intros m t t'' Hm_nat Ht_nat Hbt''.
+  repeat change_Z_of_nat.
+  unfold subst_0xffed.
+  replace (2^255 - 19) with 57896044618658097711785492504343953926634992332820282019728792003956564819949.
+  2: compute ; reflexivity.
+  ring_simplify.
+
+  rewrite take_drop_commute.
+  rewrite -ZofList_nth_take_cons.
+  2: assumption.
+  rewrite /subst_0x7fffc.
+  rewrite /mod0xffff.
+  change 65535 with (Z.ones 16).
+  rewrite Z.land_ones.
+  2: omega.
+  replace (2 ^ (16 * 15)) with (2 ^ (16 * 14) * 2^16).
+  2: reflexivity.
+  rewrite -Z.add_assoc.
+  rewrite -Z.add_assoc.
+  remember (nth 14 t'' 0) as n'.
+  replace (2 ^ (16 * 14) * 2 ^ 16 * (nth 15 t 0 - 32767 - Z.land (n' ≫ 16) 1) + (- (2 ^ (16 * 14) * n') + 2 ^ (16 * 14) * n' `mod` 2 ^ 16))
+  with (2 ^ (16 * 14) * (2 ^ 16 * (nth 15 t 0 - 32767)) + 2 ^ (16 * 14) * (2 ^ 16 * (- Z.land (n' ≫ 16) 1) - n' +
+n' `mod` 2 ^ 16)) by (abstract ring).
+
+  rewrite -n_bounded_null.
+  2: assumption.
+  ring_simplify.
+  change (2147418112* 2^(16*14)) with 57894277771593319327455909206843211008119164848923406400770670397755272200192.
+  ring_simplify.
+  rewrite -ZofList_take_nth_last.
+  reflexivity.
+  omega.
+Qed.
+
+Lemma ZofList_m_from_t: forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  ZofList 16 (m_from_t m t) = ZofList 16 t - (2^255-19).
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(Hm_nat: (length m = 16)%nat) by (rewrite Zlength_correct in Hm ; omega).
+  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
+  assert(HForall:= take_15_sub_fn_rev_1 m t Hm Ht Hbt).
+  assert(HZl:= HZl m t Hm Ht).
+  assert(HZl2:= HZl2 m t Hm Ht).
+  rewrite /m_from_t.
+  orewrite upd_nth_diff_Zlength.
+  orewrite ZofList_upd_nth_Zlength.
+  orewrite ZofList_upd_nth_Zlength.
+  3: rewrite upd_nth_Zlength.
+  all: try (rewrite HZl3 ; change_Z_of_nat ; omega).
+  rewrite sub_fn_rev_f_g ; try omega.
+  2: rewrite upd_nth_length ; try omega.
+  rewrite ?sub_fn_rev_s_sub_step_2_inv.
+  2,3,4: try omega ; assumption.
+
+  rewrite sub_fn_rev_s_sub_step_1_inv.
+  rewrite upd_nth_same.
+  2,3,4: rewrite ?upd_nth_Zlength ?Hm ; change_Z_of_nat ; omega.
+
+  rewrite upd_nth_diff.
+  2,3,4: change_Z_of_nat ; omega.
+
+  rewrite upd_nth_diff.
+  2,3,4: rewrite Zlength_correct in HZl ; omega.
+  rewrite nth_15_m_0 ; try assumption.
+
+  assert(Hbn:= nth_14_bound (sub_fn_rev 1 sub_step_1 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t) HZl2 HForall).
+  apply ZofList_m_from_t_sub1.
+  all: assumption.
+Qed.
+
 
 Lemma get_m_select_m_t_Zlength : forall m t,
   Zlength m = 16 ->
