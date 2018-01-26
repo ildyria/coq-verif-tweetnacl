@@ -50,6 +50,10 @@ Open Scope Z.
 0x7fff = 32767
 *)
 
+Definition subst_0xffed t := t - 65517.
+Definition subst_0x7fffc t m := t - 32767 - (Z.land (Z.shiftr m 16) 1).
+Definition subst_0x7fff t := t - 32767.
+
 Definition subst_0xffffc t m := t - 65535 - (Z.land (Z.shiftr m 16) 1).
 Definition mod0xffff m := Z.land m 65535.
 
