@@ -20,7 +20,7 @@ Qed.
 Lemma getbit_25519_repr : forall l,
   16 = Zlength l ->
   Forall (fun x => 0 <= x < 2^16) (firstn (Z.to_nat 15) l) ->
-  -32768 <= nth (Z.to_nat 15) l 0 < 2^16->
+  -32768 <= nth (Z.to_nat 15) l 0 < 2^16 ->
   Z.land (Z.shiftr (ZofList 16 l) 256) 1 = getbit_25519 l.
 Proof.
 rewrite /getbit_25519.

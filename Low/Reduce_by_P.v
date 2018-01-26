@@ -52,7 +52,7 @@ Open Scope Z.
 0x7fff = 32767
 *)
 
-Definition getBit256 l := Z.land (Z.shiftr (nth 15%nat l 0) 16) 1.
+(* Definition getBit256 l := Z.land (Z.shiftr (nth 15%nat l 0) 16) 1. *)
 
 Definition m_from_t (m t:list Z) : list Z :=
   let m0 := upd_nth 0 m (subst_0xffed (nth 0 t 0)) in
@@ -81,11 +81,6 @@ Lemma m_from_t_dep_Zlength : forall m m' t,
   Zlength t = 16 ->
   m_from_t m' t = m_from_t m t.
 Proof. convert_length_to_Zlength m_from_t_dep_length. Qed.
-
-Definition select_m_t m t : (list Z * list Z) :=
-  let new_m := m_from_t m t in 
-  let b := 1 - getbit_25519 new_m in
-    (Sel25519 b new_m t, Sel25519 b t new_m).
 
 Lemma m_from_t_Zlength : forall m t,
   Zlength m = 16 ->
@@ -140,6 +135,271 @@ Proof.
   all: assumption.
 Qed.
 
+Lemma firstn_15_m_from_t_bound :
+  forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  Forall (fun x => 0 <= x < 2^16) (firstn (Z.to_nat 15) (m_from_t m t)).
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(Hm_nat: (length m = 16)%nat) by (rewrite Zlength_correct in Hm ; omega).
+  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
+  assert(HZl1:= HZl m t Hm Ht).
+  assert(HZl2:= HZl2 m t Hm Ht).
+  assert(HZl3:= HZl3 m t Hm Ht).
+  assert(Hmt:= m_from_t_Zlength m t Hm Ht).
+  change (Z.to_nat 15) with (Z.to_nat (14 + 1)).
+  rewrite -(take_cons_Zlength _ _ 0).
+  2: rewrite Hmt ; omega.
+  apply Forall_app_2.
+  Focus 1.
+  unfold m_from_t.
+  rewrite upd_nth_take_small_Zlength.
+  rewrite upd_nth_take_small_Zlength.
+  4: rewrite upd_nth_Zlength.
+  all: rewrite ?HZl3.
+  all: repeat (change_Z_of_nat ; change_Z_to_nat) ; try omega.
+  rewrite sub_fn_rev_f_g ; try omega.
+  2: rewrite upd_nth_length ; try omega.
+  change 14%nat with (Z.to_nat (15 - 1)).
+  apply sub_fn_rev_s_sub_step_2_bound.
+  omega. assumption.
+
+  apply Forall_cons_2.
+  2: apply Forall_nil_2.
+  unfold m_from_t.
+  rewrite upd_nth_same_Zlength.
+  2: rewrite upd_nth_Zlength ?HZl3.
+  all: repeat (change_Z_of_nat ; change_Z_to_nat) ; try omega.
+  remember ((nth 14
+       (upd_nth 15 (sub_fn_rev 1 sub_step 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t)
+          (subst_0x7fffc (nth 15 t 0) (nth 14 (sub_fn_rev 1 sub_step 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t) 0))) 0)) as m'.
+  rewrite /mod0xffff.
+  change 65535 with (Z.ones 16).
+  rewrite Z.land_ones.
+  apply Z_mod_lt.
+  apply pown0.
+  all: omega.
+Qed.
+
+Lemma nth_15_m_fromt_t_bound :
+  forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+ -32768 <= nth (Z.to_nat 15) (m_from_t m t) 0 < 2^16.
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
+  assert(HZl3:= HZl3 m t Hm Ht).
+  assert(Hmt:= m_from_t_Zlength m t Hm Ht).
+  rewrite /m_from_t.
+  rewrite upd_nth_diff_Zlength.
+  rewrite upd_nth_same_Zlength.
+  3,4: rewrite upd_nth_Zlength.
+  all: rewrite ?HZl3.
+  all: repeat (change_Z_of_nat ; change_Z_to_nat) ; try omega.
+  remember (nth 14 (sub_fn_rev 1 sub_step 15 (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t) 0) as n'.
+  rewrite /subst_0x7fffc.
+  assert(Hz:= and_0_or_1 (n' ≫ 16)).
+  assert(0 <= nth 15 t 0 < 2 ^ 16).
+  apply Forall_nth_len ; try assumption ; omega.
+  omega.
+Qed.
+
+Lemma nth_15_m_fromt_t_signed_pos: 
+  forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  0 <= nth (Z.to_nat 15) (m_from_t m t) 0 < 2^16
+   <-> getbit_25519 (m_from_t m t) = 0.
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
+  assert(HZl3:= HZl3 m t Hm Ht).
+  assert(Hmt:= m_from_t_Zlength m t Hm Ht).
+  unfold getbit_25519.
+  assert(H216: 2^16 > 0).
+  reflexivity.
+  assert(H216' : -2^16 < - 32768).
+  reflexivity.
+  split ; intros.
+  assert(Hnhtb:= nth_15_m_fromt_t_bound m t Hm Ht Hbt).
+  remember (nth (Z.to_nat 15) (m_from_t m t) 0) as n.
+  rewrite Z.shiftr_div_pow2.
+  2: omega.
+
+  assert(Hn': n `div` 2 ^ 16 = 0).
+  apply Zdiv_small ; omega.
+  rewrite Hn'.
+  reflexivity.
+
+  assert(Hnhtb:= nth_15_m_fromt_t_bound m t Hm Ht Hbt).
+  remember (nth (Z.to_nat 15) (m_from_t m t) 0) as n.
+  rewrite Z.shiftr_div_pow2 in H.
+  2: omega.
+  assert(Hn: n = 0 \/ n < 0 \/ n > 0) by omega.
+  destruct Hn as [Hn|[Hn|Hn]].
+  omega.
+  assert(Hn': n `div` 2 ^ 16 = -1).
+    assert(H0: n `div` 2 ^ 16 < 0).
+      apply Z.div_lt_upper_bound ; omega.
+    assert(H2: (- 2 ^ 16) `div` 2 ^ 16 <= n `div` 2 ^ 16).
+      apply Z_div_le; try omega.
+    change ((- 2 ^ 16) `div` 2 ^ 16) with (-1) in H2.
+    omega.
+  rewrite Hn' in H ; simpl in H ; tryfalse.
+  omega.
+Qed.
+
+Lemma nth_15_m_fromt_t_signed_neg: 
+  forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  nth (Z.to_nat 15) (m_from_t m t) 0 < 0
+   <-> getbit_25519 (m_from_t m t) = 1.
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
+  assert(HZl3:= HZl3 m t Hm Ht).
+  assert(Hmt:= m_from_t_Zlength m t Hm Ht).
+  unfold getbit_25519.
+  assert(H216: 2^16 > 0).
+  reflexivity.
+  assert(H216' : -2^16 < - 32768).
+  reflexivity.
+  split ; intros.
+  assert(Hnhtb:= nth_15_m_fromt_t_bound m t Hm Ht Hbt).
+  remember (nth (Z.to_nat 15) (m_from_t m t) 0) as n.
+  rewrite Z.shiftr_div_pow2.
+  2: omega.
+  assert(Hn': n `div` 2 ^ 16 = -1).
+    assert(H0: n `div` 2 ^ 16 < 0).
+      apply Z.div_lt_upper_bound ; omega.
+    assert(H2: (- 2 ^ 16) `div` 2 ^ 16 <= n `div` 2 ^ 16).
+      apply Z_div_le; try omega.
+    change ((- 2 ^ 16) `div` 2 ^ 16) with (-1) in H2.
+    omega.
+  rewrite Hn'.
+  reflexivity.
+
+  assert(Hnhtb:= nth_15_m_fromt_t_bound m t Hm Ht Hbt).
+  remember (nth (Z.to_nat 15) (m_from_t m t) 0) as n.
+  rewrite Z.shiftr_div_pow2 in H.
+  2: omega.
+  assert(Hn: n = 0 \/ n < 0 \/ n > 0) by omega.
+  destruct Hn as [Hn|[Hn|Hn]].
+  rewrite Hn in H.
+  simpl in H ; congruence.
+  assumption.
+
+  assert(Hn': n `div` 2 ^ 16 = 0).
+  apply Zdiv_small ; omega.
+  rewrite Hn' in H.
+  simpl in H ; congruence.
+Qed.
+
+Lemma getbit_25519_equiv_pos :
+  forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  getbit_25519 (m_from_t m t) = 0 <->
+  0 <= ZofList 16 (m_from_t m t).
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(m_from_t_Zlength := m_from_t_Zlength m t Hm Ht).
+  assert(Hlen: length (m_from_t m t) = 16%nat).
+  rewrite Zlength_correct in m_from_t_Zlength; omega.
+  split ; intros.
+  {
+  apply nth_15_m_fromt_t_signed_pos in H.
+  2: assumption.
+  2: assumption.
+  2: assumption.
+  assert(H15:= firstn_15_m_from_t_bound m t Hm Ht Hbt).
+  assert(Forall (fun x => 0 <= x < 2^16) (m_from_t m t)).
+  {
+  rewrite -(firstn_skipn 16 (m_from_t m t)).
+  rewrite drop_ge.
+  2: rewrite Hlen ; omega.
+  rewrite app_nil_r.
+  change 16%nat with (Z.to_nat (15 + 1)).
+  rewrite -(take_cons_Zlength _ _ 0).
+  2: omega.
+  apply Forall_app_2.
+  assumption.
+  apply Forall_cons_2.
+  assumption.
+  apply Forall_nil_2.
+  }
+  apply ZofList_pos.
+  omega.
+  unfold ZList_pos.
+  eapply Forall_impl.
+  apply H0.
+  clear.
+  simpl.
+  intros ; omega.
+  }
+  assert(H15:= firstn_15_m_from_t_bound m t Hm Ht Hbt).
+  assert(Hnhtb:= nth_15_m_fromt_t_bound m t Hm Ht Hbt).
+  unfold getbit_25519.
+  remember (nth (Z.to_nat 15) (m_from_t m t) 0) as n.
+  rewrite Z.shiftr_div_pow2.
+  2: omega.
+  assert(Hn: n = 0 \/ n < 0 \/ n > 0) by omega.
+  destruct Hn as [Hn|[Hn|Hn]].
+  rewrite Hn ; reflexivity.
+  exfalso.
+  assert(ZofList 16 (take (Z.to_nat 15) (m_from_t m t)) < 2^(16*ℤ.ℕ 15)).
+  apply ZofList_n_nn_bound_length.
+  omega.
+  rewrite take_length.
+  rewrite Hlen ; reflexivity.
+  assumption.
+  assert(ℤ16.lst m_from_t m t < 0).
+  rewrite -(ZofList_take_nth_drop 16 _ _ 15).
+  rewrite drop_ge.
+  2: rewrite Hlen ; omega.
+  replace (2 ^ (16 * Zlength (take 16 (m_from_t m t))) * (ℤ16.lst [])) with 0.
+  replace (Zlength (take 15 (m_from_t m t))) with 15.
+
+  move: H0 ; change_Z_of_nat ; intros.
+  assert( 2 ^ (16 * 15) * nth 15 (m_from_t m t) 0 <= -1766847064778384329583297500742918515827483896875618958121606201292619776).
+  assert(nth 15 (m_from_t m t) 0 <= -1).
+  subst ; move: Hn ; change_Z_to_nat ; intro ; omega.
+  replace (2^(16*15)) with 1766847064778384329583297500742918515827483896875618958121606201292619776.
+  2: compute ;reflexivity.
+  replace (-1766847064778384329583297500742918515827483896875618958121606201292619776) with (1766847064778384329583297500742918515827483896875618958121606201292619776 * (-1)).
+  2: compute ;reflexivity.
+  omega.
+  replace (2^(16*15)) with 1766847064778384329583297500742918515827483896875618958121606201292619776 in H0.
+  2: compute ;reflexivity.
+  assert(Habc: forall a b c, a < c -> b <= -c -> a + b < 0).
+  clear ; intros; omega.
+  rewrite Z.add_0_r.
+  eapply Habc.
+  eassumption.
+  eassumption.
+  rewrite Zlength_correct take_length Hlen ; reflexivity.
+  rewrite Zlength_correct take_length Hlen ; reflexivity.
+  omega.
+  omega.
+  assert(Hn': n `div` 2 ^ 16 = 0).
+  apply Zdiv_small ; omega.
+  rewrite Hn'.
+  reflexivity.
+Qed.
+
+Definition select_m_t m t : (list Z * list Z) :=
+  let new_m := m_from_t m t in 
+  let b := 1 - getbit_25519 new_m in
+    (Sel25519 b new_m t, Sel25519 b t new_m).
+
 Lemma get_m_select_m_t_Zlength : forall m t,
   Zlength m = 16 ->
   Zlength t = 16 ->
@@ -160,6 +420,38 @@ Proof.
   apply Sel25519_Zlength ; try apply m_from_t_Zlength; assumption.
 Qed.
 
+Lemma get_t_select_m_t_bound : forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  Forall (fun x => 0 <= x < 2^16) (get_t (select_m_t m t)).
+Proof.
+  intros m t Hm Ht Hbt;
+  rewrite /select_m_t /get_m /get_t.
+  assert(getbit_25519_dec: getbit_25519 (m_from_t m t) = 0 \/ getbit_25519 (m_from_t m t) = 1).
+    assert(GetBit:= getbit_25519_0_or_1 (m_from_t m t)).
+    omega.
+  destruct getbit_25519_dec as [getbit_25519_dec|getbit_25519_dec];
+  rewrite getbit_25519_dec;
+  Grind_add_Z ; rewrite /Sel25519 /list_cswap.
+  2: rewrite Z.eqb_refl ; assumption.
+  destruct (1 =? 0) ; try assumption.
+  apply nth_15_m_fromt_t_signed_pos in getbit_25519_dec ; try assumption.
+  assert(take15:= firstn_15_m_from_t_bound m t Hm Ht Hbt).
+  rewrite -(firstn_skipn 16 (m_from_t m t)).
+  assert(m_from_t_Zlength := m_from_t_Zlength m t Hm Ht).
+  rewrite drop_ge.
+  2: rewrite Zlength_correct in m_from_t_Zlength ; omega.
+  rewrite app_nil_r.
+  change 16%nat with (Z.to_nat (15 + 1)).
+  rewrite -(take_cons_Zlength _ _ 0).
+  2: omega.
+  apply Forall_app_2.
+  assumption.
+  apply Forall_cons_2.
+  assumption.
+  apply Forall_nil_2.
+Qed.
 
 Function subst_select (f: list Z -> list Z -> list Z*list Z) (a:Z) (m t: list Z) {measure Z.to_nat a} : (list Z*list Z) :=
   if (a <=? 0)
@@ -229,6 +521,26 @@ Proof.
   intros. apply get_t_subst_select_f_Zlength ; auto.
   apply get_m_select_m_t_Zlength.
   apply get_t_select_m_t_Zlength.
+Qed.
+
+Lemma get_t_subst_select_bound : forall i (m t:list Z),
+  0 <= i <= 2->
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  Forall (fun x => 0 <= x < 2^16) (get_t (subst_select select_m_t i m t)).
+Proof.
+  intros i m t Hi Hm Ht Hbt.
+  assert_gen_hyp i 2 2; [omega|].
+  destruct H as [H|[H|H]] ; subst i.
+  rewrite subst_select_0 ; simpl ; assumption.
+  all: rewrite subst_select_n ; [|omega] ; Grind_add_Z.
+  2: rewrite subst_select_n ; [|omega] ; Grind_add_Z.
+  all: rewrite subst_select_0.
+  all: repeat apply get_t_select_m_t_bound.
+  4: apply get_m_select_m_t_Zlength.
+  6: apply get_t_select_m_t_Zlength.
+  all: simpl ; assumption.
 Qed.
 
 Close Scope Z.

@@ -188,6 +188,18 @@ Lemma upd_nth0:
   upd_nth 0 (h::l) v = v :: l.
 Proof. reflexivity. Qed.
 
+Lemma upd_nth_take_small: 
+  forall (A : Type) (n m:nat) (l : list A) (v : A),
+  n < length l ->
+  n <= m ->
+  take n (upd_nth m l v) = take n l.
+Proof.
+   induction n ; intros [|m] [|h l] v Hnl Hnm ; simpl in Hnl ; try reflexivity ; try omega.
+   simpl.
+   fequals.
+   apply IHn ; omega.
+Qed.
+
 Lemma upd_nth_app':
   forall (A : Type) (n : nat) (l1 : list A) (v : A) (l2 : list A) (w : A),
   length l1 = n -> upd_nth n (l1 ++ v :: l2) w = l1 ++ w :: l2.
@@ -342,6 +354,13 @@ Proof. convert_length_to_Zlength upd_nth_upd_nth. Qed.
 
 Lemma upd_nth_comm_Zlength : forall A (i j:nat) (l:list A) ni nj, i < Zlength l -> j < Zlength l -> i <> j ->  upd_nth i (upd_nth j l nj) ni = upd_nth j (upd_nth i l ni) nj.
 Proof. convert_length_to_Zlength upd_nth_comm. Qed.
+
+Lemma upd_nth_take_small_Zlength:
+  forall (A : Type) (n m:nat) (l : list A) (v : A),
+  n < Zlength l ->
+  n <= m ->
+  take n (upd_nth m l v) = take n l.
+Proof. convert_length_to_Zlength upd_nth_take_small. Qed.
 
 Lemma take_cons_Zlength: forall A n (l:list A) d,
   0 <= n < Zlength l -> (take (Z.to_nat n) l) ++ nth (Z.to_nat n) l d :: nil = take (Z.to_nat (n + 1)) l.

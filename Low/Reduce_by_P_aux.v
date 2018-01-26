@@ -257,4 +257,25 @@ n' `mod` 2 ^ 16)) by (abstract ring).
   omega.
 Qed.
 
+Lemma sub_fn_rev_f_bound :
+  forall (a:nat) m t,
+  1 <= a < 16 ->
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (λ x : ℤ, 0 <= x ∧ x < 2 ^ 16) (take (Z.to_nat (a - 1)) (sub_fn_rev 1 sub_step a (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t)).
+Proof.
+intros a m t Ha Hm Ht.
+  assert(Hm_nat: (length m = 16)%nat) by (rewrite Zlength_correct in Hm ; omega).
+  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
+  assert(HZl:= HZl m t Hm Ht).
+  assert(HZl2:= HZl2 m t Hm Ht).
+  assert(Zlength (upd_nth 0 m (subst_0xffed (nth 0 t 0))) = 16).
+  rewrite upd_nth_Zlength; change_Z_of_nat; omega.
+  rewrite sub_fn_rev_f_g ; try omega.
+  apply sub_fn_rev_s_sub_step_2_bound.
+  2: rewrite sub_fn_rev_s_sub_step_1_Zlength.
+  all: try omega.
+  rewrite Zlength_correct in H ; omega.
+Qed.
+
 Close Scope Z.
