@@ -1,4 +1,5 @@
 From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import ListsOp.Export.
 Require Import ssreflect.
 
 Open Scope Z.
@@ -89,6 +90,12 @@ Proof. intros; rewrite -Sel25519_length_eq; omega. Qed.
 
 
 Open Scope Z.
+
+Lemma ZofList_Sel25519: forall n b p q,
+  ZofList n (Sel25519 b p q) = if (Z.eqb b 0) then
+    ZofList n p
+  else ZofList n q.
+Proof. intros. rewrite /Sel25519 /list_cswap. destruct (b =? 0) ; reflexivity. Qed.
 
 Lemma Sel25519_Zlength: forall b p q,
   Zlength p = 16 ->

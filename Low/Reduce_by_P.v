@@ -8,6 +8,7 @@ From Tweetnacl Require Import Low.Reduce_by_P_compose_2b.
 From Tweetnacl Require Import Low.Reduce_by_P_compose.
 From Tweetnacl Require Import Low.Reduce_by_P_aux.
 From Tweetnacl Require Import Mid.SubList.
+From Tweetnacl Require Import Mid.Reduce_by_P.
 From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.GetBit_pack25519.
 From Tweetnacl Require Import Low.Sel25519.
@@ -302,6 +303,94 @@ Proof.
   simpl in H ; congruence.
 Qed.
 
+Lemma getbit_25519_equiv_pos_bound :
+  forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  getbit_25519 (m_from_t m t) = 0 <->
+  Forall (fun x => 0 <= x < 2^16) (m_from_t m t).
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(m_from_t_Zlength := m_from_t_Zlength m t Hm Ht).
+  assert(Hlen: length (m_from_t m t) = 16%nat).
+  rewrite Zlength_correct in m_from_t_Zlength; omega.
+  split ; intros.
+  {
+  apply nth_15_m_fromt_t_signed_pos in H ; try assumption.
+  assert(H15:= firstn_15_m_from_t_bound m t Hm Ht Hbt).
+  rewrite -(firstn_skipn 16 (m_from_t m t)).
+  rewrite drop_ge.
+  2: rewrite Hlen ; omega.
+  rewrite app_nil_r.
+  change 16%nat with (Z.to_nat (15 + 1)).
+  rewrite -(take_cons_Zlength _ _ 0).
+  2: omega.
+  apply Forall_app_2.
+  assumption.
+  apply Forall_cons_2.
+  assumption.
+  apply Forall_nil_2.
+  }
+
+  assert(H15:= firstn_15_m_from_t_bound m t Hm Ht Hbt).
+  assert(Hnhtb:= nth_15_m_fromt_t_bound m t Hm Ht Hbt).
+  unfold getbit_25519.
+  remember (nth (Z.to_nat 15) (m_from_t m t) 0) as n.
+  rewrite Z.shiftr_div_pow2.
+  2: omega.
+  assert(Hn: n = 0 \/ n < 0 \/ n > 0) by omega.
+  destruct Hn as [Hn|[Hn|Hn]].
+  rewrite Hn ; reflexivity.
+  exfalso.
+  assert(ZofList 16 (take (Z.to_nat 15) (m_from_t m t)) < 2^(16*ℤ.ℕ 15)).
+  apply ZofList_n_nn_bound_length.
+  omega.
+  rewrite take_length.
+  rewrite Hlen ; reflexivity.
+  assumption.
+  assert(ℤ16.lst m_from_t m t < 0).
+  rewrite -(ZofList_take_nth_drop 16 _ _ 15).
+  rewrite drop_ge.
+  2: rewrite Hlen ; omega.
+  replace (2 ^ (16 * Zlength (take 16 (m_from_t m t))) * (ℤ16.lst [])) with 0.
+  replace (Zlength (take 15 (m_from_t m t))) with 15.
+
+  move: H0 ; change_Z_of_nat ; intros.
+  assert( 2 ^ (16 * 15) * nth 15 (m_from_t m t) 0 <= -1766847064778384329583297500742918515827483896875618958121606201292619776).
+  assert(nth 15 (m_from_t m t) 0 <= -1).
+  subst ; move: Hn ; change_Z_to_nat ; intro ; omega.
+  replace (2^(16*15)) with 1766847064778384329583297500742918515827483896875618958121606201292619776.
+  2: compute ;reflexivity.
+  replace (-1766847064778384329583297500742918515827483896875618958121606201292619776) with (1766847064778384329583297500742918515827483896875618958121606201292619776 * (-1)).
+  2: compute ;reflexivity.
+  omega.
+  replace (2^(16*15)) with 1766847064778384329583297500742918515827483896875618958121606201292619776 in H0.
+  2: compute ;reflexivity.
+  assert(Habc: forall a b c, a < c -> b <= -c -> a + b < 0).
+  clear ; intros; omega.
+  rewrite Z.add_0_r.
+  eapply Habc.
+  eassumption.
+  eassumption.
+  rewrite Zlength_correct take_length Hlen ; reflexivity.
+  rewrite Zlength_correct take_length Hlen ; reflexivity.
+  omega.
+  assert(Hpos: ZList_pos (m_from_t m t)).
+  rewrite /ZList_pos.
+  eapply Forall_impl.
+  eauto.
+  clear.
+  simpl ; intros ; omega.
+  apply (ZofList_pos 16) in Hpos.
+  omega.
+  omega.
+  assert(Hn': n `div` 2 ^ 16 = 0).
+  apply Zdiv_small ; omega.
+  rewrite Hn'.
+  reflexivity.
+Qed.
+
 Lemma getbit_25519_equiv_pos :
   forall m t,
   Zlength m = 16 ->
@@ -316,26 +405,8 @@ Proof.
   rewrite Zlength_correct in m_from_t_Zlength; omega.
   split ; intros.
   {
-  apply nth_15_m_fromt_t_signed_pos in H.
-  2: assumption.
-  2: assumption.
-  2: assumption.
-  assert(H15:= firstn_15_m_from_t_bound m t Hm Ht Hbt).
   assert(Forall (fun x => 0 <= x < 2^16) (m_from_t m t)).
-  {
-  rewrite -(firstn_skipn 16 (m_from_t m t)).
-  rewrite drop_ge.
-  2: rewrite Hlen ; omega.
-  rewrite app_nil_r.
-  change 16%nat with (Z.to_nat (15 + 1)).
-  rewrite -(take_cons_Zlength _ _ 0).
-  2: omega.
-  apply Forall_app_2.
-  assumption.
-  apply Forall_cons_2.
-  assumption.
-  apply Forall_nil_2.
-  }
+  apply getbit_25519_equiv_pos_bound ; assumption.
   apply ZofList_pos.
   omega.
   unfold ZList_pos.
@@ -345,6 +416,7 @@ Proof.
   simpl.
   intros ; omega.
   }
+
   assert(H15:= firstn_15_m_from_t_bound m t Hm Ht Hbt).
   assert(Hnhtb:= nth_15_m_fromt_t_bound m t Hm Ht Hbt).
   unfold getbit_25519.
@@ -393,6 +465,27 @@ Proof.
   apply Zdiv_small ; omega.
   rewrite Hn'.
   reflexivity.
+Qed.
+
+
+Lemma getbit_25519_equiv_neg :
+  forall m t,
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  getbit_25519 (m_from_t m t) = 1 <->
+  ZofList 16 (m_from_t m t) < 0.
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(m_from_t_Zlength := m_from_t_Zlength m t Hm Ht).
+  assert(Hlen: length (m_from_t m t) = 16%nat).
+  rewrite Zlength_correct in m_from_t_Zlength; omega.
+  split ; intros.
+  1: assert(HHH: ℤ16.lst m_from_t m t < 0 \/ 0 <= ℤ16.lst m_from_t m t) by omega.
+  2: assert(HHH: getbit_25519 (m_from_t m t) = 1 \/ getbit_25519 (m_from_t m t) = 0) by
+    (assert(HHH:= getbit_25519_0_or_1 (m_from_t m t)) ; omega).
+  all: destruct HHH as [HHH|HHH] ; try assumption.
+  all: apply getbit_25519_equiv_pos in HHH ; try assumption ; omega.
 Qed.
 
 Definition select_m_t m t : (list Z * list Z) :=
@@ -541,6 +634,138 @@ Proof.
   4: apply get_m_select_m_t_Zlength.
   6: apply get_t_select_m_t_Zlength.
   all: simpl ; assumption.
+Qed.
+
+Theorem subst_select_red_by_P :
+  forall (m t:list Z),
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  red_by_P (ZofList 16 t) = ZofList 16 (get_t (subst_select select_m_t 2 m t)).
+Proof.
+  intros m t Hm Ht Hbt.
+  assert(H25519: - (2 ^ 255 - 19) < 0) by reflexivity.
+  assert(HZL1: Zlength (m_from_t m t) = 16).
+    repeat apply m_from_t_Zlength ; assumption.
+  assert(HZL2: Zlength (m_from_t (m_from_t m t) t) = 16).
+    repeat apply m_from_t_Zlength ; assumption.
+  assert(HHH: getbit_25519 (m_from_t m t) = 1 \/ getbit_25519 (m_from_t m t) = 0) by
+    (assert(HHH:= getbit_25519_0_or_1 (m_from_t m t)) ; omega).
+  assert(HHH': getbit_25519 (m_from_t (m_from_t m t) t) = 1 \/ getbit_25519 (m_from_t (m_from_t m t) t) = 0) by
+    (assert(HHH':= getbit_25519_0_or_1 (m_from_t (m_from_t m t) t)) ; omega).
+  assert(HHH'': getbit_25519 (m_from_t t (m_from_t m t)) = 1 \/ getbit_25519 (m_from_t t (m_from_t m t)) = 0) by
+    (assert(HHH'':= getbit_25519_0_or_1 (m_from_t t (m_from_t m t))) ; omega).
+  assert(Heqb0 : 0 =? 0 = true). reflexivity.
+  assert(Heqb1: 1 =? 0 = false). reflexivity.
+
+
+  rewrite /red_by_P.
+  rewrite subst_select_n ; try omega.
+  Grind_add_Z.
+  rewrite subst_select_n ; try omega.
+  Grind_add_Z.
+  rewrite subst_select_0.
+  rewrite /get_m /get_t /select_m_t.
+  rewrite ZofList_Sel25519.
+  rewrite ZofList_Sel25519.
+  rewrite ZofList_m_from_t ; try assumption.
+
+  assert(Hsub1: (ℤ16.lst t) < 2^255 - 19 \/ 2^255 - 19 <= (ℤ16.lst t)) by omega.
+  destruct Hsub1 as [Hsub1|Hsub1].
+  {
+  assert(Hsub': (ℤ16.lst t) - (2 ^ 255 - 19) < 0) by omega.
+  assert(Hsub'': (ℤ16.lst t) - (2 ^ 255 - 19) - (2 ^ 255 - 19) < 0) by omega.
+
+  assert(Hbool: (0 <=? (ℤ16.lst t) - (2 ^ 255 - 19)) = false).
+    apply Z.leb_gt ; assumption.
+  assert(Hbool': (0 <=? (ℤ16.lst t) - (2 ^ 255 - 19) - (2 ^ 255 - 19)) = false).
+    apply Z.leb_gt ; assumption.
+  destruct(0 <=? (ℤ16.lst t) - (2 ^ 255 - 19)) eqn:? ; try discriminate.
+  destruct(0 <=? (ℤ16.lst t) - (2 ^ 255 - 19)- (2 ^ 255 - 19)) eqn:? ; try discriminate.
+
+  destruct HHH as [HHH|HHH].
+  {
+  rewrite HHH.
+  Grind_add_Z.
+  rewrite /Sel25519 /list_cswap.
+  destruct (0 =? 0) eqn:? ; try discriminate.
+  destruct HHH' as [HHH'|HHH'] ; rewrite HHH'.
+  Grind_add_Z.
+  destruct (0 =? 0) eqn:? ; try discriminate.
+  reflexivity.
+  apply getbit_25519_equiv_pos in HHH' ; try assumption;
+  rewrite ZofList_m_from_t in HHH' ; try assumption ; omega.
+  }
+  exfalso.
+  apply getbit_25519_equiv_pos in HHH ; try assumption.
+  rewrite ZofList_m_from_t in HHH ; try assumption.
+  omega.
+  }
+
+  assert(Hbool: (0 <=? (ℤ16.lst t) - (2 ^ 255 - 19)) = true).
+    apply Zle_imp_le_bool; omega.
+    rewrite Hbool.
+    assert(getbit_25519 (m_from_t m t) = 0).
+    apply getbit_25519_equiv_pos ; try assumption.
+    rewrite ZofList_m_from_t ; try assumption; omega.
+    rewrite H /Sel25519 /list_cswap.
+    Grind_add_Z.
+    destruct (1 =? 0) eqn:? ; try discriminate.
+
+  assert(Hsub2: (ℤ16.lst t) - (2^255 - 19) < 2^255 - 19 \/ 2^255 - 19 <= (ℤ16.lst t) - (2^255 - 19)) by omega.
+  destruct Hsub2 as [Hsub2|Hsub2].
+  {
+  assert(Hsub': (ℤ16.lst t) - (2 ^ 255 - 19) - (2 ^ 255 - 19) < 0) by omega.
+
+  assert(Hbool': (0 <=? (ℤ16.lst t) - (2 ^ 255 - 19) - (2 ^ 255 - 19)) = false).
+    apply Z.leb_gt ; assumption.
+
+  destruct(0 <=? (ℤ16.lst t) - (2 ^ 255 - 19)- (2 ^ 255 - 19)) eqn:? ; try discriminate.
+  destruct HHH'' as [HHH''|HHH'']; rewrite HHH'' ; Grind_add_Z.
+  destruct (0 =? 0) ; try discriminate ; reflexivity.
+  exfalso.
+  apply getbit_25519_equiv_pos in HHH'' ; try assumption.
+  rewrite ?ZofList_m_from_t in HHH'' ; try assumption.
+  omega.
+  all: apply getbit_25519_equiv_pos_bound ; assumption.
+  }
+
+  assert(Hsub': 0 <= (ℤ16.lst t) - (2 ^ 255 - 19) - (2 ^ 255 - 19)) by omega.
+
+  assert(Hbool': (0 <=? (ℤ16.lst t) - (2 ^ 255 - 19) - (2 ^ 255 - 19)) = true).
+    apply Zle_imp_le_bool; omega.
+
+  assert(getbit_25519 (m_from_t t (m_from_t m t)) = 0).
+  apply getbit_25519_equiv_pos ; try assumption.
+  apply getbit_25519_equiv_pos_bound ; assumption.
+  rewrite ?ZofList_m_from_t ; try assumption ; try omega.
+  apply getbit_25519_equiv_pos_bound ; assumption.
+  rewrite H0.
+  rewrite ?ZofList_m_from_t ; try assumption ; try omega.
+  2: apply getbit_25519_equiv_pos_bound ; assumption.
+  Grind_add_Z.
+  destruct (1 =? 0) eqn:? ; try discriminate.
+  destruct (0 <=? (ℤ16.lst t) - (2 ^ 255 - 19) - (2 ^ 255 - 19)) ; try discriminate ; reflexivity.
+Qed.
+
+Corollary subst_select_mod_P :
+  forall (m t:list Z),
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  ZofList 16 (get_t (subst_select select_m_t 2 m t)) = (ZofList 16 t) mod (2^255-19).
+Proof.
+  intros. rewrite -subst_select_red_by_P ; try assumption.
+  rewrite reduce_P_is_mod.
+  reflexivity.
+  split.
+  apply ZofList_pos.
+  omega.
+  unfold ZList_pos.
+  eapply Forall_impl; eauto.
+  clear ; simpl ; intro ; omega.
+  change 256 with (16 * 16%nat).
+  apply ZofList_n_nn_bound_Zlength ; go.
 Qed.
 
 Close Scope Z.
