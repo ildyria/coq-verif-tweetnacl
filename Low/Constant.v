@@ -31,5 +31,6 @@ Lemma list_of_P: forall l,
 Proof. intros; subst; compute ; reflexivity. Qed.
 
 Definition nul16 := [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
+Definition One16 := [1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
 
 Close Scope Z.
