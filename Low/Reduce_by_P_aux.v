@@ -278,4 +278,62 @@ intros a m t Ha Hm Ht.
   rewrite Zlength_correct in H ; omega.
 Qed.
 
+Lemma sub_fn_rev_f_bound_nth :
+  forall (a:Z) m t,
+  1 <= a < 16 ->
+  Zlength m = 16 ->
+  Zlength t = 16 ->
+  Forall (fun x => 0 <= x < 2^16) t ->
+  -2^16 <=  nth (Z.to_nat (a - 1)) (sub_fn_rev 1 sub_step a (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t) 0 < 2^16.
+Proof.
+  intros a m t Ha Hm Ht Hbt.
+  assert(Hm_nat: (length m = 16)%nat) by (rewrite Zlength_correct in Hm ; omega).
+  assert(Ht_nat: (length t = 16)%nat) by (rewrite Zlength_correct in Ht ; omega).
+  assert(HZl:= HZl m t Hm Ht).
+  assert(HZl2:= HZl2 m t Hm Ht).
+  assert(Zlength (upd_nth 0 m (subst_0xffed (nth 0 t 0))) = 16).
+  rewrite upd_nth_Zlength; change_Z_of_nat; omega.
+  assert(Haa: a = 1 \/ 1 < a) by omega.
+  destruct Haa as [Haa|Haa].
+  {
+  subst a.
+  rewrite sub_fn_rev_1.
+  Grind_add_Z.
+  change_Z_to_nat.
+  rewrite upd_nth_same_Zlength.
+  2: change_Z_of_nat ; omega.
+  rewrite /subst_0xffed.
+  assert(0 <= nth 0 t 0 < 2 ^ 16).
+  apply Forall_nth_d.
+  split ; reflexivity.
+  assumption.
+  change (2^16) with 65536 in *.
+  omega.
+  }
+  rewrite sub_fn_rev_f_g ; try omega.
+  remember (sub_fn_rev 1 sub_step_1 a (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t) as m'.
+  replace 
+  (sub_fn_rev_s 1 sub_step_2 a m')
+  with
+  (sub_fn_rev_s 1 sub_step_2 (a - 1 + 1) m').
+  apply bound_a_subst_step_2_lss.
+  omega.
+  subst m'.
+  rewrite sub_fn_rev_s_sub_step_1_Zlength ?upd_nth_Zlength ; change_Z_of_nat ;  try omega.
+  subst m'.
+  2: replace (a - 1 + 1) with a by omega; reflexivity.
+  2: rewrite Zlength_correct in H ; omega.
+  replace (a - 1 + 1) with a by omega.
+  apply sub_fn_rev_s_sub_step_1_bound ; rewrite ?upd_nth_Zlength ; change_Z_of_nat ; try omega.
+  assumption.
+  destruct m ; [tryfalse|].
+  simpl.
+  rewrite firstn_O.
+  apply Forall_cons_2.
+  assert(0 <= nth 0 t 0 < 2^16).
+  apply Forall_nth_len ; try assumption; try omega.
+  rewrite /subst_0xffed; change (2^16) with 65536 in * ; omega.
+  apply Forall_nil_2.
+Qed.
+
 Close Scope Z.

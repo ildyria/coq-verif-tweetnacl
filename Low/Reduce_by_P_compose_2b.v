@@ -14,7 +14,7 @@ Open Scope Z.
 Lemma bound_a_subst_step_2 : forall a m,
   0 < a < 15 ->
   Zlength m = 16 ->
-  Forall (fun x => -2^16 < x <= 0) (take 15 m) ->
+  Forall (fun x => -2^16 < x <= 0) (take (Z.to_nat (a + 1)) m) ->
   - 2 ^ 16 ≤ nth (Z.to_nat a) (sub_fn_rev_s 1 sub_step_2 (a + 1) m) 0 ∧ nth (Z.to_nat a) (sub_fn_rev_s 1 sub_step_2 (a + 1) m) 0 ≤ 0.
 Proof.
 intros.
@@ -49,7 +49,7 @@ intros.
   Focus 2.
   replace (length m)%nat with (Z.to_nat (Z.of_nat (length m)))%nat by (apply Nat2Z.id).
   all: rewrite -Z2Nat.inj_le -?Zlength_correct ; omega.
-  rewrite -(nth_take_full _ (Z.to_nat 15)).
+  rewrite -(nth_take_full _ (Z.to_nat (a + 1))).
   2: rewrite -Z2Nat.inj_lt ; omega.
   apply Forall_nth_d.
   compute ; split ; [reflexivity | intros; discriminate].
@@ -67,7 +67,7 @@ Qed.
 Lemma bound_a_subst_step_2_lss : forall a m,
   0 < a < 15 ->
   Zlength m = 16 ->
-  Forall (fun x => -2^16 < x < 2^16) (take 15 m) ->
+  Forall (fun x => -2^16 < x < 2^16) (take (Z.to_nat (a + 1)) m) ->
   - 2 ^ 16 ≤ nth (Z.to_nat a) (sub_fn_rev_s 1 sub_step_2 (a + 1) m) 0 ∧ nth (Z.to_nat a) (sub_fn_rev_s 1 sub_step_2 (a + 1) m) 0 < 2^16.
 Proof.
 intros.
@@ -102,7 +102,7 @@ intros.
   Focus 2.
   replace (length m)%nat with (Z.to_nat (Z.of_nat (length m)))%nat by (apply Nat2Z.id).
   all: rewrite -Z2Nat.inj_le -?Zlength_correct ; omega.
-  rewrite -(nth_take_full _ (Z.to_nat 15)).
+  rewrite -(nth_take_full _ (Z.to_nat (a + 1))).
   2: rewrite -Z2Nat.inj_lt ; omega.
   apply Forall_nth_d.
   compute ; split ; reflexivity.
@@ -116,8 +116,15 @@ Local Ltac solve_this_assert :=
   rewrite sub_fn_rev_s_n; try omega;
   rewrite sub_step_2_Z_inv_lss; Grind_add_Z; try assumption;
   rewrite ?sub_fn_rev_s_sub_step_2_Zlength ; try omega;
-  apply bound_a_subst_step_2_lss ; auto ; omega.
+  apply bound_a_subst_step_2_lss ; auto ; try omega;
+  eapply Forall_take_n_m ; [| eauto];
+  Grind_add_Z ; change_Z_to_nat ; omega.
 
+(*   rewrite sub_fn_rev_s_n; try omega;
+  rewrite sub_step_2_Z_inv_lss; Grind_add_Z; try assumption;
+  rewrite ?sub_fn_rev_s_sub_step_2_Zlength ; try omega;
+  apply bound_a_subst_step_2_lss ; auto ; omega.
+ *)
 Local Ltac gen_goals P j n := match n with 
   | 0 => idtac
   | n => 
@@ -152,6 +159,14 @@ assert(H2: ℤ16.lst sub_fn_rev_s 1 sub_step_2 2 m = ℤ16.lst m).
   rewrite sub_fn_rev_s_n ; try apply sub_step_2_Z_inv_lss; [omega | | omega].
   assert(Haspe: 0 < 2 - 1 /\ 2 - 1 < 16) by omega.
   apply Hbound in Haspe; omega.
+(* assert ((fun x => (ℤ16.lst sub_fn_rev_s 1 sub_step_2 x m = ℤ16.lst m)) 3).
+  rewrite sub_fn_rev_s_n; try omega;
+  rewrite sub_step_2_Z_inv_lss; Grind_add_Z; try assumption;
+  rewrite ?sub_fn_rev_s_sub_step_2_Zlength ; try omega;
+  apply bound_a_subst_step_2_lss ; auto ; try omega;
+  eapply Forall_take_n_m ; [| eauto];
+  Grind_add_Z ; change_Z_to_nat ; omega.
+ *)
 gen_goals (fun x => (ℤ16.lst sub_fn_rev_s 1 sub_step_2 x m = ℤ16.lst m)) 16 13.
 assert_gen_hyp_ Hadec a 15 14 ; try omega.
 repeat match goal with

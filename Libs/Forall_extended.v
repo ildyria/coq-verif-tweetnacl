@@ -44,6 +44,23 @@ Proof.
   apply Forall_cons in Hl ; destruct Hl as [Ha Hl] ; apply Forall_cons_2 ; go.
 Qed.
 
+Lemma Forall_take_n_m : forall m n A (l:list A) (P: A -> Prop),
+  n <= m ->
+  Forall P (take m l) -> Forall P (take n l).
+Proof.
+induction m ; intros.
+inv H.
+rewrite firstn_O ; apply Forall_nil_2.
+destruct n.
+rewrite firstn_O ; apply Forall_nil_2.
+destruct l.
+simpl ; apply Forall_nil_2.
+simpl.
+simpl in H0.
+apply Forall_cons in H0 ; destruct H0.
+apply Forall_cons_2 ; go.
+Qed.
+
 Open Scope Z.
 
 Lemma Forall_bounds_le_lt: forall a b l,

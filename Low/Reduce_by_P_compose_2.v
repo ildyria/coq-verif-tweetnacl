@@ -288,5 +288,97 @@ Proof.
   apply sub_fn_rev_s_sub_step_2_ind_bound ; assumption.
 Qed.
 
+(* Lemma sub_fn_rev_s_sub_step_2_ind_bound_ : forall a m,
+  0 < a < 16 ->
+  Zlength m = 16 ->
+  Forall (fun x => 0 <= x < 2^16) (take (Z.to_nat (a)) (sub_fn_rev_s 1 sub_step_2 (a) m)) ->
+  Forall (fun x => 0 <= x < 2^16) (take (Z.to_nat (a + 1)) (sub_fn_rev_s 1 sub_step_2 (a + 1) m)).
+Proof.
+  intros i m Ham Hm. intros.
+  rewrite sub_fn_rev_s_equation.
+  flatten.
+  apply Zle_bool_imp_le in Eq ; omega.
+  replace ( i + 1 - 1) with i by omega.
+  replace (Z.to_nat i) with (Z.to_nat ((i - 1) + 1)).
+  2: fequals ; omega.
+  rewrite -(take_cons_Zlength _ _ 0).
+  2: rewrite sub_step_2_Zlength sub_fn_rev_s_sub_step_2_Zlength; omega.
+  remember (sub_fn_rev_s 1 sub_step_2 i m) as m'.
+  apply Forall_app_2.
+  rewrite /sub_step_2.
+  replace (Z.to_nat i) with (Z.to_nat (i - 1 + 1)).
+  rewrite -(take_cons_Zlength _ _ 0).
+  2: subst m' ; rewrite upd_nth_Zlength upd_nth_Zlength ?sub_fn_rev_s_sub_step_2_Zlength ?Z2Nat.id; try omega.
+  2: oreplace (i - 1 + 1) i ; reflexivity.
+  {
+  apply Forall_app_2.
+
+  rewrite (upd_nth_alter _ (fun x => (mod0xffff (nth (Z.to_nat (i - 1)) m' 0)))).
+  rewrite take_alter.
+  2: reflexivity.
+  2: omega.
+  2: reflexivity.
+
+  Focus 2.
+  rewrite upd_nth_length.
+  all: replace (length m')%nat with (Z.to_nat (Z.of_nat (length m')))%nat by (apply Nat2Z.id).
+  all: rewrite -Z2Nat.inj_lt ; subst.
+  all: rewrite -?Zlength_correct.
+  4: split.
+  all: try omega.
+  all: rewrite sub_fn_rev_s_sub_step_2_Zlength ; omega.
+
+
+  rewrite (upd_nth_alter _ (fun x => (subst_c (nth (Z.to_nat i) m' 0) (nth (Z.to_nat (i - 1)) m' 0)))).
+  2: omega.
+  2: oreplace (i - 1 + 1) i ; reflexivity.
+
+  Focus 2.
+  replace (length m')%nat with (Z.to_nat (Z.of_nat (length m')))%nat by (apply Nat2Z.id).
+  all: rewrite -Z2Nat.inj_lt ; subst.
+  all: rewrite -?Zlength_correct.
+  all: try omega.
+  all: rewrite sub_fn_rev_s_sub_step_2_Zlength ; omega.
+
+  rewrite take_alter.
+  admit.
+  rewrite -Z2Nat.inj_le; omega.
+  apply Forall_cons_2.
+  2: apply Forall_nil ; trivial.
+
+  rewrite /sub_step_2.
+  rewrite upd_nth_same_Zlength /mod0xffff.
+  change (65535) with (Z.ones 16).
+  rewrite Z.land_ones.
+  apply Z_mod_lt.
+  apply pown0.
+  omega.
+  omega.
+  rewrite upd_nth_Zlength.
+  all: subst m'.
+  all: rewrite sub_fn_rev_s_sub_step_2_Zlength.
+  all: rewrite ?Z2Nat.id; omega.
+  }
+  apply Forall_cons_2.
+  2: apply Forall_nil ; trivial.
+
+  rewrite /sub_step_2.
+  rewrite upd_nth_diff.
+  rewrite upd_nth_same_Zlength /mod0xffff.
+  rewrite /subst_c.
+  change (65535) with (Z.ones 16).
+  rewrite Z.land_ones.
+  apply Z_mod_lt.
+  apply pown0.
+  omega.
+  omega.
+  rewrite upd_nth_Zlength.
+  all: subst m'.
+  all: rewrite sub_fn_rev_s_sub_step_2_Zlength.
+  all: rewrite ?Z2Nat.id; omega.
+  }
+Qed. *)
+
+
 Close Scope Z.
 

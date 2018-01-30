@@ -200,6 +200,16 @@ Proof.
    apply IHn ; omega.
 Qed.
 
+Lemma upd_nth_drop_small: 
+  forall (A : Type) (n m:nat) (l : list A) (v : A),
+  n < length l ->
+  m < n ->
+  drop n (upd_nth m l v) = drop n l.
+Proof.
+   induction n ; intros [|m] [|h l] v Hnl Hnm ; simpl in Hnl ; try reflexivity ; try omega.
+   simpl ; apply IHn ; omega.
+Qed.
+
 Lemma upd_nth_app':
   forall (A : Type) (n : nat) (l1 : list A) (v : A) (l2 : list A) (w : A),
   length l1 = n -> upd_nth n (l1 ++ v :: l2) w = l1 ++ w :: l2.

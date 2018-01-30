@@ -741,5 +741,48 @@ clears.
 compute ; reflexivity.
 Qed.
 
+Lemma sub_fn_rev_g_skip : forall a m t,
+  (length m = 16)%nat ->
+  (length t = 16)%nat ->
+  1 <= a < 16 ->
+  skipn (Z.to_nat a) (sub_fn_rev 1 sub_step_1 a m t) = skipn (Z.to_nat a) m.
+Proof.
+intros a m t Hm Ht Ha.
+do 17 (destruct m ; [tryfalse |]) ; [|tryfalse].
+do 17 (destruct t ; [tryfalse |]) ; [|tryfalse].
+match goal with
+  | [ |- ?X ] =>
+    let xss  := allVars_red tt X in
+    let envv := functionalize_red xss in
+    let r1  := reifyTerm_red xss X in
+    pose xss;
+    pose envv;
+    pose r1
+    end.
+    rename p into xs.
+    rename z31 into env.
+    rename f into reif.
+    (* in theory we would use change, but here we need to proceed slightly differently *)
+    match goal with 
+      |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
+    {
+    subst reif.
+    unfold formula_denote.
+    change (@denote _ _ list_expr_dec) with (@list_denote _ _ red_expr_dec).
+    rewrite ?list_denote_skipn.
+    change (@list_denote _ _ red_expr_dec) with (@denote _ _ list_expr_dec).
+    rewrite <- step_fn_red_expr_1;
+    trivial.
+    }
+apply Hsubst.
+apply formula_decide_impl.
+clear Hsubst xs env Hm.
+subst reif.
+clears.
+revert a Ha.
+eapply forall_Z_refl. (* bruteforce *)
+compute ; reflexivity.
+Qed.
+
 
 Close Scope Z.
