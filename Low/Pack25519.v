@@ -2,9 +2,10 @@ From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Low.Reduce_by_P.
 From Tweetnacl Require Import Low.Car25519.
+From Tweetnacl.Mid Require Import Car25519.
 From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.Pack.
-
+Require Import ssreflect.
 (*
 sv pack25519(u8 *o,const gf n)
 {
@@ -42,5 +43,37 @@ Definition Pack25519 l :=
   let l3 := car25519 l2 in
   let l4 := get_t (subst_select select_m_t 2 (0::0::0::0::0::0::0::0::0::0::0::0::0::0::0::0::nil) l3) in
   pack_for 8 l4.
+
+Lemma Pack25519_mod_25519 : forall (l:list Z),
+  Zlength l = 16 ->
+  Forall (fun x => -2^62 < x < 2^62) l ->
+  ZofList 8 (Pack25519 l) = Z.modulo (ZofList 16 l) (2^255 - 19).
+Proof.
+  intros l Hl Hb.
+  rewrite /Pack25519.
+  rewrite pack_for_correct.
+  2: omega.
+  change (2*8) with 16.
+  rewrite subst_select_mod_P.
+  repeat rewrite -car25519_ToFF_25519 ; repeat rewrite car25519_Zlength ; try reflexivity ; assumption.
+  reflexivity.
+  repeat rewrite car25519_Zlength ; try reflexivity ; assumption.
+  apply car25519_bound ; assumption.
+Qed.
+
+Lemma Pack25519_bound : forall (l:list Z),
+  Zlength l = 16 ->
+  Forall (fun x => -2^62 < x < 2^62) l ->
+  Forall (fun x => 0 <= x < 2^8) (Pack25519 l).
+Proof.
+  intros l Hl Hb.
+  rewrite /Pack25519.
+  apply unpack_for_bounded.
+  apply get_t_subst_select_bound.
+  omega.
+  reflexivity.
+  repeat rewrite car25519_Zlength ; try reflexivity ; assumption.
+  apply car25519_bound ; assumption.
+Qed.
 
 Close Scope Z.

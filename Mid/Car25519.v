@@ -260,4 +260,17 @@ move=> l1 l2 ; rewrite ?Zlength_correct => Hll1 Hll2 Hl1 Hl2;
 eapply Zcar25519_bounds_length_2 ; eauto; omega.
 Qed.
 
+Lemma car25519_bound : forall l, 
+  Zlength l = 16 ->
+  Forall (fun x : ℤ => - 2 ^ 62 < x < 2 ^ 62) l ->
+  Forall (fun x : ℤ => 0 <= x < 2 ^ 16) (car25519 (car25519 (car25519 l))).
+Proof.
+  intros l Hl Hb.
+  eapply Zcar25519_bounds_Zlength.
+  4: apply Hb.
+  4: reflexivity.
+  4: reflexivity.
+  all: repeat apply car25519_Zlength ; assumption.
+Qed.
+
 Close Scope Z.
