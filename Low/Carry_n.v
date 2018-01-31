@@ -119,3 +119,25 @@ Lemma Carry_n_length_False: forall (h:Z) (q:list Z), Carrying_n 16 15 0 (h :: q)
 Proof. intros ; rewrite Carry_n_step in H ; false. Qed.
 
 Local Close Scope Z.
+
+Lemma Carrying_n_1_nat : forall i o z m,
+  nth (S i) (Carrying_n m i z o) 0 = nth (S i) o 0.
+Proof.
+  induction i as [|i iHi]; intros [| h q ] z m; simpl; flatten ; try reflexivity.
+  all: simpl ; apply iHi; simpl in H ; omega.
+Qed.
+
+Local Open Scope Z.
+Lemma Carrying_n_1 : forall i o z m,
+  0 <= i ->
+  nth (Z.to_nat (i + 1)) (Carrying_n m (Z.to_nat i) z o) 0 = nth (Z.to_nat (i + 1)) o 0.
+Proof.
+  intros.
+  replace (Z.to_nat (i + 1)) with (S (Z.to_nat i)).
+  apply Carrying_n_1_nat.
+  rewrite Z2Nat.inj_add ; try omega.
+  change (Z.to_nat 1) with 1%nat.
+  omega.
+Qed.
+
+Local Close Scope Z.
