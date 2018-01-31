@@ -944,45 +944,6 @@ Proof.
   intros h Hh; Simplify_this; simpl in Hh; omega.
 Qed.
 
-Lemma get_e_montgomery_step_bound : forall n z a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) x ->
-    Forall (fun x => -76 <= x < 2^17 + 76) (get_e (montgomery_step_gen  n z a b c d e f x)).
-Proof.
-  intros.
-  simpl.
-  
-
-Admitted.
-
-Lemma get_f_montgomery_step_bound : forall n z a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) x ->
-    Forall (fun x => -76 <= x < 2^17 + 76) (get_f (montgomery_step_gen  n z a b c d e f x)).
-Proof.
-  intros.
-  simpl.
-
-
-Admitted.
-
-
 Lemma get_a_montgomery_rec_gen_bound : forall n z a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->

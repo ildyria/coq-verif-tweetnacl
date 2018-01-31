@@ -60,6 +60,52 @@ congr (_ == 1).
 by rewrite Nat_div_2_ssr_half {1}/bitn -divnMA -expnS.
 Qed.
 
-Lemma getbit_bitn x i : Z.to_nat (Z.land (Z.shiftr x i) 1) = bitn (Z.to_nat x) (Z.to_nat i).
+Lemma getbit_Ztestbit x i : Z.testbit (Z.of_nat x) (Z.of_nat i) = Z.testbit (Z.land (Z.shiftr (Z.of_nat x) (Z.of_nat i)) 1) 0.
 Proof.
-Admitted.
+rewrite Z.land_spec.
+rewrite Z.shiftr_spec.
+2: omega.
+simpl.
+rewrite andbT.
+reflexivity.
+Qed.
+
+Local Open Scope Z.
+Local Lemma Zland1_b x:  0 <= (Z.land x 1) < 2.
+Proof.
+change 1 with (Z.ones 1).
+rewrite Z.land_ones.
+apply Z_mod_lt.
+all: omega.
+Qed.
+
+Local Lemma Zland_0_1 x : (Z.land x 1) = 0 \/ (Z.land x 1) = 1.
+Proof. assert(H:= Zland1_b x). omega. Qed.
+
+Lemma shiftr0 x : Z.testbit (Z.land x 1) 0 = false <-> (Z.land x 1 = 0%Z).
+Proof.
+assert(Hl := Zland_0_1 x).
+destruct Hl as [Hl|Hl] ; rewrite Hl ; simpl ; split ; intros ; trivial ; discriminate.
+Qed.
+
+Lemma shiftr1 x : Z.testbit (Z.land x 1) 0 = true <-> (Z.land x 1 = 1%Z).
+Proof.
+assert(Hl := Zland_0_1 x).
+destruct Hl as [Hl|Hl] ; rewrite Hl ; simpl ; split ; intros ; trivial ; discriminate.
+Qed.
+Local Close Scope Z.
+
+Lemma shiftr1b x : Z.testbit (Z.land x 1) 0 = (Z.to_nat (Z.land x 1) == 1).
+Proof.
+assert(Hl := Zland_0_1 x).
+destruct Hl as [Hl|Hl] ; rewrite Hl ; simpl ; split ; intros ; trivial ; discriminate.
+Qed.
+
+Lemma getbit_bitn x i: (Z.to_nat (Z.land (Z.shiftr (Z.of_nat (Z.to_nat x)) (Z.of_nat (Z.to_nat i))) 1) == 1) = (bitn (Z.to_nat x) (Z.to_nat i) == 1).
+Proof.
+intros.
+rewrite -shiftr1b.
+rewrite -getbit_Ztestbit.
+rewrite bitn_Ztestbit.
+reflexivity.
+Qed.
