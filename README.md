@@ -69,4 +69,11 @@ Another possibility is to use `opam source`. This will create a
   make -j
 ```
 
+##### Benchmarks 
+
+```
+Tweetnacl: make all -j  396.46s user 13.92s system 266% cpu 2:33.77 total
+Tweetnacl_verif: make -j  2164.06s user 12.94s system 227% cpu 15:58.79 total
+```
+
 [1]: https://opam.ocaml.org/doc/Install.html
