@@ -79,26 +79,100 @@ width=0.8\columnwidth
 \definecolor{doc@lstfunctions}{HTML}{006600}    % dark green
 \definecolor{doc@lststring}{HTML}{FF5500}       % orange
 \definecolor{doc@lstkeyword}{HTML}{0000CC}      % deep blue
+\definecolor{doc@lstkeyword2}{rgb}{0.127,0.427,0.514}
 \definecolor{doc@lstdirective}{HTML}{881000}    % dark red
 \definecolor{doc@lstconstants}{HTML}{0033AA}    % dark blue
 \definecolor{doc@lstidentifiers2}{HTML}{FF0033} % purple-red
 \definecolor{doc@lstnumbers}{HTML}{AA00AA}      % purple
 
-\definecolor{doc@lstbackground}{HTML}{FFFFFF}   % white
+\definecolor{doc@lstbackground}{HTML}{FFF8DC}   % white
 \definecolor{doc@lstframe}{HTML}{FFFFFF}        % white
 
 \lstloadlanguages{% check documentation for other languages...
   C
 }
+\def\-{\raisebox{.75pt}{-}}
 
-\lstdefinelanguage{cgimli}{%
-  morekeywords=[1]{for, if, return, extern, while},
-  morekeywords=[2]{void, int, uint32_t, uint64_t, uint8_t, void},
-  morekeywords=[3]{const, typedef},
-  morekeywords=[4]{gimli, Gimli_hash, memset, memcpy, MIN, rotate},
-  morekeywords=[5]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 24, 26, 32, 0x80, 0x1F, 0x9e377900},
+\lstdefinelanguage{CoqVST}{%
+  morekeywords=[1]{PROP, SEP, POST, PRE, LOCAL, DECLARE, WITH, Definition},
+  morekeywords=[2]{val, list, Z, tuchar, uch32, lg16, share, tint},
+  morekeywords=[3]{fun, tptr, mVI, mVI64, Vint, OF},
+  morekeywords=[4]{Forall, temp, Zlength, writable_share, gvar},
+  morekeywords=[5]{ 0, 2^8, 16, 32},
   sensitive=true,
-  alsoletter   = {0,1,2,3,4,5,6,7,8,9} ,
+  alsoletter   = {0123456789^} ,
+   % morekeywords = [1]{1,2,3,40} ,
+  % otherkeywords={<, >, \\=, |, &, ^},
+  %
+  morestring=[b]",
+  %
+  morecomment=[l]{//},
+  %
+  identifierstyle=\color[rgb]{0,0,0},
+  commentstyle=\color{doc@lstcomment}\itshape,
+  stringstyle=\color{doc@lststring},
+  keywordstyle=\color{doc@lstkeyword},
+  keywordstyle=[1]\color{doc@lstidentifiers2},
+  keywordstyle=[2]\color{doc@lstconstants},
+  keywordstyle=[3]\color{doc@lstkeyword2},
+  % keywordstyle=[3]\color[rgb]{0.127,0.427,0.514},
+  keywordstyle=[4]\color{doc@lstfunctions},
+  keywordstyle=[5]\color{doc@lstnumbers},
+  % alsoletter={?},
+  % keywordsprefix=?,
+  % delim=[l][\color{doc@lstdirective}]{\#},
+  delim=[s][\color{doc@lstdirective}]{(*}{*)},
+  % moredelim=[s][\color{magenta}]{<}{>},
+  % moredelim=[s][\color{magenta}]{:}{,},
+  % moredelim=[s][\color{magenta}]{:}{^^J},
+  % moredelim=[s][\color{magenta}]{:}{\ },
+  % moredelim=[l][\color{black}]{:}{/},
+  literate=
+%     % {\\forall}{{\color{doc@lstcomment}{$\forall\;$}}}1
+%     {.}{{\color{white}{.}}}1
+%     {<-}{{$\leftarrow\;$}}1
+      {=>}{{$\mapsto$}}1
+%     {==}{{\ttfamily{==}\;}}1
+%     {==>}{{\ttfamily{==>}\;}}1
+% %    {:>}{{\code{:>}\;}}1
+%     {->}{{$\rightarrow$}}1
+%     {<->}{{$\leftrightarrow$}}1
+%     {<>}{{$\neq\;$}}1
+% %    { nil }{{ [ ]}}1
+      {<}{{$\!<\!$}}1
+      {<=}{{$\!\leq\!$}}1
+%     {<<}{{$\ll\;$}}1
+%     {<<<}{{$\lll\;$}}1
+%     {>=}{{$\geq\;$}}1
+%     {\\o}{{$\circ\;$}}1
+%     {\@}{{$\cdot$}}1
+%     {/\\}{{$\wedge$}}1
+%     {\\/}{{$\vee$}}1
+%     {++}{{\ttfamily{++}}}1
+%     {~}{{$\sim$}}1
+%     {\@\@}{{$@$}}1
+%     {\\mapsto}{{$\mapsto\;$}}1
+%     {\\oplus}{{$\oplus$}}1
+%     {\\boxplus}{{$\boxplus$}}1
+%     {\\hline}{{\rule{\linewidth}{0.5pt}}}1
+      {[\{}{\!\!\![\!\!\{\!\!}1
+      {\}]}{\!\!\}\!\!]\!\!\!}1
+      {<<(}{<\!\!\-\!\-\!\!(}1
+      {)--}{)\!\!\-\!\-\!\!}1
+      {fun}{{\color{doc@lstkeyword2}{$\lambda\!\!$}}}1
+      % {\_}{\!\_\!}1
+      {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
+}
+
+\lstdefinelanguage{Ctweetnacl}{%
+  morekeywords=[1]{FOR,for, return},
+  morekeywords=[2]{sv, int, i64, gf, long, u8},
+  morekeywords=[3]{const, typedef},
+  morekeywords=[4]{A, Z, M, S, car25519, pack25519, inv25519,
+  crypto_scalarmult, unpack25519, sel25519},
+  morekeywords=[5]{ 0, 1, 1LL, 3, 7, 15, 16, 31, 32, 37, 38, 127, 64, 248, 254,_121665 },
+  sensitive=true,
+  alsoletter   = {0123456789^} ,
    % morekeywords = [1]{1,2,3,40} ,
   % otherkeywords={<, >, \\=, |, &, ^},
   %
@@ -123,71 +197,41 @@ width=0.8\columnwidth
   % moredelim=[s][\color{magenta}]{:}{^^J},
   % moredelim=[s][\color{magenta}]{:}{\ },
   % moredelim=[l][\color{black}]{:}{/},
-}
-
-\lstdefinelanguage{HASM}{%
-  morekeywords=[1]{u, v},
-  morekeywords=[2]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 24, 26, 32},
-  sensitive=true,
-  alsoletter   = {0,1,2,3,4,5,6,7,8,9} ,
-   % morekeywords = [1]{1,2,3,40} ,
-  % otherkeywords={<, >, \\=, |, &, ^},
-  %
-  morestring=[b]",
-  %
-  morecomment=[l]{\#},
-  %
-  identifierstyle=\color[rgb]{0,0,0},
-  commentstyle=\color{doc@lstcomment}\itshape,
-  stringstyle=\color{doc@lststring},
-  keywordstyle=\color{doc@lstkeyword},
-  keywordstyle=[1]\color{doc@lstidentifiers2},
-  keywordstyle=[2]\color{doc@lstconstants},
-  % keywordstyle=[3]\color[rgb]{0.127,0.427,0.514},
-  % keywordstyle=[4]\color{doc@lstfunctions},
-  % keywordstyle=[5]\color{doc@lstnumbers},
-  % alsoletter={?},
-  % keywordsprefix=?,
-  delim=[l][\color{doc@lstdirective}]{\#},
-  % moredelim=[s][\color{magenta}]{<}{>},
-  % moredelim=[s][\color{magenta}]{:}{,},
-  % moredelim=[s][\color{magenta}]{:}{^^J},
-  % moredelim=[s][\color{magenta}]{:}{\ },
-  % moredelim=[l][\color{black}]{:}{/},
   literate=
-    % {\\forall}{{\color{doc@lstcomment}{$\forall\;$}}}1
-    {.}{{\color{white}{.}}}1
-    {<-}{{$\leftarrow\;$}}1
-    {=>}{{$\Rightarrow\;$}}1
-    {==}{{\ttfamily{==}\;}}1
-    {==>}{{\ttfamily{==>}\;}}1
-%    {:>}{{\code{:>}\;}}1
-    {->}{{$\rightarrow$}}1
-    {<->}{{$\leftrightarrow$}}1
-    {<>}{{$\neq\;$}}1
-%    { nil }{{ [ ]}}1
-    {<=}{{$\leq\;$}}1
-    {<<}{{$\ll\;$}}1
-    {<<<}{{$\lll\;$}}1
-    {>=}{{$\geq\;$}}1
-    {\\o}{{$\circ\;$}}1
-    {\@}{{$\cdot$}}1
-    {/\\}{{$\wedge$}}1
-    {\\/}{{$\vee$}}1
-    {++}{{\ttfamily{++}}}1
-    {~}{{$\sim$}}1
-    {\@\@}{{$@$}}1
-    {\\mapsto}{{$\mapsto\;$}}1
-    {\\oplus}{{$\oplus$}}1
-    {\\boxplus}{{$\boxplus$}}1
-    {\\hline}{{\rule{\linewidth}{0.5pt}}}1
+%     % {\\forall}{{\color{doc@lstcomment}{$\forall\;$}}}1
+%     {.}{{\color{white}{.}}}1
+%     {<-}{{$\leftarrow\;$}}1
+%     {=>}{{$\Rightarrow\;$}}1
+%     {==}{{\ttfamily{==}\;}}1
+%     {==>}{{\ttfamily{==>}\;}}1
+% %    {:>}{{\code{:>}\;}}1
+%     {->}{{$\rightarrow$}}1
+%     {<->}{{$\leftrightarrow$}}1
+%     {<>}{{$\neq\;$}}1
+% %    { nil }{{ [ ]}}1
+%     {<=}{{$\leq\;$}}1
+%     {<<}{{$\ll\;$}}1
+%     {<<<}{{$\lll\;$}}1
+%     {>=}{{$\geq\;$}}1
+%     {\\o}{{$\circ\;$}}1
+%     {\@}{{$\cdot$}}1
+%     {/\\}{{$\wedge$}}1
+%     {\\/}{{$\vee$}}1
+%     {++}{{\ttfamily{++}}}1
+%     {~}{{$\sim$}}1
+%     {\@\@}{{$@$}}1
+%     {\\mapsto}{{$\mapsto\;$}}1
+%     {\\oplus}{{$\oplus$}}1
+%     {\\boxplus}{{$\boxplus$}}1
+%     {\\hline}{{\rule{\linewidth}{0.5pt}}}1
 }
 
 \lstset{%
   lineskip=-0.1em,
   %
-%  basicstyle=\ttfamily\scriptsize, % font that is used for the code
-  basicstyle=\ttfamily\small, % font that is used for the code
+  % basicstyle=\ttfamily\scriptsize, % font that is used for the code
+  % basicstyle=\ttfamily\small, % font that is used for the code
+  basicstyle=\ttfamily\footnotesize, % font that is used for the code
   identifierstyle=\color{doc@lstidentifier},
   commentstyle=\color{doc@lstcomment}\itshape,
   stringstyle=\color{doc@lststring},

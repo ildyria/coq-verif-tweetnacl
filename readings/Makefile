@@ -1,7 +1,10 @@
-FILES := $(wildcard *.tex) $(wildcard *.sty)
+FILES := $(wildcard *.tex) $(wildcard tikz/*.tex) $(wildcard *.sty)
 
 curve25519.pdf: $(FILES) collection.bib
 	latexmk -pdf curve25519.tex
+
+depend:
+		@echo $(FILES)
 
 .PHONY: clean
 

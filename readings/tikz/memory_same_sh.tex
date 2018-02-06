@@ -1,0 +1,38 @@
+\begin{tikzpicture}
+\def\-{\raisebox{.75pt}{-}}
+
+\draw (0,0) rectangle (3,0.3);
+\draw[thick] (1,0) -- (1,0.3);
+\draw[thick] (2,0) -- (2,0.3);
+\node [anchor=east] (shn) at (0,0.15) {sh};
+\node [anchor=north] (Moab) at (1.5,-0.5) {\texttt{M(o,a,b)}};
+\draw[thick, -> ] (1.25, -0.6) -- (1.25, -0.5) -- (0.5,-0.1);
+\draw[thick, -> ] (1.6, -0.6) -- (1.6, -0.5) -- (1.5,-0.1);
+\draw[thick, -> ] (1.95, -0.6) -- (1.95, -0.5) -- (2.5,-0.1);
+
+\node [anchor=north west, text width=6cm, align=left] (Sepoab) at (-0.5,-1.8)
+  {\footnotesize{$\mathtt{sh [\!\!\{ v\_o \}\!\!]\ \textrm{<\!--(}lg16\textrm{)--}\ o}$\\
+  $\mathtt{sh [\!\!\{ v\_a \}\!\!]\ \textrm{<\!--(}lg16\textrm{)--}\ a}$\\
+  $\mathtt{sh [\!\!\{ v\_b \}\!\!]\ \textrm{<\!--(}lg16\textrm{)--}\ b}$}};
+
+
+\begin{scope}[yshift=0 cm,xshift=4 cm]
+  \draw (0,0) rectangle (2,0.3);
+  \draw[thick] (1,0) -- (1,0.3);
+  % \draw[thick] (2,0) -- (2,0.3);
+  \node [anchor=east] (shm) at (0,0.15) {sh};
+  \node [anchor=north] (Mcaa) at (1,-0.5) {\texttt{M(c,c,a)}};
+  \draw[thick, -> ] (0.75, -0.6) -- (0.75, -0.5) -- (0.4,-0.1);
+  \draw[thick, -> ] (1.1, -0.6) -- (1.1, -0.5) -- (0.6,-0.1);
+  \draw[thick, -> ] (1.45, -0.6) -- (1.45, -0.5) -- (1.5,-0.1);
+
+  \node [anchor=north west, text width=6cm, align=left] (Sepoab) at (-0.5,-1.8)
+    {\footnotesize{$\mathtt{sh [\!\!\{ v\_c \}\!\!]\ \textrm{<\!--(}lg16\textrm{)--}\ c}$\\
+    $\mathtt{sh [\!\!\{ v\_a \}\!\!]\ \textrm{<\!--(}lg16\textrm{)--}\ a}$}};
+
+\end{scope}
+
+\draw[dashed] (-0.5,-1.2) -- +(7.5,0);
+\node [anchor=north west] (sep) at (-0.5,-1.2) {In Separation Logic:};
+
+\end{tikzpicture}

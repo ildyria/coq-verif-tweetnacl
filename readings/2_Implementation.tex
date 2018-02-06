@@ -1,6 +1,7 @@
 \section{Curve25519 implementation}
 
-To \texttt{crypto\_scalarmult} we need to prove all the functions it calls:
+In order to prove the correctness of \texttt{crypto\_scalarmult},
+ we also need to do the same with all the functions subsequently called:
 \texttt{unpack25519}; \texttt{A}; \texttt{Z}; \texttt{M}; \texttt{S};
 \texttt{car25519}; \texttt{inv25519}; \texttt{set25519}; \texttt{sel25519};
 \texttt{pack25519}.
@@ -10,14 +11,14 @@ To \texttt{crypto\_scalarmult} we need to prove all the functions it calls:
 Curve25519 is defined over $\mathbb{Z}_{2^{255}-19}$. Number in that field can
 be represented by a 256-bits number. Each of them are cut into 16 limbs of 16
 bits placed into 64-bits signed container.
-\begin{lstlisting}[language=C]
+\begin{lstlisting}[language=Ctweetnacl]
 typedef long long i64;
 typedef i64 gf[16];
 \end{lstlisting}
 
 This representation allows simple definitions of addition (\texttt{A}),
 substraction (\texttt{Z}) and a (school-book) multiplication (\texttt{M}).
-\begin{lstlisting}[language=C]
+\begin{lstlisting}[language=Ctweetnacl]
 sv A(gf o,const gf a,const gf b) {
   int i;
   FOR(i,16) o[i]=a[i]+b[i];
@@ -35,11 +36,11 @@ sv M(gf o,const gf a,const gf b) {
 \end{lstlisting}
 
 The propagation of carries are taken care of a by the \texttt{car25519} function.
-\begin{lstlisting}[language=C]
+\begin{lstlisting}[language=Ctweetnacl]
 sv car25519(gf o) {
   int i;
   i64 c;
-  FOR(i,16) {
+  FOR(i,15) {
     o[i]+=(1LL<<16);
     c=o[i]>>16;
     o[(i+1)*(i<15)]+=c-1+37*(c-1)*(i==15);
@@ -48,18 +49,67 @@ sv car25519(gf o) {
 }
 \end{lstlisting}
 
-It should be noted that this representation does not guaranties uniqueness. i.e.
-\begin{align*}
-  \exists x,y \in \texttt{gf} \text{ such that }\\
-  x \neq y\ \land \\
-  x \bmod{2^{255}-19} = y \bmod{2^{255}-19}
-\end{align*}
+The full Mongomery ladder is defined as follow:
+\begin{lstlisting}[language=Ctweetnacl]
+int crypto_scalarmult(u8 *q,
+                      const u8 *n,
+                      const u8 *p)
+{
+  u8 z[32];
+  i64 r;
+  int i;
+  gf x,a,b,c,d,e,f;
+  FOR(i,31) z[i]=n[i];
+  z[31]=(n[31]&127)|64;
+  z[0]&=248;
+  unpack25519(x,p);
+  FOR(i,16) {
+    b[i]=x[i];
+    d[i]=a[i]=c[i]=0;
+  }
+  a[0]=d[0]=1;
+  for(i=254;i>=0;--i) {
+    r=(z[i>>3]>>(i&7))&1;
+    sel25519(a,b,r);
+    sel25519(c,d,r);
+    A(e,a,c);
+    Z(a,a,c);
+    A(c,b,d);
+    Z(b,b,d);
+    S(d,e);
+    S(f,a);
+    M(a,c,a);
+    M(c,b,e);
+    A(e,a,c);
+    Z(a,a,c);
+    S(b,a);
+    Z(c,d,f);
+    M(a,c,_121665);
+    A(a,a,d);
+    M(c,c,a);
+    M(a,d,f);
+    M(d,b,x);
+    S(b,e);
+    sel25519(a,b,r);
+    sel25519(c,d,r);
+  }
+  inv25519(c,c);
+  M(a,a,c);
+  pack25519(q,a);
+  return 0;
+}
+\end{lstlisting}
+
+It should be noted that this representation does not guaranties uniqueness. i.e.\\
+$\exists x,y \in \texttt{gf} \text{ such that }$
+\vspace{-0.25cm}
+  $$x \neq y\ \ \land\ \ x \equiv y \pmod{2^{255}-19}$$
 
 \subsection{What need to be proven?}
 
 \textbf{Soundness} and \textbf{Correctness}.
 
-We show that TweetNaCl's code is \textbf{sound} also know as \textit{shape analysis} \ie
+We show that TweetNaCl's code is \textbf{sound} \ie
 
 \begin{itemize}
 \item absence of array out-of-bounds,
@@ -71,8 +121,8 @@ We show that TweetNaCl's code is \textbf{sound} also know as \textit{shape analy
 We also show that TweetNaCl's code is \textbf{correct}:
 
 \begin{itemize}
-\item Curve25519 is correctly implemented
-\item The number representation
+\item Curve25519 is correctly implemented (steps)
+\item Operations on \texttt{gf} are equivalent to operations in $\mathbb{Z}_{2^{255}-19}$
 \end{itemize}
 
 \subsection{Correctness Theorem}
@@ -81,45 +131,39 @@ The soundness is implied by the functionnal definition of the following theorem.
 Indeed, showing equivalence between the Clight representation and a Coq
 definition of the ladder garantees us the soundness.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=CoqVST]
 Definition crypto_scalarmult_spec :=
- DECLARE _crypto_scalarmult_curve25519_tweet
- WITH
-  q: val, n: val, p: val, c121665:val,
+DECLARE _crypto_scalarmult_curve25519_tweet
+WITH
+  v_q: val, v_n: val, v_p: val, c121665:val,
   sh : share,
-  qq : list Z,
-  nn : list Z,
-  pp : list Z
-
- (* Preconditions *)
- PRE [ _q OF (tptr tuchar),
-       _n OF (tptr tuchar),
-       _p OF (tptr tuchar) ]
-  PROP  (writable_share sh;
-    Forall (fun x => 0 <= x < Z.pow 2 8) pp;
-    Forall (fun x => 0 <= x < Z.pow 2 8) nn;
-    Zlength qq = 32;
-    Zlength nn = 32;
-    Zlength pp = 32)
-  LOCAL(temp _q q; temp _n n; temp _p p;
-        gvar __121665 c121665)
- SEP  (sh [{ q }] <<(uch32)-- mVI qq;
-    sh [{ n }] <<(uch32)-- mVI nn;
-    sh [{ p }] <<(uch32)-- mVI pp;
-    Ews [{ c121665 }] <<(uch32)-- mVI64 c_121665)
-
- (* Resulting Postconditions *)
- POST [ tint ]
-  PROP (
-    Forall (fun x => 0 <= x < Z.pow 2 8)
-      (sc_mult nn pp);
-      (* WE CAN ADD MORE LEMMAS HERE *)
-    Zlength (sc_mult nn pp) = 32)
-  LOCAL()
-  SEP (sh [{ q }] <<(uch32)-- mVI (sc_mult nn pp);
-    sh [{ n }] <<(uch32)-- mVI nn;
-    sh [{ p }] <<(uch32)-- mVI pp;
-    Ews [{ c121665 }] <<(uch32)-- mVI64 c_121665).
+  q : list val, n : list Z, p : list Z
+(*------------------------------------------*)
+PRE [ _q OF (tptr tuchar),
+     _n OF (tptr tuchar),
+     _p OF (tptr tuchar) ]
+PROP (writable_share sh;
+      Forall (fun x => 0 <= x < 2^8) p;
+      Forall (fun x => 0 <= x < 2^8) n;
+      Zlength q = 32; Zlength n = 32;
+      Zlength p = 32)
+LOCAL(temp _q v_q; temp _n v_n; temp _p v_p;
+      gvar __121665 c121665)
+SEP  (sh [{ v_q }] <<(uch32)-- q;
+      sh [{ v_n }] <<(uch32)-- mVI n;
+      sh [{ v_p }] <<(uch32)-- mVI p;
+      Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665)
+(*------------------------------------------*)
+POST [ tint ]
+PROP (Forall (fun x => 0 <= x < 2^8)
+                  (Crypto_Scalarmult n p);
+      Zlength (Crypto_Scalarmult n p) = 32)
+LOCAL(temp ret_temp (Vint Int.zero))
+SEP  (sh [{ v_q }] <<(uch32)-- mVI
+                  (Crypto_Scalarmult n p);
+      sh [{ v_n }] <<(uch32)-- mVI n;
+      sh [{ v_p }] <<(uch32)-- mVI p;
+      Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665
 \end{lstlisting}
 
 In this theorem we declare that the function \texttt{crypto\_scalarmult} takes as
@@ -130,12 +174,13 @@ represented by a list of integers in Coq. In order to guarantee the equivalence
 we assume the values in \texttt{pp} and \texttt{nn} being bounded by $0$ included
 and $2^8$ excluded.
 
-This function computes: $$Q \leftarrow n \times P$$
+This function computes: $$Q.x \leftarrow n \times P.x$$
 
 \texttt{pp} represent the x-coordinate of $P$, \texttt{nn} represent the
 scalar by which it is be multiplied $n$ (where the bits 1, 2, 5 248, 249, 250
 are cleared and bit 6 is set).
 
-As a result of the excution of \texttt{crypto\_scalarmult}, the value \texttt{0} is returned,
-\texttt{p} and \texttt{n} points to the same locations containing the same values \texttt{pp} and \texttt{nn}.
+As a result of the excution of \texttt{crypto\_scalarmult}, the value \texttt{0}
+is returned, \texttt{p} and \texttt{n} points to the same locations containing
+the same values \texttt{pp} and \texttt{nn}.
 The pointer \texttt{q} points to the same location, but contain the x coordinate of $Q$.

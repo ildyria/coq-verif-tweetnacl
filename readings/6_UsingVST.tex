@@ -34,13 +34,21 @@ e.g. prove \texttt{M(o,a,b)} later notice that you can have aliasing, need to re
 your theorem to prove \texttt{M(o,a,a)} (\textit{squaring}) and other variants such as:
 \texttt{M(a,a,b)} and \texttt{M(b,a,b)}.
 
-\textbf{PICTURE with memory and arrow and SAME share}
+\begin{figure}[h]
+  \include{tikz/memory_same_sh}
+  \caption{Aliasing and Separation Logic (1)}
+  \label{tk:MemSame}
+\end{figure}
 
 Prove \texttt{M(o,a,b)} where o is a \texttt{list $\Z$} and then realize that
 \texttt{o} can be a list of \textit{undefined} (\texttt{list val}). Thus needs
 to reprove the above theorem again.
 
-\textbf{PICTURE with memory and arrow and DIFFERENT SHARE}
+\begin{figure}[h]
+  \include{tikz/memory_diff_sh}
+  \caption{Memory Share and Separation Logic}
+  \label{tk:MemSame}
+\end{figure}
 
 \subsection{How to be efficient with VST?}
 
@@ -83,17 +91,19 @@ It is to be noted that the \texttt{clightgen} tool has not been formally verifie
 
 \texttt{clightgen -normalize}
 
-Assuming that \texttt{b} is of type \texttt{long long}, the following expression
-will not be type-checked by VST.
-
-\texttt{b = 1 - b;}
-
-\texttt{1} is interpreted by cligthgen as \texttt{Vint} (\textit{Value of int})
-while \texttt{b} is interpreted as \texttt{Vlong} (\textit{Value of long}),
-resulting in an error. To solve this, we need to prefix \texttt{1} by an
-explicit cast in C into the correct type. As a result, any constants used in this
-implementation had to be casted to the correct type
-(in \textit{TweetNaclVerificable}) to pass typecheck.
+% Not true since VST 2.0
+%
+% Assuming that \texttt{b} is of type \texttt{long long}, the following expression
+% will not be type-checked by VST.
+%
+% \texttt{b = 1 - b;}
+%
+% \texttt{1} is interpreted by cligthgen as \texttt{Vint} (\textit{Value of int})
+% while \texttt{b} is interpreted as \texttt{Vlong} (\textit{Value of long}),
+% resulting in an error. To solve this, we need to prefix \texttt{1} by an
+% explicit cast in C into the correct type. As a result, any constants used in this
+% implementation had to be casted to the correct type
+% (in \textit{TweetNaclVerificable}) to pass typecheck.
 
 \subsection{Verifiying for loops: head and tail recursion}
 
