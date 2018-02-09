@@ -21,6 +21,20 @@ $
 
   \item \textbf{\texttt{clightgen}} translation from \textbf{C} to
   \textbf{Clight}.
+  VST does not support the verification of
+  \texttt{o[i] = a[i] + b[i]}, the \texttt{forward} tactic will simply not work.
+  This required us to rewrite the lines into:\\
+  \texttt{aux1 = a[i];\\
+  aux2 = b[i];\\
+  o[i] = aux1 + aux2;}. This rewriting is done 
+  The trust of the proof relied on the trust of a correct translation from the
+  initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
+
+  While this problem is still present, the Compcert developpers provided us with
+  the \texttt{-normalize} option for \texttt{clightgen} which takes care of
+  generating auxiliary variables in order to automatically derive these steps.
+  The changes required for a C-code to make it Verifiable are now minimals.
+
 
   \item The \textbf{Coq kernel}, the \textbf{Ocaml compiler},
   the \textbf{Ocaml Runtime} and the \textbf{CPU}. These are common to all proofs
@@ -30,13 +44,13 @@ $
 \subsection{Aliasing and Memory collision}
 
 Necessity to go back into your specification multiple times to refine your model.
-e.g. prove \texttt{M(o,a,b)} later notice that you can have aliasing, need to redifine
+e.g. prove \texttt{M(o,a,b)} later notice that you can have aliasing, need to redefine
 your theorem to prove \texttt{M(o,a,a)} (\textit{squaring}) and other variants such as:
 \texttt{M(a,a,b)} and \texttt{M(b,a,b)}.
 
 \begin{figure}[h]
   \include{tikz/memory_same_sh}
-  \caption{Aliasing and Separation Logic (1)}
+  \caption{Aliasing and Separation Logic}
   \label{tk:MemSame}
 \end{figure}
 
@@ -44,11 +58,11 @@ Prove \texttt{M(o,a,b)} where o is a \texttt{list $\Z$} and then realize that
 \texttt{o} can be a list of \textit{undefined} (\texttt{list val}). Thus needs
 to reprove the above theorem again.
 
-\begin{figure}[h]
-  \include{tikz/memory_diff_sh}
-  \caption{Memory Share and Separation Logic}
-  \label{tk:MemSame}
-\end{figure}
+% \begin{figure}[h]
+%   \include{tikz/memory_diff_sh}
+%   \caption{Memory Share and Separation Logic}
+%   \label{tk:MemSame}
+% \end{figure}
 
 \subsection{How to be efficient with VST?}
 
@@ -73,19 +87,7 @@ Three years ago:
 
 \subsection{Pointers arithmetic, arrays and types}
 
-VST does not support the verification of \texttt{o[i] = a[i] + b[i]},
-the \texttt{forward} tactic will simply not work. This initially required us to
-rewrite the lines into:\\
-\texttt{aux1 = a[i];\\
-aux2 = b[i];\\
-o[i] = aux1 + aux2;}\\
-The trust of the proof relied on the trust of a correct translation from the
-initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
 
-While this problem is still present, the Compcert developpers provided us with
-the \texttt{-normalize} option for \texttt{clightgen} which takes care of
-generating auxiliary variables in order to automatically derive these steps.
-The changes required for a C-code to make it Verifiable are now minimals.
 
 It is to be noted that the \texttt{clightgen} tool has not been formally verified.
 

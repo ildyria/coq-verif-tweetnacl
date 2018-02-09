@@ -38,7 +38,7 @@
 \date{}
 
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
-\title{\Large \bf Proving the complete correctness of TweetNaCl's Curve25519 implementation.%
+\title{\Large \bf A Coq proof of Tweetnacl's Curve25519 correctness.%
 \thanks{
 Date: somewhen in 2018.}
 }
@@ -48,15 +48,12 @@ Date: somewhen in 2018.}
 \author{
 {\rm Peter Schwabe}\\
   Radboud University, The Netherlands\\
-%\~\\
 \and
 {\rm Beno\^it Viguier}\\
   Radboud University, The Netherlands\\
-%\~\\
 \and
 {\rm Timmy Weerwag}\\
   Radboud University, The Netherlands\\
-%\~\\
 \and
 {\rm Freek Wiedijk}\\
   Radboud University, The Netherlands\\
@@ -67,10 +64,7 @@ Date: somewhen in 2018.}
 
 %\thispagestyle{empty}
 
-\subsection*{Abstract}
-By using the Coq formal proof assistant with the VST library, we prove the
-soundness and correctness of TweetNaCl's Curve25519 implementation.
-
+\input{0_Abstract.tex}
 \input{1_Introduction.tex}
 \input{2_Implementation.tex}
 \input{3_Maths.tex}
@@ -84,6 +78,5 @@ soundness and correctness of TweetNaCl's Curve25519 implementation.
 
 \begin{appendix}
 \end{appendix}
-
 
 \end{document}

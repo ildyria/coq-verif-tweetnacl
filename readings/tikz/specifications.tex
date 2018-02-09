@@ -1,0 +1,37 @@
+\begin{tikzpicture}[textstyle/.style={black, anchor= south west, align=center}]
+
+    \filldraw[draw=orange!10!doc@lstbackground, fill=doc@lstbackground, thick] (0.25,0.5) rectangle (4.5,5.5);
+    % node[textstyle, anchor=west, draw=yellow, fill=yellow!20, thick, minimum width=5.5cm,minimum height=5cm] {};
+
+    \draw (4.5,5.5)  node[anchor=north east, inner sep=0pt] (russell) {\includegraphics[width=.03\textwidth]{img/coq_logo.png}};
+
+    \draw (0.5,-1) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (longlong) {\texttt{long long[16]}};
+    \draw (0,-1) node [anchor=east] (longlongdef) {\texttt{C} code};
+    \draw (2.25,-0.1) node [anchor=west] (app) {\texttt{clightgen}};
+
+
+    \draw (0.5,1) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (clight) {\texttt{tptr tlong}};
+    \draw (0,1) node [anchor=east] (clightdef) {\texttt{CLight}};
+
+    \draw [thick, ->] (longlong.north) -- (clight.south);
+
+    \begin{scope}[yshift=1 cm,xshift=0 cm]
+
+      \draw (0.5,2) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (ll) {\texttt{list} $\mathbb{Z}$};
+      \draw (0,2) node [anchor=east] (shn) {Low Level};
+
+      \draw [thick,double, <->, >=implies] (clight.north) -- (ll.south);
+      \draw (2.25,1) node[anchor=west, inner sep=0pt] (chain) {\includegraphics[width=.07\textwidth]{img/chain.png}};
+
+
+      \draw (0.5,3) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (ml) {$\mathbb{Z}_{2^{255}-19}$};
+      \draw (0,3) node [anchor=east] (shn) {Mid Level};
+
+      \draw[thick,double, <->, >=implies] (ll.north) -- (ml.south);
+
+      \draw (0.5,4) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (hl) {$\mathbb{F}$};
+      \draw (0,4) node [anchor=east] (shn) {High Level};
+
+      \draw[thick,double, <-, >=implies] (ml.north) -- (hl.south);
+    \end{scope}
+\end{tikzpicture}
