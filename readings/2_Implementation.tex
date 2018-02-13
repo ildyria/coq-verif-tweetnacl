@@ -15,8 +15,8 @@ bits placed into 64-bits signed container.
 typedef long long i64;
 typedef i64 gf[16];
 \end{lstlisting}
-This representation does not guaranties uniqueness. i.e.\\
-$\exists x,y \in \texttt{gf} \text{ such that }$
+This does not guaranty a uniqueness representation of each number. i.e.\\
+$\exists x,y \in \texttt{gf}$ such that
 \vspace{-0.25cm}
   $$x \neq y\ \ \land\ \ x \equiv y \pmod{2^{255}-19}$$
 
@@ -176,6 +176,35 @@ We also show that TweetNaCl's code is \textbf{correct}:
 \item Curve25519 is correctly implemented (steps)
 \item Operations on \texttt{gf} are equivalent to operations in $\mathbb{Z}_{2^{255}-19}$
 \end{itemize}
+
+\subsection{Meet-in-the-middle Approach}
+
+In order to prove that \texttt{crypto\_scalarmult} is computing a scalar
+multiplication over the x-coordinate of a point P, we need to define multiples
+levels of specifications and show equivalence between them (Fig.\ref{tk:ProofStructure}).
+
+\begin{enumerate}
+  \item Write a high level specification (over a generic field $\mathbb{F}$).
+  \item Prove that the high level specification is equivalent to the
+  computation of a montgomery ladder.
+  \item Write a low level specification (e.g. over lists of $\mathbb{Z}$).
+  \item Prove that the low level specification represent the operations of
+  defined C code.
+  \item Write a middle level specification over $\mathbb{Z}_{2^{255}-19}$.
+  \item Prove that the low level specification are equivalent to simple
+  operations in $\mathbb{Z}_{2^{255}-19}$ and thus equivalent to the middle level.
+  \item Prove that the middle level specification is an instance of the high
+  level one.
+\end{enumerate}
+
+The equivalence between each level, garantees us the correctness of the
+implementation.
+
+\begin{figure}[h]
+  \include{tikz/specifications}
+  \caption{Structural construction of the proof}
+  \label{tk:ProofStructure}
+\end{figure}
 
 \subsection{Correctness Theorem}
 
