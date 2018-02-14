@@ -20,3 +20,4 @@ clean:
 	@rm *.fls 2> /dev/null || true
 	@rm *.log 2> /dev/null || true
 	@rm *.out 2> /dev/null || true
+	@rm */*.aux 2> /dev/null || true
