@@ -1,7 +1,15 @@
 \section{Number representation and C implementation}
 
+To convert a number in \texttt{gf} to $\mathbb{Z}$ with define $ZofList : list Z \to Z$ such that:
+\begin{lstlisting}[language=Coq]
+Fixpoint ZofList (a : list Z) : Z := match a with
+| [] => 0
+| h :: q => h + Z.pow 2 n * ZofList q
+end.
+\end{lstlisting}
+
 \subsection{Reflection and Inversions}
 
 \begin{lstlisting}
-  
+
 \end{lstlisting}
