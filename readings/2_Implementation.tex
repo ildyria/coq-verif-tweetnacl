@@ -9,8 +9,10 @@ In order to prove the correctness of \texttt{crypto\_scalarmult},
 \subsection{Implementation}
 
 Curve25519 is defined over $\mathbb{Z}_{2^{255}-19}$. Number in that field can
-be represented by a 256-bits number. Each of them are cut into 16 limbs of at
-least 16 bits placed into 64-bits signed container.
+be represented by a 256-bits number. Each of them represented in base $2^{16}$.
+they are cut into 16 limbs of at least 16 bits placed into 64-bits signed
+container.
+
 \begin{lstlisting}[language=Ctweetnacl]
 typedef long long i64;
 typedef i64 gf[16];
@@ -20,7 +22,7 @@ $\exists x,y \in$ \TNaCle{gf} such that
 \vspace{-0.25cm}
   $$x \neq y\ \ \land\ \ x \equiv y \pmod{2^{255}-19}$$
 
-On the otherhand it allows simple definitions of addition (\texttt{A}),
+On the other hand it allows simple definitions of addition (\texttt{A}),
 substraction (\texttt{Z}) and a (school-book) multiplication (\texttt{M}).
 \begin{lstlisting}[language=Ctweetnacl]
 sv A(gf o,const gf a,const gf b) {
@@ -44,7 +46,7 @@ sv M(gf o,const gf a,const gf b) {
 }
 \end{lstlisting}
 
-The propagation of carries are taken care of a by the \texttt{car25519} function.
+To avoid overflows, carries are propagated by the \texttt{car25519} function.
 \begin{lstlisting}[language=Ctweetnacl]
 sv car25519(gf o) {
   int i;
@@ -59,8 +61,8 @@ sv car25519(gf o) {
 \end{lstlisting}
 
 At the end of the Mongomery ladder, we have to compute an inverse.
-This is computed using the Fermat's little theorem by the
-exponentiation to $2^{255}-21$ with the Square-and-multiply algorithm and taking
+This is done using the Fermat's little theorem by the exponentiation to
+$2^{255}-21$ with the Square-and-multiply algorithm and taking
 advantage of the shape of the number.
 \begin{lstlisting}[language=Ctweetnacl]
 sv inv25519(gf o,const gf a)
@@ -182,7 +184,7 @@ A high level specification (over a generic field $\mathbb{F}$) looking only at
 the structure of the Montgomery ladder provided us with the correcntess.
 A low level specification close to the \texttt{C} code (over lists of $\mathbb{Z}$)
 gave us the soundness assurance.
-We defined a third specification over $\mathbb{Z}_{2^{255}-19}$ (mid level) land
+We defined a third specification over $\mathbb{Z}_{2^{255}-19}$ (mid level) and
 we proved to be an instance of the high level one.
 We also proved its equivalence with the low level one.
 As such we proved all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
@@ -198,7 +200,7 @@ implementation.
 \subsection{Correctness specification}
 
 % The soundness is implied by the proof of the following specification.
-We show the soundness of TweetNaCl by proving the equivalence of the following
+We show the soundness of TweetNaCl by proving the {\red{equivalence}} of the following
 specification. This defines the equivalence between the Clight representation
 and a Coq definition of the ladder.
 
@@ -270,15 +272,15 @@ As Post-condition we have:
 \end{itemize}
 
 \texttt{THEOREM BETWEEN CSM and TIMMY REPR. EG:}
-\begin{coq}
-Theorem CSM_eq : forall n p,
-  length n = 16 ->
-  length p = 16 ->
+\begin{lstlisting}[language=CoqD]
+Theorem CSM_eq :
+  forall (n:list Z) (p:list Z),
+  Zlength n = 16 ->
+  Zlength p = 16 ->
   Forall (fun x => 0 <= x < 2^8) p ->
   Forall (fun x => 0 <= x < 2^8) n ->
-  CSM n p = ZofList n $\times$ ZofList n.
-Qed.
-\end{coq}
+  CSM n p = ZofList n $\times$ ZofList p.
+\end{lstlisting}
 We proved that \VSTe{crypto_scalarmult} (\VSTe{CSM} in Coq)
 computes: $$Q.x \leftarrow N \times P.x$$
 

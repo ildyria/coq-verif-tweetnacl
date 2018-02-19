@@ -1,15 +1,186 @@
 \section{Number representation and C implementation}
 
-To convert a number in \texttt{gf} to $\mathbb{Z}$ with define $ZofList : list Z \to Z$ such that:
-\begin{lstlisting}[language=Coq]
-Fixpoint ZofList (a : list Z) : Z := match a with
-| [] => 0
-| h :: q => h + Z.pow 2 n * ZofList q
-end.
+To convert a number in \texttt{gf} to $\mathbb{Z}$ with define
+\coqDe{ZofList : Z -> list Z -> Z} such that:
+\begin{lstlisting}[language=CoqD]
+Fixpoint ZofList (n:Z) (a:list Z) : Z :=
+  match a with
+  | [] => 0
+  | h :: q => h + 2^n * ZofList q
+  end.
+Notation "Z16.lst A" := (ZofList 16 A).
 \end{lstlisting}
 
-\subsection{Reflection and Inversions}
-
-\begin{lstlisting}
-
+The following Coq notation is defined to convert any integer to its representent
+in $\mathbb{Z}_{2^{255}-19}$.
+\begin{lstlisting}[language=CoqD]
+Notation "A :GF" := (A mod (2^255-19)).
 \end{lstlisting}
+
+Using these two definitions, we proved lemmas such as the correctness of the
+multiplication \coqDe{M}:
+\begin{coqD}
+Lemma mult_GF_Zlength :
+  forall (a:list Z) (b:list Z),
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+   (Z16.lst (M a b)) :GF =
+   (Z16.lst a * Z16.lst b) :GF.
+\end{coqD}
+
+\subsection{Inversions and Reflections}
+
+Reflection proofs relies on the decidability of an expression. In our case,
+we show that for a property $P$, we can define a decidable
+boolean property $P_{bool}$ such that $$P_{bool} = true \implies P$$
+
+With VST we proved that \TNaCle{inv25519} is equivalent to its Coq functionnal
+definition \coqDe{Inv25519}.
+
+\begin{coqD}
+Definition Inv25519 (x:list Z) : (list Z) :=
+  pow_fn_rev 254 254 x x.
+\end{coqD}
+
+We proved that \coqDe{pow_fn_rev} over \coqDe{list Z} is equivalent to applying
+\coqDe{pow_fn_rev_Z} over \coqDe{Z}
+
+\begin{coqD}
+Lemma pow_fn_rev_Z_GF :
+  forall (a:Z) (b:Z) (c:list Z) (g:list Z),
+  Zlength c = 16 ->
+  Zlength g = 16 ->
+  (Z16.lst (pow_fn_rev a b c g)) :GF =
+  (pow_fn_rev_Z a b (Z16.lst c) (Z16.lst g)) :GF .
+\end{coqD}
+
+where \coqDe{pow_fn_rev_Z} is defined in two parts: the application
+(body of the for loop) and the loop itself.
+
+\begin{coqD}
+Definition step_pow_Z (a:Z) (c:Z) (g:Z) :=
+  let c0 := c*c in
+  if a <>? 1 && a <>? 3
+    then c0*g
+    else c0.
+\end{coqD}
+
+\begin{coqD}
+Function pow_fn_rev_Z (a:Z) (b:Z) (c:Z) (g: Z)
+  {measure Z.to_nat a} : (Z) :=
+  if (a <=? 0)
+    then c
+    else
+      let prev := pow_fn_rev_Z (a - 1) b c g in
+        step_pow_Z (b - 1 - a) prev g.
+\end{coqD}
+
+We define the inversion modulo $2^{255}-19$ as an instance of \coqDe{pow_fn_rev_Z} where \coqDe{a} and \coqDe{b} are 254.
+
+\begin{coqD}
+Definition Inv25519_Z (x:Z) : Z :=
+  pow_fn_rev_Z 254 254 x x.
+\end{coqD}
+
+
+\subsubsection{A Simple Domain Specific Language}
+
+To prove that the \coqDe{Inv25519_Z} is computing $x^{2^{255}-21}$,
+we define a Domain Specific Language:
+\begin{coqD}
+Inductive expr_inv :=
+  | R_inv : expr_inv
+  | M_inv : expr_inv -> expr_inv -> expr_inv
+  | S_inv : expr_inv -> expr_inv
+  | P_inv : expr_inv -> positive -> expr_inv.
+\end{coqD}
+An expression can be either a term, a multiplication, a squaring or a power.
+This is denoted as follow:
+\begin{coqD}
+Fixpoint e_inv_denote (m:expr_inv) : Z :=
+  match m with
+  | R_inv     =>
+    term_denote
+  | M_inv x y =>
+    (e_inv_denote x) * (e_inv_denote y)
+  | S_inv x =>
+    (e_inv_denote x) * (e_inv_denote x)
+  | P_inv x p =>
+    pow (e_inv_denote x) (Z.pos p)
+  end.
+\end{coqD}
+
+We then defined \coqDe{step_inv} and \coqDe{pow_inv} to mirror the behavior of
+\coqDe{step_pow_Z} and respectively \coqDe{pow_fn_rev_Z} over our new language.
+
+\begin{coqD}
+Lemma step_inv_step_pow_eq :
+  forall (a:Z) (c:expr_inv) (g:expr_inv),
+  e_inv_denote (step_inv a c g) =
+  step_pow_Z a (e_inv_denote c) (e_inv_denote g).
+\end{coqD}
+\begin{coqD}
+Lemma pow_inv_pow_fn_rev_eq :
+  forall (a:Z) (b:Z) (c:expr_inv) (g:expr_inv),
+  e_inv_denote (pow_inv a b c g) =
+  pow_fn_rev_Z a b (e_inv_denote c) (e_inv_denote g).
+\end{coqD}
+
+We also define what is a formula in our language: a simple equality.
+\begin{coqD}
+Inductive formula_inv :=
+  | Eq_inv : expr_inv -> expr_inv -> formula_inv.
+\end{coqD}
+This is denoted as follow:
+\begin{coqD}
+Definition f_inv_denote (t : formula_inv) : Prop :=
+  match t with
+  | Eq_inv x y => e_inv_denote x = e_inv_denote y
+  end.
+\end{coqD}
+With such Domain Specific Language we have the equivalence between:
+\begin{lstlisting}[backgroundcolor=\color{white}]
+f_inv_denote
+ (Eq_inv (M_inv R_inv (S_inv R_inv))
+         (P_inv R_inv 3))
+  = (x * x^2 = x^3)
+\end{lstlisting}
+
+\subsubsection{Deciding formulas}
+
+In order to prove formulas, we define a decidable procedure.
+We first compute the power of each side of the formula and then check their
+equality.
+\begin{coqD}
+Fixpoint pow_expr_inv (t : expr_inv) : Z :=
+match t with
+  | R_inv   => 1
+  | M_inv x y =>
+    (pow_expr_inv x) + (pow_expr_inv y)
+  | S_inv x =>
+    2 * (pow_expr_inv x)
+  | P_inv x p =>
+    (Z.pos p) * (pow_expr_inv x)
+  end.
+
+Fixpoint decide_expr_inv_eq (l1 l2:expr_inv) :=
+  (pow_expr_inv l1) ==? (pow_expr_inv l2).
+\end{coqD}
+We proved that our procedure is correct: for all formulas, if
+decide returns \coqDe{true}, then the denoted equality is correct.
+\begin{coqD}
+Lemma decide_formula_inv_impl :
+  forall (f:formula_inv),
+  decide_formula_inv f = true ->
+  formula_inv_denote f.
+\end{coqD}
+
+By reification to our Domain Specific Language and then by applying
+\texttt{decide\_formula\_inv\_impl} and computing \texttt{decide\_formula\_inv},
+we proved that \coqDe{Inv25519} is indeed computing an inverse in
+modulo $2^{255}-19$.
+\begin{coqD}
+Theorem Inv25519_Z_correct :
+  forall (x:Z),
+  Inv25519_Z x = pow x (2^255-21).
+\end{coqD}

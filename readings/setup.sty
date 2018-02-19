@@ -6,6 +6,7 @@
 
 % \usepackage{etex}
 \usepackage{amsfonts,amsmath,amscd,amscd,amssymb,array}
+% \usepackage[mathscr]{eucal}
 \usepackage{type1cm}
 \newcommand{\lstsize}{\fontsize{8.5pt}{8.5pt}\selectfont}
 \usepackage{algorithm, algorithmic}
@@ -93,6 +94,10 @@ width=0.8\columnwidth
 }
 \def\-{\raisebox{.75pt}{-}}
 
+
+%
+%   DEFINITION OF VST SYNTAX COLORING
+%
 \lstdefinelanguage{CoqVST}{%
   morekeywords=[1]{PROP, SEP, POST, PRE, LOCAL, DECLARE, WITH, Definition},
   morekeywords=[2]{val, list, Z, tuchar, uch32, lg16, share, tint},
@@ -102,23 +107,10 @@ width=0.8\columnwidth
   sensitive=true,
   mathescape=true,
   alsoletter   = {0123456789^} ,
-  % morekeywords = [1]{1,2,3,40} ,
-  % otherkeywords={<, >, \\=, |, &, ^},
-  %
   morestring=[b]",
-  %
   morecomment=[l]{//},
-  %
   identifierstyle=\color[rgb]{0,0,0},
-  % alsoletter={?},
-  % keywordsprefix=?,
-  % delim=[l][\color{doc@lstdirective}]{\#},
   delim=[s][\color{doc@lstdirective}]{(*}{*)},
-  % moredelim=[s][\color{magenta}]{<}{>},
-  % moredelim=[s][\color{magenta}]{:}{,},
-  % moredelim=[s][\color{magenta}]{:}{^^J},
-  % moredelim=[s][\color{magenta}]{:}{\ },
-  % moredelim=[l][\color{black}]{:}{/},
   literate=
       {=>}{{$\mapsto$}}1
       {<}{{$\!<\!$}}1
@@ -130,12 +122,95 @@ width=0.8\columnwidth
       {fun}{{\color{doc@lstkeyword2}{$\lambda\!\!$}}}1
       {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
 }
-% pour inliner dans le texte
-% \def\VSTe{\lstinline[language=CoqVST, basicstyle=\small]}
 \def\VSTe{\lstinline[language=CoqVST, basicstyle=\ttfamily\normalsize]}
-% pour inliner dans les tableaux / displaymath...
 \def\VSTes{\lstinline[language=CoqVST, basicstyle=\scriptsize]}
 
+
+%
+%   DEFINITION OF COQ PERSONNAL SYNTAX COLORING
+%
+\lstdefinelanguage{CoqD}{
+%
+% Anything betweeen $ becomes LaTeX math mode
+mathescape=true,
+% Comments may or not include Latex commands
+texcl=false,
+% Vernacular commands
+morekeywords=[1]{Definition, Fixpoint, Theorem, Qed, Function, Lemma, Notation,
+Inductive},
+morekeywords=[2]{list, Z, expr_inv, positive, formula_inv, Prop},
+morekeywords=[3]{forall, fun, match, end, with, measure, if, then, else, let, in},
+morekeywords=[4]{Forall, ZofList, Zlength},
+morekeywords=[5]{ 0, 1, 2, 3, 16, 32, 254},
+sensitive=true,
+mathescape=true,
+alsoletter   = {0123456789^} ,
+% Comments delimiters, we do turn this off for the manual
+morecomment=[s]{(*}{*)},
+% Spaces are not displayed as a special character
+showstringspaces=false,
+% String delimiters
+% morestring=[b]",
+morestring=[d],
+% Size of tabulations
+tabsize=3,
+% Enables ASCII chars 128 to 255
+extendedchars=false,
+% Case sensitivity
+sensitive=true,
+% Automatic breaking of long lines
+breaklines=false,
+% Default style fors listings
+% basicstyle=\small,
+% Position of captions is bottom
+captionpos=b,
+% flexible columns
+columns=[l]flexible,
+literate=
+    % {\\forall}{{\color{dkgreen}{$\forall\;$}}}1
+    % {\\exists}{{$\exists\;$}}1
+    {<-}{{$\leftarrow\;$}}1
+    {=>}{{$\Rightarrow\;$}}1
+    {==}{{\code{==}\;}}1
+    {==?}{{$=$?}}1
+    {==>}{{\code{==>}\;}}1
+    {->}{{$\rightarrow\;$}}1
+    {<->}{{$\leftrightarrow\;$}}1
+    {<}{{$\!<\!$}}1
+    {<>}{{$\neq$}}1
+    {<=}{{$\!\leq\!$}}1
+    % {\#}{{$^\star$}}1
+    % {\\o}{{$\circ\;$}}1
+    % {\@}{{$\cdot$}}1
+    % {\/\\}{{$\wedge\;$}}1
+    % {\\\/}{{$\vee\;$}}1
+    % {++}{{\code{++}}}1
+    % {~}{{\ }}1
+    % {\@\@}{{$@$}}1
+    {\\ldots}{{$\ldots$}}1
+    {\\mapsto}{{$\mapsto\;$}}1
+    {:GF}{{\color{doc@lstfunctions}{:$GF$}}}1
+    {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
+    {2^16}{{\color{doc@lstnumbers}{$2^{16}$}}}1
+    {2^255-19}{{\color{doc@lstnumbers}{$2^{255}-19$}}}1
+    {2^255-21}{{\color{doc@lstnumbers}{$2^{255}-21$}}}1
+    {\\hline}{{\rule{\linewidth}{0.5pt}}}1
+    {Z16.lst}{{\color{doc@lstfunctions}{$\mathbb{Z}$16.lst}}}1
+%
+}[keywords,comments,strings]
+
+\lstnewenvironment{coqD}{\lstset{language=CoqD}}{}
+
+% pour inliner dans le texte
+\def\coqDe{\lstinline[language=CoqD, basicstyle=\ttfamily\normalsize]}
+% pour inliner dans les tableaux / displaymath...
+\def\coqDes{\lstinline[language=CoqD, basicstyle=\scriptsize]}
+
+
+
+%
+%   DEFINITION OF COQ SYNTAX COLORING
+%
 \lstdefinelanguage{Coq}{
 %
 % Anything betweeen $ becomes LaTeX math mode
@@ -263,6 +338,12 @@ literate=
 % pour inliner dans les tableaux / displaymath...
 \def\coqes{\lstinline[language=Coq, basicstyle=\scriptsize]}
 
+
+
+
+
+
+
 \lstdefinelanguage{Ctweetnacl}{%
   morekeywords=[1]{FOR,for, return},
   morekeywords=[2]{sv, int, i64, gf, long, u8},
@@ -282,6 +363,7 @@ literate=
   %
   identifierstyle=\color[rgb]{0,0,0},
   delim=[l][\color{doc@lstdirective}]{\#},
+  backgroundcolor=\color{white}, % set the background color
   literate=
 }
 
