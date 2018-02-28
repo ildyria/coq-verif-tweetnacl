@@ -1,17 +1,27 @@
-\section{Number representation and C implementation}
+\section{Linking C and Coq}
 
-To convert a number in \texttt{gf} to $\mathbb{Z}$ with define
-\coqDe{ZofList : Z -> list Z -> Z} such that:
+In this section we describe techniques used to prove the equivalence between the
+Clight description of TweetNaCl and Coq functions producing similar behaviors.
+
+\subsection{Number representation and C implementation}
+
+As described in Section \ref{sec:impl}, numbers in \TNaCle{gf} are represented
+in base $2^16$ and we can use a direct mapping to represent that array as a list
+integers in Coq. However in order to show the correctness of the basic operations,
+we need to convert this number as a full integer. For this reason We define
+\coqDe{ZofList : Z -> list Z -> Z}:
 \begin{lstlisting}[language=CoqD]
-Fixpoint ZofList (n:Z) (a:list Z) : Z :=
+Fixpoint ZofList {n:Z} (a:list Z) : Z :=
   match a with
   | [] => 0
   | h :: q => h + 2^n * ZofList q
   end.
 Notation "Z16.lst A" := (ZofList 16 A).
 \end{lstlisting}
+It convert any list of integer from a base $2^n$ to an single integer. In our
+case we define a notation where $n$ is $16$.
 
-The following Coq notation is defined to convert any integer to its representent
+The following Coq notation is defined to convert any integer to its representant
 in $\mathbb{Z}_{2^{255}-19}$.
 \begin{lstlisting}[language=CoqD]
 Notation "A :GF" := (A mod (2^255-19)).
@@ -30,11 +40,18 @@ Lemma mult_GF_Zlength :
 
 \subsection{Inversions and Reflections}
 
+To prove that the \coqDe{Inv25519_Z} is computing $\mathbb{Z}_{2^{255}-19}$,
+In TweetNaCl, \TNaCle{inv25519} computes an inverse in $\mathbb{Z}_{2^{255}-19}$
+
+\coqDe{Inv25519} the inverse is computed using ht
+
+{\red TODO: SAY WHY WE WANT TO USE REFLECTION}
+
 Reflection proofs relies on the decidability of an expression. In our case,
 we show that for a property $P$, we can define a decidable
 boolean property $P_{bool}$ such that $$P_{bool} = true \implies P$$
 
-With VST we proved that \TNaCle{inv25519} is equivalent to its Coq functionnal
+With VST we proved that \TNaCle{inv25519} is equivalent to its Coq functional
 definition \coqDe{Inv25519}.
 
 \begin{coqD}
@@ -84,6 +101,8 @@ Definition Inv25519_Z (x:Z) : Z :=
 
 
 \subsubsection{A Simple Domain Specific Language}
+
+{\red TODO: WHY $2^{255}-21$ ???}
 
 To prove that the \coqDe{Inv25519_Z} is computing $x^{2^{255}-21}$,
 we define a Domain Specific Language:
@@ -153,7 +172,7 @@ We first compute the power of each side of the formula and then check their
 equality.
 \begin{coqD}
 Fixpoint pow_expr_inv (t : expr_inv) : Z :=
-match t with
+  match t with
   | R_inv   => 1
   | M_inv x y =>
     (pow_expr_inv x) + (pow_expr_inv y)
@@ -163,20 +182,25 @@ match t with
     (Z.pos p) * (pow_expr_inv x)
   end.
 
-Fixpoint decide_expr_inv_eq (l1 l2:expr_inv) :=
+Definition decide_e_inv (l1 l2 : expr_inv) : bool :=
   (pow_expr_inv l1) ==? (pow_expr_inv l2).
+
+Definition decide_f_inv (f : formula_inv) : bool :=
+  match f with
+  | Eq_inv x y => decide_e_inv x y
+  end.
 \end{coqD}
 We proved that our procedure is correct: for all formulas, if
-decide returns \coqDe{true}, then the denoted equality is correct.
+\coqDe{decide_f_inv} returns \coqDe{true}, then the denoted equality is correct.
 \begin{coqD}
 Lemma decide_formula_inv_impl :
   forall (f:formula_inv),
-  decide_formula_inv f = true ->
-  formula_inv_denote f.
+  decide_f_inv f = true ->
+  f_inv_denote f.
 \end{coqD}
 
 By reification to our Domain Specific Language and then by applying
-\texttt{decide\_formula\_inv\_impl} and computing \texttt{decide\_formula\_inv},
+\texttt{decide\_formula\_inv\_impl} and computing \texttt{decide\_f\_inv},
 we proved that \coqDe{Inv25519} is indeed computing an inverse in
 modulo $2^{255}-19$.
 \begin{coqD}
@@ -184,3 +208,5 @@ Theorem Inv25519_Z_correct :
   forall (x:Z),
   Inv25519_Z x = pow x (2^255-21).
 \end{coqD}
+
+{\red TODO: GIVE OTHER EXAMPLES WHERE REFLECTION IS APPLIED : e.g. PACK25519}

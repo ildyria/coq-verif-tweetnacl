@@ -6,7 +6,7 @@ In order to prove the correctness of \texttt{crypto\_scalarmult},
 \texttt{car25519}; \texttt{inv25519}; \texttt{set25519}; \texttt{sel25519};
 \texttt{pack25519}.
 
-\subsection{Implementation}
+\subsection{Implementation} \label{sec:impl}
 
 Curve25519 is defined over $\mathbb{Z}_{2^{255}-19}$. Number in that field can
 be represented by a 256-bits number. Each of them represented in base $2^{16}$.
@@ -279,7 +279,7 @@ Theorem CSM_eq :
   Zlength p = 16 ->
   Forall (fun x => 0 <= x < 2^8) p ->
   Forall (fun x => 0 <= x < 2^8) n ->
-  CSM n p = ZofList n $\times$ ZofList p.
+  Z16.lst (CSM n p) = Z16.lst n $\times$ Z16.lst p.
 \end{lstlisting}
 We proved that \VSTe{crypto_scalarmult} (\VSTe{CSM} in Coq)
 computes: $$Q.x \leftarrow N \times P.x$$
