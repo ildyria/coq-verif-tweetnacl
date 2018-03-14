@@ -284,38 +284,33 @@ Corollary Inv25519_Zpow_GF :
 
 \subsubsection{Packing and other applications}
 
-Reflection can also be used where proofs requires computing.
-
-\todo[inline]{give other examples where Reflection was applied, e.g. pack25519}
-
-Pack25519 :
-prove that the substraction and the carry can be seen as two separate loops instead of a single for.
-This simplifies the proof as you just the carrying does not change the value in \Zfield.
-
-Proving equalitives of the form:
+Reflection can also be used where proofs requires computing and a small and
+finite domain of variable to test e.g. for all $i$ such that $0 \le i < 16$.
+Using reflections we proved that we can split the for loop in \TNaCle{pack25519} into two parts.
+\begin{lstlisting}[language=Ctweetnacl]
+for(i=1;i<15;i++) {
+  m[i]=t[i]-0xffff-((m[i-1]>>16)&1);
+  m[i-1]&=0xffff;
+}
+\end{lstlisting}
+The first is computing the substraction while the second is applying the carrying.
+\begin{lstlisting}[language=Ctweetnacl]
+for(i=1;i<15;i++) {
+  m[i]=t[i]-0xffff
+}
+for(i=1;i<15;i++) {
+  m[i]=m[i]-((m[i-1]>>16)&1);
+  m[i-1]&=0xffff;
+}
+\end{lstlisting}
+This loop separation allows simpler proofs. The first loop is seen as the substraction of a number in \Zfield.
+We then proved than with the iteration of the second loop, the number represented in \Zfield stays the same.
+This lead to the proof that \TNaCle{pack25519} is effectively reducing mod $2^{255}-19$ and returning a number in base $2^8$.
 
 \begin{coqD}
-[x * y + z * t, x , y * r] =
-[t * z + y * x, x , r * y].
+Lemma Pack25519_mod_25519 :
+forall (l:list Z),
+Zlength l = 16 ->
+Forall (fun x => -2^62 < x < 2^62) l ->
+ZofList 8 (Pack25519 l) = (Z16.lst l) mod (2^255-19).
 \end{coqD}
-
-This is usually solved with the repetition of the \coqDe{f_equal} lemma.
-
-\begin{coqD}
-Lemma f_equal :
-  forall (A B C:Type) (x y:A) (z t:B) (f:A->B->C),
-  x = y -> z = t ->
-  f x z = f y t.
-\end{coqD}
-In this example case it will create two subgoals:
-\begin{coqD}
-(* 1 *)
-x * y + z * t = t * z + y * x
-(* 2 *)
-[x , y * r] = [x , r * y]
-\end{coqD}
-The first one will be proven by the \coqDe{ring} tactic which solve simple non-linear goals.
-The second one will be proven by the application of \coqDe{f_equal}
-followed by \coqDe{ring}. This iteration and call for tactics makes the proofs slow.
-Instead of repeating this over the 16 or more elements of the lists, we used a reflection.
-We created a decidable procedure over the elements of the list and iterated on them.
