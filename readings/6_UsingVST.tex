@@ -2,6 +2,8 @@
 
 \subsection{The Trusted Base}
 
+\todo[inline]{blablabla needs to be rewritten}
+
 The soundness of our proof relies on a trusted base
 , i.e. a foundation of specifications and implementations
 that must stay correct with respect to the specifications.
@@ -26,7 +28,7 @@ $
   This required us to rewrite the lines into:\\
   \texttt{aux1 = a[i];\\
   aux2 = b[i];\\
-  o[i] = aux1 + aux2;}. This rewriting is done 
+  o[i] = aux1 + aux2;}. This rewriting is done
   The trust of the proof relied on the trust of a correct translation from the
   initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
 
@@ -88,7 +90,6 @@ Three years ago:
 \subsection{Pointers arithmetic, arrays and types}
 
 
-
 It is to be noted that the \texttt{clightgen} tool has not been formally verified.
 
 \texttt{clightgen -normalize}
@@ -112,13 +113,34 @@ It is to be noted that the \texttt{clightgen} tool has not been formally verifie
 While the final state of a For loops can be computed by a simple recursive function,
 we must define invariants that are true for each step of the iteration.
 
+\begin{coqD}
+Variable T : Type.
+Variable g : nat -> T -> T.
+
+Fixpoint rec_fn (n:nat) (s:T) :=
+  match n with
+  | 0 => s
+  | S n => (rec_fn n (g n s))
+  end.
+
+Fixpoint rec_fn_rev_acc (n:nat) (m:nat) (s:T) :=
+  match n with
+  | 0 => s
+  | S n => g (m - n - 1) (rec_fn_rev_acc n m s)
+  end.
+
+Definition rec_fn_rev (n:nat) (s:T) :=
+  rec_fn_rev_acc n n s.
+
+Lemma Tail_Head_equiv :
+  forall (n:nat) (s:T),
+  rec_fn n s = rec_fn_rev n s.
+\end{coqD}
 
 
 In order to prove the for loops, we must define invariants.
 Those have to be
 
-
-TODO:
-How many lines of specification ?
-How many lines of proofs ?
-How long did it take ?
+\todo[inline]{How many lines of specification ?}
+\todo[inline]{How many lines of proofs ?}
+\todo[inline]{How long did it take ?}

@@ -38,7 +38,7 @@
 \usepackage{xspace}
 \usepackage{subfig}
 \usepackage{float}
-
+\usepackage{todonotes}
 \usepackage[capitalise,nameinlink]{cleveref}
 
 \floatstyle{ruled}
@@ -48,6 +48,12 @@
 \newcounter{subListing}
 \newcounter{subListing@save}
 \renewcommand{\thesubListing}{\alph{subListing}}
+
+\usepackage[framemethod=tikz]{mdframed}
+\mdfsetup{leftmargin=0cm,skipabove=0.1cm,hidealllines=true,%
+  innerleftmargin=0.05cm,innerrightmargin=0.05cm,
+  innertopmargin=-0.10cm,innerbottommargin=-0.20cm,
+  skipbelow=-0.2cm}
 
 \renewcommand{\tabcolsep}{4pt}
 
@@ -111,6 +117,7 @@ width=0.8\columnwidth
   morecomment=[l]{//},
   identifierstyle=\color[rgb]{0,0,0},
   delim=[s][\color{doc@lstdirective}]{(*}{*)},
+  backgroundcolor=\color{doc@lstbackground}, % set the background color
   literate=
       {=>}{{$\mapsto$}}1
       {<}{{$\!<\!$}}1
@@ -125,6 +132,12 @@ width=0.8\columnwidth
 \def\VSTe{\lstinline[language=CoqVST, basicstyle=\ttfamily\normalsize]}
 \def\VSTes{\lstinline[language=CoqVST, basicstyle=\scriptsize]}
 
+\lstnewenvironment{CoqVST}{
+\mdframed[backgroundcolor=doc@lstbackground]%
+\lstset{language=CoqVST}}{
+\endmdframed
+}
+
 
 %
 %   DEFINITION OF COQ PERSONNAL SYNTAX COLORING
@@ -136,12 +149,13 @@ mathescape=true,
 % Comments may or not include Latex commands
 texcl=false,
 % Vernacular commands
-morekeywords=[1]{Definition, Fixpoint, Theorem, Qed, Function, Lemma, Notation,
-Inductive},
-morekeywords=[2]{list, Z, expr_inv, positive, formula_inv, Prop},
-morekeywords=[3]{forall, fun, match, end, with, measure, if, then, else, let, in},
+morekeywords=[1]{Definition, Fixpoint, Theorem, Corollary, Qed, Function, Lemma,
+Notation, Inductive, Variable},
+morekeywords=[2]{list, Z, expr_inv, positive, formula_inv, bool, Prop, nat, T, Type},
+morekeywords=[3]{forall, fun, match, end, with, measure, if, then, else, let, in,
+ring},
 morekeywords=[4]{Forall, ZofList, Zlength},
-morekeywords=[5]{ 0, 1, 2, 3, 16, 32, 254},
+morekeywords=[5]{ 0, 1, 2, 3, 16, 32, 254, true},
 sensitive=true,
 mathescape=true,
 alsoletter   = {0123456789^} ,
@@ -164,6 +178,7 @@ breaklines=false,
 % basicstyle=\small,
 % Position of captions is bottom
 captionpos=b,
+backgroundcolor=\color{doc@lstbackground}, % set the background color
 % flexible columns
 columns=[l]flexible,
 literate=
@@ -192,14 +207,20 @@ literate=
     {:GF}{{\color{doc@lstfunctions}{:$GF$}}}1
     {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
     {2^16}{{\color{doc@lstnumbers}{$2^{16}$}}}1
+    {2^62}{{\color{doc@lstnumbers}{$2^{62}$}}}1
     {2^255-19}{{\color{doc@lstnumbers}{$2^{255}-19$}}}1
     {2^255-21}{{\color{doc@lstnumbers}{$2^{255}-21$}}}1
+    {fun}{{\color{doc@lstkeyword2}{$\lambda\!\!$}}}1
     {\\hline}{{\rule{\linewidth}{0.5pt}}}1
     {Z16.lst}{{\color{doc@lstfunctions}{$\mathbb{Z}$16.lst}}}1
 %
 }[keywords,comments,strings]
 
-\lstnewenvironment{coqD}{\lstset{language=CoqD}}{}
+\lstnewenvironment{coqD}{
+\mdframed[backgroundcolor=doc@lstbackground]%
+\lstset{language=CoqD}}{
+\endmdframed
+}
 
 % pour inliner dans le texte
 \def\coqDe{\lstinline[language=CoqD, basicstyle=\ttfamily\normalsize]}
@@ -363,7 +384,6 @@ literate=
   %
   identifierstyle=\color[rgb]{0,0,0},
   delim=[l][\color{doc@lstdirective}]{\#},
-  backgroundcolor=\color{white}, % set the background color
   literate=
 }
 
@@ -402,14 +422,14 @@ literate=
   %
   captionpos=b, % set the caption position to `bottom'
   %
-  xleftmargin=0.4em, % text to the right
-  xrightmargin=0.4em, % text to the left
+  xleftmargin=0.2em, % text to the right
+  xrightmargin=0.2em, % text to the left
   breaklines=false, % don't break long lines of code
   %
   frame=single, % add a frame around the code
   framexleftmargin=0pt, % frame back to the left
   framexrightmargin=0pt, % frame back to the right
-  backgroundcolor=\color{doc@lstbackground}, % set the background color
+  backgroundcolor=\color{white}, % set the background color
   rulecolor=\color{doc@lstframe}, % frame color
   %
   columns=flexible, % try not to ruin the spacing intended by the font designer

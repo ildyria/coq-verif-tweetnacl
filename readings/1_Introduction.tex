@@ -1,9 +1,9 @@
 \section{Introduction}
 
 Implementing cryptographic primitives without any bugs is hard.
-While tests provides a some code coverage, they don't cover
-100\% of the possible input values. Using Coq, we prove the
-correctness of the scalar multiplication in Tweetnacl.
+While tests provides a some code coverage and are used in the limits,
+they still don't cover 100\% of the possible input values.
+Using Coq, we prove the correctness of the scalar multiplication in Tweetnacl.
 
 TweetNaCl\cite{BGJ+15} is a compact reimplementation of the
 NaCl\cite{BLS12} library. It does not aim for high speed
@@ -12,7 +12,7 @@ It maintains some degree of readability in order to be
 easily auditable.
 
 This library makes use of Curve25519\cite{Ber06}, an elliptic
-curve defined over the field $\mathbb{Z}_{2^{255}-19}$.
+curve defined over the field \Zfield.
 It defines the function \texttt{crypto\_scalarmult} which
 takes as input a scalar $n$ and the $x$ coordinate of a
 point $P$ and returns the $x$ coordinate of the

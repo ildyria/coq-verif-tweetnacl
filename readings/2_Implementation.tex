@@ -1,14 +1,15 @@
 \section{Curve25519 implementation}
 
-In order to prove the correctness of \texttt{crypto\_scalarmult},
+\todo[inline]{This part does not really make sens here. Needs to be rewritten.}
+To prove the correctness of \texttt{crypto\_scalarmult},
  we also need to do the same with all the functions subsequently called:
 \texttt{unpack25519}; \texttt{A}; \texttt{Z}; \texttt{M}; \texttt{S};
 \texttt{car25519}; \texttt{inv25519}; \texttt{set25519}; \texttt{sel25519};
 \texttt{pack25519}.
 
-\subsection{Implementation}
+\subsection{Implementation} \label{sec:impl}
 
-Curve25519 is defined over $\mathbb{Z}_{2^{255}-19}$. Number in that field can
+Curve25519 is defined over \Zfield. Number in that field can
 be represented by a 256-bits number. Each of them represented in base $2^{16}$.
 they are cut into 16 limbs of at least 16 bits placed into 64-bits signed
 container.
@@ -168,15 +169,14 @@ We prove that the implementation of Curve25519 is \textbf{sound} \ie
 \item absence of overflows/underflow on the arithmetic.
 \end{itemize}
 
+\noindent
 We also prove that TweetNaCl's code is \textbf{correct}:
 
 \begin{itemize}
 \item Curve25519 is correctly implemented (we get what we expect).
 \item Operations on \texttt{gf} (\texttt{A}, \texttt{Z}, \texttt{M}, \texttt{S})
-are equivalent to operations ($+,-,\times,x^2$) in $\mathbb{Z}_{2^{255}-19}$
+are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
 \end{itemize}
-
-% \subsection{Meet-in-the-middle Approach}
 
 In order to prove the soundness and correctness of \texttt{crypto\_scalarmult},
 we defined multiples levels of specifications.
@@ -184,7 +184,7 @@ A high level specification (over a generic field $\mathbb{F}$) looking only at
 the structure of the Montgomery ladder provided us with the correcntess.
 A low level specification close to the \texttt{C} code (over lists of $\mathbb{Z}$)
 gave us the soundness assurance.
-We defined a third specification over $\mathbb{Z}_{2^{255}-19}$ (mid level) and
+We defined a third specification over \Zfield (mid level) and
 we proved to be an instance of the high level one.
 We also proved its equivalence with the low level one.
 As such we proved all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
@@ -204,7 +204,7 @@ We show the soundness of TweetNaCl by proving the {\red{equivalence}} of the fol
 specification. This defines the equivalence between the Clight representation
 and a Coq definition of the ladder.
 
-\begin{lstlisting}[language=CoqVST]
+\begin{CoqVST}
 Definition crypto_scalarmult_spec :=
 DECLARE _crypto_scalarmult_curve25519_tweet
 WITH
@@ -235,7 +235,7 @@ SEP  (sh [{ v_q }] <<(uch32)-- mVI (CSM n p);
       sh [{ v_n }] <<(uch32)-- mVI n;
       sh [{ v_p }] <<(uch32)-- mVI p;
       Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665
-\end{lstlisting}
+\end{CoqVST}
 
 In this specification we state as preconditions:
 \begin{itemize}
@@ -271,7 +271,8 @@ As Post-condition we have:
   We show that the computation for \VSTe{CSM} fits in  \TNaCle{u8[32]}.
 \end{itemize}
 
-\texttt{THEOREM BETWEEN CSM and TIMMY REPR. EG:}
+\todo[inline]{theorem between CSM and Timmy representation here. Eg.}
+
 \begin{lstlisting}[language=CoqD]
 Theorem CSM_eq :
   forall (n:list Z) (p:list Z),
@@ -279,7 +280,7 @@ Theorem CSM_eq :
   Zlength p = 16 ->
   Forall (fun x => 0 <= x < 2^8) p ->
   Forall (fun x => 0 <= x < 2^8) n ->
-  CSM n p = ZofList n $\times$ ZofList p.
+  Z16.lst (CSM n p) = Z16.lst n $\times$ Z16.lst p.
 \end{lstlisting}
 We proved that \VSTe{crypto_scalarmult} (\VSTe{CSM} in Coq)
 computes: $$Q.x \leftarrow N \times P.x$$

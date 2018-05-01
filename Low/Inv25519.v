@@ -136,7 +136,7 @@ Lemma Inv25519_bound_Zlength : forall g,
 Proof. intros; rewrite /Inv25519; apply pow_fn_rev_bound_Zlength => //. Qed.
 
 Lemma Inv25519_Zlength : forall g,
-  Zlength g = 16 -> 
+  Zlength g = 16 ->
   Zlength (Inv25519 g) = 16.
 Proof. intros; rewrite /Inv25519; apply pow_fn_rev_Zlength => //. Qed.
 
@@ -145,7 +145,7 @@ Lemma Inv25519_Z_GF : forall g,
   ZofList 16 (Inv25519 g) :𝓖𝓕  = (Inv25519_Z (ZofList 16 g)) :𝓖𝓕 .
 Proof. intros; rewrite /Inv25519 /Inv25519_Z; apply pow_fn_rev_Z_GF => //. Qed.
 
-Lemma Inv25519_Zpow_GF : forall g,
+Corollary Inv25519_Zpow_GF : forall g,
   Zlength g = 16 ->
   ZofList 16 (Inv25519 g) :𝓖𝓕  = (Z.pow (ZofList 16 g) (Z.pow 2 255 - 21)) :𝓖𝓕 .
 Proof. intros. rewrite Inv25519_Z_GF //.
