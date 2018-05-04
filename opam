@@ -17,7 +17,7 @@ install: [
 remove: ["rm" "-R" "%{lib}%/coq/user-contrib/Tweetnacl"]
 depends: [
   "coq" {>= "8.7.0"}
-  "coq-coqprime" {= "dev"}
+  "coq-coqprime" 
   "coq-stdpp"
   "coq-ssr-elliptic-curves"
   "coq-mathcomp-ssreflect"
