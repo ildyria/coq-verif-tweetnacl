@@ -1,7 +1,7 @@
-Require Import stdpp.prelude.
 From Tweetnacl Require Import Libs.LibTactics.
 From Tweetnacl Require Import Libs.LibTactics_SF.
 Require Import mathcomp.ssreflect.ssreflect.
+Require Import stdpp.list.
 
 Section nth_f.
 Context {I} {O} (f:I -> O) (v:I).
