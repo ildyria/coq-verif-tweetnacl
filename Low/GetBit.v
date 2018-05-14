@@ -3,7 +3,7 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
 Require Import ssreflect.
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 
 Open Scope Z.
 
