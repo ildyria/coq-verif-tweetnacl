@@ -1,4 +1,4 @@
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Export ListsOp.ZofList.
@@ -15,7 +15,7 @@ Hypothesis Hn: n > 0.
   Forall LEMMAS
 *)
 
-Definition ZList_pos (l:list Z) : Prop := Forall (Zle 0) l.
+Definition ZList_pos (l:list Z) : Prop := Forall (Z.le 0) l.
 
 Notation "ℤ.lst A" := (ZofList n A) (at level 65, right associativity).
 
@@ -191,58 +191,6 @@ Lemma ZofList_bounds_Zlength: forall l (m:nat) (a b:Z),
    ZofList_Bound m a <= ℤ.lst l <= ZofList_Bound m b.
 Proof. convert_length_to_Zlength ZofList_bounds. Qed.
 
-(* the following lemma is useless! *)
-(* Lemma ZofList_bounds': forall l (m:nat) a b,
-  (length l = m)%nat -> 
-  a < 0 < b ->
-  Forall (fun x => a < x < b) l -> 
-   2 * a * 2^(n*ℤ.ℕ m) < ℤ.lst l < 2 * b * 2^(n*ℤ.ℕ m).
-Proof.
-  induction l using rev_ind => m a b Hl Hab Hbounds.
-  simpl in Hl ; subst m.
-  rewrite <- Zmult_0_r_reverse ; go.
-  rewrite !Z.pow_0_r ZofList_nil.
-  omega.
-  destruct m;
-  move : Hl; rewrite app_length; simpl length ; 
-  oreplace (length l + 1)%nat (S (length l))%nat => Hl;
-  try congruence.
-  rewrite Nat2Z.inj_succ -Zmult_succ_r_reverse ZofList_app'.
-  2: done.
-  inversion Hl; clear Hl.
-  rewrite H0.
-  replace (ℤ.lst [x]) with x by (simpl ZofList ; omega).
-  apply Forall_app in Hbounds.
-  destruct Hbounds as [Hl Hx].
-  destruct (IHl m a b H0 Hab Hl) as [Hinf Hsup].
-  inversion Hx ; subst x0 l0; clear H3.
-  destruct H2 as [Hxinf Hxsup].
-  split.
-  - rewrite Z.add_comm.
-    eapply (Z.le_lt_trans _ (2 * a * 2 ^ (n * (ℤ.ℕ m)) + 2 ^ (n * (ℤ.ℕ m)) * x))
-    ; [| apply Zplus_lt_compat_r ; omega].
-    rewrite Z.pow_add_r. 2: omega. 2: go.
-    replace (2 * a * 2 ^ (n * (ℤ.ℕ m))) with (2 ^ (n * (ℤ.ℕ m)) * 2 * a) by ring.
-    rewrite -!Z.mul_assoc Zred_factor4.
-    replace (2 * (a * (2 ^ n * 2 ^ (n * (ℤ.ℕ m))))) with (2 ^ (n * (ℤ.ℕ m)) * (2 * a * 2 ^ n)) by ring.
-    apply Zmult_le_compat_l ; [| apply Z.pow_nonneg ; omega].
-    apply (Z.le_trans _ (2 * a * 2)) ; try omega.
-    rewrite -!Z.mul_assoc.
-    apply Zmult_le_compat_l ; try omega.
-    apply Z.mul_le_mono_nonpos_l ; try omega.
-    apply pown2 ; omega.
-  - eapply (Z.lt_le_trans _ (2 * b * 2 ^ (n * (ℤ.ℕ m)) + 2 ^ (n * (ℤ.ℕ m)) * x)).
-    apply Zplus_lt_compat_r ; omega.
-    rewrite Z.pow_add_r. 2: go. 2: omega.
-    replace (2 * b * 2 ^ (n * (ℤ.ℕ m))) with (2 ^ (n * (ℤ.ℕ m)) * 2 * b) by ring.
-    rewrite -!Z.mul_assoc Zred_factor4.
-    replace (2 * (b * (2 ^ (n * (ℤ.ℕ m))* 2 ^ n))) with (2 ^ (n * (ℤ.ℕ m)) * (2 * b * 2 ^ n)) by ring.
-    apply Zmult_le_compat_l ; [|apply Z.pow_nonneg ; omega].
-    apply (Z.le_trans _ (2 * b * 2)) ; try omega.
-    apply Zmult_le_compat_l ; try omega.
-    apply pown2 ; omega.
-Qed.
- *)
 Lemma ZofList_nth_mod_div : forall l (m:nat), Forall (fun x => 0 <= x < 2^n) l ->
   m < length l ->
   nth m l 0 = (ℤ.lst l) mod 2^(n*(S m)) / 2 ^ (n * m).
@@ -286,7 +234,7 @@ Proof.
   2: symmetry; rewrite Z.mul_comm ; apply Z_mod_mult.
   rewrite Z.add_0_r.
   rewrite Z.mod_small.
-  Focus 2.
+  2: {
     split.
       rewrite Z.mul_comm; omega.
     - assert((ℤ.lst (take m l)) + 2 ^ (n * m) * nth m l 0 < 2 ^ (n * m) + 2 ^ (n * m) * nth m l 0).
@@ -312,6 +260,7 @@ Proof.
         rewrite Nat.add_0_r.
         reflexivity.
       omega.
+  }
   rewrite Z.mul_comm.
   rewrite Z.Private_NZDiv.div_add ; try omega.
   rewrite Zdiv_small.

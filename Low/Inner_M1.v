@@ -1,4 +1,4 @@
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 Require Import Recdef.
@@ -161,10 +161,11 @@ unfold update_M_i_j.
 rewrite alter_app_r_alt.
 f_equal.
 
-Focus 2.
+2: {
 rewrite take_length ; rewrite Z2Nat.inj_add ; try omega.
 apply (NPeano.Nat.le_trans _ (Z.to_nat i)) ; try omega.
 apply Min.le_min_l.
+}
 
 rewrite drop_app_ge. 2: (rewrite take_length ; apply Min.le_min_l).
 replace ((Z.to_nat i - length (take (Z.to_nat i) o)))%nat with 0%nat.

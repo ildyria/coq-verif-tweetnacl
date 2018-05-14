@@ -1,4 +1,4 @@
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 
@@ -14,66 +14,21 @@ Fixpoint Zipp (f:Z -> Z -> Z) (a b : list Z) : list Z := match a,b with
 end.
 
 Notation "F ( A , B )" := (Zipp F A B) (at level 60, right associativity).
-(*
-Fixpoint Zipp_n (f:Z -> Z -> Z) (n:nat) (a b : list Z) : list Z := match n, a, b with 
-  | 0, _, _ => []
-  | S p, [], []  => []
-  | S p, [], h::q  => (f 0%Z h) :: (Zipp_n f p [] q)
-  | S p, h::q, []  => (f h 0%Z) :: (Zipp_n f p q [])
-  | S p, h1::q1, h2::q2 => (f h1 h2) :: (Zipp_n f p q1 q2)
-end.
-*)
+
 Lemma Zipp_nil1: forall f h q, Zipp f (h :: q) [] = (f h 0%Z) :: (Zipp f q []).
 Proof. ind_boum q. Qed.
 
 Lemma Zipp_nil2: forall f h q, Zipp f [] (h :: q) = (f 0%Z h) :: (Zipp f [] q).
 Proof. ind_boum q. Qed.
-(*
-Lemma Zipp_eq_length: forall f n a b,
-  length a <= n ->
-  length b <= n ->
-    Zipp f a b = Zipp_n f n a b.
-Proof.
-  ind_destr_destr n a b ; 
-  repeat match goal with
-    | _ => progress boum
-    | |- _ :: _ = _ :: _ => progress f_equal
-    | [ H : context[length] |- _ ] => simpl in H ; apply le_S_n in H
-    | _ => progress apply IHn
-    | _ => progress simpl Zipp_n
-    | _ => progress simpl Zipp
-    | _ => progress rewrite <- IHn
-    | [ |- map _ ?a = _ ] => destr_boum a
-  end.
-Qed.
-*)
+
 Open Scope Z.
-(*
-Lemma Zipp_n_length : forall f (n:nat) (a b : list Z), length (Zipp_n f n a b) = min n (max (length a) (length b)).
-Proof. ind_destr_destr n a b ; simpl ; rewrite IHn; [|rewrite max_l] ; boum. Qed.
 
-Lemma Zipp_eq_Zlength: forall f (n:nat) a b,
-  Zlength a <= n ->
-  Zlength b <= n ->
-    Zipp f a b = Zipp_n f n a b.
-Proof. convert_length_to_Zlength Zipp_eq_length. Qed.
-
-Lemma Zipp_n_Zlength : forall f (n:nat) (a b : list Z), Zlength (Zipp_n f n a b) = Zmin n (Zmax (Zlength a) (Zlength b)).
-Proof. convert_length_to_Zlength Zipp_n_length.
-rewrite Nat2Z.inj_min.
-rewrite Nat2Z.inj_max.
-reflexivity.
-Qed.
-*)
 Lemma Zipp_map_l: forall f a, Zipp f a [] = map (fun x : Z => f x 0%Z) a.
 Proof. ind_boum a. Qed.
 
 Lemma Zipp_map_r: forall f a, Zipp f [] a = map (f 0%Z) a.
 Proof. ind_boum a. Qed.
-(*
-Lemma Zipp_taked: forall f n a b, take n (Zipp f a b) = Zipp_n f n a b.
-Proof. ind_destr_destr n a b ; simpl ; flatten ; go ; try inv Eq ; rewrite <- IHn ; f_equal ;   [rewrite Zipp_map_r | rewrite Zipp_map_l]; go. Qed.
-*)
+
 Lemma Zipp_take : forall f n a b, take n (Zipp f a b) = Zipp f (take n a) (take n b).
 Proof. ind_destr_destr n a b => //=; rewrite -?Zipp_map_l -?Zipp_map_r IHn; destruct n; go. Qed.
 
@@ -119,35 +74,6 @@ Proof.
     | _ => left; apply Z.max_l ; go ; fail
   end.
 Qed.
-(*
-Lemma Zipp_n_nth_length : forall f (n : nat) (a b : list Z),
-  length a = length b ->
-  (n < length a)%nat ->
-  Zipp_n f (S n) a b = (Zipp_n f n a b) ++ [f (nth n a 0) (nth n b 0)].
-Proof.
-  induction n; intros.
-  simpl ; flatten ; simpl ; simpl in H0 ; try omega ; try reflexivity.
-  do 2 (destruct a ; destruct b ;
-        try match goal with
-         | [H : context[length] |- _ ] => simpl in H ; omega
-        end).
-  repeat rewrite nth_lookup.
-  unfold lookup ; unfold list_lookup.
-  rewrite <- (nth_lookup (z1 :: a) n).
-  rewrite <- (nth_lookup (z2 :: b) n).
-  change (Zipp_n f (S (S n)) (z :: z1 :: a) (z0 :: z2 :: b))
-  with (f z z0 :: Zipp_n f (S n) (z1 :: a) (z2 :: b)).
-  rewrite IHn by (simpl in *; omega).
-  simpl Zipp_n.
-  rewrite app_comm_cons ; reflexivity.
-Qed.
-
-Lemma Zipp_n_nth_Zlength : forall f (n : nat) (a b : list Z),
-  Zlength a = Zlength b ->
-  n < Zlength a ->
-  Zipp_n f (S n) a b = (Zipp_n f n a b) ++ [f (nth n a 0) (nth n b 0)].
-Proof. convert_length_to_Zlength Zipp_n_nth_length. Qed.
-*)
 
 Lemma Zipp_nth_length : forall f (n : nat) (a b : list Z),
   length a = length b ->

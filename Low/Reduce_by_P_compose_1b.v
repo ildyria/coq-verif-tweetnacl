@@ -5,7 +5,7 @@ From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
 From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
 From Tweetnacl Require Import Low.Reduce_by_P_compose.
 From Tweetnacl Require Import Low.Z.
-From stdpp Require Import prelude.
+From stdpp Require Import list.
 Require Import Recdef.
 Require Import ssreflect.
 Open Scope Z.

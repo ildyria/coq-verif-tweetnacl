@@ -1,6 +1,6 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 Open Scope Z.
 
 Definition c_121665 :list Z := [ 56129; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0 ].

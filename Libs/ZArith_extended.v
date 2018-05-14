@@ -28,10 +28,10 @@ Fact le_mul_pos_le : forall m n, 0 <= m -> 1 <= n -> m <= n * m.
 Proof. intros m n Hm Hn. Psatz.nia. Qed.
 
 Definition min_prod (min1 max1 min2 max2: Z) : Z:=
-  Zmin (Zmin (min1*min2) (max1*max2)) (Zmin (max1*min2) (min1*max2)).
+  Z.min (Z.min (min1*min2) (max1*max2)) (Z.min (max1*min2) (min1*max2)).
 
 Definition max_prod (min1 max1 min2 max2: Z) : Z:=
-  Zmax (Zmax (min1*min2) (max1*max2)) (Zmax (max1*min2) (min1*max2)).
+  Z.max (Z.max (min1*min2) (max1*max2)) (Z.max (max1*min2) (min1*max2)).
 
 Lemma min_prod_neg_lt : forall a b c d,
   a < 0 < b ->

@@ -1,4 +1,4 @@
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
@@ -75,7 +75,7 @@ Proof. intros a b ; rewrite ?ZsumList_Zipp_eq; apply Zipp_Zlength. Qed.
 Lemma ZsumList_length_max : forall a b, length (a ⊕ b) = max (length a) (length b).
 Proof. intros a b ; rewrite ?ZsumList_Zipp_eq; apply Zipp_length_max. Qed.
 
-Lemma ZsumList_Zlength_max : forall a b, Zlength (a ⊕ b) = Zmax (Zlength a) (Zlength b).
+Lemma ZsumList_Zlength_max : forall a b, Zlength (a ⊕ b) = Z.max (Zlength a) (Zlength b).
 Proof. intros a b ; rewrite ?ZsumList_Zipp_eq; apply Zipp_Zlength_max. Qed.
 
 Close Scope Z.

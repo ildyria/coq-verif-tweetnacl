@@ -1,4 +1,4 @@
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Mid.Reduce.

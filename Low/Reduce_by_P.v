@@ -13,7 +13,7 @@ From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.GetBit_pack25519.
 From Tweetnacl Require Import Low.Sel25519.
 From Tweetnacl Require Import Low.Constant.
-From stdpp Require Import prelude.
+From stdpp Require Import list.
 Require Import Recdef.
 Require Import ssreflect.
 
@@ -154,7 +154,7 @@ Proof.
   rewrite -(take_cons_Zlength _ _ 0).
   2: rewrite Hmt ; omega.
   apply Forall_app_2.
-  Focus 1.
+  1: {
   unfold m_from_t.
   rewrite upd_nth_take_small_Zlength.
   rewrite upd_nth_take_small_Zlength.
@@ -166,7 +166,7 @@ Proof.
   change 14%nat with (Z.to_nat (15 - 1)).
   apply sub_fn_rev_s_sub_step_2_bound.
   omega. assumption.
-
+  }
   apply Forall_cons_2.
   2: apply Forall_nil_2.
   unfold m_from_t.

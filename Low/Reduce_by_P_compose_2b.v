@@ -5,7 +5,7 @@ From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
 From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
 From Tweetnacl Require Import Low.Reduce_by_P_compose.
 From Tweetnacl Require Import Low.Z.
-From stdpp Require Import prelude.
+From stdpp Require Import list.
 Require Import Recdef.
 Require Import ssreflect.
 Open Scope Z.
@@ -40,15 +40,17 @@ intros.
   2: rewrite Zlength_correct in H0.
   2: omega.
   2: omega.
-  Focus 2.
+  2: {
   replace (length m')%nat with (Z.to_nat (Z.of_nat (length m')))%nat by (apply Nat2Z.id).
   all: rewrite -Z2Nat.inj_le ; subst.
   all: rewrite -?Zlength_correct.
   all: rewrite ?sub_fn_rev_s_sub_step_2_Zlength ; omega.
+  }
   rewrite -nth_drop_2.
-  Focus 2.
+  2: {
   replace (length m)%nat with (Z.to_nat (Z.of_nat (length m)))%nat by (apply Nat2Z.id).
   all: rewrite -Z2Nat.inj_le -?Zlength_correct ; omega.
+  }
   rewrite -(nth_take_full _ (Z.to_nat (a + 1))).
   2: rewrite -Z2Nat.inj_lt ; omega.
   apply Forall_nth_d.
@@ -93,15 +95,17 @@ intros.
   2: rewrite Zlength_correct in H0.
   2: omega.
   2: omega.
-  Focus 2.
+  2: {
   replace (length m')%nat with (Z.to_nat (Z.of_nat (length m')))%nat by (apply Nat2Z.id).
   all: rewrite -Z2Nat.inj_le ; subst.
   all: rewrite -?Zlength_correct.
   all: rewrite ?sub_fn_rev_s_sub_step_2_Zlength ; omega.
+  }
   rewrite -nth_drop_2.
-  Focus 2.
+  2: {
   replace (length m)%nat with (Z.to_nat (Z.of_nat (length m)))%nat by (apply Nat2Z.id).
   all: rewrite -Z2Nat.inj_le -?Zlength_correct ; omega.
+  }
   rewrite -(nth_take_full _ (Z.to_nat (a + 1))).
   2: rewrite -Z2Nat.inj_lt ; omega.
   apply Forall_nth_d.

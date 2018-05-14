@@ -1,4 +1,4 @@
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
@@ -208,12 +208,13 @@ Proof.
   end.
   erewrite getCarry_16_eq_256.
   
-  Focus 2.
+  2: {
     repeat match goal with
     | _ => rewrite Carry_n.Carry_n_step
     | _ => rewrite Carry_n.Carry_n_step_0
   end.
   f_equal.
+  }
 
   unfold nth.
   change (2^17) with (2^16 + 2^16).

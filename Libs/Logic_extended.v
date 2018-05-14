@@ -68,47 +68,6 @@ Function forall_Z (n_min:Z) (a:Z) (P:Z -> bool) {measure (dec_proof_fun n_min) a
       andb (P (a - 1)) (forall_Z n_min (a - 1) P).
 Proof. intros. apply Z2Nat.inj_lt; apply Z.leb_gt in teq; omega. Defined.
 
-(* Lemma forall_Z_translate: forall n_min n_max P,
-  n_min <= n_max ->
-  forall_Z n_min n_max P = forall_Z 0 (n_max - n_min) (fun x => P (x + n_min)).
-Proof.
-intros.
-assert(exists n, (n_max - n_min) = Z.of_nat n).
-apply Z_of_nat_complete; omega.
-destruct H0 as [n Hn].
-revert Hn.
-revert H.
-revert n_min n_max.
-induction n ; intros.
-revert Hn. change_Z_of_nat => Hn.
-assert(n_max = n_min) by omega.
-subst.
-rewrite Hn.
-rewrite forall_Z_equation. symmetry. rewrite forall_Z_equation.
-rewrite ?Zle_imp_le_bool.
-omega.
-omega.
-reflexivity.
-rewrite Nat2Z.inj_succ in Hn.
-change (Z.succ ?A) with (A + 1) in Hn.
-assert(n_max = n_min + Z.of_nat n + 1).
-omega.
-rewrite forall_Z_equation. symmetry. rewrite forall_Z_equation.
-replace (n_max - n_min <=? 0) with false.
-2: symmetry ; apply Z.leb_gt ; omega.
-replace (n_max <=? n_min) with false.
-2: symmetry ; apply Z.leb_gt ; omega.
-fequals.
-fequals.
-omega.
-symmetry.
-assert(n_max - n_min - 1 = Z.of_nat n).
-omega.
-replace (n_max - n_min - 1) with (n_max - 1 - n_min).
-2: omega.
-apply IHn ; omega.
-Qed.
- *)
 Lemma forall_Z_refl : forall (P: Z -> bool) (n_min n_max: Z),
   (forall i, n_min <= i < n_max -> P i = true) <-> forall_Z n_min n_max P = true.
 Proof.

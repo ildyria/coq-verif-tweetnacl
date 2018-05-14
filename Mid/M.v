@@ -1,4 +1,4 @@
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
@@ -67,8 +67,8 @@ Lemma mult_1_bound_le_Zlength : forall (a b: list Z) (m1 n1 m2 n2 m3 n3: Z) ,
   (fun x => m2 <= x <= n2) 0 ->
   Forall (fun x => m1 <= x <= n1) a ->
   Forall (fun x => m2 <= x <= n2) b ->
-  m3 = Zmin (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2 -> 
-  n3 = Zmin (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2 ->
+  m3 = Z.min (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2 -> 
+  n3 = Z.min (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2 ->
   Forall (fun x => m3 <= x <= n3) (mult_1 a b).
 Proof.
   induction a ; introv Hl Hmn1 Hmn2 Ha Hb Hm3 Hn3.
@@ -145,8 +145,8 @@ Lemma mult_1_bound_le : forall (a b: list Z) (m1 n1 m2 n2 m3 n3: Z) ,
   (fun x => m2 <= x <= n2) 0 ->
   Forall (fun x => m1 <= x <= n1) a ->
   Forall (fun x => m2 <= x <= n2) b ->
-  m3 = Zmin (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2 -> 
-  n3 = Zmin (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2 ->
+  m3 = Z.min (Zlength a) (Zlength b) * min_prod m1 n1 m2 n2 -> 
+  n3 = Z.min (Zlength a) (Zlength b) * max_prod m1 n1 m2 n2 ->
   Forall (fun x => m3 <= x <= n3) (mult_1 a b).
 Proof.
   introv Hmn1 Hmn2 Ha H2 Hm3 Hn3.

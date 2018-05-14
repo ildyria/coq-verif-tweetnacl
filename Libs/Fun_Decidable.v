@@ -1,7 +1,6 @@
 Set Warnings "-notation-overridden".
 Require Export Coq.ZArith.ZArith.
 Require Import Tweetnacl.Libs.Decidable.
-(* Require Import ssreflect. *)
 Require Import Recdef.
 Open Scope Z_scope.
 

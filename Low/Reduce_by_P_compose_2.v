@@ -1,7 +1,7 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
-From stdpp Require Import prelude.
+From stdpp Require Import list.
 Require Import Recdef.
 Require Import ssreflect.
 Open Scope Z.
@@ -232,7 +232,7 @@ Proof.
   2: omega.
   2: reflexivity.
 
-  Focus 2.
+  2: {
   rewrite upd_nth_length.
   all: replace (length m')%nat with (Z.to_nat (Z.of_nat (length m')))%nat by (apply Nat2Z.id).
   all: rewrite -Z2Nat.inj_lt ; subst.
@@ -240,18 +240,19 @@ Proof.
   4: split.
   all: try omega.
   all: rewrite sub_fn_rev_s_sub_step_2_Zlength ; omega.
-
+  }
 
   rewrite (upd_nth_alter _ (fun x => (subst_c (nth (Z.to_nat i) m' 0) (nth (Z.to_nat (i - 1)) m' 0)))).
   2: omega.
   2: reflexivity.
 
-  Focus 2.
+  2: {
   replace (length m')%nat with (Z.to_nat (Z.of_nat (length m')))%nat by (apply Nat2Z.id).
   all: rewrite -Z2Nat.inj_lt ; subst.
   all: rewrite -?Zlength_correct.
   all: try omega.
   all: rewrite sub_fn_rev_s_sub_step_2_Zlength ; omega.
+  }
 
   rewrite take_alter.
   assumption.

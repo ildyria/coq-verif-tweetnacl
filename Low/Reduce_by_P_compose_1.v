@@ -1,7 +1,7 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
-From stdpp Require Import prelude.
+From stdpp Require Import list.
 Require Import ssreflect.
 Require Import Recdef.
 

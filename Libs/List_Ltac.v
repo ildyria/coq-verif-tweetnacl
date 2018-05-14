@@ -175,3 +175,4 @@ Proof. mini_ring. Qed.
 Local Example example3 : forall x, (2*3*4*x = 3*4*2*x)%Z.
 Proof. mini_ring. Qed.
 
+Close Scope Z.

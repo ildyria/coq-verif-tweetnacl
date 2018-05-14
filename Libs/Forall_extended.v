@@ -1,4 +1,4 @@
-Require Import stdpp.prelude.
+Require Import stdpp.list.
 From Tweetnacl Require Export Libs.Lists_extended.
 From Tweetnacl Require Import Libs.LibTactics.
 

@@ -1,6 +1,6 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From stdpp Require Import prelude.
+From stdpp Require Import list.
 Require Import Recdef.
 
 (*

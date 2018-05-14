@@ -75,7 +75,7 @@ Lemma red_expr_indp : forall (P : red_expr -> Prop),
        forall l, P l.
 Proof.
 intros P HR HS HC HM HN.
-fix 1.
+fix red_expr_indp 1.
 destruct l;
 first [
    apply HR 

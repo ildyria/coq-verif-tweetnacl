@@ -50,13 +50,13 @@ Local Lemma SomeListDenote : forall (env:environment) (n:nat) (l:list_upd_ext) (
   list_upd_ext_denote env (Upd n l v) = list_upd_ext_denote env (List (SomeList n l v)).
 Proof.
   intros env.
-  fix 2.
+  fix IHl 2.
   intros n l v.
   destruct l ; simpl; change (list_denote ?A ?B) with (denote A B);
   rewrite -upd_nth_denote ;  try reflexivity.
-  specialize SomeListDenote with n0 l t;
-  simpl in SomeListDenote;
-  rewrite SomeListDenote;
+  specialize IHl with n0 l t;
+  simpl in IHl;
+  rewrite IHl;
   reflexivity.
 Qed.
 

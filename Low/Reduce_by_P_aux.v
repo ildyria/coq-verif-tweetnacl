@@ -11,7 +11,7 @@ From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.GetBit_pack25519.
 From Tweetnacl Require Import Low.Sel25519.
 From Tweetnacl Require Import Low.Constant.
-From stdpp Require Import prelude.
+From stdpp Require Import list.
 Require Import ssreflect.
 
 (*
