@@ -37,6 +37,12 @@ Lemma lelt_lt_trans: forall (b c a d x:Z),
   a < x < d.
 Proof. intros b c a d x [] ; split ; omega. Qed.
 
+Lemma lelteq_lt_trans: forall (b d a x:Z),
+  b <= x < d ->
+  a < b ->
+  a < x < d.
+Proof. intros b a d x [] ; split ; omega. Qed.
+
 End bounds.
 
 Close Scope Z.
