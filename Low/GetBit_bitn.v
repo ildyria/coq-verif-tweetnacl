@@ -2,6 +2,7 @@ Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect eqtype ssrfun ssrbool ssrnat div.
 From Tweetnacl.High Require Import ladder.
 Require Import ZArith.
+Require Import Tweetnacl.Low.GetBit.
 
 (* Lemma Zpow_Natpow n m : Z.pow (Z.of_nat n) (Z.of_nat m) = Z.of_nat (Nat.pow n m).
 Proof.
@@ -101,7 +102,7 @@ assert(Hl := Zland_0_1 x).
 destruct Hl as [Hl|Hl] ; rewrite Hl ; simpl ; split ; intros ; trivial ; discriminate.
 Qed.
 
-Lemma getbit_bitn x i: (Z.to_nat (Z.land (Z.shiftr (Z.of_nat (Z.to_nat x)) (Z.of_nat (Z.to_nat i))) 1) == 1) = (bitn (Z.to_nat x) (Z.to_nat i) == 1).
+Lemma getbit_bitn x i: (Z.to_nat (Zgetbit (Z.of_nat (Z.to_nat i)) (Z.of_nat (Z.to_nat x))) == 1) = (bitn (Z.to_nat x) (Z.to_nat i) == 1).
 Proof.
 intros.
 rewrite -shiftr1b.

@@ -5,6 +5,8 @@ Open Scope Z.
 
 Definition c_121665 :list Z := [ 56129; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0 ].
 
+(* Eval compute in ZofList 16 c_121665. *)
+
 Lemma c_121665_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) c_121665.
 Proof. unfold c_121665;
 repeat match goal with

@@ -2,15 +2,15 @@ Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From Tweetnacl Require Import Mid.Carry.
+From Tweetnacl Require Import Low.Carry.
 From Tweetnacl Require Import Mid.ZCarry.
 From Tweetnacl Require Import Mid.Reduce.
 From Tweetnacl Require Import Low.Car25519.
 
 Open Scope Z.
 
-(*Eval simpl in (ZofList_Bound 16 16 (2 ^ 62) < 1 * 2^303).*)
-
+(* Eval compute in (ZofList_Bound 16 16 (2 ^ 62) < 1 * 2^303).
+ *)
 Theorem Zcar25519_bounds_length:
   forall l1 l2 l3,
     length l1 = 16%nat ->

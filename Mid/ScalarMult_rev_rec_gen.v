@@ -165,7 +165,7 @@ destruct k as (((((a0,b0),c0),d0),e0),f0); reflexivity.
 Qed.
 
 Open Scope Z.
-
+(* 
 Variable fa_bound : forall r a b c d e f x,
     (fun x => -38 <= x < 2^16 + 38) a ->
     (fun x => -38 <= x < 2^16 + 38) b ->
@@ -278,7 +278,7 @@ assert(He: exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_rec_rev n p
 destruct He as [a' [b' [c' [d' [e' [f' He]]]]]].
 assert(Ht := abstract_rec_rev_bound n p z a b c d e f x a' b' c' d' e' f' H H0 H1 H2 H3 He).
 rewrite -He; jauto_set; go.
-Qed.
+Qed. *)
 
 Close Scope Z.
 

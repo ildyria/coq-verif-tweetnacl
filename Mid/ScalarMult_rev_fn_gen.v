@@ -1,297 +1,312 @@
-Require Import Tweetnacl.Libs.Export.
+Set Warnings "-funind-cannot-define-graph".
+Set Warnings "-funind".
+
 Require Import ssreflect.
+Require Import Tweetnacl.Libs.Export.
+Require Import Tweetnacl.Low.Get_abcdef.
+Require Import Recdef.
 
 Section ScalarRec.
+
 Open Scope Z.
 
-Variable A : Z -> Z -> Z.
-Variable M : Z -> Z -> Z.
-Variable Zub : Z -> Z -> Z.
-Variable Sq : Z -> Z.
-Variable _121665: Z.
-Variable Sel25519 : Z -> Z -> Z -> Z.
+Variable fa : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
+Variable fb : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
+Variable fc : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
+Variable fd : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
+Variable fe : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
+Variable ff : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
 Variable getbit : Z -> Z -> Z.
 
-Definition fa r (a b c d e f x:Z) :=
-  Sel25519 r
-     (M (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-        (Sq (Zub (Sel25519 r a b) (Sel25519 r c d))))
-     (Sq
-        (A
-           (M (A (Sel25519 r b a) (Sel25519 r d c))
-              (Zub (Sel25519 r a b) (Sel25519 r c d)))
-           (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-              (A (Sel25519 r a b) (Sel25519 r c d))))).
+Function abstract_fn_rev (m p:Z) (z a b c d e f x : Z) {measure Z.to_nat m} : (Z * Z * Z * Z * Z * Z) :=
+  if (m <=? 0)
+    then (a,b,c,d,e,f)
+    else 
+    match (abstract_fn_rev (m - 1) p z a b c d e f x) with
+        | (a,b,c,d,e,f) =>
+        let r := getbit (p - (m - 1)) z in
+        (fa r a b c d e f x,
+        fb r a b c d e f x,
+        fc r a b c d e f x,
+        fd r a b c d e f x,
+        fe r a b c d e f x,
+        ff r a b c d e f x)
+      end.
+Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
 
-Definition fb r (a b c d e f x:Z) :=
-  Sel25519 r
-     (Sq
-        (A
-           (M (A (Sel25519 r b a) (Sel25519 r d c))
-              (Zub (Sel25519 r a b) (Sel25519 r c d)))
-           (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-              (A (Sel25519 r a b) (Sel25519 r c d)))))
-     (M (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-        (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))).
+Lemma abstract_fn_rev_0 : forall p z a b c d e f x,
+  abstract_fn_rev 0 p z a b c d e f x = (a,b,c,d,e,f).
+Proof. move=> p z a b c d e f x ; reflexivity. Qed.
 
-Definition fc r (a b c d e f x:Z) :=
-Sel25519 r
-  (M
-     (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-        (Sq (Zub (Sel25519 r a b) (Sel25519 r c d))))
-     (A
-        (M
-           (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-              (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) _121665)
-        (Sq (A (Sel25519 r a b) (Sel25519 r c d)))))
-  (M
-     (Sq
-        (Zub
-           (M (A (Sel25519 r b a) (Sel25519 r d c))
-              (Zub (Sel25519 r a b) (Sel25519 r c d)))
-           (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-              (A (Sel25519 r a b) (Sel25519 r c d))))) x).
+Lemma abstract_fn_rev_n : forall n p z a b c d e f x,
+  0 < n ->
+  abstract_fn_rev n p z a b c d e f x =
+   match (abstract_fn_rev (n - 1) p z a b c d e f x) with
+        | (a,b,c,d,e,f) =>
+        let r := getbit (p - (n - 1)) z in
+        (fa r a b c d e f x,
+        fb r a b c d e f x,
+        fc r a b c d e f x,
+        fd r a b c d e f x,
+        fe r a b c d e f x,
+        ff r a b c d e f x)
+      end.
+Proof. move=> n p z a b c d e f x Hn.
+rewrite abstract_fn_rev_equation.
+assert((n <=? 0) = false).
+by apply Z.leb_gt. flatten.
+Qed.
 
-Definition fd r (a b c d e f x:Z) :=
-Sel25519 r
-  (M
-     (Sq
-        (Zub
-           (M (A (Sel25519 r b a) (Sel25519 r d c))
-              (Zub (Sel25519 r a b) (Sel25519 r c d)))
-           (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-              (A (Sel25519 r a b) (Sel25519 r c d))))) x)
-  (M
-     (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-        (Sq (Zub (Sel25519 r a b) (Sel25519 r c d))))
-     (A
-        (M
-           (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-              (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) _121665)
-        (Sq (A (Sel25519 r a b) (Sel25519 r c d))))).
-
-Definition fe r (a b c d e f x:Z) :=
-A
-  (M (A (Sel25519 r b a) (Sel25519 r d c))
-     (Zub (Sel25519 r a b) (Sel25519 r c d)))
-  (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-     (A (Sel25519 r a b) (Sel25519 r c d))).
-
-Definition ff r (a b c d e f x:Z) :=
-  Sq (Zub (Sel25519 r a b) (Sel25519 r c d)).
-
-Variable M_bound_Zlength : forall a b,
-  (fun x => -Z.pow 2 26 < x < Z.pow 2 26) a ->
-  (fun x => -Z.pow 2 26 < x < Z.pow 2 26) b ->
-  (fun x => -38 <= x < Z.pow 2 16 + 38) (M a b).
-Variable Sq_bound_Zlength : forall a,
-  (fun x => -Z.pow 2 26 < x < Z.pow 2 26) a ->
-  (fun x => -38 <= x < Z.pow 2 16 + 38) (Sq a).
-(* Variable A_bound_Zlength_le : forall m1 n1 m2 n2 a b,
-  (fun x => m1 <= x <= n1) a -> 
-  (fun x => m2 <= x <= n2) b -> 
-  (fun x => m1 + m2 <= x <= n1 + n2) (A a b). *)
-Variable A_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
-  (fun x => m1 < x < n1) a -> 
-  (fun x => m2 < x < n2) b -> 
-  (fun x => m1 + m2 < x < n1 + n2) (A a b).
-(* Variable Zub_bound_Zlength_le : forall m1 n1 m2 n2 a b,
-  (fun x => m1 <= x <= n1) a -> 
-  (fun x => m2 <= x <= n2) b -> 
-  (fun x => m1 - n2 <= x <= n1 - m2) (Zub a b). *)
-Variable Zub_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
-  (fun x => m1 < x < n1) a -> 
-  (fun x => m2 < x < n2) b -> 
-  (fun x => m1 - n2 < x < n1 - m2) (Zub a b).
-Variable Sel25519_bound_le : forall p pmin pmax q qmin qmax,
-  (fun x => pmin <= x <= pmax) p ->
-  (fun x => qmin <= x <= qmax) q -> forall b,
-  (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
-Variable Sel25519_bound_lt_le_id : forall pmin pmax p q,
-  (fun x => pmin <= x < pmax) p ->
-  (fun x => pmin <= x < pmax) q -> forall b,
-  (fun x => pmin <= x < pmax) (Sel25519 b p q).
-Variable Sel25519_bound_lt_lt_id : forall pmin pmax p q,
-  (fun x => pmin < x < pmax) p ->
-  (fun x => pmin < x < pmax) q -> forall b,
-  (fun x => pmin < x < pmax) (Sel25519 b p q).
-Variable Sel25519_bound_le_lt_trans_le_id : forall pmin pmax p q,
-  (fun x => pmin <= x < pmax) p ->
-  (fun x => pmin <= x < pmax) q -> forall b,
-  (fun x => pmin <= x <= pmax) (Sel25519 b p q).
-Variable _121665_bound : (fun x => 0 <= x < 2 ^16) _121665.
-
-Local Ltac Simplify_this :=
-change (2^16) with 65536 in *;
-change (2^26) with 67108864 in *.
-
-Local Ltac solve_Sel25519 :=
-  match goal with 
-    | [ |- context[Sel25519] ] => apply (Sel25519_bound_lt_lt_id (-39) (2 ^ 16 + 38)) ; omega
-    | _ => Simplify_this ; omega
-  end.
-
-Lemma fa_bound : forall r a b c d e f x,
+Lemma abstract_fn_a : forall n p (z a b c d e f x : Z),
+  0 <= n ->
+  fa (getbit (p - n) z)
+   (get_a (abstract_fn_rev n p z a b c d e f x))
+   (get_b (abstract_fn_rev n p z a b c d e f x))
+   (get_c (abstract_fn_rev n p z a b c d e f x))
+   (get_d (abstract_fn_rev n p z a b c d e f x))
+   (get_e (abstract_fn_rev n p z a b c d e f x))
+   (get_f (abstract_fn_rev n p z a b c d e f x))
+   x
+  =
+  get_a (abstract_fn_rev (n + 1) p z a b c d e f x).
+Proof.
+intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
+intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
+replace (n + 1 <=? 0) with false ; try reflexivity.
+symmetry ; apply Z.leb_gt ; omega.
+Qed.
+Lemma abstract_fn_b : forall n p (z a b c d e f x : Z),
+  0 <= n ->
+  fb (getbit (p - n) z)
+   (get_a (abstract_fn_rev n p z a b c d e f x))
+   (get_b (abstract_fn_rev n p z a b c d e f x))
+   (get_c (abstract_fn_rev n p z a b c d e f x))
+   (get_d (abstract_fn_rev n p z a b c d e f x))
+   (get_e (abstract_fn_rev n p z a b c d e f x))
+   (get_f (abstract_fn_rev n p z a b c d e f x))
+   x
+  =
+  get_b (abstract_fn_rev (n + 1) p z a b c d e f x).
+Proof.
+intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
+intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
+replace (n + 1 <=? 0) with false ; try reflexivity.
+symmetry ; apply Z.leb_gt ; omega.
+Qed.
+Lemma abstract_fn_c : forall n p (z a b c d e f x : Z),
+  0 <= n ->
+  fc (getbit (p - n) z)
+   (get_a (abstract_fn_rev n p z a b c d e f x))
+   (get_b (abstract_fn_rev n p z a b c d e f x))
+   (get_c (abstract_fn_rev n p z a b c d e f x))
+   (get_d (abstract_fn_rev n p z a b c d e f x))
+   (get_e (abstract_fn_rev n p z a b c d e f x))
+   (get_f (abstract_fn_rev n p z a b c d e f x))
+   x
+  =
+  get_c (abstract_fn_rev (n + 1) p z a b c d e f x).
+Proof.
+intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
+intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
+replace (n + 1 <=? 0) with false ; try reflexivity.
+symmetry ; apply Z.leb_gt ; omega.
+Qed.
+Lemma abstract_fn_d : forall n p (z a b c d e f x : Z),
+  0 <= n ->
+  fd (getbit (p - n) z)
+   (get_a (abstract_fn_rev n p z a b c d e f x))
+   (get_b (abstract_fn_rev n p z a b c d e f x))
+   (get_c (abstract_fn_rev n p z a b c d e f x))
+   (get_d (abstract_fn_rev n p z a b c d e f x))
+   (get_e (abstract_fn_rev n p z a b c d e f x))
+   (get_f (abstract_fn_rev n p z a b c d e f x))
+   x
+  =
+  get_d (abstract_fn_rev (n + 1) p z a b c d e f x).
+Proof.
+intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
+intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
+replace (n + 1 <=? 0) with false ; try reflexivity.
+symmetry ; apply Z.leb_gt ; omega.
+Qed.
+Lemma abstract_fn_e : forall n p (z a b c d e f x : Z),
+  0 <= n ->
+  fe (getbit (p - n) z)
+   (get_a (abstract_fn_rev n p z a b c d e f x))
+   (get_b (abstract_fn_rev n p z a b c d e f x))
+   (get_c (abstract_fn_rev n p z a b c d e f x))
+   (get_d (abstract_fn_rev n p z a b c d e f x))
+   (get_e (abstract_fn_rev n p z a b c d e f x))
+   (get_f (abstract_fn_rev n p z a b c d e f x))
+   x
+  =
+  get_e (abstract_fn_rev (n + 1) p z a b c d e f x).
+Proof.
+intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
+intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
+replace (n + 1 <=? 0) with false ; try reflexivity.
+symmetry ; apply Z.leb_gt ; omega.
+Qed.
+Lemma abstract_fn_f : forall n p (z a b c d e f x : Z),
+  0 <= n ->
+  ff (getbit (p - n) z)
+   (get_a (abstract_fn_rev n p z a b c d e f x))
+   (get_b (abstract_fn_rev n p z a b c d e f x))
+   (get_c (abstract_fn_rev n p z a b c d e f x))
+   (get_d (abstract_fn_rev n p z a b c d e f x))
+   (get_e (abstract_fn_rev n p z a b c d e f x))
+   (get_f (abstract_fn_rev n p z a b c d e f x))
+   x
+  =
+  get_f (abstract_fn_rev (n + 1) p z a b c d e f x).
+Proof.
+intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
+intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
+replace (n + 1 <=? 0) with false ; try reflexivity.
+symmetry ; apply Z.leb_gt ; omega.
+Qed.
+(* 
+Variable fa_bound : forall r a b c d e f x,
     (fun x => -38 <= x < 2^16 + 38) a ->
     (fun x => -38 <= x < 2^16 + 38) b ->
     (fun x => -38 <= x < 2^16 + 38) c ->
     (fun x => -38 <= x < 2^16 + 38) d ->
     (fun x => -38 <= x < 2^16 + 38) (fa r a b c d e f x).
-Proof.
-  intros r a b c d e f x Ha Hb Hc Hd ; simpl in *.
-  apply Sel25519_bound_lt_le_id.
-  {
-  apply M_bound_Zlength.
-  1,2: eapply bounds.lelt_lt_trans.
-  1,4: apply Sq_bound_Zlength.
-  1,2: eapply bounds.lt_lt_trans.
-  apply A_bound_Zlength_lt.
-  5: apply Zub_bound_Zlength_lt.
-  all: solve_Sel25519.
-  }
-  apply Sq_bound_Zlength.
-  eapply bounds.lt_lt_trans.
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  1,3: apply M_bound_Zlength.
-  1,2,3,4: eapply bounds.lt_lt_trans.
-  1,10: apply A_bound_Zlength_lt.
-  7,10: apply Zub_bound_Zlength_lt.
-  all: solve_Sel25519.
-Qed.
-
-Lemma fb_bound : forall r a b c d e f x,
+Variable fb_bound : forall r a b c d e f x,
     (fun x => -38 <= x < 2^16 + 38) a ->
     (fun x => -38 <= x < 2^16 + 38) b ->
     (fun x => -38 <= x < 2^16 + 38) c ->
     (fun x => -38 <= x < 2^16 + 38) d ->
     (fun x => -38 <= x < 2^16 + 38) (fb r a b c d e f x).
-Proof.
-  intros r a b c d e f x Ha Hb Hc Hd ; simpl in *.
-  apply Sel25519_bound_lt_le_id.
-  {
-  apply Sq_bound_Zlength.
-  eapply bounds.lt_lt_trans.
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  1,3: apply M_bound_Zlength.
-  1,2,3,4: eapply bounds.lt_lt_trans.
-  1,10: apply A_bound_Zlength_lt.
-  7,10: apply Zub_bound_Zlength_lt.
-  all: solve_Sel25519.
-  }
-  eapply M_bound_Zlength.
-  1,2: eapply bounds.lelt_lt_trans.
-  1,4: apply Sq_bound_Zlength.
-  1,2: eapply bounds.lt_lt_trans.
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  5: apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  all: solve_Sel25519.
-Qed.
-
-
-Lemma fc_bound : forall r a b c d e f x,
+Variable fc_bound : forall r a b c d e f x,
     (fun x => -38 <= x < 2^16 + 38) a ->
     (fun x => -38 <= x < 2^16 + 38) b ->
     (fun x => -38 <= x < 2^16 + 38) c ->
     (fun x => -38 <= x < 2^16 + 38) d ->
-    (fun x => 0 <= x < 2^16) x ->
+    (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
     (fun x => -38 <= x < 2^16 + 38) (fc r a b c d e f x).
-Proof.
-  intros r a b c d e f x Ha Hb Hc Hd Hx; simpl in *.
-  apply Sel25519_bound_lt_le_id.
-  1,2: apply M_bound_Zlength.
-  1,2: eapply bounds.lt_lt_trans.
-  {
-  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  1,3: apply Sq_bound_Zlength.
-  1,2: eapply bounds.lt_lt_trans.
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  5: apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  all: solve_Sel25519.
-  }
-  1,2: solve_Sel25519.
-  {
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  3: apply Sq_bound_Zlength.
-  3: eapply bounds.lt_lt_trans.
-  3: apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  apply M_bound_Zlength.
-  eapply bounds.lt_lt_trans.
-  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  1,3: apply Sq_bound_Zlength.
-  1,2: eapply bounds.lt_lt_trans.
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  5: apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  all: solve_Sel25519.
-  }
-  1,2: solve_Sel25519.
-  eapply bounds.lelt_lt_trans.
-  apply Sq_bound_Zlength.
-  eapply bounds.lt_lt_trans.
-  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  1,3: apply M_bound_Zlength.
-  1,2,3,4: eapply bounds.lt_lt_trans.
-  1,10: apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  7,10: apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  all: try solve_Sel25519.
-Qed.
+Variable fd_bound : forall r a b c d e f x,
+    (fun x => -38 <= x < 2^16 + 38) a ->
+    (fun x => -38 <= x < 2^16 + 38) b ->
+    (fun x => -38 <= x < 2^16 + 38) c ->
+    (fun x => -38 <= x < 2^16 + 38) d ->
+    (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
+    (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
 
-Lemma fd_bound : forall r a b c d e f x,
+Lemma abstract_fn_rev_bound : forall n p z a b c d e f x a' b' c' d' e' f',
+  0 <= n ->
     (fun x => -38 <= x < 2^16 + 38) a ->
     (fun x => -38 <= x < 2^16 + 38) b ->
     (fun x => -38 <= x < 2^16 + 38) c ->
     (fun x => -38 <= x < 2^16 + 38) d ->
     (fun x => 0 <= x < 2^16) x ->
-    (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
-Proof.
-  intros r a b c d e f x Ha Hb Hc Hd Hx; simpl in *.
-  apply Sel25519_bound_lt_le_id.
-  1,2: apply M_bound_Zlength.
-  {
-  eapply bounds.lelt_lt_trans.
-  apply Sq_bound_Zlength.
-  eapply bounds.lt_lt_trans.
-  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  1,3: apply M_bound_Zlength.
-  1,2,3,4: eapply bounds.lt_lt_trans.
-  1,10: apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  7,10: apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  all: try solve_Sel25519.
-  }
-  solve_Sel25519.
-  {
-  eapply bounds.lt_lt_trans.
-  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  1,3: apply Sq_bound_Zlength.
-  1,2: eapply bounds.lt_lt_trans.
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  5: apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  all: solve_Sel25519.
-  }
-  eapply bounds.lt_lt_trans.
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  3: apply Sq_bound_Zlength.
-  3: eapply bounds.lt_lt_trans.
-  3: apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  apply M_bound_Zlength.
-  eapply bounds.lt_lt_trans.
-  apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  1,2: eapply bounds.lelteq_lt_trans.
-  1,3: apply Sq_bound_Zlength.
-  1,2: eapply bounds.lt_lt_trans.
-  apply (A_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  5: apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
-  all: solve_Sel25519.
+    (a',b',c',d',e',f') = (abstract_fn_rev n p z a b c d e f x) -> 
+    (fun x => -38 <= x < 2^16 + 38) a'
+    /\ (fun x => -38 <= x < 2^16 + 38) b'
+    /\ (fun x => -38 <= x < 2^16 + 38) c'
+    /\ (fun x => -38 <= x < 2^16 + 38) d'.
+Proof. intros m p z a b c d e f x a' b' c' d' e' f' Hm.
+  gen a' b' c' d' e' f'.
+  gen p z a b c d e f x.
+  gen m.
+  apply (natlike_ind (fun m => forall (p : ℤ) (z a b c d e f x a' b' c' d' e' f' : ℤ),
+(fun x0 : ℤ => -38 <= x0 < 2 ^ 16 + 38) a ->
+(fun x0 : ℤ => -38 <= x0 < 2 ^ 16 + 38) b ->
+(fun x0 : ℤ => -38 <= x0 < 2 ^ 16 + 38) c ->
+(fun x0 : ℤ => -38 <= x0 < 2 ^ 16 + 38) d ->
+(fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
+(a', b', c', d', e', f') = abstract_fn_rev m p z a b c d e f x ->
+(fun x0 : ℤ => -38 <= x0 < 2 ^ 16 + 38) a' /\
+(fun x0 : ℤ => -38 <= x0 < 2 ^ 16 + 38) b' /\
+(fun x0 : ℤ => -38 <= x0 < 2 ^ 16 + 38) c' /\ (fun x0 : ℤ => -38 <= x0 < 2 ^ 16 + 38) d')).
+move=> p z a b c d e f x a' b' c' d' e' f'
+Haa Hbb Hcc Hdd Hxx.
+rewrite abstract_fn_rev_0 => Hh.
+inv Hh ; go.
+move => m Hm IHm p z a b c d e f x a' b' c' d' e' f'
+Haa Hbb Hcc Hdd Hxx.
+rewrite abstract_fn_rev_n. 2: omega.
+replace (Z.succ m - 1) with m.
+2: omega.
+remember (abstract_fn_rev m p z a b c d e f x) as k.
+destruct k as (((((a0,b0),c0),d0),e0),f0).
+remember (getbit (p - m) z) as r.
+simpl => Hh.
+inv Hh.
+assert(Ht:= IHm p z a b c d e f x a0 b0 c0 d0 e0 f0 Haa Hbb Hcc Hdd Hxx Heqk) ; auto.
+jauto_set ; first [ apply fa_bound | apply fb_bound | apply fc_bound | apply fd_bound ] ; go.
 Qed.
 
-End ScalarRec.
+
+Lemma get_a_abstract_fn_bound : forall n p z a b c d e f x,
+  0 <= n ->
+    (fun x => -38 <= x < 2^16 + 38) a ->
+    (fun x => -38 <= x < 2^16 + 38) b ->
+    (fun x => -38 <= x < 2^16 + 38) c ->
+    (fun x => -38 <= x < 2^16 + 38) d ->
+    (fun x => 0 <= x < 2^16) x ->
+    (fun x => -38 <= x < 2^16 + 38) (get_a (abstract_fn_rev n p z a b c d e f x)).
+Proof.
+intros.
+assert(He: exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_fn_rev n p z a b c d e f x)).
+  remember (abstract_fn_rev n p z a b c d e f x) as k ; destruct k as (((((a0,b0),c0),d0),e0),f0).
+  do 6 eexists ; reflexivity.
+destruct He as [a' [b' [c' [d' [e' [f' He]]]]]].
+assert(Ht := abstract_fn_rev_bound n p z a b c d e f x a' b' c' d' e' f' H H0 H1 H2 H3 H4  He).
+rewrite -He; jauto_set; go.
+Qed.
+Lemma get_b_abstract_fn_bound : forall n p z a b c d e f x,
+  0 <= n ->
+    (fun x => -38 <= x < 2^16 + 38) a ->
+    (fun x => -38 <= x < 2^16 + 38) b ->
+    (fun x => -38 <= x < 2^16 + 38) c ->
+    (fun x => -38 <= x < 2^16 + 38) d ->
+    (fun x => 0 <= x < 2^16) x ->
+    (fun x => -38 <= x < 2^16 + 38) (get_b (abstract_fn_rev n p z a b c d e f x)).
+Proof.
+intros.
+assert(He: exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_fn_rev n p z a b c d e f x)).
+  remember (abstract_fn_rev n p z a b c d e f x) as k ; destruct k as (((((a0,b0),c0),d0),e0),f0).
+  do 6 eexists ; reflexivity.
+destruct He as [a' [b' [c' [d' [e' [f' He]]]]]].
+assert(Ht := abstract_fn_rev_bound n p z a b c d e f x a' b' c' d' e' f' H H0 H1 H2 H3 H4 He).
+rewrite -He; jauto_set; go.
+Qed.
+Lemma get_c_abstract_fn_bound : forall n p z a b c d e f x,
+  0 <= n ->
+    (fun x => -38 <= x < 2^16 + 38) a ->
+    (fun x => -38 <= x < 2^16 + 38) b ->
+    (fun x => -38 <= x < 2^16 + 38) c ->
+    (fun x => -38 <= x < 2^16 + 38) d ->
+    (fun x => 0 <= x < 2^16) x ->
+    (fun x => -38 <= x < 2^16 + 38) (get_c (abstract_fn_rev n p z a b c d e f x)).
+Proof.
+intros.
+assert(He: exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_fn_rev n p z a b c d e f x)).
+  remember (abstract_fn_rev n p z a b c d e f x) as k ; destruct k as (((((a0,b0),c0),d0),e0),f0).
+  do 6 eexists ; reflexivity.
+destruct He as [a' [b' [c' [d' [e' [f' He]]]]]].
+assert(Ht := abstract_fn_rev_bound n p z a b c d e f x a' b' c' d' e' f' H H0 H1 H2 H3 H4 He).
+rewrite -He; jauto_set; go.
+Qed.
+Lemma get_d_abstract_fn_bound : forall n p z a b c d e f x,
+  0 <= n ->
+    (fun x => -38 <= x < 2^16 + 38) a ->
+    (fun x => -38 <= x < 2^16 + 38) b ->
+    (fun x => -38 <= x < 2^16 + 38) c ->
+    (fun x => -38 <= x < 2^16 + 38) d ->
+    (fun x => 0 <= x < 2^16) x ->
+    (fun x => -38 <= x < 2^16 + 38) (get_d (abstract_fn_rev n p z a b c d e f x)).
+Proof.
+intros.
+assert(He: exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_fn_rev n p z a b c d e f x)).
+  remember (abstract_fn_rev n p z a b c d e f x) as k ; destruct k as (((((a0,b0),c0),d0),e0),f0).
+  do 6 eexists ; reflexivity.
+destruct He as [a' [b' [c' [d' [e' [f' He]]]]]].
+assert(Ht := abstract_fn_rev_bound n p z a b c d e f x a' b' c' d' e' f' H H0 H1 H2 H3 H4 He).
+rewrite -He; jauto_set; go.
+Qed. *)
 
 Close Scope Z.
+
+End ScalarRec.

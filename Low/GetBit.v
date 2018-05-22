@@ -8,6 +8,7 @@ Require Import stdpp.list.
 Open Scope Z.
 
 Definition getbit (i:Z) (l : list Z) := Z.land ((Z.shiftr (nth (Z.to_nat (Z.shiftr i 3)) l 0)  (Z.land i 7))) 1.
+Definition Zgetbit (i:Z) (l: Z) := Z.land (Z.shiftr l i) 1.
 
 Lemma getbit_0_or_1 : forall i l,
   0 <= getbit i l <= 1.
@@ -21,9 +22,9 @@ Lemma getbit_repr : forall l i,
   0 <= i->
   i / 8 < Zlength l ->
   Forall (fun x => 0 <= x < 2^8) l ->
-  Z.land (Z.shiftr (ZofList 8 l) i) 1 = getbit i l.
+  Zgetbit i (ZofList 8 l) = getbit i l.
 Proof.
-rewrite /getbit.
+rewrite /getbit /Zgetbit.
 move=> l i Hi Hli Hl.
 assert(0 <= i `div` 8).
   apply Z_div_pos ; omega.
