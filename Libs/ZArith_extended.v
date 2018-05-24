@@ -212,6 +212,184 @@ Proof. assert(Hp:= pown) ; omega. Qed.
 Lemma pown2: 2 <= 2 ^ n.
 Proof. change 2 with (2 ^ 1) ;apply Z.pow_le_mono ; change (2^1) with 2 ; omega. Qed.
 
+Lemma bound_pow_add: forall a b : Z,
+  a < 2^n -> b < 2^n ->
+    a + b < 2^Z.succ n.
+Proof.
+  intros.
+  assert(H': 2 ^ Z.succ n = 2 * 2 ^ n) by (apply Z.pow_succ_r ; omega).
+  rewrite H' ; omega.
+Qed.
+
+Lemma mod_div: forall m:Z, m mod 2 ^ n + 2 ^ n * (m / 2 ^ n) = m.
+Proof.
+  intro.
+  rewrite Z.add_comm ; symmetry ;apply Z_div_mod_eq.
+  apply pown0.
+Qed.
+
+Lemma Zland_pow : forall a b,
+  0 <= a < 2 ^ n ->
+  Z.land a (2^n * b) = 0.
+Proof.
+  intros a b Ha.
+  apply Z.bits_inj.
+  intro m.
+  rewrite Z.land_spec ; symmetry.
+  assert(Hm: m < n \/ m >= n) by omega.
+  rewrite Z.testbit_0_l.
+  destruct Hm as [Hm | Hm].
+  {
+  assert(Z.testbit (2^n * b) m = false).
+  rewrite Z.mul_comm; rewrite <- Z.shiftl_mul_pow2.
+  apply Z.shiftl_spec_low ; assumption.
+  omega.
+  rewrite H.
+  rewrite Bool.andb_false_r.
+  reflexivity.
+  }
+  assert(Z.testbit a m = false).
+  replace (a) with (a mod 2^n).
+  apply Z.mod_pow2_bits_high.
+  omega.
+  apply Zmod_small.
+  assumption.
+  rewrite H.
+  rewrite Bool.andb_false_l.
+  reflexivity.
+Qed.
+
+Lemma Zxor_add : forall a b,
+  0 <= a < 2 ^ n ->
+  a + 2^n * b = Z.lxor a (2^n * b).
+Proof.
+  intros a b Ha.
+  apply Z.add_nocarry_lxor.
+  apply Zland_pow.
+  assumption.
+Qed.
+
+Lemma Zor_add : forall a b,
+  0 <= a < 2 ^ n ->
+  a + 2^n * b = Z.lor a (2^n * b).
+Proof.
+  intros a b Ha.
+  rewrite <- Z.lxor_lor.
+  apply Z.add_nocarry_lxor.
+  all: apply Zland_pow; assumption.
+Qed.
+
+Lemma Z_land_bound : forall a b,
+  0 <= a /\ a < 2 ^ n ->
+  0 <= b /\ b < 2 ^ n ->
+  0 <= Z.land a b /\ Z.land a b < 2 ^ n.
+Proof.
+  intros a b [Ha Ha'] [Hb Hb'].
+  split.
+  apply Z.land_nonneg.
+  omega.
+  assert(Haa: a = 0 \/ 0 < a) by omega.
+  destruct Haa as [Haa|Haa].
+  subst.
+  rewrite Z.land_0_l.
+  apply Z.gt_lt.
+  apply pown0.
+  assert(Hbb: b = 0 \/ 0 < b) by omega.
+  destruct Hbb as [Hbb|Hbb].
+  subst.
+  rewrite Z.land_0_r.
+  apply Z.gt_lt.
+  apply pown0.
+  apply Z.log2_lt_cancel.
+  assert(Hab:= Z.log2_land a b Ha Hb).
+  assert(Z.min (Z.log2 a) (Z.log2 b) < Z.log2 (2^n)).
+  {
+  apply Z.log2_lt_pow2 in Ha'.
+  2: omega.
+  apply Z.log2_lt_pow2 in Hb'.
+  2: omega.
+  rewrite Z.log2_pow2.
+  2: omega.
+  apply Z.min_lt_iff.
+  omega.
+  }
+  omega.
+Qed.
+
+Lemma Z_lor_bound : forall a b,
+  0 <= a /\ a < 2 ^ n ->
+  0 <= b /\ b < 2 ^ n ->
+  0 <= Z.lor a b /\ Z.lor a b < 2 ^ n.
+Proof.
+  intros a b [Ha Ha'] [Hb Hb'].
+  split.
+  apply Z.lor_nonneg.
+  omega.
+  assert(Haa: a = 0 \/ 0 < a) by omega.
+  destruct Haa as [Haa|Haa].
+  subst.
+  rewrite Z.lor_0_l.
+  omega.
+  assert(Hbb: b = 0 \/ 0 < b) by omega.
+  destruct Hbb as [Hbb|Hbb].
+  subst.
+  rewrite Z.lor_0_r.
+  omega.
+  apply Z.log2_lt_cancel.
+  assert(Hab:= Z.log2_lor a b Ha Hb).
+  assert(Z.max (Z.log2 a) (Z.log2 b) < Z.log2 (2^n)).
+  {
+  apply Z.log2_lt_pow2 in Ha'.
+  2: omega.
+  apply Z.log2_lt_pow2 in Hb'.
+  2: omega.
+  rewrite Z.log2_pow2.
+  2: omega.
+  Search Z.max.
+  apply Z.max_case ; assumption.
+  }
+  omega.
+Qed.
+
+Lemma Z_land_dist : forall a b c,
+  Z.land (Z.lxor a b) c = Z.lxor (Z.land a c) (Z.land b c).
+Proof.
+  intros a b c.
+  apply Z.bits_inj.
+  intro m.
+  rewrite ?Z.lxor_spec.
+  rewrite ?Z.land_spec.
+  rewrite ?Z.lxor_spec.
+  destruct (Z.testbit a m), (Z.testbit b m), (Z.testbit c m); reflexivity.
+Qed.
+
+Lemma Z_land_null : forall a b,
+  0 <= a < 2^n ->
+  Z.land a (2^n * b) = 0.
+Proof.
+  intros a b c.
+  apply Z.bits_inj.
+  intro m.
+  rewrite Z.land_spec.
+  rewrite Z.bits_0.
+  assert(Hmn: m < n \/ m >= n) by omega.
+  destruct Hmn as [Hmn|Hmn].
+  replace (Z.testbit (2 ^ n * b) m) with false.
+  apply Bool.andb_false_r.
+  symmetry.
+  rewrite Z.mul_comm.
+  apply Z.mul_pow2_bits_low.
+  omega.
+  replace a with (a mod 2^n).
+  2: apply Z.mod_small ; omega.
+  replace (Z.testbit (a mod 2 ^ n) m) with false.
+  rewrite Bool.andb_false_l.
+  reflexivity.
+  symmetry.
+  apply Z.mod_pow2_bits_high.
+  omega.
+Qed.
+
 End Integer.
 
 Close Scope Z.

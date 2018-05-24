@@ -94,14 +94,6 @@ Proof.
   assumption.
 Qed.
 
-Lemma mod_div: forall m:Z, m mod 2 ^ n + 2 ^ n * (m / 2 ^ n) = m.
-Proof.
-  intro.
-  rewrite Z.add_comm ; symmetry ;apply Z_div_mod_eq.
-  apply pown0.
-  assumption.
-Qed.
-
 Lemma residuteCarry: forall m:Z, getResidue m + 2^n *getCarry m = m.
 Proof.
   intro m.

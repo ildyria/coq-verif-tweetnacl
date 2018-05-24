@@ -1,6 +1,6 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import Mid.Reduce.
-From Tweetnacl Require Import Mid.Carry.
+From Tweetnacl Require Import Low.Carry.
 From Tweetnacl Require Import Low.Car25519.
 Require Import ssreflect.
 Require Import Nsatz.

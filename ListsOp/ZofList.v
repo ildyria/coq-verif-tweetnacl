@@ -9,15 +9,6 @@ Section Integer.
 Variable n:Z.
 Hypothesis Hn: n > 0.
 
-Lemma addition: forall a b : Z,
-  a < 2^n -> b < 2^n ->
-    a + b < 2^Z.succ n.
-Proof.
-  intros.
-  assert(H': 2 ^ Z.succ n = 2 * 2 ^ n) by (apply Z.pow_succ_r ; omega).
-  orewrite H'.
-Qed.
-
 Fixpoint ZofListi (a: list Z) (i:Z) : Z := match a with 
 | [] => 0
 | h :: q => h * Z.pow 2 (n * i) + ZofListi q (Z.succ i)
@@ -224,6 +215,15 @@ Lemma ZofList_upd_nth_Zlength : forall l (m:nat) v,
       ℤ.lst (upd_nth m l v) = (ℤ.lst l) + 2^(n*m) * (-nth m l 0 + v).
 Proof. convert_length_to_Zlength ZofList_upd_nth_length. Qed.
 
+Fixpoint ZxorList (a : list Z) : Z := match a with 
+| [] => 0
+| h :: q => Z.lxor h (Z.shiftl (ZxorList q) n)
+end.
+
+Lemma ZxorList_cons : forall a b, ZxorList (a :: b) = Z.lxor a (Z.shiftl (ZxorList b) n).
+Proof. intros a b ; go. Qed.
+
+
 End Integer.
 
 Lemma destruct_length_16 : forall (l:list Z), (length l = 16)%nat -> exists z z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14,
@@ -240,16 +240,6 @@ rewrite Zlength_correct in Hl.
 apply destruct_length_16.
 omega.
 Qed.
-
-
-
-
-
-
-
-
-
-
 
 Close Scope Z.
 

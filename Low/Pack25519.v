@@ -2,7 +2,7 @@ From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Low.Reduce_by_P.
 From Tweetnacl Require Import Low.Car25519.
-From Tweetnacl.Mid Require Import Car25519.
+From Tweetnacl Require Import Low.Car25519_bounds.
 From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.Pack.
 Require Import ssreflect.

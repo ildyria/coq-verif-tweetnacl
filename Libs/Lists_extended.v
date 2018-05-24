@@ -69,6 +69,19 @@ Fixpoint upd_nth {A} (n:nat) (l:list A) (v:A) := match l with
     end
   end.
 
+Lemma upd_nth_cons:
+  forall (A : Type) (i : nat) (l : list A) (h v : A),
+  upd_nth (S i) (h::l) v = h :: upd_nth i l v.
+Proof. go. Qed.
+
+Lemma upd_nth_cons_sub:
+  forall (A : Type) (i : nat) (l : list A) (h v : A),
+  0 < i ->
+  upd_nth i (h::l) v = h :: upd_nth (i - 1) l v.
+Proof. intros. destruct i. omega.
+rewrite upd_nth_cons. f_equal. f_equal.
+omega. Qed.
+
 Lemma upd_nth_length:
   forall (A : Type) (i : nat) (l : list A) (v : A),
   0 <= i < length l -> length (upd_nth i l v) = length l.

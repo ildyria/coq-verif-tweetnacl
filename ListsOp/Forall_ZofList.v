@@ -302,5 +302,23 @@ Proof.
   rewrite Zdiv_small ; omega.
 Qed.
 
+Lemma ZofList_eq_ZxorList: forall l,
+  Forall (fun x => 0 <= x < 2^n) l ->
+  ZofList n l = ZxorList n l.
+Proof.
+  induction l ; intros.
+  reflexivity.
+  simpl.
+  orewrite Z.shiftl_mul_pow2.
+(*   replace ((ℤ.lst l) * 2 ^ n) with (2^n * (ℤ.lst l)). *)
+(*   2: rewrite Z.mul_comm ; reflexivity. *)
+  rewrite -IHl.
+  rewrite Zxor_add.
+  f_equal.
+  ring.
+  omega.
+  all: apply list.Forall_cons in H ; destruct H ; assumption.
+Qed.
+
 End Integer.
 

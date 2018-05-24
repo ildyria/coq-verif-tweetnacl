@@ -1,4 +1,3 @@
-From Tweetnacl Require Export Mid.Car25519.
 From Tweetnacl Require Export Mid.M_low_level.
 From Tweetnacl Require Export Mid.MinusList.
 From Tweetnacl Require Export Mid.SubList.
@@ -7,4 +6,3 @@ From Tweetnacl Require Export Mid.ScalarMult.
 From Tweetnacl Require Export Mid.Reduce.
 From Tweetnacl Require Export Mid.ZCarry.
 From Tweetnacl Require Export Mid.M.
-From Tweetnacl Require Export Mid.Carry.

@@ -1,5 +1,6 @@
 From Tweetnacl Require Export Low.Unpack25519.
 From Tweetnacl Require Export Low.Car25519.
+From Tweetnacl Require Export Low.Car25519_bounds.
 From Tweetnacl Require Export Low.BackCarry.
 From Tweetnacl Require Export Low.Outer_M1.
 From Tweetnacl Require Export Low.Inner_M1.
@@ -9,3 +10,4 @@ From Tweetnacl Require Export Low.A.
 From Tweetnacl Require Export Low.Z.
 From Tweetnacl Require Export Low.Binary_select.
 From Tweetnacl Require Export Low.Carry_n.
+From Tweetnacl Require Export Low.Carry.

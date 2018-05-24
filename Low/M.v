@@ -1,14 +1,14 @@
-Require Import Tweetnacl.Libs.Export.
+From Tweetnacl Require Import Libs.Export.
 Require Import ssreflect.
 From Tweetnacl Require Import ListsOp.Export.
-Require Export Tweetnacl.Low.M_low_level_compute.
-Require Export Tweetnacl.Low.Inner_M1.
-Require Export Tweetnacl.Low.Outer_M1.
-Require Export Tweetnacl.Mid.M_low_level.
-Require Export Tweetnacl.Mid.M.
-Require Export Tweetnacl.Mid.ScalarMult.
-Require Export Tweetnacl.Low.Car25519.
-Require Export Tweetnacl.Mid.Car25519.
+From Tweetnacl Require Export Low.M_low_level_compute.
+From Tweetnacl Require Export Low.Inner_M1.
+From Tweetnacl Require Export Low.Outer_M1.
+From Tweetnacl Require Export Mid.M_low_level.
+From Tweetnacl Require Export Mid.M.
+From Tweetnacl Require Export Mid.ScalarMult.
+From Tweetnacl Require Export Low.Car25519.
+From Tweetnacl Require Export Low.Car25519_bounds.
 
 Definition M (a b : list Z) : list Z := (car25519 (car25519 (mult_3 
                   (M2_fix (Z.of_nat 15%nat)
