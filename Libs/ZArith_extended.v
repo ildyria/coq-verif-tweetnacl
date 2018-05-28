@@ -345,7 +345,6 @@ Proof.
   2: omega.
   rewrite Z.log2_pow2.
   2: omega.
-  Search Z.max.
   apply Z.max_case ; assumption.
   }
   omega.

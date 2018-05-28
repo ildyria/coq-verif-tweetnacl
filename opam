@@ -5,7 +5,10 @@ maintainer: "benoit@cs.ru.nl"
 homepage: "https://gitlab.science.ru.nl/benoit/tweetnacl/"
 bug-reports: "none"
 License: "MIT"
-build: [make "-j%{jobs}%"]
+build: [
+  ["./configure.sh"]
+  [make "-j%{jobs}%"]
+]
 install: [
   ["mkdir" "-p" "%{lib}%/coq/user-contrib/Tweetnacl"]
   ["cp" "-r" "Libs" "%{lib}%/coq/user-contrib/Tweetnacl/"]
