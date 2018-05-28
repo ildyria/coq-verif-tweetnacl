@@ -1,0 +1,6 @@
+clean::
+	$(HIDE)rm .lia.cache 2> /dev/null || true
+	$(HIDE)rm .nia.cache 2> /dev/null || true
+	$(HIDE)rm */.*.aux 2> /dev/null || true
+	$(HIDE)rm */*.glob 2> /dev/null || true
+	$(HIDE)rm */*.v.d 2> /dev/null || true

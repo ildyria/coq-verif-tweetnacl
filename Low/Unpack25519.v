@@ -2,7 +2,7 @@ Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-
+From Tweetnacl Require Import Mid.Unpack25519.
 Open Scope Z.
 
 Section Integer.
@@ -204,5 +204,42 @@ Open Scope Z.
 
 Lemma Unpack25519_Zlength : forall l, Zlength l = 32 -> Zlength (Unpack25519 l) = 16.
 Proof. convert_length_to_Zlength Unpack25519_length. Qed.
+
+Lemma Unpack25519_eq_ZUnpack25519 : forall l,
+  (length l = 32)%nat ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) l ->
+  ZUnpack25519 (ZofList 8 l) = ZofList 16 (Unpack25519 l).
+Proof.
+  intros l Hlength Hbound.
+  rewrite /Unpack25519.
+  rewrite -Unpack_for_correct //.
+  change (2 * 8) with 16.
+  assert(Up8Bounded := unpack_for_bounded l Hbound).
+  assert(Up8Length := Unpack_for_length_16_32 l Hlength).
+  remember (unpack_for 8 l) as l'.
+  clear l Hlength Hbound Heql'.
+  rewrite /ZUnpack25519.
+  replace (Z.ones 255) with (ℤ16.lst [65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;32767]).
+  2: compute ; reflexivity.
+  rewrite Zlist_and_ZofList.
+  2: reflexivity.
+  2: assumption.
+  2: repeat apply list.Forall_cons_2 ; try apply list.Forall_nil ; compute ; go.
+  f_equal.
+  unfold mask0x7FFF.
+  do 17 (destruct l' ; tryfalse).
+  simpl nth.
+  simpl upd_nth.
+  rewrite /Zlist_and.
+  simpl Zipp.
+  assert(HX: forall x, 0 <= x < 2^16 -> Z.land x (Z.ones 16) = x).
+  {
+  intros ; rewrite Z.land_ones ; try apply Z.mod_small ; omega.
+  }
+  change (65535) with (Z.ones 16).
+  repeat (apply list.Forall_cons_1 in Up8Bounded ; destruct Up8Bounded as [? Up8Bounded]).
+  repeat (rewrite HX ; [|assumption]).
+  reflexivity.
+Qed.
 
 Close Scope Z.

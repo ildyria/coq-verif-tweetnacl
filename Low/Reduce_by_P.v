@@ -8,7 +8,7 @@ From Tweetnacl Require Import Low.Reduce_by_P_compose_2b.
 From Tweetnacl Require Import Low.Reduce_by_P_compose.
 From Tweetnacl Require Import Low.Reduce_by_P_aux.
 From Tweetnacl Require Import Mid.SubList.
-From Tweetnacl Require Import Mid.Reduce_by_P.
+From Tweetnacl Require Import Mid.Pack25519.
 From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.GetBit_pack25519.
 From Tweetnacl Require Import Low.Sel25519.
@@ -756,7 +756,7 @@ Corollary subst_select_mod_P :
   ZofList 16 (get_t (subst_select select_m_t 2 m t)) = (ZofList 16 t) mod (2^255-19).
 Proof.
   intros. rewrite -subst_select_red_by_P ; try assumption.
-  rewrite reduce_P_is_mod.
+  rewrite -reduce_P_is_mod.
   reflexivity.
   split.
   apply ZofList_pos.

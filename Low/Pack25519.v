@@ -5,6 +5,7 @@ From Tweetnacl Require Import Low.Car25519.
 From Tweetnacl Require Import Low.Car25519_bounds.
 From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.Pack.
+From Tweetnacl Require Import Mid.Pack25519.
 Require Import ssreflect.
 (*
 sv pack25519(u8 *o,const gf n)
@@ -47,10 +48,10 @@ Definition Pack25519 l :=
 Lemma Pack25519_mod_25519 : forall (l:list Z),
   Zlength l = 16 ->
   Forall (fun x => -2^62 < x < 2^62) l ->
-  ZofList 8 (Pack25519 l) = Z.modulo (ZofList 16 l) (2^255 - 19).
+  ZofList 8 (Pack25519 l) = ZPack25519 (ZofList 16 l).
 Proof.
   intros l Hl Hb.
-  rewrite /Pack25519.
+  rewrite /Pack25519 /ZPack25519.
   rewrite pack_for_correct.
   2: omega.
   change (2*8) with 16.

@@ -15,6 +15,9 @@ Definition red_by_P n :=
   else
     n.
 
+Definition ZPack25519 n := 
+  Z.modulo n (Z.pow 2 255 - 19).
+
 Lemma reduce_pos :  forall n, 0 <= n -> 0 <= red_by_P n.
 Proof. move=> n Hn ; rewrite /red_by_P.
 flatten.
@@ -63,9 +66,9 @@ Qed.
 
 Theorem reduce_P_is_mod : forall n,
   0 <= n < 2 ^ 256 ->
-  n mod (2^255-19) = red_by_P n.
+  ZPack25519 n = red_by_P n.
 Proof. intros.
-rewrite -reduce_P_mod_correct.
+rewrite /ZPack25519 -reduce_P_mod_correct.
 apply Zmod_small.
 split.
 apply reduce_pos ; omega.

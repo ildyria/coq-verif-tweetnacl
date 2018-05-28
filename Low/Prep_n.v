@@ -2,7 +2,7 @@ Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From Tweetnacl.Mid Require Import Prep_n.
+From Tweetnacl Require Import Mid.Prep_n.
 Local Open Scope Z.
 
 (* upd_Znth 0
@@ -67,7 +67,7 @@ Lemma clamp_Zlength : forall l,
 Proof. convert_length_to_Zlength clamp_length. Qed.
 
 Local Lemma upd_nth_Forall_bounds: forall l,
-  Forall (fun x => 0 <= x < 2^8) l ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) l ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8)
   (upd_nth 0 (upd_nth 31 l (Z.lor (Z.land (nth 31 l 0) 127) 64)) (Z.land (nth 0 l 0) 248)).
 Proof.
@@ -99,7 +99,7 @@ Qed.
 
 Lemma clamp_ZofList_eq : forall l,
   (length l = 32)%nat ->
-  Forall (fun x => 0 <= x < 2^8) l ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) l ->
   Zclamp (ZofList 8 l) = ZofList 8 (clamp l).
 Proof.
 intros l Hl HBl.

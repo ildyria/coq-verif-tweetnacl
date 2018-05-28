@@ -198,6 +198,26 @@ Lemma div_interval_mono:
   a / c <= x / c <= b / c.
 Proof. intros ; split ; apply Z_div_le ; omega. Qed.
 
+Lemma pow_mod : forall a b n,
+  0 <= b ->
+  Z.modulo (Z.pow a b) n = Z.modulo (Z.pow (Z.modulo a n) b) n.
+Proof.
+  intros a b n Hb ; revert a n.
+  pattern b.
+  apply natlike_ind.
+  3: assumption.
+  intros a n.
+  rewrite ?Z.pow_0_r ; reflexivity.
+  clear b Hb.
+  intros b IHb Hb a n.
+  rewrite ?Z.pow_succ_r by assumption.
+  rewrite Zmult_mod_idemp_l.
+  rewrite <-Zmult_mod_idemp_r.
+  rewrite Hb.
+  rewrite Zmult_mod_idemp_r.
+  reflexivity.
+Qed.
+
 Section Integer.
 
 Variable n:Z.

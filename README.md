@@ -55,6 +55,7 @@ Another possibility is to use `opam source`. This will create a
 ```bash
   opam source coq-tweetnacl --pin
   cd coq-tweetnacl.dev
+  ./configure.sh
   make -j
   cd ..
   opam install coq-tweetnacl

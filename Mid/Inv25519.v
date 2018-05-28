@@ -22,6 +22,7 @@ Proof. intros. rewrite pow_fn_rev_Z_equation. flatten; apply Zle_bool_imp_le in 
 
 Definition Inv25519_Z (x:Z) : Z := pow_fn_rev_Z 254 254 x x.
 
+Definition ZInv25519 (x:Z) : Z := Z.pow x (Z.pow 2 255 - 21).
 (*****************************************************************************************
  *   DEFINE SEMANTIC
  *)
@@ -265,10 +266,12 @@ Eval compute in Z.pow 2 255 - 21.
 Z.pow 2 255 - 21 = 57896044618658097711785492504343953926634992332820282019728792003956564819947
 *)
 
-Theorem Inv25519_Z_correct : forall x, Inv25519_Z x = Z.pow x 57896044618658097711785492504343953926634992332820282019728792003956564819947.
+Theorem Inv25519_Z_correct : forall x, Inv25519_Z x = ZInv25519 x.
+(* Z.pow x 57896044618658097711785492504343953926634992332820282019728792003956564819947. *)
 Proof.
 intros.
-  rewrite /Inv25519_Z.
+  rewrite /Inv25519_Z /ZInv25519.
+  change (2 ^ 255 - 21) with 57896044618658097711785492504343953926634992332820282019728792003956564819947.
   match goal with
   | [ |- ?X ] =>
     let xss := constr:((x, tt)) in
