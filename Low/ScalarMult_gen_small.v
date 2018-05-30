@@ -1,6 +1,5 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import ssreflect.
-
 Section ScalarRec.
 Open Scope Z.
 
@@ -728,6 +727,10 @@ Proof.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   intros h Hh; Simplify_this; simpl in Hh; omega.
 Qed.
+
+
+
+
 
 End ScalarRec.
 

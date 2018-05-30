@@ -53,27 +53,27 @@ int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
 *)
 
 Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.Mid.Reduce.
-Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Get_abcdef.
+Require Import Tweetnacl.Mid.Reduce.
+Require Import Tweetnacl.Mid.GetBit.
 Require Import Tweetnacl.Mid.ScalarMult_gen_small.
 Require Import Tweetnacl.Mid.ScalarMult_rev_fn_gen.
 Require Import Tweetnacl.Mid.AMZubSqSel.
 
 Open Scope Z.
 
-Definition fa := fa A M Zub Sq Sel25519.
-Definition fb := fb A M Zub Sq Sel25519.
-Definition fc := fc A M Zub Sq c_121665 Sel25519.
-Definition fd := fd A M Zub Sq c_121665 Sel25519.
-Definition fe := fe A M Zub Sel25519.
-Definition ff := ff Zub Sq Sel25519.
+Definition Zfa := Zfa A M Zub Sq Sel25519.
+Definition Zfb := Zfb A M Zub Sq Sel25519.
+Definition Zfc := Zfc A M Zub Sq c_121665 Sel25519.
+Definition Zfd := Zfd A M Zub Sq c_121665 Sel25519.
+Definition Zfe := Zfe A M Zub Sel25519.
+Definition Zff := Zff Zub Sq Sel25519.
 
 Open Scope Z.
 
-Definition Zmontgomery_fn := abstract_fn_rev fa fb fc fd fe ff Zgetbit.
+Definition Zmontgomery_fn := Zabstract_fn_rev Zfa Zfb Zfc Zfd Zfe Zff Zgetbit.
 
-Lemma montgomery_fn_equation: forall (m p : ℤ) (z a b c d e f x : ℤ),
+Lemma Zmontgomery_fn_equation: forall (m p : ℤ) (z a b c d e f x : ℤ),
        Zmontgomery_fn m p z a b c d e f x =
        (if m <=? 0
         then (a, b, c, d, e, f)
@@ -83,16 +83,16 @@ Lemma montgomery_fn_equation: forall (m p : ℤ) (z a b c d e f x : ℤ),
          let (p2, d0) := p1 in
          let (p3, c0) := p2 in
          let (a0, b0) := p3 in
-         (fa (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fb (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
-         fc (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fd (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
-         fe (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x)).
-Proof. apply abstract_fn_rev_equation. Qed.
+         (Zfa (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zfb (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         Zfc (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zfd (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         Zfe (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zff (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x)).
+Proof. apply Zabstract_fn_rev_equation. Qed.
 
-Lemma montgomery_fn_0 : forall p z a b c d e f x,
+Lemma Zmontgomery_fn_0 : forall p z a b c d e f x,
   Zmontgomery_fn 0 p z a b c d e f x = (a,b,c,d,e,f).
-Proof. apply abstract_fn_rev_0. Qed.
+Proof. apply Zabstract_fn_rev_0. Qed.
 
-Lemma montgomery_fn_n : forall (m p : ℤ) (z a b c d e f x : ℤ),
+Lemma Zmontgomery_fn_n : forall (m p : ℤ) (z a b c d e f x : ℤ),
        0 < m ->
        Zmontgomery_fn m p z a b c d e f x =
          let (p0, f0) := Zmontgomery_fn (m - 1) p z a b c d e f x in
@@ -100,9 +100,9 @@ Lemma montgomery_fn_n : forall (m p : ℤ) (z a b c d e f x : ℤ),
          let (p2, d0) := p1 in
          let (p3, c0) := p2 in
          let (a0, b0) := p3 in
-         (fa (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fb (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
-         fc (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fd (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
-         fe (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x).
-Proof. apply abstract_fn_rev_n. Qed.
+         (Zfa (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zfb (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         Zfc (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zfd (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         Zfe (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zff (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x).
+Proof. apply Zabstract_fn_rev_n. Qed.
 
 Close Scope Z.

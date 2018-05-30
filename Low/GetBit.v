@@ -2,13 +2,13 @@
 
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.ListsOp.Export.
+Require Import Tweetnacl.Mid.GetBit.
 Require Import ssreflect.
 Require Import stdpp.list.
 
 Open Scope Z.
 
 Definition getbit (i:Z) (l : list Z) := Z.land ((Z.shiftr (nth (Z.to_nat (Z.shiftr i 3)) l 0)  (Z.land i 7))) 1.
-Definition Zgetbit (i:Z) (l: Z) := Z.land (Z.shiftr l i) 1.
 
 Lemma getbit_0_or_1 : forall i l,
   0 <= getbit i l <= 1.

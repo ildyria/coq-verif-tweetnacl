@@ -12,7 +12,7 @@ Variable _121665: Z.
 Variable Sel25519 : Z -> Z -> Z -> Z.
 Variable getbit : Z -> Z -> Z.
 
-Definition fa r (a b c d e f x:Z) :=
+Definition Zfa r (a b c d e f x:Z) :=
   Sel25519 r
      (M (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
         (Sq (Zub (Sel25519 r a b) (Sel25519 r c d))))
@@ -23,7 +23,7 @@ Definition fa r (a b c d e f x:Z) :=
            (M (Zub (Sel25519 r b a) (Sel25519 r d c))
               (A (Sel25519 r a b) (Sel25519 r c d))))).
 
-Definition fb r (a b c d e f x:Z) :=
+Definition Zfb r (a b c d e f x:Z) :=
   Sel25519 r
      (Sq
         (A
@@ -34,7 +34,7 @@ Definition fb r (a b c d e f x:Z) :=
      (M (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
         (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))).
 
-Definition fc r (a b c d e f x:Z) :=
+Definition Zfc r (a b c d e f x:Z) :=
 Sel25519 r
   (M
      (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
@@ -52,7 +52,7 @@ Sel25519 r
            (M (Zub (Sel25519 r b a) (Sel25519 r d c))
               (A (Sel25519 r a b) (Sel25519 r c d))))) x).
 
-Definition fd r (a b c d e f x:Z) :=
+Definition Zfd r (a b c d e f x:Z) :=
 Sel25519 r
   (M
      (Sq
@@ -70,14 +70,14 @@ Sel25519 r
               (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) _121665)
         (Sq (A (Sel25519 r a b) (Sel25519 r c d))))).
 
-Definition fe r (a b c d e f x:Z) :=
+Definition Zfe r (a b c d e f x:Z) :=
 A
   (M (A (Sel25519 r b a) (Sel25519 r d c))
      (Zub (Sel25519 r a b) (Sel25519 r c d)))
   (M (Zub (Sel25519 r b a) (Sel25519 r d c))
      (A (Sel25519 r a b) (Sel25519 r c d))).
 
-Definition ff r (a b c d e f x:Z) :=
+Definition Zff r (a b c d e f x:Z) :=
   Sq (Zub (Sel25519 r a b) (Sel25519 r c d)).
 
 End ScalarRec.

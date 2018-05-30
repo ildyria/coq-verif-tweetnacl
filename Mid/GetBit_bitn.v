@@ -2,7 +2,7 @@ Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect eqtype ssrfun ssrbool ssrnat div.
 From Tweetnacl.High Require Import ladder.
 Require Import ZArith.
-Require Import Tweetnacl.Low.GetBit.
+Require Import Tweetnacl.Mid.GetBit.
 
 (* Lemma Zpow_Natpow n m : Z.pow (Z.of_nat n) (Z.of_nat m) = Z.of_nat (Nat.pow n m).
 Proof.

@@ -8,15 +8,22 @@ From Tweetnacl.Low Require Import Unpack25519.
 From Tweetnacl.Low Require Import M.
 From Tweetnacl.Low Require Import Inv25519.
 From Tweetnacl.Low Require Import ScalarMult_rev.
+
+From Tweetnacl.Low Require Import ScalarMult_rev_fn_gen.
+
 From Tweetnacl.Low Require Import Get_abcdef.
 From Tweetnacl.Low Require Import Constant.
 From Tweetnacl.Low Require Import Prep_n.
+From Tweetnacl.Low Require Import GetBit.
 From Tweetnacl.Mid Require Import Unpack25519.
 From Tweetnacl.Mid Require Import Pack25519.
 From Tweetnacl.Mid Require Import Inv25519.
 From Tweetnacl.Mid Require Import ScalarMult_rev.
 From Tweetnacl.Mid Require Import Prep_n.
+From Tweetnacl.Mid Require Import GetBit.
 From Tweetnacl.Mid Require Import Crypto_Scalarmult.
+
+From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen.
 
 Open Scope Z.
 
@@ -127,6 +134,9 @@ Proof.
   rewrite -Zmult_mod_idemp_r.
   f_equal.
   f_equal.
+  unfold Zmontgomery_fn.
+  unfold montgomery_fn.
+
   admit.
   rewrite Inv25519_Z_GF.
   2: assumption.
@@ -137,6 +147,7 @@ Proof.
   2,3: compute; discriminate.
   f_equal.
   f_equal.
+  admit.
 Admitted.
 
 
