@@ -1,6 +1,6 @@
 Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
-From Tweetnacl.High Require Import mc Zmodp.
+From Tweetnacl.High Require Import mc Zmodp opt_ladder.
 
 Open Scope ring_scope.
 Import GRing.Theory.
@@ -28,3 +28,6 @@ Canonical Structure curve25519_ecuFieldType :=
   Eval hnf in ECUFieldType Zmodp.type curve25519_ecuFieldMixin.
 Canonical Structure curve25519_finECUFieldType :=
   Eval hnf in [finECUFieldType of Zmodp.type].
+
+Definition curve25519_ladder n x :=
+  @opt_montgomery curve25519_finECUFieldType curve25519_mcuType n 255 x.

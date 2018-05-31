@@ -186,6 +186,15 @@ apply/eqP; rewrite eqE; apply/eqP=> /=.
 by apply: esym; apply: Z.add_mod; apply: Hp_neq0.
 Qed.
 
+Lemma Zmodp_oppE x : (-pi x)%R = pi (-x).
+Proof.
+apply/eqP; rewrite eqE; apply/eqP=> /=.
+move: Hp_neq0=> Hp_neq0. (* Intro to proof env so we can discharge this easy *)
+case: (Z.eqb_spec (x mod p) 0) => Hx.
+- by rewrite Hx Z.mod_opp_l_z // Z.sub_0_r Z.mod_same.
+- by rewrite -Z.mod_opp_l_nz // Z.mod_mod.
+Qed.
+
 Fact Hp_gt1 : p > 1.
 Proof. by unlock p; rewrite Z.gt_lt_iff; apply/Z.ltb_spec0. Qed.
 
