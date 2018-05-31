@@ -61,15 +61,17 @@ congr (_ == 1).
 by rewrite Nat_div_2_ssr_half {1}/bitn -divnMA -expnS.
 Qed.
 
-Lemma getbit_Ztestbit x i : Z.testbit (Z.of_nat x) (Z.of_nat i) = Z.testbit (Z.land (Z.shiftr (Z.of_nat x) (Z.of_nat i)) 1) 0.
+Lemma Zland1_odd (x : Z) : (Z.land x 1 =? 1)%Z = Z.odd x.
 Proof.
-rewrite Z.land_spec.
-rewrite Z.shiftr_spec.
-2: omega.
-simpl.
-rewrite andbT.
-reflexivity.
+by rewrite -{1}[1%Z]/(Z.ones 1) Z.land_ones // Z.pow_1_r -Z.bit0_eqb Z.bit0_odd.
 Qed.
+
+Lemma Zgetbit_Ztestbit (n k : Z) : (Zgetbit k n =? 1)%Z = Z.testbit n k.
+Proof. by rewrite Zland1_odd; apply: esym; apply: Z.testbit_odd. Qed.
+
+Lemma Zgetbit_bitn_1 (n k : nat) :
+  (Zgetbit (Z.of_nat k) (Z.of_nat n) =? 1)%Z = (bitn n k == 1).
+Proof. by rewrite -bitn_Ztestbit Zgetbit_Ztestbit. Qed.
 
 Local Open Scope Z.
 Local Lemma Zland1_b x:  0 <= (Z.land x 1) < 2.
@@ -100,13 +102,4 @@ Lemma shiftr1b x : Z.testbit (Z.land x 1) 0 = (Z.to_nat (Z.land x 1) == 1).
 Proof.
 assert(Hl := Zland_0_1 x).
 destruct Hl as [Hl|Hl] ; rewrite Hl ; simpl ; split ; intros ; trivial ; discriminate.
-Qed.
-
-Lemma getbit_bitn x i: (Z.to_nat (Zgetbit (Z.of_nat (Z.to_nat i)) (Z.of_nat (Z.to_nat x))) == 1) = (bitn (Z.to_nat x) (Z.to_nat i) == 1).
-Proof.
-intros.
-rewrite -shiftr1b.
-rewrite -getbit_Ztestbit.
-rewrite bitn_Ztestbit.
-reflexivity.
 Qed.
