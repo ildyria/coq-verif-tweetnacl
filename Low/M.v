@@ -6,7 +6,7 @@ From Tweetnacl Require Export Low.Inner_M1.
 From Tweetnacl Require Export Low.Outer_M1.
 From Tweetnacl Require Export Mid.M_low_level.
 From Tweetnacl Require Export Mid.M.
-From Tweetnacl Require Export Mid.ScalarMult.
+From Tweetnacl Require Export Mid.ScalMult.
 From Tweetnacl Require Export Low.Car25519.
 From Tweetnacl Require Export Low.Car25519_bounds.
 

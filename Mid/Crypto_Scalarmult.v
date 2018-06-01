@@ -8,8 +8,8 @@ From Tweetnacl.Mid Require Import Unpack25519.
 From Tweetnacl.Mid Require Import Pack25519.
 From Tweetnacl.Mid Require Import Inv25519.
 From Tweetnacl.Mid Require Import ScalarMult_rev.
-From Tweetnacl.Mid Require Import ScalarMult_gen_small.
-From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen.
+(* From Tweetnacl.Mid Require Import ScalarMult_gen_small. *)
+(* From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen. *)
 From Tweetnacl.Mid Require Import AMZubSqSel.
 
 From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.

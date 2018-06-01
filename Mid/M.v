@@ -2,7 +2,7 @@ Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From Tweetnacl Require Import Mid.ScalarMult.
+From Tweetnacl Require Import Mid.ScalMult.
 From Tweetnacl Require Import Low.A.
 
 Local Open Scope Z.
