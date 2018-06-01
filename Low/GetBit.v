@@ -55,9 +55,8 @@ replace (8 * i `div` 8 + i `mod` 8) with i.
 2: apply Z.pow_nonneg; omega.
 rewrite -?Z.shiftr_div_pow2 ; try omega.
 replace 1 with ((1 ≪ i) ≫ i).
-Focus 2.
-rewrite Z.shiftr_shiftl_l ; try omega.
-rewrite -Zminus_diag_reverse ; reflexivity.
+2: rewrite Z.shiftr_shiftl_l ; try omega.
+2: rewrite -Zminus_diag_reverse ; reflexivity.
 rewrite -?Z.shiftr_land.
 rewrite -Z.land_ones.
 2: omega.
