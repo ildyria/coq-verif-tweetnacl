@@ -62,7 +62,7 @@ Proof. intros. rewrite /abstract_rec_fn /rec_fn_rev -abstract_rec_rev_equiv_recf
 replace (S n - 1) with n ; go.
 Qed.
 
-
+(* 
 Lemma Zabstract_step_rev_a : forall n p (z a b c d e f x : Z),
   Zfa (Zgetbit (Z.of_nat (p - n)) z)
    (get_a (Zabstract_rec_rev n p z a b c d e f x))
@@ -158,7 +158,7 @@ Proof.
 intros; simpl; remember (Zabstract_rec_rev n p z a b c d e f x) as k.
 destruct k as (((((a0,b0),c0),d0),e0),f0); reflexivity.
 Qed.
-
+ *)
 Open Scope Z.
 
 End ScalarRec.
