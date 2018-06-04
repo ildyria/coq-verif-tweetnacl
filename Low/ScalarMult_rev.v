@@ -64,11 +64,14 @@ Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Constant.
 Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Tweetnacl.Low.AMZubSqSel.
-Require Import Tweetnacl.Gen.ABCDEF.
 Require Import Tweetnacl.Low.ScalarMult_gen_small.
+Require Import Tweetnacl.Gen.abstract_fn_rev.
 Require Import Tweetnacl.Low.ScalarMult_rev_fn_gen.
+Require Import Tweetnacl.Gen.ABCDEF.
 
 Section ScalarGen.
+
+Open Scope Z.
 
 (*
   Ops.
@@ -81,9 +84,29 @@ Section ScalarGen.
   getbit : Z -> T -> Z;
 *)
 Local Instance List_Z_Ops : Ops (list Z) := Build_Ops (list Z) A.A M.M Z.Zub S.Sq c_121665 Sel25519.Sel25519 GetBit.getbit.
-(* Local Instance List_Z_Ops : Ops (list Z) := Build_Ops (list Z) A.A M.M Z.Zub S.Sq c_121665 Sel25519.Sel25519 GetBit.getbit. *)
+Local Instance List_Z_Ops_Prop : Ops_Prop :=  Build_Ops_Prop
+  List_Z_Ops
+  A.A_Zlength
+  M.M_Zlength
+  Z.Zub_Zlength
+  S.Sq_Zlength
+  Sel25519.Sel25519_Zlength
+  Constant.Zlength_c_121665
+  M.M_bound_Zlength
+  S.Sq_bound_Zlength
+  A.A_bound_Zlength_le
+  A.A_bound_Zlength_lt
+  Z.Zub_bound_Zlength_le
+  Z.Zub_bound_Zlength_lt
+  Sel25519.Sel25519_bound_le
+  Sel25519.Sel25519_bound_lt_trans_le
+  Sel25519.Sel25519_bound_lt
+  Sel25519.Sel25519_bound_lt_le_id
+  Sel25519.Sel25519_bound_lt_lt_id
+  Sel25519.Sel25519_bound_le_le_id
+  Sel25519.Sel25519_bound_le_lt_trans_le_id
+  c_121665_bounds.
 
-Check Sel25519_Zlength.
 Local Ltac solve_dependencies_Zlength :=
   match goal with
     | _ => apply Sel25519_Zlength
@@ -98,7 +121,7 @@ Local Ltac solve_dependencies_bound :=
 repeat match goal with
   | _ => assumption
   | _ => reflexivity
-  | _ => solve_dependencies_length
+(*   | _ => solve_dependencies_length *)
   | _ => apply M_bound_Zlength
   | _ => apply Sq_bound_Zlength
   | _ => apply A_bound_Zlength_le
@@ -112,9 +135,7 @@ repeat match goal with
   | _ => apply c_121665_bounds
 end.
 
-Open Scope Z.
-
-Definition montgomery_fn := abstract_fn_rev fa fb fc fd fe ff getbit.
+Definition montgomery_fn := abstract_fn_rev.
 
 Lemma montgomery_fn_equation: forall (m p : ℤ) (z a b c d e f x : list ℤ),
        montgomery_fn m p z a b c d e f x =
@@ -148,38 +169,36 @@ Lemma montgomery_fn_n : forall (m p : ℤ) (z a b c d e f x : list ℤ),
          fe (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x).
 Proof. apply abstract_fn_rev_n. Qed.
 
-Lemma fa_Zlength : forall r a b c d e f x,
+(* Lemma fa_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fa r a b c d e f x) = 16.
-Proof.
-Check fa_Zlength.
-apply (fa_Zlength _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
+Proof. apply fa_Zlength ; solve_dependencies_Zlength. Qed.
 Lemma fb_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fb r a b c d e f x) = 16.
-Proof. apply (fb_Zlength _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
+Proof. apply fb_Zlength ; solve_dependencies_Zlength. Qed.
 Lemma fc_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fc r a b c d e f x) = 16.
-Proof. apply (fc_Zlength _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
+Proof. apply fc_Zlength ; solve_dependencies_Zlength. Qed.
 Lemma fd_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fd r a b c d e f x) = 16.
-Proof. apply (fd_Zlength _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
+Proof. apply fd_Zlength ; solve_dependencies_Zlength. Qed.
 Lemma fe_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fe r a b c d e f x) = 16.
-Proof. apply (fe_Zlength _ _ _ c_121665) ; solve_dependencies_length. Qed.
+Proof. apply fe_Zlength ; solve_dependencies_Zlength. Qed.
 Lemma ff_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (ff r a b c d e f x) = 16.
-Proof. apply (ff_Zlength _ _ c_121665) ; solve_dependencies_length. Qed.
+Proof. apply ff_Zlength ; solve_dependencies_Zlength. Qed. *)
 
 Local Ltac solve_f_length :=
   repeat match goal with
@@ -192,7 +211,7 @@ Local Ltac solve_f_length :=
     | |- Zlength (ff _ _ _ _ _ _ _ _) = _ => apply ff_Zlength
     | _ => idtac
   end.
-
+(* 
 Lemma fa_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
@@ -204,7 +223,7 @@ Lemma fa_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fa r a b c d e f x).
-Proof. apply (fa_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
+Proof. apply fa_bound ; solve_dependencies_bound. Qed.
 Lemma fb_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
@@ -216,7 +235,7 @@ Lemma fb_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fb r a b c d e f x).
-Proof. apply (fb_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
+Proof. apply fb_bound ; solve_dependencies_bound. Qed.
 Lemma fc_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
@@ -229,7 +248,7 @@ Lemma fc_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fc r a b c d e f x).
-Proof. apply (fc_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
+Proof. apply fc_bound ; solve_dependencies_bound. Qed.
 Lemma fd_bound : forall r a b c d e f x,
   Zlength a = 16 ->
   Zlength b = 16 ->
@@ -242,8 +261,8 @@ Lemma fd_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
     Forall (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
-Proof. apply (fd_bound _ _ _ _ c_121665) ; solve_dependencies_bound. Qed.
-
+Proof. apply fd_bound ; solve_dependencies_bound. Qed.
+ *)
 Local Ltac solve_f_bound :=
   repeat match goal with
     | _ => assumption
@@ -449,3 +468,5 @@ Ltac solve_montgomery_rec_rev_Zlength :=
   end ; try reflexivity.
 
 Close Scope Z.
+
+End ScalarGen.

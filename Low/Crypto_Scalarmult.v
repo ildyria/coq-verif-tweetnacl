@@ -18,12 +18,11 @@ From Tweetnacl.Low Require Import GetBit.
 From Tweetnacl.Mid Require Import Unpack25519.
 From Tweetnacl.Mid Require Import Pack25519.
 From Tweetnacl.Mid Require Import Inv25519.
-From Tweetnacl.Mid Require Import ScalarMult_rev.
 From Tweetnacl.Mid Require Import Prep_n.
 From Tweetnacl.Mid Require Import GetBit.
-From Tweetnacl.Mid Require Import Crypto_Scalarmult.
+(* From Tweetnacl.Mid Require Import Crypto_Scalarmult. *)
 
-From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen.
+(* From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen. *)
 
 Open Scope Z.
 
@@ -56,7 +55,7 @@ Proof.
   omega.
 Qed.
 
-Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
+(* Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength n = 32 ->
   Zlength p = 32 ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
@@ -148,7 +147,7 @@ Proof.
   f_equal.
   f_equal.
   admit.
-Admitted.
+Admitted. *)
 
 
 

@@ -1,4 +1,4 @@
-From Tweetnacl.Libs Require Import Export.
+(* From Tweetnacl.Libs Require Import Export.
 
 From Tweetnacl.Low Require Import Get_abcdef.
 From Tweetnacl.Low Require Import Car25519.
@@ -44,3 +44,4 @@ Lemma ZCrypto_Scalarmult_curve25519_ladder n (x : Zmodp.type) :
 Proof. Admitted.
 
 Close Scope Z.
+ *)

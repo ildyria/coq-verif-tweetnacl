@@ -2,11 +2,9 @@ From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Import AMZubSqSel.
 From Tweetnacl.Gen Require Import ABCDEF.
 From Tweetnacl.Low Require Import AMZubSqSel.
-(* From Tweetnacl.Mid Require Import AMZubSqSel. *)
 From Tweetnacl.Low Require Import ScalarMult_gen_small.
-(* From Tweetnacl.Mid Require Import ScalarMult_gen_small. *)
 From Tweetnacl.Low Require Import ScalarMult_rev_fn_gen.
-From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen.
+(* From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen. *)
 Require Import ssreflect.
 
 Section ScalarRec.
@@ -356,6 +354,13 @@ Proof.
 Admitted.
  *)
 
+
+
+
+
+
+
+(* 
 Lemma abstract_fn_eq_Zabstract_fn : forall (m p:Z) (z a b c d e f x a' b' c' d' e' f' a'' b'' c'' d'' e'' f'': list Z),
   0 <= m ->
   (a',b',c',d',e',f') = (abstract_fn_rev fa fb fc fd fe ff getbit m p z a b c d e f x) -> 
@@ -448,7 +453,7 @@ Proof.
   jauto_set.
 Admitted.
 
-
+ *)
 Close Scope Z.
 
 End ScalarRec.

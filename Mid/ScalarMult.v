@@ -2,18 +2,23 @@ From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Low Require Import Get_abcdef.
 From Tweetnacl.Mid Require Import Reduce.
 From Tweetnacl.Mid Require Import GetBit.
-From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen.
-From Tweetnacl.Mid Require Import ScalarMult_rev.
-From Tweetnacl.Mid Require Import ScalarMult_rec_gen.
-From Tweetnacl.Mid Require Import ScalarMult_gen.
+Require Import Tweetnacl.Gen.AMZubSqSel.
+Require Import Tweetnacl.Mid.AMZubSqSel.
+
+From Tweetnacl.Gen Require Import abstract_rec_rev.
+
 Require Import ssreflect.
 
 
-Open Scope Z.
-Definition Zmontgomery_Zabstract_rec := Zabstract_rec Zfa Zfb Zfc Zfd Zfe Zff Zgetbit.
-Definition Zmontgomery_rec := Zmontgomery_rec_gen A M Zub Sq c_121665 Sel25519 Zgetbit.
 
-Lemma Zabstract_eq_Zmontgomery_rec : forall n z a b c d e f x,
+Open Scope Z.
+
+Local Instance Z_Ops : (Ops Z) := Build_Ops Z A Z.mul Z.sub (fun x => Z.mul x x) 121665 Sel25519 Zgetbit.
+
+Definition Zmontgomery_Zabstract_rec := abstract_rec_rev.
+Definition Zmontgomery_rec := abstract_rec.
+
+(* Lemma Zabstract_eq_Zmontgomery_rec : forall n z a b c d e f x,
    Zmontgomery_rec n z a b c d e f x = Zmontgomery_Zabstract_rec n z a b c d e f x.
 Proof.
   induction n ; intros.
@@ -30,7 +35,7 @@ Lemma Zmontgomery_fn_eq_rec : forall n z a b c d e f x,
    Zmontgomery_rec (S n) z a b c d e f x = Zmontgomery_fn (Z.of_nat (S n)) (Z.of_nat n) z a b c d e f x.
 Proof.
 Admitted.
-(*   intros.
+ *)(*   intros.
   rewrite Zabstract_eq_Zmontgomery_rec.
   rewrite /Zmontgomery_Zabstract_rec.
   rewrite abstract_rec_equiv_rec_fn.
