@@ -56,22 +56,13 @@ Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Tweetnacl.Mid.Reduce.
 Require Import Tweetnacl.Mid.GetBit.
-Require Import Tweetnacl.Mid.ScalarMult_gen_small.
 Require Import Tweetnacl.Mid.ScalarMult_rev_fn_gen.
-Require Import Tweetnacl.Mid.AMZubSqSel.
+Require Import Tweetnacl.Gen.AMZubSqSel.
+Require Import Tweetnacl.Gen.ABCDEF.
 
 Open Scope Z.
 
-Definition Zfa := Zfa A M Zub Sq Sel25519.
-Definition Zfb := Zfb A M Zub Sq Sel25519.
-Definition Zfc := Zfc A M Zub Sq c_121665 Sel25519.
-Definition Zfd := Zfd A M Zub Sq c_121665 Sel25519.
-Definition Zfe := Zfe A M Zub Sel25519.
-Definition Zff := Zff Zub Sq Sel25519.
-
-Open Scope Z.
-
-Definition Zmontgomery_fn := Zabstract_fn_rev Zfa Zfb Zfc Zfd Zfe Zff Zgetbit.
+(* Definition Zmontgomery_fn := Zabstract_fn_rev Zfa Zfb Zfc Zfd Zfe Zff Zgetbit.
 
 Lemma Zmontgomery_fn_equation: forall (m p : ℤ) (z a b c d e f x : ℤ),
        Zmontgomery_fn m p z a b c d e f x =
@@ -103,6 +94,6 @@ Lemma Zmontgomery_fn_n : forall (m p : ℤ) (z a b c d e f x : ℤ),
          (Zfa (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zfb (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
          Zfc (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zfd (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
          Zfe (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, Zff (Zgetbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x).
-Proof. apply Zabstract_fn_rev_n. Qed.
+Proof. apply Zabstract_fn_rev_n. Qed. *)
 
 Close Scope Z.

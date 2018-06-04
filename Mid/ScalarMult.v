@@ -2,9 +2,7 @@ From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Low Require Import Get_abcdef.
 From Tweetnacl.Mid Require Import Reduce.
 From Tweetnacl.Mid Require Import GetBit.
-From Tweetnacl.Mid Require Import ScalarMult_gen_small.
 From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen.
-From Tweetnacl.Mid Require Import AMZubSqSel.
 From Tweetnacl.Mid Require Import ScalarMult_rev.
 From Tweetnacl.Mid Require Import ScalarMult_rec_gen.
 From Tweetnacl.Mid Require Import ScalarMult_gen.

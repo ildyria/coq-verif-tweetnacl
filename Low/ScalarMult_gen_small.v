@@ -1,90 +1,14 @@
 Require Import Tweetnacl.Libs.Export.
+Require Import Tweetnacl.Gen.AMZubSqSel.
+Require Import Tweetnacl.Low.AMZubSqSel.
+Require Import Tweetnacl.Gen.ABCDEF.
 Require Import ssreflect.
+
 Section ScalarRec.
 Open Scope Z.
 
-Variable A : list Z -> list Z -> list Z.
-Variable M : list Z -> list Z -> list Z.
-Variable Zub : list Z -> list Z -> list Z.
-Variable Sq : list Z -> list Z.
-Variable _121665: list Z.
-Variable Sel25519 : Z -> list Z -> list Z -> list Z.
-Variable getbit : Z -> list Z -> Z.
-
-Definition fa r (a b c d e f x:list Z) :=
-  Sel25519 r
-     (M (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-        (Sq (Zub (Sel25519 r a b) (Sel25519 r c d))))
-     (Sq
-        (A
-           (M (A (Sel25519 r b a) (Sel25519 r d c))
-              (Zub (Sel25519 r a b) (Sel25519 r c d)))
-           (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-              (A (Sel25519 r a b) (Sel25519 r c d))))).
-
-Definition fb r (a b c d e f x:list Z) :=
-  Sel25519 r
-     (Sq
-        (A
-           (M (A (Sel25519 r b a) (Sel25519 r d c))
-              (Zub (Sel25519 r a b) (Sel25519 r c d)))
-           (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-              (A (Sel25519 r a b) (Sel25519 r c d)))))
-     (M (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-        (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))).
-
-Definition fc r (a b c d e f x:list Z) :=
-Sel25519 r
-  (M
-     (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-        (Sq (Zub (Sel25519 r a b) (Sel25519 r c d))))
-     (A
-        (M
-           (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-              (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) _121665)
-        (Sq (A (Sel25519 r a b) (Sel25519 r c d)))))
-  (M
-     (Sq
-        (Zub
-           (M (A (Sel25519 r b a) (Sel25519 r d c))
-              (Zub (Sel25519 r a b) (Sel25519 r c d)))
-           (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-              (A (Sel25519 r a b) (Sel25519 r c d))))) x).
-
-Definition fd r (a b c d e f x:list Z) :=
-Sel25519 r
-  (M
-     (Sq
-        (Zub
-           (M (A (Sel25519 r b a) (Sel25519 r d c))
-              (Zub (Sel25519 r a b) (Sel25519 r c d)))
-           (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-              (A (Sel25519 r a b) (Sel25519 r c d))))) x)
-  (M
-     (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-        (Sq (Zub (Sel25519 r a b) (Sel25519 r c d))))
-     (A
-        (M
-           (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-              (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) _121665)
-        (Sq (A (Sel25519 r a b) (Sel25519 r c d))))).
-
-Definition fe r (a b c d e f x:list Z) :=
-A
-  (M (A (Sel25519 r b a) (Sel25519 r d c))
-     (Zub (Sel25519 r a b) (Sel25519 r c d)))
-  (M (Zub (Sel25519 r b a) (Sel25519 r d c))
-     (A (Sel25519 r a b) (Sel25519 r c d))).
-
-Definition ff r (a b c d e f x:list Z) :=
-  Sq (Zub (Sel25519 r a b) (Sel25519 r c d)).
-
-Variable A_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (A a b) = 16.
-Variable M_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (M a b) = 16.
-Variable Zub_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (Zub a b) = 16.
-Variable Sq_Zlength : forall a, Zlength a = 16 -> Zlength (Sq a) = 16.
-Variable Sel25519_Zlength : forall b p q, Zlength p = 16 -> Zlength q = 16 -> Zlength (Sel25519 b p q) = 16.
-Variable _121665_Zlength : Zlength _121665 = 16.
+Context {O : Ops (list Z)}.
+Context {OP : @Ops_Prop O}.
 
 Local Ltac solve_small_step_Zlength :=
   intros;
@@ -95,6 +19,8 @@ Local Ltac solve_small_step_Zlength :=
     | _ => orewrite Sq_Zlength
     | _ => orewrite A_Zlength
     | _ => orewrite Zub_Zlength
+    | _ => apply _121665_Zlength
+    | _ => apply OP
   end ; reflexivity.
 
 Lemma fa_Zlength : forall r a b c d e f x,
@@ -102,79 +28,36 @@ Lemma fa_Zlength : forall r a b c d e f x,
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fa r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
+
 Lemma fb_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fb r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
+
 Lemma fc_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fc r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
+
 Lemma fd_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fd r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
+
 Lemma fe_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fe r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
+
 Lemma ff_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (ff r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
-
-Variable M_bound_Zlength : forall a b,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) a ->
-  Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) b ->
-  Forall (fun x => -38 <= x < Z.pow 2 16 + 38) (M a b).
-Variable Sq_bound_Zlength : forall a,
-  Zlength a = 16 ->
-  Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) a ->
-  Forall (fun x => -38 <= x < Z.pow 2 16 + 38) (Sq a).
-Variable A_bound_Zlength_le : forall m1 n1 m2 n2 a b,
-  Zlength a = Zlength b ->
-  Forall (fun x => m1 <= x <= n1) a -> 
-  Forall (fun x => m2 <= x <= n2) b -> 
-  Forall (fun x => m1 + m2 <= x <= n1 + n2) (A a b).
-Variable A_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
-  Zlength a = Zlength b ->
-  Forall (fun x => m1 < x < n1) a -> 
-  Forall (fun x => m2 < x < n2) b -> 
-  Forall (fun x => m1 + m2 < x < n1 + n2) (A a b).
-Variable Zub_bound_Zlength_le : forall m1 n1 m2 n2 a b,
-  Zlength a = Zlength b ->
-  Forall (fun x => m1 <= x <= n1) a -> 
-  Forall (fun x => m2 <= x <= n2) b -> 
-  Forall (fun x => m1 - n2 <= x <= n1 - m2) (Zub a b).
-Variable Zub_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
-  Zlength a = Zlength b ->
-  Forall (fun x => m1 < x < n1) a -> 
-  Forall (fun x => m2 < x < n2) b -> 
-  Forall (fun x => m1 - n2 < x < n1 - m2) (Zub a b).
-Variable Sel25519_bound_le : forall p pmin pmax q qmin qmax,
-  Forall (fun x => pmin <= x <= pmax) p ->
-  Forall (fun x => qmin <= x <= qmax) q -> forall b,
-  Forall (fun x => Z.min pmin qmin <= x <= Z.max pmax qmax) (Sel25519 b p q).
-Variable Sel25519_bound_lt_le_id : forall pmin pmax p q,
-  Forall (fun x => pmin <= x < pmax) p ->
-  Forall (fun x => pmin <= x < pmax) q -> forall b,
-  Forall (fun x => pmin <= x < pmax) (Sel25519 b p q).
-Variable Sel25519_bound_lt_lt_id : forall pmin pmax p q,
-  Forall (fun x => pmin < x < pmax) p ->
-  Forall (fun x => pmin < x < pmax) q -> forall b,
-  Forall (fun x => pmin < x < pmax) (Sel25519 b p q).
-Variable Sel25519_bound_le_lt_trans_le_id : forall pmin pmax p q,
-  Forall (fun x => pmin <= x < pmax) p ->
-  Forall (fun x => pmin <= x < pmax) q -> forall b,
-  Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q).
-Variable _121665_bound : Forall (fun x => 0 <= x < 2 ^16) _121665.
 
 Local Ltac Simplify_this :=
 change (2^16) with 65536 in *;
@@ -437,7 +320,7 @@ Proof.
   eapply list.Forall_impl.
   apply M_bound_Zlength.
   solve_small_step_Zlength.
-  assumption.
+  solve_small_step_Zlength.
   eapply list.Forall_impl.
   apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
   solve_small_step_Zlength.

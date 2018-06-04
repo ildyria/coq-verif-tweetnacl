@@ -63,17 +63,28 @@ Require Import Tweetnacl.Low.S.
 Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Constant.
 Require Import Tweetnacl.Low.Get_abcdef.
+Require Import Tweetnacl.Low.AMZubSqSel.
+Require Import Tweetnacl.Gen.ABCDEF.
 Require Import Tweetnacl.Low.ScalarMult_gen_small.
 Require Import Tweetnacl.Low.ScalarMult_rev_fn_gen.
 
-Definition fa := fa A M Zub Sq Sel25519.
-Definition fb := fb A M Zub Sq Sel25519.
-Definition fc := fc A M Zub Sq c_121665 Sel25519.
-Definition fd := fd A M Zub Sq c_121665 Sel25519.
-Definition fe := fe A M Zub Sel25519.
-Definition ff := ff Zub Sq Sel25519.
+Section ScalarGen.
 
-Local Ltac solve_dependencies_length :=
+(*
+  Ops.
+  A : T -> T -> T;
+  M : T -> T -> T;
+  Zub : T -> T -> T;
+  Sq : T -> T;
+  _121665: T;
+  Sel25519 : Z -> T -> T -> T;
+  getbit : Z -> T -> Z;
+*)
+Local Instance List_Z_Ops : Ops (list Z) := Build_Ops (list Z) A.A M.M Z.Zub S.Sq c_121665 Sel25519.Sel25519 GetBit.getbit.
+(* Local Instance List_Z_Ops : Ops (list Z) := Build_Ops (list Z) A.A M.M Z.Zub S.Sq c_121665 Sel25519.Sel25519 GetBit.getbit. *)
+
+Check Sel25519_Zlength.
+Local Ltac solve_dependencies_Zlength :=
   match goal with
     | _ => apply Sel25519_Zlength
     | _ => apply M_Zlength
@@ -141,7 +152,9 @@ Lemma fa_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
   Zlength (fa r a b c d e f x) = 16.
-Proof. apply (fa_Zlength _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
+Proof.
+Check fa_Zlength.
+apply (fa_Zlength _ _ _ _ c_121665) ; solve_dependencies_length. Qed.
 Lemma fb_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->

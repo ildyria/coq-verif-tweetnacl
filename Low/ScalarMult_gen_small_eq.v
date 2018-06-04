@@ -1,46 +1,38 @@
-Require Import Tweetnacl.Libs.Export.
-Require Import ssreflect.
+From Tweetnacl.Libs Require Import Export.
+From Tweetnacl.Gen Require Import AMZubSqSel.
+From Tweetnacl.Gen Require Import ABCDEF.
+From Tweetnacl.Low Require Import AMZubSqSel.
+(* From Tweetnacl.Mid Require Import AMZubSqSel. *)
 From Tweetnacl.Low Require Import ScalarMult_gen_small.
-From Tweetnacl.Mid Require Import ScalarMult_gen_small.
+(* From Tweetnacl.Mid Require Import ScalarMult_gen_small. *)
 From Tweetnacl.Low Require Import ScalarMult_rev_fn_gen.
 From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen.
+Require Import ssreflect.
 
 Section ScalarRec.
 
 Open Scope Z.
 
-Variable A : list Z -> list Z -> list Z.
-Variable M : list Z -> list Z -> list Z.
-Variable Zub : list Z -> list Z -> list Z.
-Variable Sq : list Z -> list Z.
-Variable _121665: list Z.
-Variable Sel25519 : Z -> list Z -> list Z -> list Z.
-Variable getbit : Z -> list Z -> Z.
-
-Variable ZA : Z -> Z -> Z.
-Variable ZM : Z -> Z -> Z.
-Variable ZZub : Z -> Z -> Z.
-Variable ZSq : Z -> Z.
-Variable Z_121665: Z.
-Variable ZSel25519 : Z -> Z -> Z -> Z.
-Variable Zgetbit : Z -> Z -> Z.
+Context {O : Ops (list Z)}.
+Context {ZO : Ops Z}.
+Context {OP : @Ops_Prop O}.
 
 Variable P : list Z -> Z.
 Variable Mod : Z -> Z.
 
-Variable A_eq : forall a b, Mod (P (A a b)) = Mod (ZA (P a) (P b)).
-Variable M_eq : forall a b, Mod (P (M a b)) = Mod (ZM (P a) (P b)).
-Variable Zub_eq : forall a b,  Mod (P (Zub a b)) = Mod (ZZub (P a) (P b)).
-Variable Sq_eq : forall a,  Mod (P (Sq a)) = Mod (ZSq (P a)).
-Variable _121665_eq : Mod (P _121665) = Mod (Z_121665).
-Variable Sel25519_eq : forall b p q,  Mod (P (Sel25519 b p q)) = Mod (ZSel25519 b (P p) (P q)).
-Variable getbit_eq : forall i p,  getbit i p = Zgetbit i (P p).
+Variable A_eq : forall (a b:list Z), Mod (P (A a b)) = Mod (A (P a) (P b)).
+Variable M_eq : forall (a b:list Z), Mod (P (M a b)) = Mod (M (P a) (P b)).
+Variable Zub_eq : forall (a b:list Z),  Mod (P (Zub a b)) = Mod (Zub (P a) (P b)).
+Variable Sq_eq : forall (a:list Z),  Mod (P (Sq a)) = Mod (Sq (P a)).
+Variable _121665_eq : Mod (P _121665) = Mod (_121665).
+Variable Sel25519_eq : forall b (p q:list Z),  Mod (P (Sel25519 b p q)) = Mod (Sel25519 b (P p) (P q)).
+Variable getbit_eq : forall i (p:list Z),  getbit i p = getbit i (P p).
 
-Variable Mod_ZSel25519_eq : forall b p q,  Mod (ZSel25519 b p q) = ZSel25519 b (Mod p) (Mod q).
-Variable Mod_ZA_eq : forall p q,  Mod (ZA p q) = Mod (ZA (Mod p) (Mod q)).
-Variable Mod_ZM_eq : forall p q,  Mod (ZM p q) = Mod (ZM (Mod p) (Mod q)).
-Variable Mod_ZZub_eq : forall p q,  Mod (ZZub p q) = Mod (ZZub (Mod p) (Mod q)).
-Variable Mod_ZSq_eq : forall p,  Mod (ZSq p) = Mod (ZSq (Mod p)).
+Variable Mod_ZSel25519_eq : forall b p q,  Mod (Sel25519 b p q) = Sel25519 b (Mod p) (Mod q).
+Variable Mod_ZA_eq : forall p q,  Mod (A p q) = Mod (A (Mod p) (Mod q)).
+Variable Mod_ZM_eq : forall p q,  Mod (M p q) = Mod (M (Mod p) (Mod q)).
+Variable Mod_ZZub_eq : forall p q,  Mod (Zub p q) = Mod (Zub (Mod p) (Mod q)).
+Variable Mod_ZSq_eq : forall p,  Mod (Sq p) = Mod (Sq (Mod p)).
 Variable Mod_red : forall p,  Mod (Mod p) = (Mod p).
 
 Local Ltac propagate := repeat match goal with
@@ -62,12 +54,12 @@ Local Ltac down := match goal with
     | _ => rewrite Mod_ZSq_eq
   end.
 
-Lemma fa_eq_Zfa : forall r (a b c d e f x:list Z),
-  Mod (Zfa ZA ZM ZZub ZSq ZSel25519 r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fa A M Zub Sq Sel25519 r a b c d e f x)).
+Lemma fa_eq : forall r (a b c d e f x:list Z),
+  Mod (fa r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (fa r a b c d e f x)).
 Proof.
   intros.
-  rewrite /Zfa /fa.
+  rewrite /fa.
   propagate.
   f_equal.
   down ; symmetry; down; propagate.
@@ -82,11 +74,11 @@ Proof.
 Qed.
 
 Lemma Zfa_eq_mod : forall r (a b c d e f x:Z),
-  Mod (Zfa ZA ZM ZZub ZSq ZSel25519 r a b c d e f x) =
-  Mod (Zfa ZA ZM ZZub ZSq ZSel25519 r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (fa r a b c d e f x) =
+  Mod (fa r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  rewrite /Zfa.
+  rewrite /fa.
   propagate.
   f_equal.
   down ; symmetry; down.
@@ -99,12 +91,12 @@ Proof.
   f_equal ; f_equal ; propagate ; down ; reflexivity.
 Qed.
 
-Lemma fb_eq_Zfb : forall r (a b c d e f x:list Z),
-  Mod (Zfb ZA ZM ZZub ZSq ZSel25519 r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fb A M Zub Sq Sel25519 r a b c d e f x)).
+Lemma fb_eq : forall r (a b c d e f x:list Z),
+  Mod (fb r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (fb r a b c d e f x)).
 Proof.
   intros.
-  rewrite /Zfb /fb.
+  rewrite /fb.
   propagate.
   f_equal.
   down ; symmetry ; rewrite Mod_ZSq_eq ; propagate.
@@ -119,11 +111,11 @@ Proof.
 Qed.
 
 Lemma Zfb_eq_mod : forall r (a b c d e f x:Z),
-  Mod (Zfb ZA ZM ZZub ZSq ZSel25519 r a b c d e f x) =
-  Mod (Zfb ZA ZM ZZub ZSq ZSel25519 r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (fb r a b c d e f x) =
+  Mod (fb r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  rewrite /Zfb.
+  rewrite /fb.
   propagate.
   f_equal.
   down ; symmetry ; rewrite Mod_ZSq_eq.
@@ -136,12 +128,12 @@ Proof.
   f_equal ; f_equal ; down ; symmetry ; rewrite ?Mod_ZSel25519_eq; reflexivity.
 Qed.
 
-Lemma fc_eq_Zfc : forall r (a b c d e f x:list Z),
-  Mod (Zfc ZA ZM ZZub ZSq Z_121665 ZSel25519 r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fc A M Zub Sq _121665 Sel25519 r a b c d e f x)).
+Lemma fc_eq : forall r (a b c d e f x:list Z),
+  Mod (fc r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (fc r a b c d e f x)).
 Proof.
   intros.
-  rewrite /Zfc /fc.
+  rewrite /fc.
   propagate.
   f_equal.
   1 : {
@@ -166,11 +158,11 @@ Proof.
 Qed.
 
 Lemma Zfc_eq_mod : forall r (a b c d e f x:Z),
-  Mod (Zfc ZA ZM ZZub ZSq Z_121665 ZSel25519 r a b c d e f x) =
-  Mod (Zfc ZA ZM ZZub ZSq Z_121665 ZSel25519 r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (fc r a b c d e f x) =
+  Mod (fc r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  rewrite /Zfc.
+  rewrite /fc.
   propagate.
   f_equal.
   1 : {
@@ -201,12 +193,12 @@ Proof.
   rewrite Mod_ZA_eq ; symmetry ; down ; f_equal ; f_equal ; propagate ; reflexivity.
 Qed.
 
-Lemma fd_eq_Zfd : forall r (a b c d e f x:list Z),
-  Mod (Zfd ZA ZM ZZub ZSq Z_121665 ZSel25519 r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fd A M Zub Sq _121665 Sel25519 r a b c d e f x)).
+Lemma fd_eq : forall r (a b c d e f x:list Z),
+  Mod (fd r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (fd r a b c d e f x)).
 Proof.
   intros.
-  rewrite /Zfd /fd.
+  rewrite /fd.
   propagate.
   f_equal.
   down ; symmetry; down; propagate;
@@ -228,12 +220,12 @@ Proof.
   f_equal ; f_equal ; propagate ; down ; symmetry ; down ; propagate ; reflexivity.
 Qed.
 
-Lemma Zfd_eq_mod : forall r (a b c d e f x:Z),
-  Mod (Zfd ZA ZM ZZub ZSq Z_121665 ZSel25519 r a b c d e f x) =
-  Mod (Zfd ZA ZM ZZub ZSq Z_121665 ZSel25519 r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+Lemma fd_eq_mod : forall r (a b c d e f x:Z),
+  Mod (fd r a b c d e f x) =
+  Mod (fd r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  rewrite /Zfd.
+  rewrite /fd.
   propagate.
   f_equal.
   2 : {
@@ -264,12 +256,12 @@ Proof.
   rewrite Mod_ZA_eq ; symmetry ; down ; f_equal ; f_equal ; propagate ; reflexivity.
 Qed.
 
-Lemma fe_eq_Zfe : forall r (a b c d e f x:list Z),
-  Mod (Zfe ZA ZM ZZub ZSel25519 r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fe A M Zub Sel25519 r a b c d e f x)).
+Lemma fe_eq : forall r (a b c d e f x:list Z),
+  Mod (fe r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (fe r a b c d e f x)).
 Proof.
   intros.
-  rewrite /Zfe /fe.
+  rewrite /fe.
   propagate.
   down ; symmetry; rewrite Mod_ZA_eq ; propagate.
   f_equal ; f_equal ; down ; symmetry; down ; propagate;
@@ -277,40 +269,40 @@ Proof.
   f_equal ; f_equal ; down ; symmetry; down ; propagate.
 Qed.
 
-Lemma Zfe_eq_mod : forall r (a b c d e f x:Z),
-  Mod (Zfe ZA ZM ZZub ZSel25519 r a b c d e f x) =
-  Mod (Zfe ZA ZM ZZub ZSel25519 r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+Lemma fe_eq_mod : forall r (a b c d e f x:Z),
+  Mod (fe r a b c d e f x) =
+  Mod (fe r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  rewrite /Zfe.
+  rewrite /fe.
   down ; symmetry ; rewrite Mod_ZA_eq ; f_equal ; f_equal;
   down ; symmetry ; down ; f_equal ; f_equal;
   down ; symmetry ; down ; propagate ; down ; reflexivity.
 Qed.
 
-Lemma ff_eq_Zff : forall r (a b c d e f x:list Z),
-  Mod (Zff ZZub ZSq ZSel25519 r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (ff Zub Sq Sel25519 r a b c d e f x)).
+Lemma ff_eq : forall r (a b c d e f x:list Z),
+  Mod (ff r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (ff r a b c d e f x)).
 Proof.
   intros.
-  rewrite /Zff /ff.
+  rewrite /ff.
   propagate.
   down ; symmetry; rewrite Mod_ZSq_eq ; propagate;
   f_equal ; f_equal ; down ; symmetry; down ; propagate.
   reflexivity.
 Qed.
 
-Lemma Zff_eq_mod : forall r (a b c d e f x:Z),
-  Mod (Zff ZZub ZSq ZSel25519 r a b c d e f x) =
-  Mod (Zff ZZub ZSq ZSel25519 r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+Lemma ff_eq_mod : forall r (a b c d e f x:Z),
+  Mod (ff r a b c d e f x) =
+  Mod (ff r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  rewrite /Zff.
+  rewrite /ff.
   down ; symmetry ; rewrite Mod_ZSq_eq ; f_equal ; f_equal.
   down ; symmetry ; down ; f_equal ; f_equal ; propagate ; down ; reflexivity.
 Qed.
 
-Local Lemma abstract_fn_eq_Z_ind_step : forall x : ℤ,
+(* Local Lemma abstract_fn_eq_Z_ind_step : forall x : ℤ,
 0 <= x ->
 (forall (p : ℤ) (z a b c d e f x0 a' b' c' d' e' f' : list ℤ) (a'' b'' c'' d'' e'' f'' : ℤ),
 (a', b', c', d', e', f') = abstract_fn_rev (fa A M Zub Sq Sel25519) (fb A M Zub Sq Sel25519) (fc A M Zub Sq _121665 Sel25519)
@@ -327,7 +319,7 @@ forall (p : ℤ) (z a b c d e f x0 a' b' c' d' e' f' : list ℤ) (a'' b'' c'' d'
   (Z.succ x) p z a b c d e f x0 ->
 (a'', b'', c'', d'', e'', f'') = Zabstract_fn_rev (Zfa ZA ZM ZZub ZSq ZSel25519) (Zfb ZA ZM ZZub ZSq ZSel25519)
   (Zfc ZA ZM ZZub ZSq Z_121665 ZSel25519) (Zfd ZA ZM ZZub ZSq Z_121665 ZSel25519) (Zfe ZA ZM ZZub ZSel25519)
-  (Zff ZZub ZSq ZSel25519) Zgetbit (Z.succ x) p (P z) (P a) (P b) (P c) (P d) (P e) (P f) 
+  (Zff ZZub ZSq ZSel25519) getbit (Z.succ x) p (P z) (P a) (P b) (P c) (P d) (P e) (P f) 
   (P x0) ->
 Mod (P a') = Mod a'' /\
 Mod (P b') = Mod b'' /\
@@ -362,23 +354,12 @@ Proof.
   6: rewrite -ff_eq_Zff getbit_eq Zff_eq_mod ; symmetry ; rewrite Zff_eq_mod.
   all: symmetry ; f_equal ; f_equal ; assumption.
 Admitted.
+ *)
 
-Lemma abstract_fn_eq_Zabstract_fn : forall m p z a b c d e f x a' b' c' d' e' f' a'' b'' c'' d'' e'' f'',
+Lemma abstract_fn_eq_Zabstract_fn : forall (m p:Z) (z a b c d e f x a' b' c' d' e' f' a'' b'' c'' d'' e'' f'': list Z),
   0 <= m ->
-  (a',b',c',d',e',f') = (abstract_fn_rev (fa A M Zub Sq Sel25519)
-                      (fb A M Zub Sq Sel25519)
-                      (fc A M Zub Sq _121665 Sel25519)
-                      (fd A M Zub Sq _121665 Sel25519)
-                      (fe A M Zub Sel25519)
-                      (ff Zub Sq Sel25519)
-                      getbit m p z a b c d e f x) -> 
-  (a'',b'',c'',d'',e'',f'') = (Zabstract_fn_rev (Zfa ZA ZM ZZub ZSq ZSel25519)
-                       (Zfb ZA ZM ZZub ZSq ZSel25519)
-                       (Zfc ZA ZM ZZub ZSq Z_121665 ZSel25519)
-                       (Zfd ZA ZM ZZub ZSq Z_121665 ZSel25519)
-                       (Zfe ZA ZM ZZub ZSel25519)
-                       (Zff ZZub ZSq ZSel25519)
-                       Zgetbit m p
+  (a',b',c',d',e',f') = (abstract_fn_rev fa fb fc fd fe ff getbit m p z a b c d e f x) -> 
+  (a'',b'',c'',d'',e'',f'') = (Zabstract_fn_rev fa fb fc fd fe ff getbit m p
                        (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))
  ->
   Mod (P a') = Mod a'' /\

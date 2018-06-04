@@ -1,66 +1,90 @@
 Require Import ssreflect.
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Libs.HeadTailRec.
-Require Import Tweetnacl.Low.Get_abcdef.
-Require Import Tweetnacl.Mid.ScalarMult_step_gen.
+Require Import Tweetnacl.Gen.Get_abcdef.
+Require Import Tweetnacl.Gen.AMZubSqSel.
+Require Import Tweetnacl.Gen.ABCDEF.
+Require Import Tweetnacl.Gen.step_gen.
 
 Section ScalarRec.
 
-Variable Zfa : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
-Variable Zfb : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
-Variable Zfc : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
-Variable Zfd : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
-Variable Zfe : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
-Variable Zff : Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z.
-Variable Zgetbit : Z -> Z -> Z.
+Context {T : Type}.
+Context {O : Ops T}.
 
-Fixpoint Zabstract_rec_rev m p (z a b c d e f x : Z) : (Z * Z * Z * Z * Z * Z)
+Fixpoint abstract_rec_rev m p (z a b c d e f x : T) : (T * T * T * T * T * T)
   :=
   match m with
   | 0%nat => (a,b,c,d,e,f)
   | S n => 
-      match (Zabstract_rec_rev n p z a b c d e f x) with
+      match (abstract_rec_rev n p z a b c d e f x) with
         | (a,b,c,d,e,f) =>
-        let r := Zgetbit (Z.of_nat (p - n)) z in
-        (Zfa r a b c d e f x,
-        Zfb r a b c d e f x,
-        Zfc r a b c d e f x,
-        Zfd r a b c d e f x,
-        Zfe r a b c d e f x,
-        Zff r a b c d e f x)
+        let r := getbit (Z.of_nat (p - n)) z in
+        (fa r a b c d e f x,
+        fb r a b c d e f x,
+        fc r a b c d e f x,
+        fd r a b c d e f x,
+        fe r a b c d e f x,
+        ff r a b c d e f x)
       end
   end.
 
 
-(* Proof of the Currying of the function  *)
-Definition Zstep_gen :=  Zstep_gen Zfa Zfb Zfc Zfd Zfe Zff Zgetbit.
+Fixpoint abstract_rec (m : nat) (z a b c d e f x : T) : (T * T * T * T * T * T) :=
+  match m with
+  | 0%nat => (a,b,c,d,e,f)
+  | S n => 
+      let r := getbit (Z.of_nat n) z in
+      abstract_rec n z 
+        (fa r a b c d e f x)
+        (fb r a b c d e f x)
+        (fc r a b c d e f x)
+        (fd r a b c d e f x)
+        (fe r a b c d e f x)
+        (ff r a b c d e f x)
+        x
+    end.
 
 Arguments rec_fn_rev_acc [T] _ _ _.
 Arguments rec_fn_rev [T] _ _.
 
-Definition abstract_rec_fn (z x: Z) (n:nat) (a b c d e f : Z) := rec_fn_rev (Zstep_gen z x) n (a,b,c,d,e,f).
+Definition abstract_rev_fn (z x: T) (n:nat) (a b c d e f : T) := rec_fn_rev (step_gen z x) n (a,b,c,d,e,f).
 
-Lemma abstract_rec_rev_equiv_recfn_p: forall n p z a b c d e f x,
-  Zabstract_rec_rev n (p - 1) z a b c d e f x = rec_fn_rev_acc (Zstep_gen z x) n p (a,b,c,d,e,f).
+Lemma abstract_rec_rev_equiv_rev_fn_p : forall n p z a b c d e f x,
+  abstract_rec_rev n (p - 1) z a b c d e f x = rec_fn_rev_acc (step_gen z x) n p (a,b,c,d,e,f).
 Proof.
   induction n => p z x a b c d e f.
   reflexivity.
   simpl.
   replace (p - n - 1) with (p - 1 - n).
   2: omega.
-  remember((rec_fn_rev_acc (Zstep_gen z f) n p (x, a, b, c, d, e))) as k.
+  remember((rec_fn_rev_acc (step_gen z f) n p (x, a, b, c, d, e))) as k.
   destruct k as (((((a0,b0),c0),d0),e0),f0).
-  remember (Zabstract_rec_rev n (p - 1) z x a b c d e f ) as k'.
+  remember (abstract_rec_rev n (p - 1) z x a b c d e f ) as k'.
   destruct k' as (((((a1,b1),c1),d1),e1),f1).
   assert(IH := IHn p z x a b c d e f).
   go.
 Qed.
 
 Corollary abstract_rec_rev_equiv_rec_fn : forall n z a b c d e f x,
-  Zabstract_rec_rev (S n) n z a b c d e f x = abstract_rec_fn z x (S n) a b c d e f.
-Proof. intros. rewrite /abstract_rec_fn /rec_fn_rev -abstract_rec_rev_equiv_recfn_p.
+  abstract_rec_rev (S n) n z a b c d e f x = abstract_rev_fn z x (S n) a b c d e f.
+Proof. intros. rewrite /abstract_rev_fn /rec_fn_rev -abstract_rec_rev_equiv_rev_fn_p.
 replace (S n - 1) with n ; go.
 Qed.
+
+Arguments rec_fn [T] _ _ _.
+
+Definition abstract_rec_fn (z x:T) (n:nat) (a b c d e f : T) := rec_fn (step_gen z x) n (a,b,c,d,e,f).
+
+Lemma abstract_rec_equiv_rec_fn: forall n z a b c d e f x,
+  abstract_rec n z a b c d e f x = abstract_rec_fn z x n a b c d e f.
+Proof.
+  induction n => z x a b c d e f.
+  reflexivity.
+  simpl.
+  rewrite IHn /abstract_rec_fn.
+  reflexivity.
+Qed.
+
 
 (* 
 Lemma Zabstract_step_rev_a : forall n p (z a b c d e f x : Z),

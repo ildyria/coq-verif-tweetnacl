@@ -10,9 +10,9 @@ From Tweetnacl.Mid Require Import Inv25519.
 From Tweetnacl.Mid Require Import ScalarMult_rev.
 (* From Tweetnacl.Mid Require Import ScalarMult_gen_small. *)
 (* From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen. *)
-From Tweetnacl.Mid Require Import AMZubSqSel.
+(* From Tweetnacl.Mid Require Import AMZubSqSel. *)
 
-From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.
+(* From Tweetnacl.High Require Import Zmodp opt_ladder curve25519. *)
 
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
 

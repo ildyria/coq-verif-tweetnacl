@@ -1,18 +1,11 @@
-Require Import Tweetnacl.Libs.Export.
-Require Import ssreflect.
+From Tweetnacl.Gen Require Import AMZubSqSel.
 
-Section ScalarRec.
-Open Scope Z.
+Section ABCDEF.
 
-Variable A : Z -> Z -> Z.
-Variable M : Z -> Z -> Z.
-Variable Zub : Z -> Z -> Z.
-Variable Sq : Z -> Z.
-Variable _121665: Z.
-Variable Sel25519 : Z -> Z -> Z -> Z.
-Variable getbit : Z -> Z -> Z.
+Context {T : Type}.
+Context {O : @Ops T}.
 
-Definition Zfa r (a b c d e f x:Z) :=
+Definition fa r (a b c d e f x:T) :=
   Sel25519 r
      (M (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
         (Sq (Zub (Sel25519 r a b) (Sel25519 r c d))))
@@ -22,8 +15,7 @@ Definition Zfa r (a b c d e f x:Z) :=
               (Zub (Sel25519 r a b) (Sel25519 r c d)))
            (M (Zub (Sel25519 r b a) (Sel25519 r d c))
               (A (Sel25519 r a b) (Sel25519 r c d))))).
-
-Definition Zfb r (a b c d e f x:Z) :=
+Definition fb r (a b c d e f x:T) :=
   Sel25519 r
      (Sq
         (A
@@ -33,8 +25,7 @@ Definition Zfb r (a b c d e f x:Z) :=
               (A (Sel25519 r a b) (Sel25519 r c d)))))
      (M (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
         (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))).
-
-Definition Zfc r (a b c d e f x:Z) :=
+Definition fc r (a b c d e f x:T) :=
 Sel25519 r
   (M
      (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
@@ -51,8 +42,7 @@ Sel25519 r
               (Zub (Sel25519 r a b) (Sel25519 r c d)))
            (M (Zub (Sel25519 r b a) (Sel25519 r d c))
               (A (Sel25519 r a b) (Sel25519 r c d))))) x).
-
-Definition Zfd r (a b c d e f x:Z) :=
+Definition fd r (a b c d e f x:T) :=
 Sel25519 r
   (M
      (Sq
@@ -69,17 +59,13 @@ Sel25519 r
            (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
               (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) _121665)
         (Sq (A (Sel25519 r a b) (Sel25519 r c d))))).
-
-Definition Zfe r (a b c d e f x:Z) :=
+Definition fe r (a b c d e f x:T) :=
 A
   (M (A (Sel25519 r b a) (Sel25519 r d c))
      (Zub (Sel25519 r a b) (Sel25519 r c d)))
   (M (Zub (Sel25519 r b a) (Sel25519 r d c))
      (A (Sel25519 r a b) (Sel25519 r c d))).
-
-Definition Zff r (a b c d e f x:Z) :=
+Definition ff r (a b c d e f x:T) :=
   Sq (Zub (Sel25519 r a b) (Sel25519 r c d)).
 
-End ScalarRec.
-
-Close Scope Z.
+End ABCDEF.

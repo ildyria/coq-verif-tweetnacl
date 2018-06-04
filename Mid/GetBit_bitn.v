@@ -1,4 +1,4 @@
-Set Warnings "-notation-overridden,-parsing".
+(* Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect eqtype ssrfun ssrbool ssrnat div.
 From Tweetnacl.High Require Import ladder.
 Require Import ZArith.
@@ -103,3 +103,4 @@ Proof.
 assert(Hl := Zland_0_1 x).
 destruct Hl as [Hl|Hl] ; rewrite Hl ; simpl ; split ; intros ; trivial ; discriminate.
 Qed.
+ *)

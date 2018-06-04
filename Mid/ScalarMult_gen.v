@@ -54,97 +54,91 @@ int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
 *)
 
 Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.Mid.ScalarMult_gen_small.
 Require Import Tweetnacl.Low.Get_abcdef.
+Require Import Tweetnacl.Gen.AMZubSqSel.
 
 Section ScalarRec.
 
-Variable ZA : Z -> Z -> Z.
-Variable ZM : Z -> Z -> Z.
-Variable ZZub : Z -> Z -> Z.
-Variable ZSq : Z -> Z.
-Variable Z_121665: Z.
-Variable ZSel25519 : Z -> Z -> Z -> Z.
-Variable Zgetbit : Z -> Z -> Z.
+Context {O : Ops Z}.
 
-Fixpoint Zmontgomery_rec_gen (m : nat) (z a b c d e f x : Z) : (Z * Z * Z * Z * Z * Z) :=
+Fixpoint montgomery_rec_gen (m : nat) (z a b c d e f x : Z) : (Z * Z * Z * Z * Z * Z) :=
   match m with
   | 0%nat => (a,b,c,d,e,f)
   | S n => 
-      let r := Zgetbit (Z.of_nat n) z in
-      let (a, b) := (ZSel25519 r a b, ZSel25519 r b a) in
-      let (c, d) := (ZSel25519 r c d, ZSel25519 r d c) in
-      let e := ZA a c in
-      let a := ZZub a c in
-      let c := ZA b d in
-      let b := ZZub b d in
-      let d := ZSq e in
-      let f := ZSq a in
-      let a := ZM c a in
-      let c := ZM b e in
-      let e := ZA a c in
-      let a := ZZub a c in
-      let b := ZSq a in
-      let c := ZZub d f in
-      let a := ZM c Z_121665 in
-      let a := ZA a d in
-      let c := ZM c a in
-      let a := ZM d f in
-      let d := ZM b x in
-      let b := ZSq e in
-      let (a, b) := (ZSel25519 r a b, ZSel25519 r b a) in
-      let (c, d) := (ZSel25519 r c d, ZSel25519 r d c) in
-      Zmontgomery_rec_gen n z a b c d e f x
+      let r := getbit (Z.of_nat n) z in
+      let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+      let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+      let e := A a c in
+      let a := Zub a c in
+      let c := A b d in
+      let b := Zub b d in
+      let d := Sq e in
+      let f := Sq a in
+      let a := M c a in
+      let c := M b e in
+      let e := A a c in
+      let a := Zub a c in
+      let b := Sq a in
+      let c := Zub d f in
+      let a := M c _121665 in
+      let a := A a d in
+      let c := M c a in
+      let a := M d f in
+      let d := M b x in
+      let b := Sq e in
+      let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+      let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+      montgomery_rec_gen n z a b c d e f x
     end.
 
-Definition Zmontgomery_step_gen (m:nat) (z a b c d e f x : Z) : (Z * Z * Z * Z * Z * Z)  :=
-      let r := Zgetbit (Z.of_nat m) z in
-      let (a, b) := (ZSel25519 r a b, ZSel25519 r b a) in
-      let (c, d) := (ZSel25519 r c d, ZSel25519 r d c) in
-      let e := ZA a c in
-      let a := ZZub a c in
-      let c := ZA b d in
-      let b := ZZub b d in
-      let d := ZSq e in
-      let f := ZSq a in
-      let a := ZM c a in
-      let c := ZM b e in
-      let e := ZA a c in
-      let a := ZZub a c in
-      let b := ZSq a in
-      let c := ZZub d f in
-      let a := ZM c Z_121665 in
-      let a := ZA a d in
-      let c := ZM c a in
-      let a := ZM d f in
-      let d := ZM b x in
-      let b := ZSq e in
-      let (a, b) := (ZSel25519 r a b, ZSel25519 r b a) in
-      let (c, d) := (ZSel25519 r c d, ZSel25519 r d c) in
+Definition montgomery_step_gen (m:nat) (z a b c d e f x : Z) : (Z * Z * Z * Z * Z * Z)  :=
+      let r := getbit (Z.of_nat m) z in
+      let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+      let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+      let e := A a c in
+      let a := Zub a c in
+      let c := A b d in
+      let b := Zub b d in
+      let d := Sq e in
+      let f := Sq a in
+      let a := M c a in
+      let c := M b e in
+      let e := A a c in
+      let a := Zub a c in
+      let b := Sq a in
+      let c := Zub d f in
+      let a := M c _121665 in
+      let a := A a d in
+      let c := M c a in
+      let a := M d f in
+      let d := M b x in
+      let b := Sq e in
+      let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+      let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
       (a,b,c,d,e,f).
 (*     end. *)
 
 Lemma opt_montgomery_rec_step_gen : forall n z a b c d e f x,
-  Zmontgomery_rec_gen (S n) z a b c d e f x = 
-  Zmontgomery_rec_gen n z 
-  (get_a (Zmontgomery_step_gen n z a b c d e f x))
-  (get_b (Zmontgomery_step_gen n z a b c d e f x))
-  (get_c (Zmontgomery_step_gen n z a b c d e f x))
-  (get_d (Zmontgomery_step_gen n z a b c d e f x))
-  (get_e (Zmontgomery_step_gen n z a b c d e f x))
-  (get_f (Zmontgomery_step_gen n z a b c d e f x))
+  montgomery_rec_gen (S n) z a b c d e f x = 
+  montgomery_rec_gen n z 
+  (get_a (montgomery_step_gen n z a b c d e f x))
+  (get_b (montgomery_step_gen n z a b c d e f x))
+  (get_c (montgomery_step_gen n z a b c d e f x))
+  (get_d (montgomery_step_gen n z a b c d e f x))
+  (get_e (montgomery_step_gen n z a b c d e f x))
+  (get_f (montgomery_step_gen n z a b c d e f x))
   x.
 Proof. reflexivity. Qed.
 
 Lemma opt_montgomery_rec_step_gen_ext : forall n z a b c d e f e' f' x,
-  Zmontgomery_rec_gen (S n) z a b c d e' f' x = 
-  Zmontgomery_rec_gen n z 
-  (get_a (Zmontgomery_step_gen n z a b c d e f x))
-  (get_b (Zmontgomery_step_gen n z a b c d e f x))
-  (get_c (Zmontgomery_step_gen n z a b c d e f x))
-  (get_d (Zmontgomery_step_gen n z a b c d e f x))
-  (get_e (Zmontgomery_step_gen n z a b c d e f x))
-  (get_f (Zmontgomery_step_gen n z a b c d e f x))
+  montgomery_rec_gen (S n) z a b c d e' f' x = 
+  montgomery_rec_gen n z 
+  (get_a (montgomery_step_gen n z a b c d e f x))
+  (get_b (montgomery_step_gen n z a b c d e f x))
+  (get_c (montgomery_step_gen n z a b c d e f x))
+  (get_d (montgomery_step_gen n z a b c d e f x))
+  (get_e (montgomery_step_gen n z a b c d e f x))
+  (get_f (montgomery_step_gen n z a b c d e f x))
   x.
 Proof. reflexivity. Qed.
 
