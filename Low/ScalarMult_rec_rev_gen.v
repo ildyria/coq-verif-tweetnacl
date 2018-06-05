@@ -1,4 +1,4 @@
-Require Import ssreflect.
+(* Require Import ssreflect.
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Libs.HeadTailRec.
 Require Import Tweetnacl.Low.Get_abcdef.
@@ -248,4 +248,4 @@ Qed.
 
 Close Scope Z.
 
-End ScalarRec.
+End ScalarRec. *)

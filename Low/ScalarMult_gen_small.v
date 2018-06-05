@@ -611,10 +611,6 @@ Proof.
   intros h Hh; Simplify_this; simpl in Hh; omega.
 Qed.
 
-
-
-
-
 End ScalarRec.
 
 Close Scope Z.

@@ -6,6 +6,7 @@ Require Import Tweetnacl.Gen.AMZubSqSel.
 Require Import Tweetnacl.Mid.AMZubSqSel.
 
 From Tweetnacl.Gen Require Import abstract_rec_rev.
+From Tweetnacl.Gen Require Import abstract_rec.
 
 Require Import ssreflect.
 

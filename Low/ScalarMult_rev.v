@@ -1,57 +1,3 @@
-(*
-int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
-{
-  u8 z[32];
-  i64 x[80],r;
-  int i;
-  gf a,b,c,d,e,f;
-  FOR(i,31) z[i]=n[i];
-  z[31]=(n[31]&127)|64;
-  z[0]&=248;
-  unpack25519(x,p);
-  FOR(i,16) {
-    b[i]=x[i];
-    d[i]=a[i]=c[i]=0;
-  }
-  a[0]=d[0]=1;
-  for(i=254;i>=0;--i) {
-    r=(z[i>>3]>>(i&7))&1;
-    sel25519(a,b,r);
-    sel25519(c,d,r);
-    A(e,a,c);
-    Z(a,a,c);
-    A(c,b,d);
-    Z(b,b,d);
-    S(d,e);
-    S(f,a);
-    M(a,c,a);
-    M(c,b,e);
-    A(e,a,c);
-    Z(a,a,c);
-    S(b,a);
-    Z(c,d,f);
-    M(a,c,_121665);
-    A(a,a,d);
-    M(c,c,a);
-    M(a,d,f);
-    M(d,b,x);
-    S(b,e);
-    sel25519(a,b,r);
-    sel25519(c,d,r);
-  }
-  FOR(i,16) {
-    x[i+16]=a[i];
-    x[i+32]=c[i];
-    x[i+48]=b[i];
-    x[i+64]=d[i];
-  }
-  inv25519(x+32,x+32);
-  M(x+16,x+16,x+32);
-  pack25519(q,x+16);
-  return 0;
-}
-*)
-
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Low.Car25519.
 Require Import Tweetnacl.Low.Unpack25519.
@@ -66,6 +12,7 @@ Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Tweetnacl.Low.AMZubSqSel.
 Require Import Tweetnacl.Low.ScalarMult_gen_small.
 Require Import Tweetnacl.Gen.abstract_fn_rev.
+Require Import Tweetnacl.Gen.abstract_fn_rev_abcdef.
 Require Import Tweetnacl.Low.ScalarMult_rev_fn_gen.
 Require Import Tweetnacl.Gen.ABCDEF.
 
@@ -283,7 +230,7 @@ Lemma fa_step : forall n p z a b c d e f x ,
      (get_e (montgomery_fn n p z a b c d e f x))
      (get_f (montgomery_fn n p z a b c d e f x)) x =
    get_a (montgomery_fn (n + 1) p z a b c d e f x).
-Proof. apply abstract_fn_a. Qed.
+Proof. apply abstract_fn_rev_a. Qed.
 Lemma fb_step : forall n p z a b c d e f x ,
   0 <= n ->
    fb (getbit (p - n) z)
@@ -294,7 +241,7 @@ Lemma fb_step : forall n p z a b c d e f x ,
      (get_e (montgomery_fn n p z a b c d e f x))
      (get_f (montgomery_fn n p z a b c d e f x)) x =
    get_b (montgomery_fn (n + 1) p z a b c d e f x).
-Proof. apply abstract_fn_b. Qed.
+Proof. apply abstract_fn_rev_b. Qed.
 Lemma fc_step : forall n p z a b c d e f x ,
   0 <= n ->
    fc (getbit (p - n) z)
@@ -305,7 +252,7 @@ Lemma fc_step : forall n p z a b c d e f x ,
      (get_e (montgomery_fn n p z a b c d e f x))
      (get_f (montgomery_fn n p z a b c d e f x)) x =
    get_c (montgomery_fn (n + 1) p z a b c d e f x).
-Proof. apply abstract_fn_c. Qed.
+Proof. apply abstract_fn_rev_c. Qed.
 Lemma fd_step : forall n p z a b c d e f x ,
   0 <= n ->
    fd (getbit (p - n) z)
@@ -316,7 +263,7 @@ Lemma fd_step : forall n p z a b c d e f x ,
      (get_e (montgomery_fn n p z a b c d e f x))
      (get_f (montgomery_fn n p z a b c d e f x)) x =
    get_d (montgomery_fn (n + 1) p z a b c d e f x).
-Proof. apply abstract_fn_d. Qed.
+Proof. apply abstract_fn_rev_d. Qed.
 Lemma fe_step : forall n p z a b c d e f x ,
   0 <= n ->
    fe (getbit (p - n) z)
@@ -327,7 +274,7 @@ Lemma fe_step : forall n p z a b c d e f x ,
      (get_e (montgomery_fn n p z a b c d e f x))
      (get_f (montgomery_fn n p z a b c d e f x)) x =
    get_e (montgomery_fn (n + 1) p z a b c d e f x).
-Proof. apply abstract_fn_e. Qed.
+Proof. apply abstract_fn_rev_e. Qed.
 Lemma ff_step : forall n p z a b c d e f x ,
   0 <= n ->
    ff (getbit (p - n) z)
@@ -338,7 +285,7 @@ Lemma ff_step : forall n p z a b c d e f x ,
      (get_e (montgomery_fn n p z a b c d e f x))
      (get_f (montgomery_fn n p z a b c d e f x)) x =
    get_f (montgomery_fn (n + 1) p z a b c d e f x).
-Proof. apply abstract_fn_f. Qed.
+Proof. apply abstract_fn_rev_f. Qed.
 
 Lemma get_a_montgomery_fn_Zlength : forall n p z a b c d e f x,
   0 <= n ->

@@ -2,13 +2,13 @@ Set Warnings "-funind-cannot-define-graph".
 Set Warnings "-funind".
 
 Require Import ssreflect.
-Require Import Tweetnacl.Libs.Export.
-Require Import Tweetnacl.Gen.Get_abcdef.
-Require Import Tweetnacl.Gen.AMZubSqSel.
-Require Import Tweetnacl.Gen.ABCDEF.
-Require Import Recdef.
+From Tweetnacl.Libs Require Import Export.
+From Tweetnacl.Libs Require Import HeadTailRec.
+From Tweetnacl.Gen Require Import AMZubSqSel.
+From Tweetnacl.Gen Require Import ABCDEF.
+From Tweetnacl.Gen Require Import step_gen.
 
-Section ScalarRec.
+Section Abstract_Fn_Rev.
 
 Open Scope Z.
 
@@ -54,115 +54,6 @@ assert((n <=? 0) = false).
 by apply Z.leb_gt. flatten.
 Qed.
 
-Lemma abstract_fn_a : forall n p (z a b c d e f x : T),
-  0 <= n ->
-  fa (getbit (p - n) z)
-   (get_a (abstract_fn_rev n p z a b c d e f x))
-   (get_b (abstract_fn_rev n p z a b c d e f x))
-   (get_c (abstract_fn_rev n p z a b c d e f x))
-   (get_d (abstract_fn_rev n p z a b c d e f x))
-   (get_e (abstract_fn_rev n p z a b c d e f x))
-   (get_f (abstract_fn_rev n p z a b c d e f x))
-   x
-  =
-  get_a (abstract_fn_rev (n + 1) p z a b c d e f x).
-Proof.
-intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
-intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
-replace (n + 1 <=? 0) with false ; try reflexivity.
-symmetry ; apply Z.leb_gt ; omega.
-Qed.
-Lemma abstract_fn_b : forall n p (z a b c d e f x : T),
-  0 <= n ->
-  fb (getbit (p - n) z)
-   (get_a (abstract_fn_rev n p z a b c d e f x))
-   (get_b (abstract_fn_rev n p z a b c d e f x))
-   (get_c (abstract_fn_rev n p z a b c d e f x))
-   (get_d (abstract_fn_rev n p z a b c d e f x))
-   (get_e (abstract_fn_rev n p z a b c d e f x))
-   (get_f (abstract_fn_rev n p z a b c d e f x))
-   x
-  =
-  get_b (abstract_fn_rev (n + 1) p z a b c d e f x).
-Proof.
-intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
-intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
-replace (n + 1 <=? 0) with false ; try reflexivity.
-symmetry ; apply Z.leb_gt ; omega.
-Qed.
-Lemma abstract_fn_c : forall n p (z a b c d e f x : T),
-  0 <= n ->
-  fc (getbit (p - n) z)
-   (get_a (abstract_fn_rev n p z a b c d e f x))
-   (get_b (abstract_fn_rev n p z a b c d e f x))
-   (get_c (abstract_fn_rev n p z a b c d e f x))
-   (get_d (abstract_fn_rev n p z a b c d e f x))
-   (get_e (abstract_fn_rev n p z a b c d e f x))
-   (get_f (abstract_fn_rev n p z a b c d e f x))
-   x
-  =
-  get_c (abstract_fn_rev (n + 1) p z a b c d e f x).
-Proof.
-intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
-intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
-replace (n + 1 <=? 0) with false ; try reflexivity.
-symmetry ; apply Z.leb_gt ; omega.
-Qed.
-Lemma abstract_fn_d : forall n p (z a b c d e f x : T),
-  0 <= n ->
-  fd (getbit (p - n) z)
-   (get_a (abstract_fn_rev n p z a b c d e f x))
-   (get_b (abstract_fn_rev n p z a b c d e f x))
-   (get_c (abstract_fn_rev n p z a b c d e f x))
-   (get_d (abstract_fn_rev n p z a b c d e f x))
-   (get_e (abstract_fn_rev n p z a b c d e f x))
-   (get_f (abstract_fn_rev n p z a b c d e f x))
-   x
-  =
-  get_d (abstract_fn_rev (n + 1) p z a b c d e f x).
-Proof.
-intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
-intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
-replace (n + 1 <=? 0) with false ; try reflexivity.
-symmetry ; apply Z.leb_gt ; omega.
-Qed.
-Lemma abstract_fn_e : forall n p (z a b c d e f x : T),
-  0 <= n ->
-  fe (getbit (p - n) z)
-   (get_a (abstract_fn_rev n p z a b c d e f x))
-   (get_b (abstract_fn_rev n p z a b c d e f x))
-   (get_c (abstract_fn_rev n p z a b c d e f x))
-   (get_d (abstract_fn_rev n p z a b c d e f x))
-   (get_e (abstract_fn_rev n p z a b c d e f x))
-   (get_f (abstract_fn_rev n p z a b c d e f x))
-   x
-  =
-  get_e (abstract_fn_rev (n + 1) p z a b c d e f x).
-Proof.
-intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
-intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
-replace (n + 1 <=? 0) with false ; try reflexivity.
-symmetry ; apply Z.leb_gt ; omega.
-Qed.
-Lemma abstract_fn_f : forall n p (z a b c d e f x : T),
-  0 <= n ->
-  ff (getbit (p - n) z)
-   (get_a (abstract_fn_rev n p z a b c d e f x))
-   (get_b (abstract_fn_rev n p z a b c d e f x))
-   (get_c (abstract_fn_rev n p z a b c d e f x))
-   (get_d (abstract_fn_rev n p z a b c d e f x))
-   (get_e (abstract_fn_rev n p z a b c d e f x))
-   (get_f (abstract_fn_rev n p z a b c d e f x))
-   x
-  =
-  get_f (abstract_fn_rev (n + 1) p z a b c d e f x).
-Proof.
-intros. symmetry; rewrite abstract_fn_rev_equation. replace (n + 1 - 1) with n by omega.
-intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0),d0),e0),f0).
-replace (n + 1 <=? 0) with false ; try reflexivity.
-symmetry ; apply Z.leb_gt ; omega.
-Qed.
-
 Close Scope Z.
 
-End ScalarRec.
+End Abstract_Fn_Rev.

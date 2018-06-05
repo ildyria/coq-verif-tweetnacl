@@ -8,8 +8,8 @@ Require Import Tweetnacl.Low.ScalarMult_gen_small.
 Require Import Tweetnacl.Low.AMZubSqSel.
 Require Import Tweetnacl.Gen.ABCDEF.
 Require Import Tweetnacl.Gen.abstract_fn_rev.
-Require Import Recdef.
-
+(* Require Import Recdef.
+ *)
 Section ScalarRec.
 
 Open Scope Z.

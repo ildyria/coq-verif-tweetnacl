@@ -1,13 +1,16 @@
 From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Libs Require Import HeadTailRec.
 
-From Tweetnacl.Gen Require Import Get_abcdef.
+Require Import ssreflect.
+From Tweetnacl.Libs Require Import Export.
+From Tweetnacl.Libs Require Import HeadTailRec.
 From Tweetnacl.Gen Require Import AMZubSqSel.
 From Tweetnacl.Gen Require Import ABCDEF.
 From Tweetnacl.Gen Require Import step_gen.
 
-From Tweetnacl.Gen Require Import abstract_rec_rev.
 From Tweetnacl.Gen Require Import abstract_fn_rev.
+From Tweetnacl.Gen Require Import abstract_rec.
+From Tweetnacl.Gen Require Import abstract_rec_rev.
 
 Require Import ssreflect.
 
@@ -58,8 +61,8 @@ Lemma abstract_rec_rev_eq : forall n z a b c d e f x,
   abstract_rec (S n) z a b c d e f x = abstract_rec_rev (S n) n z a b c d e f x.
 Proof.
 intros.
-rewrite abstract_rec_equiv_rec_fn abstract_rec_rev_equiv_rec_fn.
-rewrite /abstract_rev_fn /abstract_rec_fn /abstract_rec_fn Tail_Head_equiv ;f_equal.
+rewrite abstract_rec_equiv_rec_fn abstract_rec_rev_equiv_rec_fn_S_n.
+rewrite /abstract_rec_fn_rev /abstract_rec_fn /abstract_rec_fn Tail_Head_equiv ;f_equal.
 Qed.
 
 End EquivFnRec.

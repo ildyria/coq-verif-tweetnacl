@@ -9,7 +9,7 @@ From Tweetnacl.Low Require Import M.
 From Tweetnacl.Low Require Import Inv25519.
 From Tweetnacl.Low Require Import ScalarMult_rev.
 
-From Tweetnacl.Low Require Import ScalarMult_rev_fn_gen.
+(* From Tweetnacl.Low Require Import ScalarMult_rev_fn_gen. *)
 
 From Tweetnacl.Low Require Import Get_abcdef.
 From Tweetnacl.Low Require Import Constant.

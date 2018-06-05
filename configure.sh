@@ -29,6 +29,7 @@ echo "" >> _CoqProject
 # generate the list of files for coq_makefile
 ls */*.v | egrep -v $filt >> _CoqProject
 
+
 coq_makefile INSTALLDEFAULTROOT = Tweetnacl -f _CoqProject -o Makefile
 # coq_makefile -f _CoqProject -o Makefile
 

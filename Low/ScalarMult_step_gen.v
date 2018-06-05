@@ -1,4 +1,4 @@
-Require Import Tweetnacl.Libs.Export.
+(* Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Libs.HeadTailRec.
 Section ScalarRec.
 
@@ -21,4 +21,4 @@ Definition step_gen (z x:list Z) (n:nat) k : (list Z * list Z * list Z * list Z 
         ff r a b c d e f x)
       end.
 
-End ScalarRec.
+End ScalarRec. *)
