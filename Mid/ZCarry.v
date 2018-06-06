@@ -1,7 +1,6 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import Mid.Reduce.
-From Tweetnacl Require Import Low.Carry.
-From Tweetnacl Require Import Low.Car25519.
+From Tweetnacl Require Import Mid.Car25519.
 Require Import ssreflect.
 Require Import Nsatz.
 Require Import Psatz.
@@ -453,3 +452,5 @@ Proof.
   repeat apply ZCarry25519_pos ; omega.
   eapply doubleCar ; eauto.
 Qed.
+
+Close Scope Z.

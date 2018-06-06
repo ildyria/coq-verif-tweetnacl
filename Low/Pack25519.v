@@ -1,6 +1,6 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From Tweetnacl Require Import Low.Reduce_by_P.
+From Tweetnacl Require Import Low.Reduce_by_P.Reduce_by_P.
 From Tweetnacl Require Import Low.Car25519.
 From Tweetnacl Require Import Low.Car25519_bounds.
 From Tweetnacl Require Import Low.Get_abcdef.

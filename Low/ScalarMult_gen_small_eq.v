@@ -1,4 +1,4 @@
-From Tweetnacl.Libs Require Import Export.
+(* From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.ListsOp Require Import Export.
 
 From Tweetnacl.Gen Require Import AMZubSqSel.
@@ -34,3 +34,4 @@ Variable Mod_ZSq_eq : forall p,  Mod (Sq p) = Mod (Sq (Mod p)).
 Variable Mod_red : forall p,  Mod (Mod p) = (Mod p).
 
 End ScalarRec.
+ *)

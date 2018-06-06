@@ -3,7 +3,7 @@ From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Import Get_abcdef.
 From Tweetnacl.Gen Require Import AMZubSqSel.
 From Tweetnacl.Gen Require Import ABCDEF.
-From Tweetnacl.Gen Require Import montgomery_step_gen.
+(* From Tweetnacl.Gen Require Import montgomery_step_gen. *)
 
 Section Montgomery_Rec.
 
@@ -42,7 +42,7 @@ Fixpoint montgomery_rec (m : nat) (z a b c d e f x : T) : (T * T * T * T * T * T
       montgomery_rec n z a b c d e f x
     end.
 
-Lemma opt_montgomery_rec_step_gen : forall n z a b c d e f x,
+(* Lemma opt_montgomery_rec_step_gen : forall n z a b c d e f x,
   montgomery_rec (S n) z a b c d e f x = 
   montgomery_rec n z 
   (get_a (montgomery_step_gen n z a b c d e f x))
@@ -64,7 +64,7 @@ Lemma opt_montgomery_rec_step_gen_ext : forall n z a b c d e f e' f' x,
   (get_e (montgomery_step_gen n z a b c d e f x))
   (get_f (montgomery_step_gen n z a b c d e f x))
   x.
-Proof. reflexivity. Qed.
+Proof. reflexivity. Qed. *)
 
 Close Scope Z.
 

@@ -2,10 +2,11 @@ Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From Tweetnacl Require Import Low.Carry.
 From Tweetnacl Require Import Mid.ZCarry.
 From Tweetnacl Require Import Mid.Reduce.
+From Tweetnacl Require Import Low.Carry.
 From Tweetnacl Require Import Low.Car25519.
+From Tweetnacl Require Import Mid.Car25519.
 
 Open Scope Z.
 

@@ -21,14 +21,15 @@ fi
 
 # generate the path for coqide and voqv
 for D in $(find * -maxdepth 1 -type d | egrep -v $filt); do
-	echo "-Q $D Tweetnacl.$D" >> _CoqProject
+	echo "-Q $D Tweetnacl.$D" | sed 's/\//./2'>> _CoqProject
 done
 
 echo "" >> _CoqProject
 
 # generate the list of files for coq_makefile
-ls */*.v | egrep -v $filt >> _CoqProject
-
+# ls */*.v | egrep -v $filt >> _CoqProject
+find * -name "*.v" -print | egrep -v $filt >> _CoqProject
+ 
 
 coq_makefile INSTALLDEFAULTROOT = Tweetnacl -f _CoqProject -o Makefile
 # coq_makefile -f _CoqProject -o Makefile

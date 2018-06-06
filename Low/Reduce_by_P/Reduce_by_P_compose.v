@@ -1,9 +1,9 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
-From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
-From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
 From Tweetnacl Require Import Low.Z.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_step.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2.
 Require Import ssreflect.
 Require Import Recdef.
 

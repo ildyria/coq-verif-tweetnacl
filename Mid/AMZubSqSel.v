@@ -1,7 +1,6 @@
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
-From Tweetnacl.Low Require Import Car25519.
-From Tweetnacl.Mid Require Import Reduce.
+From Tweetnacl Require Import Mid.Car25519.
 
 Open Scope Z.
 

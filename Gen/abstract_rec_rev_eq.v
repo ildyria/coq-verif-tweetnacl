@@ -21,7 +21,7 @@ Open Scope Z.
 Context {T : Type}.
 Context {O : Ops T}.
 
-Lemma abstract_fn_rev_eq : forall m p z a b c d e f x,
+Theorem abstract_fn_rev_eq : forall m p z a b c d e f x,
   0 <= m ->
   0 <= p ->
   m <= p + 1 ->
@@ -57,12 +57,13 @@ Qed.
 
 Close Scope Z.
 
-Lemma abstract_rec_rev_eq : forall n z a b c d e f x,
+(* Theorem not needed but still cool to have *)
+Theorem abstract_rec_rev_eq : forall n z a b c d e f x,
   abstract_rec (S n) z a b c d e f x = abstract_rec_rev (S n) n z a b c d e f x.
 Proof.
 intros.
 rewrite abstract_rec_equiv_rec_fn abstract_rec_rev_equiv_rec_fn_S_n.
-rewrite /abstract_rec_fn_rev /abstract_rec_fn /abstract_rec_fn Tail_Head_equiv ;f_equal.
+apply Tail_Head_equiv.
 Qed.
 
 End EquivFnRec.

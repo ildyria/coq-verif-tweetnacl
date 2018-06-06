@@ -32,7 +32,7 @@ Variable Mod_ZZub_eq : forall p q,  Mod (Zub p q) = Mod (Zub (Mod p) (Mod q)).
 Variable Mod_ZSq_eq : forall p,  Mod (Sq p) = Mod (Sq (Mod p)).
 Variable Mod_red : forall p,  Mod (Mod p) = (Mod p).
 
-Lemma abstract_fn_rev_eq : forall (m p:Z) (z a b c d e f x a' b' c' d' e' f':T) (a'' b'' c'' d'' e'' f'': U),
+Theorem abstract_fn_rev_eq : forall (m p:Z) (z a b c d e f x a' b' c' d' e' f':T) (a'' b'' c'' d'' e'' f'': U),
   0 <= m ->
   (a',b',c',d',e',f') = (abstract_fn_rev m p z a b c d e f x) -> 
   (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))

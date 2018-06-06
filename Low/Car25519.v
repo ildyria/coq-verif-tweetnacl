@@ -3,6 +3,7 @@ Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Mid.Reduce.
+From Tweetnacl Require Import Mid.Car25519.
 From Tweetnacl Require Import Low.Carry_n.
 From Tweetnacl Require Import Low.BackCarry.
 From Tweetnacl Require Import Low.Carry.
@@ -41,24 +42,6 @@ Qed.
 
 Lemma car25519_bound_Z : forall (i:nat) l, Zlength l = 16 -> 0 <> i -> nth i (car25519 l) 0 < 2 ^ 16.
 Proof. convert_length_to_Zlength car25519_bound_sup. Qed.
-
-Definition Zcar25519 (n:ℤ) : ℤ  :=  38 * getCarry 256 n +  getResidue 256 n.
-
-Notation ℤcar25519 := Zcar25519.
-
-Lemma Zcar25519_correct: forall n, n:𝓖𝓕 = (Zcar25519 n) :𝓖𝓕.
-Proof.
-  intro n.
-  unfold ℤcar25519.
-  rewrite  <- Z.add_mod_idemp_l by (compute ; intro ; false).
-  rewrite <- Zmult_mod_idemp_l.
-  rewrite <- t2256is38.
-  rewrite Zmult_mod_idemp_l.
-  rewrite Z.add_mod_idemp_l.
-  rewrite Z.add_comm.
-  orewrite residuteCarry.
-  compute ; intro ; false.
-Qed.
 
 (*
 A bunch of facts required to prove getCarry_16_eq_256.

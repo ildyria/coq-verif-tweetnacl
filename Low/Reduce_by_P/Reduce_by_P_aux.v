@@ -1,16 +1,17 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
-From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
-From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
-From Tweetnacl Require Import Low.Reduce_by_P_compose_1b.
-From Tweetnacl Require Import Low.Reduce_by_P_compose_2b.
-From Tweetnacl Require Import Low.Reduce_by_P_compose.
-From Tweetnacl Require Import Mid.SubList.
 From Tweetnacl Require Import Low.Get_abcdef.
 From Tweetnacl Require Import Low.GetBit_pack25519.
 From Tweetnacl Require Import Low.Sel25519.
 From Tweetnacl Require Import Low.Constant.
+From Tweetnacl Require Import Mid.SubList.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_step.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1b.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2b.
+From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose.
+
 From stdpp Require Import list.
 Require Import ssreflect.
 

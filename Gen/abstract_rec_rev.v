@@ -30,9 +30,9 @@ Fixpoint abstract_rec_rev m p (z a b c d e f x : T) : (T * T * T * T * T * T)
 Arguments rec_fn_rev_acc [T] _ _ _.
 Arguments rec_fn_rev [T] _ _.
 
-Definition abstract_rec_fn_rev (z x: T) (n:nat) (a b c d e f : T) := rec_fn_rev (step_gen z x) n (a,b,c,d,e,f).
+(* Definition abstract_rec_fn_rev (z x: T) (n:nat) (a b c d e f : T) := rec_fn_rev (step_gen z x) n (a,b,c,d,e,f). *)
 
-Lemma abstract_rec_rev_equiv_rev_fn_p : forall n p z a b c d e f x,
+Local Lemma abstract_rec_rev_equiv_rev_fn_p : forall n p z a b c d e f x,
   abstract_rec_rev n (p - 1) z a b c d e f x = rec_fn_rev_acc (step_gen z x) n p (a,b,c,d,e,f).
 Proof.
   induction n => p z x a b c d e f.
@@ -48,16 +48,16 @@ Proof.
   go.
 Qed.
 
-Lemma abstract_rec_rev_equiv_rec_fn_S_n : forall n z a b c d e f x,
-  abstract_rec_rev (S n) n z a b c d e f x = abstract_rec_fn_rev z x (S n) a b c d e f.
-Proof. intros. rewrite /abstract_rec_fn_rev /rec_fn_rev -abstract_rec_rev_equiv_rev_fn_p.
+Theorem abstract_rec_rev_equiv_rec_fn_S_n : forall n z a b c d e f x,
+  abstract_rec_rev (S n) n z a b c d e f x = rec_fn_rev (step_gen z x) (S n) (a,b,c,d,e,f).
+Proof. intros. rewrite /rec_fn_rev -abstract_rec_rev_equiv_rev_fn_p.
 replace (S n - 1) with n ; go.
 Qed.
 
+(*
 Local Lemma abstract_rec_rev_equiv_rec_fn_0 : forall n z a b c d e f x,
   abstract_rec_rev 0 n z a b c d e f x = abstract_rec_fn_rev z x 0 a b c d e f.
 Proof. intros; rewrite /abstract_rec_fn_rev /rec_fn_rev; simpl; reflexivity. Qed.
-
-Open Scope Z.
+*)
 
 End Abstract_Rec_Rev.

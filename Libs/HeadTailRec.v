@@ -29,7 +29,7 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma Tail_Head_equiv : forall n s, rec_fn n s = rec_fn_rev n s.
+Theorem Tail_Head_equiv : forall n s, rec_fn n s = rec_fn_rev n s.
 Proof.
   induction n => s //.
   rewrite /rec_fn_rev rec_fn_rev_acc_S.

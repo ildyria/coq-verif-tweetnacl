@@ -5,21 +5,6 @@ Open Scope Z.
 
 Class Ops_Prop `{Ops (list Z)} :=
 {
-(*   A : list Z -> list Z -> list Z;
-  M : list Z -> list Z -> list Z;
-  Zub : list Z -> list Z -> list Z;
-  Sq : list Z -> list Z;
-  _121665: list Z;
-  Sel25519 : Z -> list Z -> list Z -> list Z;
-  getbit : Z -> list Z -> Z;
- *)(*
-  A_length : forall a b, length a = 16 -> length b = 16 -> length (A a b) = 16;
-  M_length : forall a b, length a = 16 -> length b = 16 -> length (M a b) = 16;
-  Zub_length : forall a b, length a = 16 -> length b = 16 -> length (Zub a b) = 16;
-  Sq_length : forall a, length a = 16 -> length (Sq a) = 16;
-  Sel25519_length : forall b p q, length p = 16 -> length q = 16 -> length (Sel25519 b p q) = 16;
-  _121665_length : length _121665 = 16;
- *)
   A_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (A a b) = 16;
   M_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (M a b) = 16;
   Zub_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (Zub a b) = 16;

@@ -27,16 +27,15 @@ Fixpoint abstract_rec (m : nat) (z a b c d e f x : T) : (T * T * T * T * T * T) 
 
 Arguments rec_fn [T] _ _ _.
 
-Definition abstract_rec_fn (z x:T) (n:nat) (a b c d e f : T) := rec_fn (step_gen z x) n (a,b,c,d,e,f).
+(* Definition abstract_rec_fn (z x:T) (n:nat) (a b c d e f : T) := rec_fn (step_gen z x) n (a,b,c,d,e,f). *)
 
 Lemma abstract_rec_equiv_rec_fn: forall n z a b c d e f x,
-  abstract_rec n z a b c d e f x = abstract_rec_fn z x n a b c d e f.
+  abstract_rec n z a b c d e f x = rec_fn (step_gen z x) n (a,b,c,d,e,f).
 Proof.
   induction n => z x a b c d e f.
   reflexivity.
   simpl.
-  rewrite IHn /abstract_rec_fn.
-  reflexivity.
+  apply IHn.
 Qed.
 
 End Abstract_Rec.
