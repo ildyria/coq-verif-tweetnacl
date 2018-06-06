@@ -3,28 +3,84 @@ From Tweetnacl.ListsOp Require Import Export.
 From stdpp Require Import list.
 Require Import ssreflect.
 
+From Tweetnacl.Gen Require Import AMZubSqSel_Prop.
+From Tweetnacl.Mid Require Import AMZubSqSel.
+From Tweetnacl.Gen Require Import ABCDEF.
+From Tweetnacl.Gen Require Import abstract_fn_rev.
+From Tweetnacl.Gen Require Import abstract_fn_rev_eq.
+From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
 From Tweetnacl.Low Require Import Pack25519.
 From Tweetnacl.Low Require Import Unpack25519.
 From Tweetnacl.Low Require Import M.
 From Tweetnacl.Low Require Import Inv25519.
 From Tweetnacl.Low Require Import ScalarMult_rev.
-
-(* From Tweetnacl.Low Require Import ScalarMult_rev_fn_gen. *)
-
 From Tweetnacl.Low Require Import Get_abcdef.
 From Tweetnacl.Low Require Import Constant.
 From Tweetnacl.Low Require Import Prep_n.
 From Tweetnacl.Low Require Import GetBit.
+From Tweetnacl.Low Require Import Get_abcdef.
+From Tweetnacl.Low Require Import AMZubSqSel.
+From Tweetnacl.Low Require Import ScalarMult_gen_small.
 From Tweetnacl.Mid Require Import Unpack25519.
 From Tweetnacl.Mid Require Import Pack25519.
 From Tweetnacl.Mid Require Import Inv25519.
 From Tweetnacl.Mid Require Import Prep_n.
 From Tweetnacl.Mid Require Import GetBit.
-(* From Tweetnacl.Mid Require Import Crypto_Scalarmult. *)
-
-(* From Tweetnacl.Mid Require Import ScalarMult_rev_fn_gen. *)
+From Tweetnacl.Mid Require Import Crypto_Scalarmult.
+From Tweetnacl.Mid Require Import ScalarMult.
 
 Open Scope Z.
+
+Local Instance Z_Ops : (Ops Z) := Build_Ops Z
+  Mid.AMZubSqSel.A
+  Mid.AMZubSqSel.M
+  Mid.AMZubSqSel.Zub
+  Mid.AMZubSqSel.Sq
+  Mid.AMZubSqSel.c_121665
+  Mid.AMZubSqSel.Sel25519
+  Zgetbit.
+Local Instance List_Z_Ops : Ops (list Z) := Build_Ops (list Z) A.A M.M Z.Zub S.Sq c_121665 Sel25519.Sel25519 GetBit.getbit.
+Local Instance List_Z_Ops_Prop : Ops_Prop :=  Build_Ops_Prop
+  List_Z_Ops
+  A.A_Zlength
+  M.M_Zlength
+  Z.Zub_Zlength
+  S.Sq_Zlength
+  Sel25519.Sel25519_Zlength
+  Constant.Zlength_c_121665
+  M.M_bound_Zlength
+  S.Sq_bound_Zlength
+  A.A_bound_Zlength_le
+  A.A_bound_Zlength_lt
+  Z.Zub_bound_Zlength_le
+  Z.Zub_bound_Zlength_lt
+  Sel25519.Sel25519_bound_le
+  Sel25519.Sel25519_bound_lt_trans_le
+  Sel25519.Sel25519_bound_lt
+  Sel25519.Sel25519_bound_lt_le_id
+  Sel25519.Sel25519_bound_lt_lt_id
+  Sel25519.Sel25519_bound_le_le_id
+  Sel25519.Sel25519_bound_le_lt_trans_le_id
+  c_121665_bounds.
+Local Instance List_Z_Z_Ops_Prop : @Ops_Mod_P (list Z) Z List_Z_Ops Z_Ops := {
+P := (ZofList 16);
+Mod := (fun x => x `mod` (2^255 - 19))}.
+admit.
+admit.
+admit.
+admit.
+admit.
+admit.
+admit.
+admit.
+admit.
+admit.
+admit.
+admit.
+admit.
+Admitted.
+(* Check Build_Ops_Mod_P (list Z) Z List_Z_Ops Z_Ops (ZofList 16) (fun x => x `mod` (2^255 - 19)). *)
+(* Local Instance List_Z_Z_Ops_Prop : Build_Ops_Mod_P. *)
 
 Definition Crypto_Scalarmult n p :=
   let a := get_a (montgomery_fn 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)) in
@@ -55,7 +111,7 @@ Proof.
   omega.
 Qed.
 
-(* Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
+Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength n = 32 ->
   Zlength p = 32 ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
@@ -135,7 +191,9 @@ Proof.
   f_equal.
   unfold Zmontgomery_fn.
   unfold montgomery_fn.
-
+  symmetry.
+  Check (@abstract_fn_rev_eq_a (list Z) Z List_Z_Ops Z_Ops List_Z_Z_Ops_Prop 255 254).
+(*   apply abstract_fn_rev_eq_a. *)
   admit.
   rewrite Inv25519_Z_GF.
   2: assumption.
@@ -147,7 +205,7 @@ Proof.
   f_equal.
   f_equal.
   admit.
-Admitted. *)
+Admitted.
 
 
 

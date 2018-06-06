@@ -1,8 +1,10 @@
 From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Import AMZubSqSel.
+From Tweetnacl.Gen Require Import AMZubSqSel_Prop.
 From Tweetnacl.Gen Require Import ABCDEF.
 From Tweetnacl.Gen Require Import ABCDEF_eq.
 From Tweetnacl.Gen Require Import abstract_fn_rev.
+From Tweetnacl.Gen Require Import Get_abcdef.
 Require Import ssreflect.
 
 Open Scope Z.
@@ -13,24 +15,7 @@ Context {T : Type}.
 Context {U : Type}.
 Context {TO : Ops T}.
 Context {UO : Ops U}.
-
-Variable P : T -> U.
-Variable Mod :U -> U.
-
-Variable A_eq : forall a b, Mod (P (A a b)) = Mod (A (P a) (P b)).
-Variable M_eq : forall a b, Mod (P (M a b)) = Mod (M (P a) (P b)).
-Variable Zub_eq : forall a b,  Mod (P (Zub a b)) = Mod (Zub (P a) (P b)).
-Variable Sq_eq : forall a,  Mod (P (Sq a)) = Mod (Sq (P a)).
-Variable _121665_eq : Mod (P _121665) = Mod (_121665).
-Variable Sel25519_eq : forall b p q,  Mod (P (Sel25519 b p q)) = Mod (Sel25519 b (P p) (P q)).
-Variable getbit_eq : forall i p,  getbit i p = getbit i (P p).
-
-Variable Mod_ZSel25519_eq : forall b p q,  Mod (Sel25519 b p q) = Sel25519 b (Mod p) (Mod q).
-Variable Mod_ZA_eq : forall p q,  Mod (A p q) = Mod (A (Mod p) (Mod q)).
-Variable Mod_ZM_eq : forall p q,  Mod (M p q) = Mod (M (Mod p) (Mod q)).
-Variable Mod_ZZub_eq : forall p q,  Mod (Zub p q) = Mod (Zub (Mod p) (Mod q)).
-Variable Mod_ZSq_eq : forall p,  Mod (Sq p) = Mod (Sq (Mod p)).
-Variable Mod_red : forall p,  Mod (Mod p) = (Mod p).
+Context {UTO : @Ops_Mod_P T U TO UO}.
 
 Theorem abstract_fn_rev_eq : forall (m p:Z) (z a b c d e f x a' b' c' d' e' f':T) (a'' b'' c'' d'' e'' f'': U),
   0 <= m ->
@@ -84,6 +69,68 @@ Proof.
   5: rewrite fe_eq_mod ; try assumption ; symmetry ; rewrite fe_eq_mod ; try assumption.
   6: rewrite ff_eq_mod ; try assumption ; symmetry ; rewrite ff_eq_mod ; try assumption.
   all: symmetry ; f_equal ; f_equal ; assumption.
+Qed.
+
+Corollary abstract_fn_rev_eq_a : forall (m p:Z) (z a b c d e f x: T),
+  0 <= m ->
+  Mod (P (get_a (abstract_fn_rev m p z a b c d e f x))) = Mod (get_a (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
+Proof.
+  intros.
+  assert(H': exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_fn_rev m p z a b c d e f x)).
+  {
+  rewrite abstract_fn_rev_equation.
+  remember (abstract_fn_rev (m - 1) p z a b c d e f x) as k.
+  destruct k as (((((a0',b0'),c0'),d0'),e0'),f0').
+  flatten; do 6 eexists ; reflexivity.
+  }
+  assert(H'': exists a'' b'' c'' d'' e'' f'', (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
+  {
+  rewrite abstract_fn_rev_equation.
+  remember (abstract_fn_rev (m - 1) p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x)) as k.
+  destruct k as (((((a0',b0'),c0'),d0'),e0'),f0').
+  flatten; do 6 eexists ; reflexivity.
+  }
+  destruct H' as [a' [b' [c' [d' [e' [f' H']]]]]].
+  destruct H'' as [a'' [b'' [c'' [d'' [e'' [f'' H'']]]]]].
+  assert(H''':= abstract_fn_rev_eq _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ H H' H'').
+  destruct H''' as [Ha [_ [Hc _]]].
+  apply (f_equal get_a) in H'.
+  apply (f_equal get_a) in H''.
+  simpl in H'.
+  simpl in H''.
+  subst.
+  assumption.
+Qed.
+
+Corollary abstract_fn_rev_eq_c : forall (m p:Z) (z a b c d e f x: T),
+  0 <= m ->
+  Mod (P (get_c (abstract_fn_rev m p z a b c d e f x))) = Mod (get_c (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
+Proof.
+  intros.
+  assert(H': exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_fn_rev m p z a b c d e f x)).
+  {
+  rewrite abstract_fn_rev_equation.
+  remember (abstract_fn_rev (m - 1) p z a b c d e f x) as k.
+  destruct k as (((((a0',b0'),c0'),d0'),e0'),f0').
+  flatten; do 6 eexists ; reflexivity.
+  }
+  assert(H'': exists a'' b'' c'' d'' e'' f'', (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
+  {
+  rewrite abstract_fn_rev_equation.
+  remember (abstract_fn_rev (m - 1) p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x)) as k.
+  destruct k as (((((a0',b0'),c0'),d0'),e0'),f0').
+  flatten; do 6 eexists ; reflexivity.
+  }
+  destruct H' as [a' [b' [c' [d' [e' [f' H']]]]]].
+  destruct H'' as [a'' [b'' [c'' [d'' [e'' [f'' H'']]]]]].
+  assert(H''':= abstract_fn_rev_eq _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ H H' H'').
+  destruct H''' as [Ha [_ [Hc _]]].
+  apply (f_equal get_c) in H'.
+  apply (f_equal get_c) in H''.
+  simpl in H'.
+  simpl in H''.
+  subst.
+  assumption.
 Qed.
 
 End Abstract_Fn_Rev_Eq_Thm.

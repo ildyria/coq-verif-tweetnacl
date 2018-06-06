@@ -1,5 +1,6 @@
 From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Import AMZubSqSel.
+From Tweetnacl.Gen Require Import AMZubSqSel_Prop.
 From Tweetnacl.Gen Require Import ABCDEF.
 Require Import ssreflect.
 
@@ -11,7 +12,9 @@ Context {T : Type}.
 Context {U : Type}.
 Context {TO : Ops T}.
 Context {UO : Ops U}.
+Context {UTO : @Ops_Mod_P T U TO UO}.
 
+(*
 Variable P : T -> U.
 Variable Mod :U -> U.
 
@@ -29,7 +32,7 @@ Variable Mod_ZM_eq : forall p q,  Mod (M p q) = Mod (M (Mod p) (Mod q)).
 Variable Mod_ZZub_eq : forall p q,  Mod (Zub p q) = Mod (Zub (Mod p) (Mod q)).
 Variable Mod_ZSq_eq : forall p,  Mod (Sq p) = Mod (Sq (Mod p)).
 Variable Mod_red : forall p,  Mod (Mod p) = (Mod p).
-
+*)
 Local Ltac propagate := repeat match goal with
     | _ => rewrite A_eq
     | _ => rewrite M_eq

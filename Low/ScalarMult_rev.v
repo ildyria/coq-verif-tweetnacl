@@ -116,37 +116,6 @@ Lemma montgomery_fn_n : forall (m p : ℤ) (z a b c d e f x : list ℤ),
          fe (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x).
 Proof. apply abstract_fn_rev_n. Qed.
 
-(* Lemma fa_Zlength : forall r a b c d e f x,
-  Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fa r a b c d e f x) = 16.
-Proof. apply fa_Zlength ; solve_dependencies_Zlength. Qed.
-Lemma fb_Zlength : forall r a b c d e f x,
-  Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fb r a b c d e f x) = 16.
-Proof. apply fb_Zlength ; solve_dependencies_Zlength. Qed.
-Lemma fc_Zlength : forall r a b c d e f x,
-  Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fc r a b c d e f x) = 16.
-Proof. apply fc_Zlength ; solve_dependencies_Zlength. Qed.
-Lemma fd_Zlength : forall r a b c d e f x,
-  Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fd r a b c d e f x) = 16.
-Proof. apply fd_Zlength ; solve_dependencies_Zlength. Qed.
-Lemma fe_Zlength : forall r a b c d e f x,
-  Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fe r a b c d e f x) = 16.
-Proof. apply fe_Zlength ; solve_dependencies_Zlength. Qed.
-Lemma ff_Zlength : forall r a b c d e f x,
-  Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
-  Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (ff r a b c d e f x) = 16.
-Proof. apply ff_Zlength ; solve_dependencies_Zlength. Qed. *)
-
 Local Ltac solve_f_length :=
   repeat match goal with
     | _ => assumption
@@ -158,58 +127,7 @@ Local Ltac solve_f_length :=
     | |- Zlength (ff _ _ _ _ _ _ _ _) = _ => apply ff_Zlength
     | _ => idtac
   end.
-(* 
-Lemma fa_bound : forall r a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (fa r a b c d e f x).
-Proof. apply fa_bound ; solve_dependencies_bound. Qed.
-Lemma fb_bound : forall r a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (fb r a b c d e f x).
-Proof. apply fb_bound ; solve_dependencies_bound. Qed.
-Lemma fc_bound : forall r a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (fc r a b c d e f x).
-Proof. apply fc_bound ; solve_dependencies_bound. Qed.
-Lemma fd_bound : forall r a b c d e f x,
-  Zlength a = 16 ->
-  Zlength b = 16 ->
-  Zlength c = 16 ->
-  Zlength d = 16 ->
-  Zlength x = 16 ->
-    Forall (fun x => -38 <= x < 2^16 + 38) a ->
-    Forall (fun x => -38 <= x < 2^16 + 38) b ->
-    Forall (fun x => -38 <= x < 2^16 + 38) c ->
-    Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
-Proof. apply fd_bound ; solve_dependencies_bound. Qed.
- *)
+
 Local Ltac solve_f_bound :=
   repeat match goal with
     | _ => assumption
