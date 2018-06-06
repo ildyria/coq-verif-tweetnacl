@@ -1,7 +1,4 @@
-Require Import ssreflect.
-From Tweetnacl Require Import Libs.Export.
-(* Require Import Tweetnacl.Low.Car25519.
-Require Import Tweetnacl.Mid.Reduce. *)
+Require Import ZArith.
 
 Open Scope Z.
 
@@ -17,3 +14,4 @@ Class Ops (T: Type) :=
 }.
 
 Close Scope Z.
+
