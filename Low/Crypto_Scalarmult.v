@@ -41,9 +41,9 @@ apply A.
 apply M.
 apply Zub.
 apply Sq.
-apply 0.
-apply 1.
-apply c_121665.
+apply C_0.
+apply C_1.
+apply C_121665.
 apply Sel25519.
 apply Zgetbit.
 apply (fun x => Z.modulo x ((Z.pow 2 255) - 19)).
