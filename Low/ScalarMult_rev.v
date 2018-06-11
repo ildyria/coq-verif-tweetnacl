@@ -9,7 +9,7 @@ Require Import Tweetnacl.Low.S.
 Require Import Tweetnacl.Low.GetBit.
 Require Import Tweetnacl.Low.Constant.
 Require Import Tweetnacl.Low.Get_abcdef.
-Require Import Tweetnacl.Low.AMZubSqSel.
+Require Import Tweetnacl.Gen.AMZubSqSel_List.
 Require Import Tweetnacl.Low.ScalarMult_gen_small.
 Require Import Tweetnacl.Gen.abstract_fn_rev.
 Require Import Tweetnacl.Gen.abstract_fn_rev_abcdef.
@@ -30,8 +30,27 @@ Open Scope Z.
   Sel25519 : Z -> T -> T -> T;
   getbit : Z -> T -> Z;
 *)
-Local Instance List_Z_Ops : Ops (list Z) := Build_Ops (list Z) A.A M.M Z.Zub S.Sq c_121665 Sel25519.Sel25519 GetBit.getbit.
-Local Instance List_Z_Ops_Prop : Ops_Prop :=  Build_Ops_Prop
+Local Instance List_Z_Ops : Ops (list Z) (list Z) := {}.
+Proof.
+apply A.A.
+apply M.M.
+apply Z.Zub.
+apply S.Sq.
+apply nul16.
+apply One16.
+apply c_121665.
+apply Sel25519.Sel25519.
+apply GetBit.getbit.
+apply id.
+simpl ; reflexivity.
+simpl ; reflexivity.
+simpl ; reflexivity.
+simpl ; reflexivity.
+simpl ; reflexivity.
+simpl ; reflexivity.
+Defined.
+
+Local Instance List_Z_Ops_Prop : Ops_List :=  Build_Ops_List
   List_Z_Ops
   A.A_Zlength
   M.M_Zlength
@@ -39,6 +58,8 @@ Local Instance List_Z_Ops_Prop : Ops_Prop :=  Build_Ops_Prop
   S.Sq_Zlength
   Sel25519.Sel25519_Zlength
   Constant.Zlength_c_121665
+  Constant.Zlength_nul16
+  Constant.Zlength_One16
   M.M_bound_Zlength
   S.Sq_bound_Zlength
   A.A_bound_Zlength_le
@@ -52,7 +73,9 @@ Local Instance List_Z_Ops_Prop : Ops_Prop :=  Build_Ops_Prop
   Sel25519.Sel25519_bound_lt_lt_id
   Sel25519.Sel25519_bound_le_le_id
   Sel25519.Sel25519_bound_le_lt_trans_le_id
-  c_121665_bounds.
+  C_121665_bounds
+  nul16_bounds
+  One16_bounds.
 
 Local Ltac solve_dependencies_Zlength :=
   match goal with
@@ -79,7 +102,7 @@ repeat match goal with
   | _ => apply Sel25519_bound_lt_le_id
   | _ => apply Sel25519_bound_lt_lt_id
   | _ => apply Sel25519_bound_le_lt_trans_le_id
-  | _ => apply c_121665_bounds
+  | _ => apply C_121665_bounds
 end.
 
 Definition montgomery_fn := abstract_fn_rev.
@@ -94,9 +117,9 @@ Lemma montgomery_fn_equation: forall (m p : ℤ) (z a b c d e f x : list ℤ),
          let (p2, d0) := p1 in
          let (p3, c0) := p2 in
          let (a0, b0) := p3 in
-         (fa (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fb (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
-         fc (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fd (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
-         fe (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x)).
+         (fa (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fb (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         fc (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fd (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         fe (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x)).
 Proof. apply abstract_fn_rev_equation. Qed.
 
 Lemma montgomery_fn_0 : forall p z a b c d e f x,
@@ -111,9 +134,9 @@ Lemma montgomery_fn_n : forall (m p : ℤ) (z a b c d e f x : list ℤ),
          let (p2, d0) := p1 in
          let (p3, c0) := p2 in
          let (a0, b0) := p3 in
-         (fa (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fb (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
-         fc (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fd (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
-         fe (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x).
+         (fa (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fb (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         fc (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, fd (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x,
+         fe (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x, ff (Getbit (p - (m - 1)) z) a0 b0 c0 d0 e0 f0 x).
 Proof. apply abstract_fn_rev_n. Qed.
 
 Local Ltac solve_f_length :=
@@ -140,7 +163,7 @@ Local Ltac solve_f_bound :=
 
 Lemma fa_step : forall n p z a b c d e f x ,
   0 <= n ->
-   fa (getbit (p - n) z)
+   fa (Getbit (p - n) z)
      (get_a (montgomery_fn n p z a b c d e f x))
      (get_b (montgomery_fn n p z a b c d e f x))
      (get_c (montgomery_fn n p z a b c d e f x))
@@ -151,7 +174,7 @@ Lemma fa_step : forall n p z a b c d e f x ,
 Proof. apply abstract_fn_rev_a. Qed.
 Lemma fb_step : forall n p z a b c d e f x ,
   0 <= n ->
-   fb (getbit (p - n) z)
+   fb (Getbit (p - n) z)
      (get_a (montgomery_fn n p z a b c d e f x))
      (get_b (montgomery_fn n p z a b c d e f x))
      (get_c (montgomery_fn n p z a b c d e f x))
@@ -162,7 +185,7 @@ Lemma fb_step : forall n p z a b c d e f x ,
 Proof. apply abstract_fn_rev_b. Qed.
 Lemma fc_step : forall n p z a b c d e f x ,
   0 <= n ->
-   fc (getbit (p - n) z)
+   fc (Getbit (p - n) z)
      (get_a (montgomery_fn n p z a b c d e f x))
      (get_b (montgomery_fn n p z a b c d e f x))
      (get_c (montgomery_fn n p z a b c d e f x))
@@ -173,7 +196,7 @@ Lemma fc_step : forall n p z a b c d e f x ,
 Proof. apply abstract_fn_rev_c. Qed.
 Lemma fd_step : forall n p z a b c d e f x ,
   0 <= n ->
-   fd (getbit (p - n) z)
+   fd (Getbit (p - n) z)
      (get_a (montgomery_fn n p z a b c d e f x))
      (get_b (montgomery_fn n p z a b c d e f x))
      (get_c (montgomery_fn n p z a b c d e f x))
@@ -184,7 +207,7 @@ Lemma fd_step : forall n p z a b c d e f x ,
 Proof. apply abstract_fn_rev_d. Qed.
 Lemma fe_step : forall n p z a b c d e f x ,
   0 <= n ->
-   fe (getbit (p - n) z)
+   fe (Getbit (p - n) z)
      (get_a (montgomery_fn n p z a b c d e f x))
      (get_b (montgomery_fn n p z a b c d e f x))
      (get_c (montgomery_fn n p z a b c d e f x))
@@ -195,7 +218,7 @@ Lemma fe_step : forall n p z a b c d e f x ,
 Proof. apply abstract_fn_rev_e. Qed.
 Lemma ff_step : forall n p z a b c d e f x ,
   0 <= n ->
-   ff (getbit (p - n) z)
+   ff (Getbit (p - n) z)
      (get_a (montgomery_fn n p z a b c d e f x))
      (get_b (montgomery_fn n p z a b c d e f x))
      (get_c (montgomery_fn n p z a b c d e f x))

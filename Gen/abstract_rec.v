@@ -8,13 +8,14 @@ From Tweetnacl.Gen Require Import step_gen.
 Section Abstract_Rec.
 
 Context {T : Type}.
-Context {O : Ops T}.
+Context {T' : Type}.
+Context {O : Ops T T'}.
 
-Fixpoint abstract_rec (m : nat) (z a b c d e f x : T) : (T * T * T * T * T * T) :=
+Fixpoint abstract_rec (m : nat) (z:T') (a b c d e f x : T) : (T * T * T * T * T * T) :=
   match m with
   | 0%nat => (a,b,c,d,e,f)
   | S n => 
-      let r := getbit (Z.of_nat n) z in
+      let r := Getbit (Z.of_nat n) z in
       abstract_rec n z 
         (fa r a b c d e f x)
         (fb r a b c d e f x)
@@ -26,8 +27,6 @@ Fixpoint abstract_rec (m : nat) (z a b c d e f x : T) : (T * T * T * T * T * T) 
     end.
 
 Arguments rec_fn [T] _ _ _.
-
-(* Definition abstract_rec_fn (z x:T) (n:nat) (a b c d e f : T) := rec_fn (step_gen z x) n (a,b,c,d,e,f). *)
 
 Lemma abstract_rec_equiv_rec_fn: forall n z a b c d e f x,
   abstract_rec n z a b c d e f x = rec_fn (step_gen z x) n (a,b,c,d,e,f).

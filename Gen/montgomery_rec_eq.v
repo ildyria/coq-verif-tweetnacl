@@ -17,7 +17,8 @@ Open Scope Z.
 Section Montgomery_Rec_Eq.
 
 Context {T : Type}.
-Context {O : Ops T}.
+Context {T' : Type}.
+Context {O : Ops T T'}.
 
 Theorem montgomery_rec_eq: forall n z a b c d e f x,
   montgomery_rec n z a b c d e f x =

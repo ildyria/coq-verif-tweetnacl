@@ -11,7 +11,25 @@ Require Import ssreflect.
 
 Open Scope Z.
 
-Local Instance Z_Ops : (Ops Z) := Build_Ops Z A Z.mul Z.sub (fun x => Z.mul x x) 121665 Sel25519 Zgetbit.
+Local Instance Z_Ops : (Ops Z Z) := {}.
+Proof.
+apply A.
+apply M.
+apply Zub.
+apply Sq.
+apply 0.
+apply 1.
+apply c_121665.
+apply Sel25519.
+apply Zgetbit.
+apply (fun x => Z.modulo x ((Z.pow 2 255) - 19)).
+intros b p q ; rewrite /Sel25519 ; flatten.
+intros ; apply A_mod_eq.
+intros ; apply M_mod_eq.
+intros ; apply Zub_mod_eq.
+intros ; apply Sq_mod_eq.
+intros ; apply Zmod_mod.
+Defined.
 
 Definition Zmontgomery_rec := montgomery_rec.
 Definition Zmontgomery_fn := abstract_fn_rev.

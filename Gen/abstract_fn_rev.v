@@ -13,15 +13,16 @@ Section Abstract_Fn_Rev.
 Open Scope Z.
 
 Context {T : Type}.
-Context {O : Ops T}.
+Context {T' : Type}.
+Context {O : Ops T T'}.
 
-Function abstract_fn_rev (m p:Z) (z a b c d e f x : T) {measure Z.to_nat m} : (T * T * T * T * T * T) :=
+Function abstract_fn_rev (m p:Z) (z:T') (a b c d e f x:T) {measure Z.to_nat m} : (T * T * T * T * T * T) :=
   if (m <=? 0)
     then (a,b,c,d,e,f)
     else 
     match (abstract_fn_rev (m - 1) p z a b c d e f x) with
         | (a,b,c,d,e,f) =>
-        let r := getbit (p - (m - 1)) z in
+        let r := Getbit (p - (m - 1)) z in
         (fa r a b c d e f x,
         fb r a b c d e f x,
         fc r a b c d e f x,
@@ -40,7 +41,7 @@ Lemma abstract_fn_rev_n : forall n p z a b c d e f x,
   abstract_fn_rev n p z a b c d e f x =
    match (abstract_fn_rev (n - 1) p z a b c d e f x) with
         | (a,b,c,d,e,f) =>
-        let r := getbit (p - (n - 1)) z in
+        let r := Getbit (p - (n - 1)) z in
         (fa r a b c d e f x,
         fb r a b c d e f x,
         fc r a b c d e f x,

@@ -5,7 +5,7 @@ Require Import ssreflect.
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Tweetnacl.Low.ScalarMult_gen_small.
-Require Import Tweetnacl.Low.AMZubSqSel.
+Require Import Tweetnacl.Gen.AMZubSqSel_List.
 Require Import Tweetnacl.Gen.ABCDEF.
 Require Import Tweetnacl.Gen.abstract_fn_rev.
 (* Require Import Recdef.
@@ -14,8 +14,8 @@ Section ScalarRec.
 
 Open Scope Z.
 
-Context {O : Ops (list Z)}.
-Context {OP : @Ops_Prop O}.
+Context {O : Ops (list Z) (list Z)}.
+Context {OP : @Ops_List O}.
 
 Lemma abstract_fn_Zlength : forall m p z a b c d e f x a' b' c' d' e' f',
   0 <= m ->
@@ -198,7 +198,7 @@ replace (Z.succ m - 1) with m.
 2: omega.
 remember (abstract_fn_rev m p z a b c d e f x) as k.
 destruct k as (((((a0,b0),c0),d0),e0),f0).
-remember (getbit (p - m) z) as r.
+remember (Getbit (p - m) z) as r.
 simpl => Hh.
 inv Hh.
 assert(Ht:= IHm p z a b c d e f x a0 b0 c0 d0 e0 f0 Ha Hb Hc Hd He Hf Hx Haa Hbb Hcc Hdd Hxx Heqk) ; auto.

@@ -3,14 +3,16 @@ From Tweetnacl.Gen Require Export AMZubSqSel.
 
 Open Scope Z.
 
-Class Ops_Prop `{Ops (list Z)} :=
+Class Ops_List `{@Ops (list Z) (list Z)} :=
 {
   A_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (A a b) = 16;
   M_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (M a b) = 16;
   Zub_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (Zub a b) = 16;
   Sq_Zlength : forall a, Zlength a = 16 -> Zlength (Sq a) = 16;
   Sel25519_Zlength : forall b p q, Zlength p = 16 -> Zlength q = 16 -> Zlength (Sel25519 b p q) = 16;
-  _121665_Zlength : Zlength _121665 = 16;
+  C_121665_Zlength : Zlength C_121665 = 16;
+  C_0_Zlength : Zlength C_0 = 16;
+  C_1_Zlength : Zlength C_1 = 16;
 
   M_bound_Zlength : forall a b,
     Zlength a = 16 ->
@@ -70,7 +72,9 @@ Class Ops_Prop `{Ops (list Z)} :=
     Forall (fun x => pmin <= x < pmax) p ->
     Forall (fun x => pmin <= x < pmax) q -> forall b,
     Forall (fun x => pmin <= x <= pmax) (Sel25519 b p q);
-  _121665_bound : Forall (fun x => 0 <= x < 2 ^16) _121665
+  C_121665_bound : Forall (fun x => 0 <= x < 2 ^16) C_121665;
+  C_0_bound : Forall (fun x => 0 <= x < 2 ^16) C_0;
+  C_1_bound : Forall (fun x => 0 <= x < 2 ^16) C_1
   }.
 
 Close Scope Z.

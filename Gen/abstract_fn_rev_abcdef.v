@@ -11,11 +11,12 @@ Section Abstract_Fn_Rev.
 Open Scope Z.
 
 Context {T : Type}.
-Context {O : Ops T}.
+Context {T' : Type}.
+Context {O : Ops T T'}.
 
-Lemma abstract_fn_rev_a : forall n p (z a b c d e f x : T),
+Lemma abstract_fn_rev_a : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fa (getbit (p - n) z)
+  fa (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -31,9 +32,9 @@ intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0)
 replace (n + 1 <=? 0) with false ; try reflexivity.
 symmetry ; apply Z.leb_gt ; omega.
 Qed.
-Lemma abstract_fn_rev_b : forall n p (z a b c d e f x : T),
+Lemma abstract_fn_rev_b : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fb (getbit (p - n) z)
+  fb (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -49,9 +50,9 @@ intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0)
 replace (n + 1 <=? 0) with false ; try reflexivity.
 symmetry ; apply Z.leb_gt ; omega.
 Qed.
-Lemma abstract_fn_rev_c : forall n p (z a b c d e f x : T),
+Lemma abstract_fn_rev_c : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fc (getbit (p - n) z)
+  fc (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -67,9 +68,9 @@ intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0)
 replace (n + 1 <=? 0) with false ; try reflexivity.
 symmetry ; apply Z.leb_gt ; omega.
 Qed.
-Lemma abstract_fn_rev_d : forall n p (z a b c d e f x : T),
+Lemma abstract_fn_rev_d : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fd (getbit (p - n) z)
+  fd (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -85,9 +86,9 @@ intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0)
 replace (n + 1 <=? 0) with false ; try reflexivity.
 symmetry ; apply Z.leb_gt ; omega.
 Qed.
-Lemma abstract_fn_rev_e : forall n p (z a b c d e f x : T),
+Lemma abstract_fn_rev_e : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fe (getbit (p - n) z)
+  fe (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -103,9 +104,9 @@ intros; simpl; destruct (abstract_fn_rev n p z a b c d e f x) as (((((a0,b0),c0)
 replace (n + 1 <=? 0) with false ; try reflexivity.
 symmetry ; apply Z.leb_gt ; omega.
 Qed.
-Lemma abstract_fn_rev_f : forall n p (z a b c d e f x : T),
+Lemma abstract_fn_rev_f : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  ff (getbit (p - n) z)
+  ff (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))

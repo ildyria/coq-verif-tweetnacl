@@ -12,15 +12,16 @@ Open Scope Z.
 Section Abstract_Fn_Rev_Eq_Thm.
 
 Context {T : Type}.
+Context {T' : Type}.
 Context {U : Type}.
-Context {TO : Ops T}.
-Context {UO : Ops U}.
-Context {UTO : @Ops_Mod_P T U TO UO}.
+Context {TO : Ops T T'}.
+Context {UO : Ops U U}.
+Context {UTO : @Ops_Mod_P T T' U TO UO}.
 
-Theorem abstract_fn_rev_eq : forall (m p:Z) (z a b c d e f x a' b' c' d' e' f':T) (a'' b'' c'' d'' e'' f'': U),
+Theorem abstract_fn_rev_eq : forall (m p:Z) (z:T') (a b c d e f x a' b' c' d' e' f':T) (a'' b'' c'' d'' e'' f'': U),
   0 <= m ->
   (a',b',c',d',e',f') = (abstract_fn_rev m p z a b c d e f x) -> 
-  (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))
+  (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))
  ->
   Mod (P a') = Mod a'' /\
   Mod (P b') = Mod b'' /\
@@ -50,7 +51,7 @@ Proof.
   replace (m + 1 - 1) with m in H' by omega.
   replace (m + 1 - 1) with m in H'' by omega.
   remember (abstract_fn_rev m p z a b c d e f x) as k'.
-  remember (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x)) as k''.
+  remember (abstract_fn_rev m p (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x)) as k''.
   destruct k' as (((((a0',b0'),c0'),d0'),e0'),f0').
   destruct k'' as (((((a0'',b0''),c0''),d0''),e0''),f0'').
   replace (m + 1 <=? 0) with false in H'.
@@ -60,7 +61,7 @@ Proof.
   inversion H''.
   assert(Ht:= IHm p z a b c d e f x a0' b0' c0' d0' e0' f0' a0'' b0'' c0'' d0'' e0'' f0'' Heqk' Heqk'').
   jauto_set.
-  all: rewrite -?fa_eq -?fb_eq -?fc_eq -?fd_eq -?fe_eq -?ff_eq ?getbit_eq.
+  all: rewrite -?fa_eq -?fb_eq -?fc_eq -?fd_eq -?fe_eq -?ff_eq ?Getbit_eq.
   all: try assumption.
   1: rewrite fa_eq_mod ; try assumption ; symmetry ; rewrite fa_eq_mod ; try assumption.
   2: rewrite fb_eq_mod ; try assumption ; symmetry ; rewrite fb_eq_mod ; try assumption.
@@ -71,9 +72,9 @@ Proof.
   all: symmetry ; f_equal ; f_equal ; assumption.
 Qed.
 
-Corollary abstract_fn_rev_eq_a : forall (m p:Z) (z a b c d e f x: T),
+Corollary abstract_fn_rev_eq_a : forall (m p:Z) (z:T') (a b c d e f x: T),
   0 <= m ->
-  Mod (P (get_a (abstract_fn_rev m p z a b c d e f x))) = Mod (get_a (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
+  Mod (P (get_a (abstract_fn_rev m p z a b c d e f x))) = Mod (get_a (abstract_fn_rev m p (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
 Proof.
   intros.
   assert(H': exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_fn_rev m p z a b c d e f x)).
@@ -83,10 +84,10 @@ Proof.
   destruct k as (((((a0',b0'),c0'),d0'),e0'),f0').
   flatten; do 6 eexists ; reflexivity.
   }
-  assert(H'': exists a'' b'' c'' d'' e'' f'', (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
+  assert(H'': exists a'' b'' c'' d'' e'' f'', (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
   {
   rewrite abstract_fn_rev_equation.
-  remember (abstract_fn_rev (m - 1) p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x)) as k.
+  remember (abstract_fn_rev (m - 1) p (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x)) as k.
   destruct k as (((((a0',b0'),c0'),d0'),e0'),f0').
   flatten; do 6 eexists ; reflexivity.
   }
@@ -102,9 +103,9 @@ Proof.
   assumption.
 Qed.
 
-Corollary abstract_fn_rev_eq_c : forall (m p:Z) (z a b c d e f x: T),
+Corollary abstract_fn_rev_eq_c : forall (m p:Z) (z:T') (a b c d e f x: T),
   0 <= m ->
-  Mod (P (get_c (abstract_fn_rev m p z a b c d e f x))) = Mod (get_c (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
+  Mod (P (get_c (abstract_fn_rev m p z a b c d e f x))) = Mod (get_c (abstract_fn_rev m p (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
 Proof.
   intros.
   assert(H': exists a' b' c' d' e' f', (a',b',c',d',e',f') = (abstract_fn_rev m p z a b c d e f x)).
@@ -114,10 +115,10 @@ Proof.
   destruct k as (((((a0',b0'),c0'),d0'),e0'),f0').
   flatten; do 6 eexists ; reflexivity.
   }
-  assert(H'': exists a'' b'' c'' d'' e'' f'', (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
+  assert(H'': exists a'' b'' c'' d'' e'' f'', (a'',b'',c'',d'',e'',f'') = (abstract_fn_rev m p (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).
   {
   rewrite abstract_fn_rev_equation.
-  remember (abstract_fn_rev (m - 1) p (P z) (P a) (P b) (P c) (P d) (P e) (P f) (P x)) as k.
+  remember (abstract_fn_rev (m - 1) p (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x)) as k.
   destruct k as (((((a0',b0'),c0'),d0'),e0'),f0').
   flatten; do 6 eexists ; reflexivity.
   }

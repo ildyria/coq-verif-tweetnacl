@@ -8,16 +8,17 @@ From Tweetnacl.Gen Require Import step_gen.
 Section Abstract_Rec_Rev.
 
 Context {T : Type}.
-Context {O : Ops T}.
+Context {T' : Type}.
+Context {O : Ops T T'}.
 
-Fixpoint abstract_rec_rev m p (z a b c d e f x : T) : (T * T * T * T * T * T)
+Fixpoint abstract_rec_rev m p (z:T') (a b c d e f x : T) : (T * T * T * T * T * T)
   :=
   match m with
   | 0%nat => (a,b,c,d,e,f)
   | S n => 
       match (abstract_rec_rev n p z a b c d e f x) with
         | (a,b,c,d,e,f) =>
-        let r := getbit (Z.of_nat (p - n)) z in
+        let r := Getbit (Z.of_nat (p - n)) z in
         (fa r a b c d e f x,
         fb r a b c d e f x,
         fc r a b c d e f x,
@@ -29,8 +30,6 @@ Fixpoint abstract_rec_rev m p (z a b c d e f x : T) : (T * T * T * T * T * T)
 
 Arguments rec_fn_rev_acc [T] _ _ _.
 Arguments rec_fn_rev [T] _ _.
-
-(* Definition abstract_rec_fn_rev (z x: T) (n:nat) (a b c d e f : T) := rec_fn_rev (step_gen z x) n (a,b,c,d,e,f). *)
 
 Local Lemma abstract_rec_rev_equiv_rev_fn_p : forall n p z a b c d e f x,
   abstract_rec_rev n (p - 1) z a b c d e f x = rec_fn_rev_acc (step_gen z x) n p (a,b,c,d,e,f).
@@ -53,11 +52,5 @@ Theorem abstract_rec_rev_equiv_rec_fn_S_n : forall n z a b c d e f x,
 Proof. intros. rewrite /rec_fn_rev -abstract_rec_rev_equiv_rev_fn_p.
 replace (S n - 1) with n ; go.
 Qed.
-
-(*
-Local Lemma abstract_rec_rev_equiv_rec_fn_0 : forall n z a b c d e f x,
-  abstract_rec_rev 0 n z a b c d e f x = abstract_rec_fn_rev z x 0 a b c d e f.
-Proof. intros; rewrite /abstract_rec_fn_rev /rec_fn_rev; simpl; reflexivity. Qed.
-*)
 
 End Abstract_Rec_Rev.

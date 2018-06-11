@@ -113,6 +113,13 @@ Proof. intros; rewrite /A ZsumList_length_max H H0 //. Qed.
 
 Open Scope Z.
 
+Lemma A_correct: forall n a b, ZofList n (A a b) = (ZofList n a) + (ZofList n b).
+Proof.
+  intros n a b.
+  rewrite /A.
+  apply ZsumList_correct.
+Qed.
+
 Lemma A_Zlength : forall a b,
   Zlength a = 16 ->
   Zlength b = 16 ->

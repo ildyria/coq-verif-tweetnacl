@@ -19,7 +19,8 @@ Section EquivFnRec.
 Open Scope Z.
 
 Context {T : Type}.
-Context {O : Ops T}.
+Context {T' : Type}.
+Context {O : Ops T T'}.
 
 Theorem abstract_fn_rev_eq : forall m p z a b c d e f x,
   0 <= m ->

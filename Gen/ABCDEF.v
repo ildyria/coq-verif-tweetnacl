@@ -3,7 +3,8 @@ From Tweetnacl.Gen Require Import AMZubSqSel.
 Section ABCDEF.
 
 Context {T : Type}.
-Context {O : @Ops T}.
+Context {T' : Type}.
+Context {O : @Ops T T'}.
 
 Definition fa r (a b c d e f x:T) :=
   Sel25519 r
@@ -33,7 +34,7 @@ Sel25519 r
      (A
         (M
            (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-              (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) _121665)
+              (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) C_121665)
         (Sq (A (Sel25519 r a b) (Sel25519 r c d)))))
   (M
      (Sq
@@ -57,7 +58,7 @@ Sel25519 r
      (A
         (M
            (Zub (Sq (A (Sel25519 r a b) (Sel25519 r c d)))
-              (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) _121665)
+              (Sq (Zub (Sel25519 r a b) (Sel25519 r c d)))) C_121665)
         (Sq (A (Sel25519 r a b) (Sel25519 r c d))))).
 Definition fe r (a b c d e f x:T) :=
 A

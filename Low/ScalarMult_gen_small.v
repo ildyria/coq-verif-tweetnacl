@@ -1,14 +1,17 @@
 Require Import Tweetnacl.Libs.Export.
 Require Import Tweetnacl.Gen.AMZubSqSel.
-Require Import Tweetnacl.Low.AMZubSqSel.
+Require Import Tweetnacl.Gen.AMZubSqSel_List.
 Require Import Tweetnacl.Gen.ABCDEF.
 Require Import ssreflect.
+
+
+(* This is so generic that it could possibly go to Gen folder *)
 
 Section ScalarRec.
 Open Scope Z.
 
-Context {O : Ops (list Z)}.
-Context {OP : @Ops_Prop O}.
+Context {O : Ops (list Z) (list Z)}.
+Context {OP : @Ops_List O}.
 
 Local Ltac solve_small_step_Zlength :=
   intros;
@@ -19,7 +22,7 @@ Local Ltac solve_small_step_Zlength :=
     | _ => orewrite Sq_Zlength
     | _ => orewrite A_Zlength
     | _ => orewrite Zub_Zlength
-    | _ => apply _121665_Zlength
+    | _ => apply C_121665_Zlength
     | _ => apply OP
   end ; reflexivity.
 
@@ -354,7 +357,7 @@ Proof.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   eapply list.Forall_impl.
-  apply _121665_bound.
+  apply C_121665_bound.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   eapply list.Forall_impl.
@@ -557,7 +560,7 @@ Proof.
   eapply list.Forall_impl.
   apply M_bound_Zlength.
   solve_small_step_Zlength.
-  apply _121665_Zlength.
+  apply C_121665_Zlength.
   eapply list.Forall_impl.
   apply (Zub_bound_Zlength_lt (-39) (2^16+ 38) (-39) (2^16+ 38)).
   solve_small_step_Zlength.
@@ -591,7 +594,7 @@ Proof.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   eapply list.Forall_impl.
-  apply _121665_bound.
+  apply C_121665_bound.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   intros h Hh; Simplify_this; simpl in Hh; omega.
   eapply list.Forall_impl.

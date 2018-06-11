@@ -7,10 +7,11 @@ From Tweetnacl.Gen Require Import step_gen.
 Section Montgomery_Step_Gen.
 
 Context {T : Type}.
-Context {O : Ops T}.
+Context {T' : Type}.
+Context {O : Ops T T'}.
 
-Definition montgomery_step_gen (m:nat) (z a b c d e f x : T) : (T * T * T * T * T * T)  :=
-      let r := getbit (Z.of_nat m) z in
+Definition montgomery_step_gen (m:nat) (z:T') (a b c d e f x : T) : (T * T * T * T * T * T)  :=
+      let r := Getbit (Z.of_nat m) z in
       let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
       let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
       let e := A a c in
@@ -25,7 +26,7 @@ Definition montgomery_step_gen (m:nat) (z a b c d e f x : T) : (T * T * T * T * 
       let a := Zub a c in
       let b := Sq a in
       let c := Zub d f in
-      let a := M c _121665 in
+      let a := M c C_121665 in
       let a := A a d in
       let c := M c a in
       let a := M d f in

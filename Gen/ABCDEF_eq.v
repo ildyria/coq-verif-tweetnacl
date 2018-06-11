@@ -9,10 +9,11 @@ Open Scope Z.
 Section ABCDEF_Eq_Prop.
 
 Context {T : Type}.
+Context {T' : Type}.
 Context {U : Type}.
-Context {TO : Ops T}.
-Context {UO : Ops U}.
-Context {UTO : @Ops_Mod_P T U TO UO}.
+Context {TO : Ops T T'}.
+Context {UO : Ops U U}.
+Context {UTO : @Ops_Mod_P T T' U TO UO}.
 
 (*
 Variable P : T -> U.
@@ -38,10 +39,10 @@ Local Ltac propagate := repeat match goal with
     | _ => rewrite M_eq
     | _ => rewrite Zub_eq
     | _ => rewrite Sq_eq
-    | _ => rewrite _121665_eq
+    | _ => rewrite C_121665_eq
     | _ => rewrite Sel25519_eq
     | _ => rewrite Mod_ZSel25519_eq
-    | _ => rewrite getbit_eq
+    | _ => rewrite Getbit_eq
   end.
 
 Local Ltac down := match goal with

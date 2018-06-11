@@ -7,7 +7,7 @@ Definition c_121665 :list Z := [ 56129; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0
 
 (* Eval compute in ZofList 16 c_121665. *)
 
-Lemma c_121665_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) c_121665.
+Lemma C_121665_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) c_121665.
 Proof. unfold c_121665;
 repeat match goal with
   | _ => change (2^16) with 65536 ; omega
@@ -34,5 +34,27 @@ Proof. intros; subst; compute ; reflexivity. Qed.
 
 Definition nul16 := [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
 Definition One16 := [1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
+Lemma Zlength_nul16 : Zlength nul16 = 16.
+Proof. go. Qed.
+Lemma Zlength_One16 : Zlength One16 = 16.
+Proof. go. Qed.
+Lemma One16_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) One16.
+Proof. unfold One16;
+repeat match goal with
+  | _ => change (2^16) with 65536 ; omega
+  | |- _ /\ _ => split
+  | _ => apply Forall_cons
+  | _ => apply Forall_nil ; trivial
+end.
+Qed.
+Lemma nul16_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) nul16.
+Proof. unfold nul16;
+repeat match goal with
+  | _ => change (2^16) with 65536 ; omega
+  | |- _ /\ _ => split
+  | _ => apply Forall_cons
+  | _ => apply Forall_nil ; trivial
+end.
+Qed.
 
 Close Scope Z.

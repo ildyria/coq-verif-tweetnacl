@@ -117,6 +117,13 @@ Proof. intros; rewrite /Zub ZsubList_length_max H H0 //. Qed.
 
 Open Scope Z.
 
+Lemma Zub_correct: forall n a b, ZofList n (Zub a b) = (ZofList n a) - (ZofList n b).
+Proof.
+  intros n a b.
+  rewrite /Zub.
+  apply ZsubList_correct.
+Qed.
+
 Lemma Zub_Zlength : forall a b,
   Zlength a = 16 ->
   Zlength b = 16 ->
