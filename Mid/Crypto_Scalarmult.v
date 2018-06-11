@@ -14,7 +14,7 @@ From Tweetnacl Require Import Mid.Car25519.
 From Tweetnacl Require Import Mid.Inv25519.
 From Tweetnacl Require Import Mid.ScalarMult.
 
-(* From Tweetnacl.High Require Import Zmodp opt_ladder curve25519. *)
+From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
 
 Open Scope Z.
@@ -40,9 +40,9 @@ apply A.
 apply M.
 apply Zub.
 apply Sq.
-apply 0.
-apply 1.
-apply c_121665.
+apply C_0.
+apply C_1.
+apply C_121665.
 apply Sel25519.
 apply Zgetbit.
 apply (fun x => Z.modulo x ((Z.pow 2 255) - 19)).
@@ -77,7 +77,6 @@ Proof.
   reflexivity.
 Qed.
 
-(* 
 (* Proof of correctness between High and Mid Level *)
 Lemma A_ok (a b : Z) : Zmodp.pi (A a b) = (Zmodp.pi a + Zmodp.pi b)%R.
 Proof. by rewrite Zmodp_addE. Qed.
@@ -99,5 +98,5 @@ Proof. by rewrite /Sq M_ok GRing.expr2. Qed.
 Lemma ZCrypto_Scalarmult_curve25519_ladder n (x : Zmodp.type) :
   ZCrypto_Scalarmult (Z.of_nat n) (val x) = val (curve25519_ladder n x).
 Proof. Admitted.
- *)
+
 Close Scope Z.
