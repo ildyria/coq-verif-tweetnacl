@@ -364,30 +364,14 @@ Proof.
   apply impl_omega_simpl_1.
 Qed.
 
-
-
-Local Lemma Crypto_Scalarmult_Eq_1 : forall (n p:list Z),
+Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength n = 32 ->
   Zlength p = 32 ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-(get_a
-   (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-      (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19) *
- ZInv25519
-   (get_c
-      (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-         (ZUnpack25519 (ZofList 8 p)))) `mod` (2 ^ 255 - 19)) `mod` (2 ^ 255 - 19) =
-((ℤ16.lst get_a
-            (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16
-               (Unpack25519 p))) `mod` (2 ^ 255 - 19) *
- (ℤ16.lst Inv25519
-            (get_c
-               (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16
-                  (Unpack25519 p)))) `mod` (2 ^ 255 - 19)) `mod` (2 ^ 255 - 19)->
   ZofList 8 (Crypto_Scalarmult n p) = ZCrypto_Scalarmult_rev_gen Z_Ops (ZofList 8 n) (ZofList 8 p).
 Proof.
-  intros n p Hln Hlp Hbn Hbp HT.
+  intros n p Hln Hlp Hbn Hbp.
   rewrite /Crypto_Scalarmult /ZCrypto_Scalarmult_rev_gen.
   assert(HUnpack:= Unpack25519_bounded p Hbp).
   assert(HCn:= clamp_bound n Hbn).
@@ -413,42 +397,6 @@ Proof.
   symmetry.
   rewrite -Zmult_mod_idemp_l.
   rewrite -Zmult_mod_idemp_r.
-  assumption.
-Qed.
-
-Local Lemma Crypto_Scalarmult_Eq_2 : forall (n p:list Z),
-  Zlength n = 32 ->
-  Zlength p = 32 ->
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-(ℤ16.lst get_a (abstract_fn_rev 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)))
-`mod` (2 ^ 255 - 19) =
-get_a
-  (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-     (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19)
-/\
-(ℤ16.lst get_c (abstract_fn_rev 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)))
-`mod` (2 ^ 255 - 19) =
-get_c
-  (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-     (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19)
-->
-(get_a
-   (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-      (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19) *
- ZInv25519
-   (get_c
-      (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-         (ZUnpack25519 (ZofList 8 p)))) `mod` (2 ^ 255 - 19)) `mod` (2 ^ 255 - 19) =
-((ℤ16.lst get_a
-            (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16
-               (Unpack25519 p))) `mod` (2 ^ 255 - 19) *
- (ℤ16.lst Inv25519
-            (get_c
-               (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16
-                  (Unpack25519 p)))) `mod` (2 ^ 255 - 19)) `mod` (2 ^ 255 - 19).
-Proof.
-  intros n p Hln Hlp Hbn Hbp HT.
   f_equal.
   f_equal.
   symmetry.
@@ -462,88 +410,13 @@ Proof.
   2: f_equal ; f_equal.
   1,2: rewrite /Zmontgomery_fn /montgomery_fn.
   1,2: assert(H255: 0 <= 255) by omega.
-  pose (HOpsL := AMZubSqSel_Correct.Ops_Prop_List_Z).
-  1,2: destruct HT; assumption.
-Qed.
-
-
-
-Local Lemma Crypto_Scalarmult_Eq_3a : forall (n p:list Z),
-  Zlength n = 32 ->
-  Zlength p = 32 ->
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-(ℤ16.lst get_a (abstract_fn_rev 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)))
-`mod` (2 ^ 255 - 19) =
-get_a
-  (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-     (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19).
-Proof.
-  intros n p Hln Hlp Hbn Hbp.
-  assert(HUnpack:= Unpack25519_bounded p Hbp).
-  assert(HCn:= clamp_bound n Hbn).
-  assert(HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p)).
-    eapply list.Forall_impl ; [eassumption | apply impl_omega_simpl_0].
-  assert(HlUnpackP: Zlength (Unpack25519 p) = 16).
-    apply Unpack25519_Zlength ; assumption.
-  assert(H255: 0 <= 255) by omega.
-(*   rewrite abstract_fn_rev_eq_List_Z_a. *)
-  assert(Equiv := abstract_fn_rev_eq_List_Z_a Mod Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct 255 254 (clamp n) (Unpack25519 p) H255 HlUnpackP HCn).
-  rewrite /Mod in Equiv.
-  rewrite clamp_ZofList_eq ?Unpack25519_eq_ZUnpack25519.
-  all: try assumption.
-  all: rewrite Zlength_correct in Hln.
-  all: rewrite Zlength_correct in Hlp.
-  all: try omega.
-Admitted.
-
-Local Lemma Crypto_Scalarmult_Eq_3 : forall (n p:list Z),
-  Zlength n = 32 ->
-  Zlength p = 32 ->
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-(ℤ16.lst get_a (abstract_fn_rev 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)))
-`mod` (2 ^ 255 - 19) =
-get_a
-  (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-     (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19)
-/\
-(ℤ16.lst get_c (abstract_fn_rev 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)))
-`mod` (2 ^ 255 - 19) =
-get_c
-  (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-     (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19).
-Proof.
-  intros n p Hln Hlp Hbn Hbp.
-  assert(HUnpack:= Unpack25519_bounded p Hbp).
-  assert(HCn:= clamp_bound n Hbn).
-  assert(HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p)).
-    eapply list.Forall_impl ; [eassumption | apply impl_omega_simpl_0].
-  assert(HlUnpackP: Zlength (Unpack25519 p) = 16).
-    apply Unpack25519_Zlength ; assumption.
-  split.
-  1,2: assert(H255: 0 <= 255) by omega.
-  1: assert(Equiv := abstract_fn_rev_eq_List_Z_a Mod Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct 255 254 (clamp n) (Unpack25519 p) H255 HlUnpackP HCn).
-  2: assert(Equiv := abstract_fn_rev_eq_List_Z_c Mod Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct 255 254 (clamp n) (Unpack25519 p) H255 HlUnpackP HCn).
-  1,2: rewrite /Mod in Equiv.
   1,2: rewrite clamp_ZofList_eq ?Unpack25519_eq_ZUnpack25519.
+  apply (abstract_fn_rev_eq_List_Z_a (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct).
+  8: apply (abstract_fn_rev_eq_List_Z_c (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct).
   all: try assumption.
   all: rewrite Zlength_correct in Hln.
   all: rewrite Zlength_correct in Hlp.
   all: try omega.
-Admitted.
-
-Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
-  Zlength n = 32 ->
-  Zlength p = 32 ->
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult n p) = ZCrypto_Scalarmult_rev_gen Z_Ops (ZofList 8 n) (ZofList 8 p).
-Proof.
-  intros.
-  apply Crypto_Scalarmult_Eq_1 ; try assumption.
-  apply Crypto_Scalarmult_Eq_2 ; try assumption.
-  apply Crypto_Scalarmult_Eq_3 ; try assumption.
 Qed.
 
 End Crypto_Scalarmult.
