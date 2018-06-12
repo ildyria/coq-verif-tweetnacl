@@ -546,4 +546,6 @@ Proof.
   apply Crypto_Scalarmult_Eq_3 ; try assumption.
 Qed.
 
+End Crypto_Scalarmult.
+
 Close Scope Z.
