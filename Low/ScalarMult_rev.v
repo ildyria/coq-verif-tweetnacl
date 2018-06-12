@@ -20,17 +20,9 @@ Section ScalarGen.
 
 Open Scope Z.
 
+Context (List_Z_Ops : Ops (list Z) (list Z) id).
 (*
-  Ops.
-  A : T -> T -> T;
-  M : T -> T -> T;
-  Zub : T -> T -> T;
-  Sq : T -> T;
-  _121665: T;
-  Sel25519 : Z -> T -> T -> T;
-  getbit : Z -> T -> Z;
-*)
-Local Instance List_Z_Ops : Ops (list Z) (list Z) := {}.
+Local Instance List_Z_Ops : Ops (list Z) (list Z) id := {}.
 Proof.
 apply A.A.
 apply M.M.
@@ -41,7 +33,6 @@ apply One16.
 apply c_121665.
 apply Sel25519.Sel25519.
 apply GetBit.getbit.
-apply id.
 simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
@@ -49,7 +40,10 @@ simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
 Defined.
+*)
 
+Context (List_Z_Ops_Prop : Ops_List).
+(*
 Local Instance List_Z_Ops_Prop : Ops_List :=  Build_Ops_List
   List_Z_Ops
   A.A_Zlength
@@ -76,7 +70,7 @@ Local Instance List_Z_Ops_Prop : Ops_List :=  Build_Ops_List
   C_121665_bounds
   nul16_bounds
   One16_bounds.
-
+ *)
 Local Ltac solve_dependencies_Zlength :=
   match goal with
     | _ => apply Sel25519_Zlength

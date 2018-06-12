@@ -3,7 +3,7 @@ From Tweetnacl.Gen Require Export AMZubSqSel.
 
 Open Scope Z.
 
-Class Ops_List `{@Ops (list Z) (list Z)} :=
+Class Ops_List `{@Ops (list Z) (list Z) id} :=
 {
   A_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (A a b) = 16;
   M_Zlength : forall a b, Zlength a = 16 -> Zlength b = 16 -> Zlength (M a b) = 16;

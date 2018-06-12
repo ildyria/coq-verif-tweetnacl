@@ -8,7 +8,8 @@ Section Montgomery_Rec.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
 
 Open Scope Z.
 

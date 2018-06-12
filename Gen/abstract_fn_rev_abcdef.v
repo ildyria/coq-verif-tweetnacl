@@ -12,7 +12,8 @@ Open Scope Z.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
 
 Lemma abstract_fn_rev_a : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->

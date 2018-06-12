@@ -9,7 +9,8 @@ Section Abstract_Rec_Rev.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
 
 Fixpoint abstract_rec_rev m p (z:T') (a b c d e f x : T) : (T * T * T * T * T * T)
   :=

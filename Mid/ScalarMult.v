@@ -11,7 +11,7 @@ Require Import ssreflect.
 
 Open Scope Z.
 
-Local Instance Z_Ops : (Ops Z Z) := {}.
+Local Instance Z_Ops : (Ops Z Z (fun x => Z.modulo x ((Z.pow 2 255) - 19))) := {}.
 Proof.
 apply A.
 apply M.
@@ -22,7 +22,6 @@ apply C_1.
 apply C_121665.
 apply Sel25519.
 apply Zgetbit.
-apply (fun x => Z.modulo x ((Z.pow 2 255) - 19)).
 intros b p q ; rewrite /Sel25519 ; flatten.
 intros ; apply A_mod_eq.
 intros ; apply M_mod_eq.

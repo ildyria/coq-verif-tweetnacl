@@ -3,9 +3,8 @@ From Tweetnacl.Gen Require Import AMZubSqSel.
 From Tweetnacl.Gen Require Import UPIC.
 
 
-Class Ops_Mod_P {T T' U:Type} `(Ops T T') `(Ops U U) :=
+Class Ops_Mod_P {T T' U:Type} {Mod:U -> U} {ModT:T -> T} `(Ops T T' ModT) `(Ops U U Mod)  :=
 {
-
 P : T -> U;
 P' : T' -> U;
 A_eq : forall a b, Mod (P (A a b)) = Mod (A (P a) (P b));

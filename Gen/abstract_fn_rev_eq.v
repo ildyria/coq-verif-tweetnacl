@@ -14,9 +14,11 @@ Section Abstract_Fn_Rev_Eq_Thm.
 Context {T : Type}.
 Context {T' : Type}.
 Context {U : Type}.
-Context {TO : Ops T T'}.
-Context {UO : Ops U U}.
-Context {UTO : @Ops_Mod_P T T' U TO UO}.
+Context {ModT : T -> T}.
+Context {Mod : U -> U}.
+Context {TO : Ops T T' ModT}.
+Context {UO : Ops U U Mod}.
+Context {UTO : @Ops_Mod_P T T' U Mod ModT TO UO}.
 
 Theorem abstract_fn_rev_eq : forall (m p:Z) (z:T') (a b c d e f x a' b' c' d' e' f':T) (a'' b'' c'' d'' e'' f'': U),
   0 <= m ->

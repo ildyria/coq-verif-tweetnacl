@@ -8,13 +8,11 @@ Require Import Tweetnacl.Low.ScalarMult_gen_small.
 Require Import Tweetnacl.Gen.AMZubSqSel_List.
 Require Import Tweetnacl.Gen.ABCDEF.
 Require Import Tweetnacl.Gen.abstract_fn_rev.
-(* Require Import Recdef.
- *)
 Section ScalarRec.
 
 Open Scope Z.
 
-Context {O : Ops (list Z) (list Z)}.
+Context {O : Ops (list Z) (list Z) id}.
 Context {OP : @Ops_List O}.
 
 Lemma abstract_fn_Zlength : forall m p z a b c d e f x a' b' c' d' e' f',

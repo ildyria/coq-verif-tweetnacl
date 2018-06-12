@@ -8,7 +8,8 @@ Section Montgomery_Step_Gen.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
 
 Definition montgomery_step_gen (m:nat) (z:T') (a b c d e f x : T) : (T * T * T * T * T * T)  :=
       let r := Getbit (Z.of_nat m) z in

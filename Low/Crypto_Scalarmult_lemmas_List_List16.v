@@ -6,11 +6,8 @@ Require Import ssreflect.
 From Tweetnacl.Gen Require Import AMZubSqSel.
 From Tweetnacl.Gen Require Import AMZubSqSel_Prop.
 From Tweetnacl.Gen Require Import AMZubSqSel_List.
-(* From Tweetnacl.Gen Require Import UPIC. *)
-(* From Tweetnacl.Gen Require Import UPIC_Prop. *)
 From Tweetnacl.Gen Require Import Get_abcdef.
 From Tweetnacl.Gen Require Import abstract_fn_rev.
-(* From Tweetnacl.Gen Require Import ABCDEF. *)
 
 From Tweetnacl.Gen Require Import abstract_fn_rev_eq.
 From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
@@ -22,9 +19,9 @@ Open Scope Z.
 
 Section Crypto_Scalarmult_Eq_ac_List.
 
-Context (List_Z_Ops : Ops (list Z) (list Z)).
+Context (List_Z_Ops : Ops (list Z) (list Z) id).
 Context (List_Z_Ops_Prop : @Ops_List List_Z_Ops).
-Local Instance List16_Ops : (Ops (@List16 Z) (List32B)) := {}.
+Local Instance List16_Ops : (Ops (@List16 Z) (List32B) id) := {}.
 Proof.
 apply A_List16.
 apply M_List16.
@@ -35,7 +32,6 @@ apply C_1_List16.
 apply C_121665_List16.
 apply Sel25519_List16.
 apply getbit_List32B.
-apply id.
 simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
@@ -43,7 +39,7 @@ simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
 Defined.
-Local Instance List16_List_Z_Eq : @Ops_Mod_P (List16 Z) (List32B) (list Z) List16_Ops List_Z_Ops := {
+Local Instance List16_List_Z_Eq : @Ops_Mod_P (List16 Z) (List32B) (list Z) id id List16_Ops List_Z_Ops := {
 P := List16_to_List;
 P' := List32_to_List
 }.
@@ -65,8 +61,8 @@ Lemma abstract_fn_rev_eq_a_list : ∀ (m p : ℤ) (CN : List32B) (L16ONE L16NUL 
   List16_to_List L16NUL = nul16 ->
   List16_to_List L16UP = Up ->
   List32_to_List CN = Cn ->
-  Mod (P (get_a (abstract_fn_rev m p CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP))) =
-  Mod (get_a (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up)).
+  P (get_a (abstract_fn_rev m p CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP)) =
+  get_a (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up).
 Proof.
   intros m p CN L16ONE L16NUL L16UP Cn Up.
   intros Hm.
@@ -74,12 +70,12 @@ Proof.
   intros HL16NUL.
   intros HL16UP.
   intros HL32CN.
-  assert(Heq1:= @abstract_fn_rev_eq_a (List16 Z) List32B (list Z) List16_Ops List_Z_Ops List16_List_Z_Eq m p).
+  assert(Heq1:= @abstract_fn_rev_eq_a (List16 Z) List32B (list Z) id id List16_Ops List_Z_Ops List16_List_Z_Eq m p).
   specialize Heq1 with CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP.
   apply Heq1 in Hm.
   clear Heq1.
   move:Hm.
-  rewrite /P /P' /List16_List_Z_Eq ?HL16ONE ?HL16NUL ?HL16UP ?HL32CN.
+  rewrite /id /P /P' /List16_List_Z_Eq ?HL16ONE ?HL16NUL ?HL16UP ?HL32CN.
   trivial.
 Qed.
 
@@ -89,18 +85,18 @@ Lemma abstract_fn_rev_eq_c_list : ∀ (m p : ℤ) (CN : List32B) (L16ONE L16NUL 
   List16_to_List L16NUL = nul16 ->
   List16_to_List L16UP = Up ->
   List32_to_List CN = Cn ->
-  Mod (P (get_c (abstract_fn_rev m p CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP))) =
-  Mod (get_c (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up)).
+  P (get_c (abstract_fn_rev m p CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP)) =
+  get_c (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up).
 Proof.
   intros m p CN L16ONE L16NUL L16UP Cn Up.
   intros Hm.
   intros HL16ONE HL16NUL HL16UP HL32CN.
-  assert(Heq1:= @abstract_fn_rev_eq_c (List16 Z) List32B (list Z) List16_Ops List_Z_Ops List16_List_Z_Eq m p).
+  assert(Heq1:= @abstract_fn_rev_eq_c (List16 Z) List32B (list Z) id id List16_Ops List_Z_Ops List16_List_Z_Eq m p).
   specialize Heq1 with CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP.
   apply Heq1 in Hm.
   clear Heq1.
   move:Hm.
-  rewrite /P /P' /List16_List_Z_Eq ?HL16ONE ?HL16NUL ?HL16UP ?HL32CN.
+  rewrite /id /P /P' /List16_List_Z_Eq ?HL16ONE ?HL16NUL ?HL16UP ?HL32CN.
   trivial.
 Qed.
 

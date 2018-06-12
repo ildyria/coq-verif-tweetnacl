@@ -1,8 +1,6 @@
 From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Export AMZubSqSel.
 From Tweetnacl.Gen Require Export AMZubSqSel_List.
-(* From Tweetnacl.Gen Require Export UPIC.
-From Tweetnacl.Gen Require Export UPIC_List. *)
 
 Open Scope Z.
 
@@ -42,10 +40,8 @@ Proof. intros; destruct l ; simpl ; assumption. Qed.
 
 Section List16.
 
-Context {OLZ : Ops (list Z) (list Z)}.
-(* Context {OLEZ : Ops_ext (list Z) (list Z)}. *)
+Context {OLZ : Ops (list Z) (list Z) id}.
 Context {OPLZ : @Ops_List OLZ}.
-(* Context {OPeLZ : @Ops_ext_List OLEZ}. *)
 
 Definition A_List16 (a b: List16 Z) := match a,b with
   | Len a Ha, Len b Hb => Len (A a b) (A_Zlength a b Ha Hb)
@@ -72,15 +68,7 @@ Definition getbit_List32B n (l: List32B) := match l with
   | L32B l _ => Getbit n l
 end.
 
-(* Definition Inv25519_List16 (a: List16 Z) := match a with
-  | Len a Ha => Len (Inv25519 a) (Inv25519_Zlength a Ha)
-end.
-
-Definition Pack25519_List16 (a: List16 Z) := match a with
-  | Len a Ha => L32B (Pack25519 a) (Inv25519_Zlength a Ha)
-end.
- *)
-Local Instance List16_Ops : (Ops (@List16 Z) List32B) := {}.
+Local Instance List16_Ops : (Ops (@List16 Z) List32B id) := {}.
 Proof.
 apply A_List16.
 apply M_List16.

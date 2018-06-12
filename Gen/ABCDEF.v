@@ -4,7 +4,8 @@ Section ABCDEF.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : @Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : @Ops T T' Mod}.
 
 Definition fa r (a b c d e f x:T) :=
   Sel25519 r

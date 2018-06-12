@@ -4,7 +4,7 @@ From Tweetnacl.ListsOp Require Import Export.
 From Tweetnacl.Gen Require Export AMZubSqSel.
 Open Scope Z.
 
-Class Ops_Prop_List_Z `{@Ops (list Z) (list Z)} `{@Ops Z Z}  :=
+Class Ops_Prop_List_Z (Mod : Z -> Z) `{@Ops (list Z) (list Z) id} `{@Ops Z Z Mod}  :=
 {
   A_correct:
     forall n a b,

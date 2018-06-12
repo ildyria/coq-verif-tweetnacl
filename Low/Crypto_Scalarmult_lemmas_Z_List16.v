@@ -19,11 +19,12 @@ Open Scope Z.
 
 Section Crypto_Scalarmult_Eq_ac_List16_Z.
 
-Context (Z_Ops : (Ops Z Z)).
-Context (List_Z_Ops : Ops (list Z) (list Z)).
+Context (Mod : Z -> Z).
+Context (Z_Ops : (Ops Z Z) Mod).
+Context (List_Z_Ops : Ops (list Z) (list Z) id).
 Context (List_Z_Ops_Prop : @Ops_List List_Z_Ops).
-Context (List_Z_Ops_Prop_Correct : @Ops_Prop_List_Z List_Z_Ops Z_Ops).
-Local Instance List16_Ops : (Ops (@List16 Z) (List32B)) := {}.
+Context (List_Z_Ops_Prop_Correct : @Ops_Prop_List_Z Mod List_Z_Ops Z_Ops).
+Local Instance List16_Ops : (Ops (@List16 Z) (List32B) id) := {}.
 Proof.
 apply A_List16.
 apply M_List16.
@@ -34,7 +35,6 @@ apply C_1_List16.
 apply C_121665_List16.
 apply Sel25519_List16.
 apply getbit_List32B.
-apply id.
 simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
@@ -42,7 +42,7 @@ simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
 Defined.
-Local Instance List16_Z_Eq : @Ops_Mod_P (@List16 Z) (List32B) Z List16_Ops Z_Ops := {
+Local Instance List16_Z_Eq : @Ops_Mod_P (@List16 Z) (List32B) Z Mod id List16_Ops Z_Ops := {
 P l := (ZofList 16 (List16_to_List l));
 P' l := (ZofList 8 (List32_to_List l));
 }.
@@ -74,7 +74,7 @@ Proof.
   intros Hm.
   intros HL16ONE HL16NUL HL16UP HL32CN.
   intros Hu Hn.
-  assert(Heq1:= @abstract_fn_rev_eq_a (List16 Z) List32B Z List16_Ops Z_Ops List16_Z_Eq m p).
+  assert(Heq1:= @abstract_fn_rev_eq_a (List16 Z) List32B Z id Mod List16_Ops Z_Ops List16_Z_Eq m p).
   specialize Heq1 with CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP.
   apply Heq1 in Hm.
   clear Heq1.
@@ -100,7 +100,7 @@ Proof.
   intros Hm.
   intros HL16ONE HL16NUL HL16UP HL32CN.
   intros Hu Hn.
-  assert(Heq1:= @abstract_fn_rev_eq_c (List16 Z) List32B Z List16_Ops Z_Ops List16_Z_Eq m p).
+  assert(Heq1:= @abstract_fn_rev_eq_c (List16 Z) List32B Z id Mod List16_Ops Z_Ops List16_Z_Eq m p).
   specialize Heq1 with CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP.
   apply Heq1 in Hm.
   clear Heq1.

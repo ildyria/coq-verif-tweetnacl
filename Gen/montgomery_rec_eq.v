@@ -18,7 +18,8 @@ Section Montgomery_Rec_Eq.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
 
 Theorem montgomery_rec_eq: forall n z a b c d e f x,
   montgomery_rec n z a b c d e f x =

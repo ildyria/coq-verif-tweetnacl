@@ -7,7 +7,8 @@ Section ScalarRec.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
 
 Definition step_gen (z:T') (x:T) (n:nat) (k:(T * T * T * T * T * T)) : (T * T * T * T * T * T)
   := match k with (a,b,c,d,e,f) =>

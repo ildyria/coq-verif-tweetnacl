@@ -11,9 +11,11 @@ Section ABCDEF_Eq_Prop.
 Context {T : Type}.
 Context {T' : Type}.
 Context {U : Type}.
-Context {TO : Ops T T'}.
-Context {UO : Ops U U}.
-Context {UTO : @Ops_Mod_P T T' U TO UO}.
+Context (ModT : T -> T).
+Context (Mod : U -> U).
+Context {TO : Ops T T' ModT}.
+Context {UO : Ops U U Mod}.
+Context {UTO : @Ops_Mod_P T T' U Mod ModT TO UO}.
 
 (*
 Variable P : T -> U.

@@ -10,7 +10,7 @@ Require Import ssreflect.
 Section ScalarRec.
 Open Scope Z.
 
-Context {O : Ops (list Z) (list Z)}.
+Context {O : Ops (list Z) (list Z) id}.
 Context {OP : @Ops_List O}.
 
 Local Ltac solve_small_step_Zlength :=

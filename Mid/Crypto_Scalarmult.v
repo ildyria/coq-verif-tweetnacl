@@ -21,7 +21,7 @@ Open Scope Z.
 
 Section ZCrypto_Scalarmult_gen.
 
-Context (Z_Ops : (Ops Z Z)).
+Context (Z_Ops : (Ops Z Z) (fun x => Z.modulo x ((Z.pow 2 255) - 19))).
 
 Definition ZCrypto_Scalarmult_rev_gen n p :=
   let t := abstract_fn_rev 255 254 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
@@ -34,7 +34,7 @@ Definition ZCrypto_Scalarmult_rec_gen n p :=
 End ZCrypto_Scalarmult_gen.
 
 
-Local Instance Z_Ops : (Ops Z Z) := {}.
+Local Instance Z_Ops : (Ops Z Z (fun x => Z.modulo x (Z.pow 2 255 - 19))) := {}.
 Proof.
 apply A.
 apply M.
@@ -45,7 +45,6 @@ apply C_1.
 apply C_121665.
 apply Sel25519.
 apply Zgetbit.
-apply (fun x => Z.modulo x ((Z.pow 2 255) - 19)).
 intros b p q ; rewrite /Sel25519 ; flatten.
 intros ; apply A_mod_eq.
 intros ; apply M_mod_eq.

@@ -14,7 +14,8 @@ Open Scope Z.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
 
 Function abstract_fn_rev (m p:Z) (z:T') (a b c d e f x:T) {measure Z.to_nat m} : (T * T * T * T * T * T) :=
   if (m <=? 0)

@@ -20,7 +20,8 @@ Open Scope Z.
 
 Context {T : Type}.
 Context {T' : Type}.
-Context {O : Ops T T'}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
 
 Theorem abstract_fn_rev_eq : forall m p z a b c d e f x,
   0 <= m ->
