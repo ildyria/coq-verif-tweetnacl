@@ -3,6 +3,7 @@ From Tweetnacl.ListsOp Require Import Export.
 From stdpp Require Import list.
 Require Import ssreflect.
 
+From Tweetnacl.Low Require Import AMZubSqSel_Correct.
 From Tweetnacl.Gen Require Import AMZubSqSel_Prop.
 From Tweetnacl.Gen Require Import AMZubSqSel_List.
 From Tweetnacl.Gen Require Import ABCDEF.
@@ -29,9 +30,10 @@ From Tweetnacl.Mid Require Import Pack25519.
 From Tweetnacl.Mid Require Import Inv25519.
 From Tweetnacl.Mid Require Import Prep_n.
 From Tweetnacl.Mid Require Import GetBit.
-(* From Tweetnacl.Mid Require Import Crypto_Scalarmult. *)
+From Tweetnacl.Mid Require Import Crypto_Scalarmult.
 From Tweetnacl.Mid Require Import AMZubSqSel.
 From Tweetnacl.Mid Require Import ScalarMult.
+From Tweetnacl.Low Require Import Crypto_Scalarmult_lemmas.
 
 Open Scope Z.
 
@@ -102,6 +104,35 @@ apply C_121665_bounds.
 apply nul16_bounds.
 apply One16_bounds.
 Defined.
+
+Local Instance List_Z_Ops_Prop_Correct  : @Ops_Prop_List_Z List_Z_Ops Z_Ops := {}.
+Proof.
+apply A_correct.
+intros; simpl.
+rewrite mult_GF_Zlengh.
+rewrite /M.
+rewrite -?Car25519.Zcar25519_correct.
+reflexivity.
+assumption.
+assumption.
+apply Zub_correct.
+intros. simpl.
+rewrite /Sq.
+rewrite mult_GF_Zlengh.
+rewrite /M.
+rewrite -?Car25519.Zcar25519_correct.
+reflexivity.
+assumption.
+assumption.
+reflexivity.
+reflexivity.
+reflexivity.
+intros; simpl.
+rewrite /Sel25519 /Sel25519.Sel25519 /Sel25519.list_cswap ; flatten.
+intros. simpl.
+apply getbit_repr.
+assumption.
+Qed.
 
 Local Instance List16_Ops : (Ops (@List16 Z) (List32B)) := {}.
 Proof.
@@ -192,84 +223,7 @@ Proof.
   omega.
 Qed.
 
-(* Local Lemma Crypto_Scalarmult_Eq_a: forall n p,
-Zlength n = 32 ->
-Zlength p = 32 ->
-Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
-Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-Zlength One16 = 16 ->
-Zlength nul16 = 16 ->
-Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) One16 ->
-Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) nul16 ->
-Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 16) (Unpack25519 p) ->
-Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p) ->
-Zlength (Unpack25519 p) = 16 ->
-Zlength (get_a (montgomery_fn 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p))) = 16 ->
-Zlength (get_c (montgomery_fn 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p))) = 16 ->
-0 ≤ 255 ->
-(ℤ16.lst get_a (abstract_fn_rev 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)))
-`mod` (2 ^ 255 - 19) =
-get_a
-  (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
-     (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19).
-Proof.
-intros n p Hln Hlp Hbn Hbp.
-intros HlOne16 HlNul16.
-intros HbOne16 HbNul16.
-intros HUnpack.
-intros HUnpackEx.
-intros HlUnpackP.
-intros HlgetA.
-intros HlgetC.
-intros H255.
-assert(HL32NForall:= clamp_bound n Hbn).
-pose(ExL32N := L32B (clamp n) HL32NForall).
-pose(L16ONE := Len One16 HlOne16).
-pose(L16NUL := Len nul16 HlNul16).
-pose(L16UP := Len (Unpack25519 p) HlUnpackP).
 
-assert(Heq1:= @abstract_fn_rev_eq_a (List16 Z) List32B (list Z) List16_Ops List_Z_Ops List16_List_Z_Eq 255 254).
-assert(Heq2:= @abstract_fn_rev_eq_a (List16 Z) List32B Z List16_Ops Z_Ops List16_Z_Eq 255 254).
-
-assert(Heq1I := Heq1 ExL32N L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP H255).
-rewrite /Mod /List16_List_Z_Eq /List16_to_List /id in Heq1I.
-change (P L16NUL) with nul16 in Heq1I.
-change (P L16ONE) with One16 in Heq1I.
-change (P' ExL32N) with (clamp n) in Heq1I.
-change (P L16UP) with (Unpack25519 p) in Heq1I.
-rewrite -Heq1I.
-
-assert(Heq2I := Heq2 ExL32N L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP H255).
-change (P L16NUL) with 0 in Heq2I.
-change (P L16ONE) with 1 in Heq2I.
-
-assert(HL32N: P' ExL32N = Zclamp (ZofList 8 n)).
-simpl ; symmetry ; apply clamp_ZofList_eq; try assumption ; rewrite Zlength_correct in Hln ; omega.
-
-assert(HL16P: P L16UP = (ZUnpack25519 (ZofList 8 p))).
-simpl ; symmetry ; apply Unpack25519_eq_ZUnpack25519; try assumption ; rewrite Zlength_correct in Hlp ; omega.
-
-rewrite HL32N in Heq2I.
-rewrite HL16P in Heq2I.
-rewrite /Mod /List16_Z_Eq in Heq2I.
-rewrite /P.
-rewrite /P /List16_to_List in Heq2I.
-remember (Zclamp (ZofList 8 n)) as N.
-remember (ZUnpack25519 (ZofList 8 p)) as P.
-remember (2 ^ 255 - 19) as PRIME.
-remember ((ℤ16.lst match get_a (abstract_fn_rev 255 254 ExL32N L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP) with
-                 | Len l _ => l
-                 end) `mod` PRIME) as m.
-clear Heqm.
-clears n p.
-clears Heq1 Heq2.
-clear L16ONE L16UP L16NUL ExL32N HL32N HL16P HeqPRIME HL32NForall.
-clears HlOne16 HlNul16 HbOne16 HbNul16 HlUnpackP H255.
-assumption.
-Qed.
-Check Crypto_Scalarmult_Eq_a. *)
-(* Print Crypto_Scalarmult_Eq_c.
-(* 
 Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength n = 32 ->
   Zlength p = 32 ->
@@ -278,7 +232,8 @@ Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   ZofList 8 (Crypto_Scalarmult n p) = ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
 Proof.
   intros n p Hln Hlp Hbn Hbp.
-  rewrite /Crypto_Scalarmult /ZCrypto_Scalarmult.
+  rewrite ZCrypto_Scalarmult_eq.
+  rewrite /Crypto_Scalarmult /ZCrypto_Scalarmult_rev_gen.
   assert(HlOne16: Zlength One16 = 16) by go.
   assert(HlNul16: Zlength nul16 = 16) by go.
   assert(HbOne16: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) One16) by
@@ -288,6 +243,7 @@ Proof.
   assert(HUnpack: Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 16) (Unpack25519 p)).
     apply Unpack25519_bounded.
     assumption.
+  assert(HCn:= clamp_bound n Hbn).
   assert(HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p)).
     eapply list.Forall_impl.
     eassumption.
@@ -357,55 +313,18 @@ Proof.
   1,2: rewrite /Zmontgomery_fn /montgomery_fn.
 
   1,2: assert(H255: 0 <= 255) by omega.
-  1: assert(Heq1:= @abstract_fn_rev_eq_a (List16 Z) List32B (list Z) List16_Ops List_Z_Ops List16_List_Z_Eq 255 254).
-  1: assert(Heq2:= @abstract_fn_rev_eq_a (List16 Z) List32B Z List16_Ops Z_Ops List16_Z_Eq 255 254).
-  2: assert(Heq1:= @abstract_fn_rev_eq_c (List16 Z) List32B (list Z) List16_Ops List_Z_Ops List16_List_Z_Eq 255 254).
-  2: assert(Heq2:= @abstract_fn_rev_eq_c (List16 Z) List32B Z List16_Ops Z_Ops List16_Z_Eq 255 254).
+  pose (HOpsL := AMZubSqSel_Correct.Ops_Prop_List_Z).
+  1: assert(Equiv := abstract_fn_rev_eq_List_Z_a Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct 255 254 (clamp n) (Unpack25519 p) H255 HlUnpackP HCn).
+  2: assert(Equiv := abstract_fn_rev_eq_List_Z_c Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct 255 254 (clamp n) (Unpack25519 p) H255 HlUnpackP HCn).
+  1,2: rewrite /Mod /Z_Ops in Equiv.
+  1,2: rewrite Equiv.
+  1,2: f_equal ; f_equal ; f_equal.
+  1,4: symmetry ; apply clamp_ZofList_eq.
+  5,6,7,8: symmetry ; apply Unpack25519_eq_ZUnpack25519.
+  all: try assumption.
+  all: rewrite Zlength_correct in Hln.
+  all: rewrite Zlength_correct in Hlp ; omega.
+Qed.
 
-  1,2: assert(HL32NForall:= clamp_bound n Hbn).
-  1,2: pose(ExL32N := L32B (clamp n) HL32NForall).
-  1,2: pose(L16ONE := Len One16 HlOne16).
-  1,2: pose(L16NUL := Len nul16 HlNul16).
-  1,2: pose(L16UP := Len (Unpack25519 p) HlUnpackP).
 
-  1,2: assert(Heq1I := Heq1 ExL32N L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP H255).
-  1,2: rewrite /Mod /List16_List_Z_Eq /List16_to_List /id in Heq1I.
-  1,2: change (P L16NUL) with nul16 in Heq1I.
-  1,2: change (P L16ONE) with One16 in Heq1I.
-  1,2: change (P' ExL32N) with (clamp n) in Heq1I.
-  1,2: change (P L16UP) with (Unpack25519 p) in Heq1I.
-  1,2: rewrite -Heq1I.
-
-  1,2: assert(Heq2I := Heq2 ExL32N L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP H255).
-  1,2: change (P L16NUL) with 0 in Heq2I.
-  1,2: change (P L16ONE) with 1 in Heq2I.
-
-  1,2: assert(HL32N: P' ExL32N = Zclamp (ZofList 8 n)).
-  1,3: simpl ; symmetry ; apply clamp_ZofList_eq; try assumption ; rewrite Zlength_correct in Hln ; omega.
-
-  1,2: assert(HL16P: P L16UP = (ZUnpack25519 (ZofList 8 p))).
-  1,3: simpl ; symmetry ; apply Unpack25519_eq_ZUnpack25519; try assumption ; rewrite Zlength_correct in Hlp ; omega.
-
-  1,2: rewrite HL32N in Heq2I.
-  1,2: rewrite HL16P in Heq2I.
-  1,2: rewrite /Mod /List16_Z_Eq in Heq2I.
-  1,2: rewrite /P.
-  1,2: rewrite /P /List16_to_List in Heq2I.
-  1,2: remember (Zclamp (ZofList 8 n)) as N.
-  1,2: remember (ZUnpack25519 (ZofList 8 p)) as P.
-  1,2: remember (2 ^ 255 - 19) as PRIME.
-  1: remember ((ℤ16.lst match get_a (abstract_fn_rev 255 254 ExL32N L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP) with
-                 | Len l _ => l
-                 end) `mod` PRIME) as m.
-  2: remember ((ℤ16.lst match get_c (abstract_fn_rev 255 254 ExL32N L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP) with
-                 | Len l _ => l
-                 end) `mod` PRIME) as m.
-  1,2: clear Heqm.
-  1,2: clears n p.
-  1,2: clears Heq1 Heq2.
-  1,2: clear L16ONE L16UP L16NUL ExL32N HL32N HL16P HeqPRIME HL32NForall.
-  1,2: clears HlOne16 HlNul16 HbOne16 HbNul16 HlUnpackP H255.
-  1,2: assumption.
-Qed. *)
-*)
 Close Scope Z.

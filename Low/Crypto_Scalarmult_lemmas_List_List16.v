@@ -6,15 +6,17 @@ Require Import ssreflect.
 From Tweetnacl.Gen Require Import AMZubSqSel.
 From Tweetnacl.Gen Require Import AMZubSqSel_Prop.
 From Tweetnacl.Gen Require Import AMZubSqSel_List.
+(* From Tweetnacl.Gen Require Import UPIC. *)
+(* From Tweetnacl.Gen Require Import UPIC_Prop. *)
 From Tweetnacl.Gen Require Import Get_abcdef.
 From Tweetnacl.Gen Require Import abstract_fn_rev.
-From Tweetnacl.Gen Require Import ABCDEF.
-
-From Tweetnacl.Low Require Import List16.
+(* From Tweetnacl.Gen Require Import ABCDEF. *)
 
 From Tweetnacl.Gen Require Import abstract_fn_rev_eq.
 From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
 From Tweetnacl.Low Require Import Constant.
+From Tweetnacl.Low Require Import List16.
+
 
 Open Scope Z.
 

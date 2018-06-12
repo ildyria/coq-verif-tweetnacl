@@ -1,4 +1,4 @@
-From Tweetnacl.Libs Require Import Export.
+(* From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Export UPIC.
 
 Open Scope Z.
@@ -22,4 +22,4 @@ Class Ops_ext_List `{@Ops_ext (list Z) (list Z)} :=
     Forall (fun x => 0 <= x < 2^8) (Pack25519 l)
 
 }.
-Close Scope Z.
+Close Scope Z. *)

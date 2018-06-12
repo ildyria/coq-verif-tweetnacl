@@ -1,4 +1,4 @@
-From Tweetnacl.Libs Require Import Export.
+(* From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Import AMZubSqSel.
 From Tweetnacl.Gen Require Import UPIC.
 
@@ -16,4 +16,4 @@ Unpack25519_eq : forall l, P (Unpack25519 l) = Unpack25519 (P' l);
 Clamp_eq : forall l, P' (Clamp l) = Clamp (P' l);
 
 
-}.
+}. *)

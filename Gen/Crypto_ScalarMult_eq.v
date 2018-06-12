@@ -1,4 +1,4 @@
-Require Import ssreflect.
+(* Require Import ssreflect.
 From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Import Get_abcdef.
 From Tweetnacl.Gen Require Import AMZubSqSel.
@@ -67,4 +67,4 @@ Proof.
   }
 Qed.
 
-End CryptoScalarMult_eq.
+End CryptoScalarMult_eq. *)
