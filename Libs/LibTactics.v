@@ -146,9 +146,18 @@ Ltac gen_i H i :=
   end.
 
 (* I would like something like that... *)
-Ltac nat_indify i :=
+(* Ltac nat_indify i :=
   match goal with
     | [ |- ?A ] => let A' := constr:(fun (i:Z) => A) in eapply (natlike_ind A')
+  end.
+just do:
+pattern 1.
+eapply natlike_ind.
+*)
+
+Ltac revert_all :=
+  repeat match goal with
+    | [ H : _ |- _ ] => revert H
   end.
 
 Close Scope Z.
