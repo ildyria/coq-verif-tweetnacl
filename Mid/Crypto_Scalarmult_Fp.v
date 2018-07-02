@@ -15,12 +15,12 @@ From Tweetnacl Require Import Mid.Car25519.
 From Tweetnacl Require Import Mid.Inv25519.
 From Tweetnacl Require Import Mid.ScalarMult.
 
-From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.
+From Tweetnacl.High Require Import Zmodp opt_ladder ladder curve25519.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
 
 Definition Mod := (fun x => Z.modulo x (Z.pow 2 255 - 19)).
 
-Local Instance Z25519_Ops : (Ops Zmodp.type Zmodp.type id) := {}.
+Local Instance Z25519_Ops : (Ops Zmodp.type nat id) := {}.
 Proof.
 apply Zmodp.add.
 apply Zmodp.mul.
@@ -30,7 +30,7 @@ apply Zmodp.zero.
 apply Zmodp.one.
 apply (Zmodp.pi C_121665).
 apply (fun b p q => if b =? 0 then p else q).
-apply (fun n m => Zgetbit n (val m)).
+apply (fun n m => Z.of_nat (bitn (Z.to_nat n) m)).
 reflexivity.
 reflexivity.
 reflexivity.
@@ -58,27 +58,9 @@ intros ; apply Sq_mod_eq.
 intros ; apply Zmod_mod.
 Defined.
 
-(* Proof of correctness between High and Mid Level *)
-Lemma A_ok (a b : Z) : Zmodp.pi (A a b) = (Zmodp.pi a + Zmodp.pi b)%R.
-Proof. by rewrite Zmodp_addE. Qed.
-
-Lemma Zub_ok (a b : Z) : Zmodp.pi (Zub a b) = (Zmodp.pi a - Zmodp.pi b)%R.
-Proof. by rewrite Zmodp_oppE Zmodp_addE. Qed.
-
-Lemma M_ok (a b : Z) : Zmodp.pi (M a b) = (Zmodp.pi a * Zmodp.pi b)%R.
-Proof.
-rewrite Zmodp_mulE /M.
-apply/eqP; rewrite eqE; apply/eqP=> /=.
-unlock p.
-by rewrite -!Zcar25519_correct.
-Qed.
-
-Lemma Sq_ok (a : Z) : Zmodp.pi (Sq a) = (Zmodp.pi a ^+ 2)%R.
-Proof. by rewrite /Sq M_ok GRing.expr2. Qed.
-
-Local Instance Z25519_Z_Eq : @Ops_Mod_P Zmodp.type Zmodp.type Z Mod id Z25519_Ops Z_Ops := {
+Local Instance Z25519_Z_Eq : @Ops_Mod_P Zmodp.type nat Z Mod id Z25519_Ops Z_Ops := {
 P := val;
-P' := val
+P' := Z.of_nat
 }.
 Proof.
 intros; simpl. admit.
@@ -89,6 +71,7 @@ simpl ; rewrite Zmod_small ; [reflexivity| admit].
 simpl ; rewrite Zmod_small ; [reflexivity| admit].
 simpl ; rewrite Zmod_small ; [reflexivity| admit].
 intros; simpl; rewrite /Sel25519; flatten.
-intros; simpl ; reflexivity.
+intros; simpl.
+admit.
 Admitted.
 
