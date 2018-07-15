@@ -1,9 +1,9 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Low.Z.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_step.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
 Require Import ssreflect.
 Require Import Recdef.
 
@@ -78,7 +78,7 @@ intros P HR HS HC HM HN.
 fix red_expr_indp 1.
 destruct l;
 first [
-   apply HR 
+   apply HR
   | apply HS
   | apply HC
   | apply HM
@@ -144,7 +144,7 @@ Qed.
  *)
 
 Lemma red_expr_decide_impl:
-  forall env l l', 
+  forall env l l',
   red_expr_decide l l' = true ->
   red_expr_denote env l = red_expr_denote env l'.
 Proof.
@@ -280,7 +280,7 @@ Qed.
 
 End red_expr.
 
-Local Instance  red_expr_dec : Decidable := 
+Local Instance  red_expr_dec : Decidable :=
 {
   decide := red_expr_decide;
   denote := red_expr_denote;
@@ -340,11 +340,11 @@ symmetry;
 replace (i + 1 - 1) with i; try omega;
 unfold H2 ; fold H2;
 cbn;
-(* match goal with | [ |- context[denote _ (upd_nth ?A ?B ?C)] ] => 
+(* match goal with | [ |- context[denote _ (upd_nth ?A ?B ?C)] ] =>
 change (denote _ (upd_nth A B C)) with (list_denote _ env (upd_nth A B C)) end; *)
 rewrite ?list_denote_upd_nth;
 unfold H1 ; fold H1; simpl;
-match goal with | [ |- context[red_expr_denote _ (nth ?A ?B ?C)] ] => 
+match goal with | [ |- context[red_expr_denote _ (nth ?A ?B ?C)] ] =>
 change (red_expr_denote _ (nth ?A ?B ?C)) with (denote env (nth A B C)) end;
 rewrite ?list_denote_nth;
 match goal with | [ H : context[sub_fn_rev] |- _ ] => rewrite H end;
@@ -387,7 +387,7 @@ rewrite ?list_denote_upd_nth;
 unfold sub_step_2 ; fold sub_step_2;
 match goal with | [ H : context[sub_fn_rev_s] |- _ ] => rewrite H end;
 simpl;
-repeat match goal with | [ |- context[red_expr_denote _ (nth ?A ?B ?C)] ] => 
+repeat match goal with | [ |- context[red_expr_denote _ (nth ?A ?B ?C)] ] =>
 change (red_expr_denote _ (nth A B C)) with (denote env (nth A B C)) end;
 rewrite ?list_denote_nth;
 rewrite -list_denote_map;
@@ -548,7 +548,7 @@ match goal with
     rename z31 into env.
     rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
-    match goal with 
+    match goal with
       |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
     {
     subst reif.
@@ -588,7 +588,7 @@ match goal with
     rename z15 into env.
     rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
-    match goal with 
+    match goal with
       |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
     {
     subst reif.
@@ -631,7 +631,7 @@ match goal with
     rename z31 into env.
     rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
-    match goal with 
+    match goal with
       |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
     {
     subst reif.
@@ -681,7 +681,7 @@ match goal with
     rename z31 into env.
     rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
-    match goal with 
+    match goal with
       |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
     {
     subst reif.
@@ -722,7 +722,7 @@ match goal with
     rename z31 into env.
     rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
-    match goal with 
+    match goal with
       |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
     {
     subst reif.
@@ -763,7 +763,7 @@ match goal with
     rename z31 into env.
     rename f into reif.
     (* in theory we would use change, but here we need to proceed slightly differently *)
-    match goal with 
+    match goal with
       |- ?P => assert( Hsubst: formula_denote {| vars := env |} reif -> P) end.
     {
     subst reif.

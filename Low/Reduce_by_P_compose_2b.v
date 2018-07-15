@@ -1,10 +1,10 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Low.Z.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_step.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
+From Tweetnacl Require Import Low.Reduce_by_P_compose.
 From stdpp Require Import list.
 Require Import Recdef.
 Require Import ssreflect.
@@ -129,9 +129,9 @@ Local Ltac solve_this_assert :=
   rewrite ?sub_fn_rev_s_sub_step_2_Zlength ; try omega;
   apply bound_a_subst_step_2_lss ; auto ; omega.
  *)
-Local Ltac gen_goals P j n := match n with 
+Local Ltac gen_goals P j n := match n with
   | 0 => idtac
-  | n => 
+  | n =>
     let n'' := (eval compute in (j - n)) in
     assert(P n'');
     [simpl ; solve_this_assert|];

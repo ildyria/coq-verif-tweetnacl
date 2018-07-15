@@ -1,6 +1,6 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
-From Tweetnacl Require Import Low.Reduce_by_P.Reduce_by_P.
+From Tweetnacl Require Import Low.Reduce_by_P.
 From Tweetnacl Require Import Low.Car25519.
 From Tweetnacl Require Import Low.Car25519_bounds.
 From Tweetnacl Require Import Low.Get_abcdef.
@@ -38,7 +38,7 @@ sv pack25519(u8 *o,const gf n)
 
 Open Scope Z.
 
-Definition Pack25519 l := 
+Definition Pack25519 l :=
   let l1 := car25519 l in
   let l2 := car25519 l1 in
   let l3 := car25519 l2 in

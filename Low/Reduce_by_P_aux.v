@@ -5,12 +5,12 @@ From Tweetnacl Require Import Low.GetBit_pack25519.
 From Tweetnacl Require Import Low.Sel25519.
 From Tweetnacl Require Import Low.Constant.
 From Tweetnacl Require Import Mid.SubList.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_step.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1b.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2b.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_1b.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_2b.
+From Tweetnacl Require Import Low.Reduce_by_P_compose.
 
 From stdpp Require Import list.
 Require Import ssreflect.
@@ -213,7 +213,7 @@ Proof.
   apply bound_a_subst_step_2_lss ; try omega ; assumption.
 Qed.
 
-Lemma ZofList_m_from_t_sub1 : forall 
+Lemma ZofList_m_from_t_sub1 : forall
 m t t'',
 length m = 16%nat ->
 length t = 16%nat ->
@@ -313,7 +313,7 @@ Proof.
   }
   rewrite sub_fn_rev_f_g ; try omega.
   remember (sub_fn_rev 1 sub_step_1 a (upd_nth 0 m (subst_0xffed (nth 0 t 0))) t) as m'.
-  replace 
+  replace
   (sub_fn_rev_s 1 sub_step_2 a m')
   with
   (sub_fn_rev_s 1 sub_step_2 (a - 1 + 1) m').

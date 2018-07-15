@@ -6,13 +6,13 @@ From Tweetnacl Require Import Low.Sel25519.
 From Tweetnacl Require Import Low.Constant.
 From Tweetnacl Require Import Mid.SubList.
 From Tweetnacl Require Import Mid.Pack25519.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_step.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_1b.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose_2b.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_compose.
-From Tweetnacl.Low.Reduce_by_P Require Import Reduce_by_P_aux.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_step.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_1.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_2.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_1b.
+From Tweetnacl Require Import Low.Reduce_by_P_compose_2b.
+From Tweetnacl Require Import Low.Reduce_by_P_compose.
+From Tweetnacl Require Import Low.Reduce_by_P_aux.
 From stdpp Require Import list.
 Require Import Recdef.
 Require Import ssreflect.
@@ -92,7 +92,7 @@ Proof.
   rewrite /m_from_t.
   repeat first[
     omega
-    | rewrite sub_fn_rev_Zlength 
+    | rewrite sub_fn_rev_Zlength
     | rewrite upd_nth_Zlength
     | change_Z_of_nat ; omega].
 Qed.
@@ -209,7 +209,7 @@ Proof.
   omega.
 Qed.
 
-Lemma nth_15_m_fromt_t_signed_pos: 
+Lemma nth_15_m_fromt_t_signed_pos:
   forall m t,
   Zlength m = 16 ->
   Zlength t = 16 ->
@@ -255,7 +255,7 @@ Proof.
   omega.
 Qed.
 
-Lemma nth_15_m_fromt_t_signed_neg: 
+Lemma nth_15_m_fromt_t_signed_neg:
   forall m t,
   Zlength m = 16 ->
   Zlength t = 16 ->
@@ -489,7 +489,7 @@ Proof.
 Qed.
 
 Definition select_m_t m t : (list Z * list Z) :=
-  let new_m := m_from_t m t in 
+  let new_m := m_from_t m t in
   let b := 1 - getbit_25519 new_m in
     (Sel25519 b new_m t, Sel25519 b t new_m).
 
@@ -550,8 +550,8 @@ Function subst_select (f: list Z -> list Z -> list Z*list Z) (a:Z) (m t: list Z)
   if (a <=? 0)
     then (m,t)
     else
-      let m_prev := get_m (subst_select f (a - 1) m t) in 
-      let t_prev := get_t (subst_select f (a - 1) m t) in 
+      let m_prev := get_m (subst_select f (a - 1) m t) in
+      let t_prev := get_t (subst_select f (a - 1) m t) in
         (f m_prev t_prev).
 Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
 
