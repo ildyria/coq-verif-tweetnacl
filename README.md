@@ -16,12 +16,21 @@
 
 ##### 2. Set OPAM for Tweetnacl so it does not pollute other projects.
 
+**With OPAM 1.2**
+
 ```bash
-opam switch -A 4.06.0 Tweetnacl
+opam switch -A 4.06.1 Tweetnacl
 eval `opam config env`
 ```
 
-##### 3. Dependencies (coq 8.7, coqide, ssreflect, stdpp, coqprime, VST)
+**With OPAM 2.0**
+
+```bash
+opam switch create Tweetnacl 4.06.1
+eval $(opam env)
+```
+
+##### 3. Dependencies (coq 8.8.1, coqide, ssreflect, stdpp, coqprime, VST 2.0)
 
 ```bash
   opam repo add coq-released https://coq.inria.fr/opam/released
@@ -31,7 +40,7 @@ eval `opam config env`
   # if you want coqide
   opam install coqide
   # install the two main repository
-  opam install coq-vst
+  opam install coq-vst.2.0
   opam install --deps-only coq-tweetnacl
 ```
 
@@ -70,7 +79,7 @@ Another possibility is to use `opam source`. This will create a
   make -j
 ```
 
-##### Benchmarks 
+##### Benchmarks
 
 ```
 Tweetnacl: make all -j  396.46s user 13.92s system 266% cpu 2:33.77 total
