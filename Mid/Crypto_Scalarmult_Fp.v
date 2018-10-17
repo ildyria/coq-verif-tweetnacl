@@ -63,15 +63,19 @@ P := val;
 P' := Z.of_nat
 }.
 Proof.
-intros; simpl. admit.
-intros; simpl. admit.
-intros; simpl. admit.
-intros; simpl. admit.
-simpl ; rewrite Zmod_small ; [reflexivity| admit].
-simpl ; rewrite Zmod_small ; [reflexivity| admit].
-simpl ; rewrite Zmod_small ; [reflexivity| admit].
-intros; simpl; rewrite /Sel25519; flatten.
+intros; simpl. rewrite /A /Mod /p -lock Zmod_mod. reflexivity.
+intros; simpl. rewrite /M /Mod /p -lock Zmod_mod -Zcar25519_correct -Zcar25519_correct. reflexivity.
+intros; simpl. rewrite /Zub /Mod /p -lock Zmod_mod.
+rewrite -Zminus_mod_idemp_l.
+change ((2 ^ 255 - 19) :𝓖𝓕) with 0%Z.
+rewrite Zplus_mod_idemp_r.
+f_equal.
+intros; simpl. rewrite /Sq /M /Mod /p -lock Zmod_mod -Zcar25519_correct -Zcar25519_correct. reflexivity.
+simpl; rewrite /C_121665 /p -lock. reflexivity.
+simpl; rewrite /C_0 /p -lock. reflexivity.
+simpl; rewrite /C_1 /p -lock. reflexivity.
 intros; simpl.
-admit.
+rewrite /Mod /Sel25519 ; flatten.
+intros; simpl.
 Admitted.
 
