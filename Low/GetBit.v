@@ -18,6 +18,22 @@ unfold getbit.
 apply and_0_or_1.
 Qed.
 
+Local Lemma Forall_Pos_bound : forall l, Forall (fun x => 0 <= x < 2^8) l -> ZofList 8 l <? 0 = false.
+Proof.
+intros l Hl.
+assert(0 <= ZofList 8 l).
+{
+apply ZofList_pos.
+omega.
+rewrite /ZList_pos.
+eapply list.Forall_impl.
+apply Hl.
+simpl.
+intro ; omega.
+}
+apply Z.ltb_ge ; assumption.
+Qed.
+
 Lemma getbit_minus : forall l i,
   i < 0->
   Forall (fun x => 0 <= x < 2^8) l ->
@@ -25,6 +41,7 @@ Lemma getbit_minus : forall l i,
 Proof.
 rewrite /getbit /Zgetbit.
 move=> l i Hi Hl.
+rewrite Forall_Pos_bound; [|assumption].
 replace (i <? 0) with true.
 2: symmetry; apply Z.ltb_lt ; assumption.
 replace (Z.to_nat (i ≫ 3)) with (Z.to_nat 0).
@@ -59,6 +76,7 @@ Lemma getbit_repr_low : forall l i,
 Proof.
 rewrite /getbit /Zgetbit.
 move=> l i Hi Hli Hl.
+rewrite Forall_Pos_bound; [|assumption].
 replace (i <? 0) with false.
 2: symmetry; apply Z.ltb_ge ; assumption.
 replace (Z.of_nat (Z.to_nat i)) with i.
@@ -130,6 +148,7 @@ Lemma getbit_repr_high : forall l i,
 Proof.
 rewrite /getbit /Zgetbit.
 move=> l i Hi Hli Hl.
+rewrite Forall_Pos_bound; [|assumption].
 replace (i <? 0) with false.
 2: symmetry; apply Z.ltb_ge ; assumption.
 replace (Z.of_nat (Z.to_nat i)) with i.

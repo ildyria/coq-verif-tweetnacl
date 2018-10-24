@@ -8,6 +8,7 @@ From Tweetnacl Require Import Gen.montgomery_rec_eq.
 From Tweetnacl Require Import Mid.AMZubSqSel.
 From Tweetnacl Require Import Mid.Reduce.
 From Tweetnacl Require Import Mid.GetBit.
+From Tweetnacl Require Import Mid.GetBit_bitn.
 From Tweetnacl Require Import Mid.Prep_n.
 From Tweetnacl Require Import Mid.Unpack25519.
 From Tweetnacl Require Import Mid.Pack25519.
@@ -30,7 +31,7 @@ apply Zmodp.zero.
 apply Zmodp.one.
 apply (Zmodp.pi C_121665).
 apply (fun b p q => if b =? 0 then p else q).
-apply (fun n m => Z.of_nat (bitn (Z.to_nat n) m)).
+apply (fun n m => Z.of_nat (bitn (Z.to_nat (Z.of_nat m)) (Z.to_nat n))).
 reflexivity.
 reflexivity.
 reflexivity.
@@ -77,5 +78,5 @@ simpl; rewrite /C_1 /p -lock. reflexivity.
 intros; simpl.
 rewrite /Mod /Sel25519 ; flatten.
 intros; simpl.
-Admitted.
-
+apply Zgetbit_bitn.
+Defined.
