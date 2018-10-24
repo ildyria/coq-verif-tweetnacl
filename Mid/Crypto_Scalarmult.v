@@ -158,16 +158,33 @@ intros; simpl.
 apply Zgetbit_bitn.
 Defined.
 
-SearchAbout Z Zmodp.type.
 Lemma ZCrypto_Scalarmult_curve25519_ladder n x : (*(x : Zmodp.type) :*)
   ZCrypto_Scalarmult n x = val (curve25519_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi x)).
 Proof.
+rewrite 
+(* get_a (Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 x) 0 1 0 0 (ZUnpack25519 x)) :𝓖𝓕 *
+((get_c (Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 x) 0 1 0 0 (ZUnpack25519 x)) :𝓖𝓕) ^ (2 ^ 255 - 21) :𝓖𝓕) :𝓖𝓕 
+
+Lemma ZCrypto_Scalarmult_curve25519_ladder n x : (*(x : Zmodp.type) :*)
+  ZCrypto_Scalarmult n x = val (curve25519_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi x)).
+ *)Proof.
 rewrite /ZCrypto_Scalarmult.
 rewrite /curve25519_ladder.
 rewrite /opt_montgomery.
 rewrite /ZCrypto_Scalarmult_rev_gen.
 rewrite /ZPack25519.
 rewrite /ZInv25519.
+rewrite Zmult_mod.
+rewrite pow_mod.
+2: by compute.
+SearchAbout get_a.
+apply (abstract_fn_rev_eq_List_Z_a (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct).
+SearchAbout Z.pow Z.modulo.
+
+Search Z.mul Z.modulo.
+
+
+
 Admitted.
 
 Close Scope Z.

@@ -15,6 +15,10 @@ From Tweetnacl Require Import Mid.Pack25519.
 From Tweetnacl Require Import Mid.Car25519.
 From Tweetnacl Require Import Mid.Inv25519.
 From Tweetnacl Require Import Mid.ScalarMult.
+From Tweetnacl.Gen Require Import abstract_fn_rev_eq.
+From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
+
+From stdpp Require Import list.
 
 From Tweetnacl.High Require Import Zmodp opt_ladder ladder curve25519.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
@@ -80,3 +84,70 @@ rewrite /Mod /Sel25519 ; flatten.
 intros; simpl.
 apply Zgetbit_bitn.
 Defined.
+
+Lemma abstract_fn_rev_eq_a_Fp : ∀ (m p : ℤ) (N : nat) (PP : Zmodp.type) (n pp:Z),
+  0 ≤ m →
+  val PP = pp ->
+  Z.of_nat N = n ->
+  Mod (P (get_a (abstract_fn_rev m p N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP)))
+  = Mod (get_a (abstract_fn_rev m p n 1%Z pp 0%Z 1%Z 0%Z 0%Z pp)).
+Proof.
+  intros m p N PP n pp.
+  intros Hm.
+  intros HPP.
+  intros HN.
+  assert(Heq1:= @abstract_fn_rev_eq_a Zmodp.type nat Z id Mod Z25519_Ops Z_Ops Z25519_Z_Eq m p).
+  specialize Heq1 with N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP.
+  apply Heq1 in Hm.
+  clear Heq1.
+  move:Hm.
+  rewrite /P /P' /Z25519_Z_Eq.
+  replace (val Zmodp.one) with 1%Z.
+  replace (val Zmodp.zero) with 0%Z.
+  rewrite HPP.
+  rewrite -HN.
+  trivial.
+  move => //.
+  rewrite /val.
+  rewrite /Zmodp.one.
+  rewrite /Zmodp_subType.
+  simpl.
+  symmetry.
+  apply Z.mod_1_l.
+  rewrite /Zmodp.p -lock.
+reflexivity.
+Qed.
+
+Lemma abstract_fn_rev_eq_c_Fp : ∀ (m p : ℤ) (N : nat) (PP : Zmodp.type) (n pp:Z),
+  0 ≤ m →
+  val PP = pp ->
+  Z.of_nat N = n ->
+  Mod (P (get_c (abstract_fn_rev m p N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP)))
+  = Mod (get_c (abstract_fn_rev m p n 1%Z pp 0%Z 1%Z 0%Z 0%Z pp)).
+Proof.
+  intros m p N PP n pp.
+  intros Hm.
+  intros HPP.
+  intros HN.
+  assert(Heq1:= @abstract_fn_rev_eq_c Zmodp.type nat Z id Mod Z25519_Ops Z_Ops Z25519_Z_Eq m p).
+  specialize Heq1 with N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP.
+  apply Heq1 in Hm.
+  clear Heq1.
+  move:Hm.
+  rewrite /P /P' /Z25519_Z_Eq.
+  replace (val Zmodp.one) with 1%Z.
+  replace (val Zmodp.zero) with 0%Z.
+  rewrite HPP.
+  rewrite -HN.
+  trivial.
+  move => //.
+  rewrite /val.
+  rewrite /Zmodp.one.
+  rewrite /Zmodp_subType.
+  simpl.
+  symmetry.
+  apply Z.mod_1_l.
+  rewrite /Zmodp.p -lock.
+  reflexivity.
+Qed.
+
