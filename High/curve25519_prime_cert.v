@@ -2,7 +2,7 @@ From Coqprime Require Import PocklingtonRefl.
 
 Local Open Scope positive_scope.
 
-Lemma primo0:
+Local Lemma primo0:
   prime  931218878435386497786796567938400535129069166394620456332928480626419->
   prime  57896044618658097711785492504343953926634992332820282019728792003956564819949.
 Proof.
@@ -20,7 +20,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo1:
+Local Lemma primo1:
   prime  22266776940661067353406101430821847517593469195057176400865389263->
   prime  931218878435386497786796567938400535129069166394620456332928480626419.
 Proof.
@@ -38,7 +38,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo2:
+Local Lemma primo2:
   prime  5150316867973915629300709498314229172748173861649161360791->
   prime  22266776940661067353406101430821847517593469195057176400865389263.
 Proof.
@@ -56,7 +56,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo3:
+Local Lemma primo3:
   prime  2466626852477928941235971981897950762244384347495500727->
   prime  5150316867973915629300709498314229172748173861649161360791.
 Proof.
@@ -74,7 +74,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo4:
+Local Lemma primo4:
   prime  4636516639996107032398443580441021974324001049713957->
   prime  2466626852477928941235971981897950762244384347495500727.
 Proof.
@@ -92,7 +92,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo5:
+Local Lemma primo5:
   prime  2725759341561497373544058466949978033715632975633->
   prime  4636516639996107032398443580441021974324001049713957.
 Proof.
@@ -110,7 +110,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo6:
+Local Lemma primo6:
   prime  30252017017801369777602864528433797385759->
   prime  2725759341561497373544058466949978033715632975633.
 Proof.
@@ -128,7 +128,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo7:
+Local Lemma primo7:
   prime  2213816161727139318732873036742423->
   prime  30252017017801369777602864528433797385759.
 Proof.
@@ -146,7 +146,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo8:
+Local Lemma primo8:
   prime  3020213044648211779357687121917->
   prime  2213816161727139318732873036742423.
 Proof.
@@ -164,7 +164,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo9:
+Local Lemma primo9:
   prime  115959570309034195578391->
   prime  3020213044648211779357687121917.
 Proof.
@@ -182,7 +182,7 @@ apply (Pocklington_refl
 vm_cast_no_check (refl_equal true).
 Time Qed.
 
-Lemma primo10:
+Local Lemma primo10:
   prime  15591867611977->
   prime  115959570309034195578391.
 Proof.
@@ -199,7 +199,8 @@ apply (Pocklington_refl
      ((Proof_certif _ H) :: nil)).
 vm_cast_no_check (refl_equal true).
 Time Qed.
-Lemma primo11 : prime 15591867611977.
+
+Local Lemma primo11 : prime 15591867611977.
 Proof.
  apply (Pocklington_refl
          (Pock_certif 15591867611977 5 ((216553716833, 1)::(2,3)::nil) 1)

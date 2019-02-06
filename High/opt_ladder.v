@@ -80,7 +80,7 @@ Section OptimizedLadder.
   Local Notation "x \+ y" := (@MCGroup.add _ M x y).
   Local Notation "x \- y" := (x \+ (\- y)).
 
-  Lemma opt_montgomery_rec_small (n m k : nat) (x a b c d : K) : k >= m ->
+  Local Lemma opt_montgomery_rec_small (n m k : nat) (x a b c d : K) : k >= m ->
     opt_montgomery_rec (n + 2^k) m x a b c d = opt_montgomery_rec n m x a b c d.
   Proof.
     move=> Hm.
@@ -89,7 +89,7 @@ Section OptimizedLadder.
     by case/orP: (bitnV n m) => /eqP-> /=; rewrite IHm 1?ltnW.
   Qed.
 
-  Lemma opt_montgomery_rec_ok (n m : nat) (p q : mc M) (a b c d : K) :
+  Local Lemma opt_montgomery_rec_ok (n m : nat) (p q : mc M) (a b c d : K) :
     n < 2^m -> p#x0 != 0 ->
     hom_ok a c -> hom_ok b d ->
     q#x = inf_div a c -> (p + q)#x = inf_div b d ->
@@ -152,4 +152,5 @@ Section OptimizedLadder.
       - by exact: oner_neq0.
       - by apply: point_x0_neq0_fin; rewrite p_x_eqx.
   Qed.
+
 End OptimizedLadder.

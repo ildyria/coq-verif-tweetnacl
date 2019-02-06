@@ -18,7 +18,7 @@ From Tweetnacl Require Import Mid.ScalarMult.
 From Tweetnacl Require Import Mid.Crypto_Scalarmult_Fp.
 
 From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.
-From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
+From mathcomp Require Import ssreflect ssrbool eqtype ssralg prime div.
 
 Open Scope Z.
 
@@ -77,25 +77,6 @@ Proof.
   change (254 + 1) with 255.
   reflexivity.
 Qed.
-
-(* (* Proof of correctness between High and Mid Level *)
-Lemma A_ok (a b : Z) : Zmodp.pi (A a b) = (Zmodp.pi a + Zmodp.pi b)%R.
-Proof. by rewrite Zmodp_addE. Qed.
-
-Lemma Zub_ok (a b : Z) : Zmodp.pi (Zub a b) = (Zmodp.pi a - Zmodp.pi b)%R.
-Proof. by rewrite Zmodp_oppE Zmodp_addE. Qed.
-
-Lemma M_ok (a b : Z) : Zmodp.pi (M a b) = (Zmodp.pi a * Zmodp.pi b)%R.
-Proof.
-rewrite Zmodp_mulE /M.
-apply/eqP; rewrite eqE; apply/eqP=> /=.
-unlock p.
-by rewrite -!Zcar25519_correct.
-Qed.
-
-Lemma Sq_ok (a : Z) : Zmodp.pi (Sq a) = (Zmodp.pi a ^+ 2)%R.
-Proof. by rewrite /Sq M_ok GRing.expr2. Qed.
- *)
 
 Local Instance Z25519_Ops : (Ops Zmodp.type nat id) := {}.
 Proof.
@@ -157,34 +138,49 @@ rewrite /Mod /Sel25519 ; flatten.
 intros; simpl.
 apply Zgetbit_bitn.
 Defined.
-
+(* 
 Lemma ZCrypto_Scalarmult_curve25519_ladder n x : (*(x : Zmodp.type) :*)
   ZCrypto_Scalarmult n x = val (curve25519_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi x)).
 Proof.
-rewrite 
+(* rewrite  *)
 (* get_a (Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 x) 0 1 0 0 (ZUnpack25519 x)) :𝓖𝓕 *
 ((get_c (Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 x) 0 1 0 0 (ZUnpack25519 x)) :𝓖𝓕) ^ (2 ^ 255 - 21) :𝓖𝓕) :𝓖𝓕 
 
 Lemma ZCrypto_Scalarmult_curve25519_ladder n x : (*(x : Zmodp.type) :*)
   ZCrypto_Scalarmult n x = val (curve25519_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi x)).
- *)Proof.
+ *)
 rewrite /ZCrypto_Scalarmult.
-rewrite /curve25519_ladder.
-rewrite /opt_montgomery.
-rewrite /ZCrypto_Scalarmult_rev_gen.
+rewrite -Fp_Crypto_Scalarmult_rec_gen_equiv.
+(* rewrite /curve25519_ladder. *)
+(* rewrite /opt_montgomery. *)
+(* rewrite /ZCrypto_Scalarmult_rev_gen. *)
 rewrite /ZPack25519.
 rewrite /ZInv25519.
 rewrite Zmult_mod.
 rewrite pow_mod.
 2: by compute.
-SearchAbout get_a.
-apply (abstract_fn_rev_eq_List_Z_a (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct).
-SearchAbout Z.pow Z.modulo.
+rewrite /Zmontgomery_rec.
+rewrite /Fp_Crypto_Scalarmult_rec_gen.
+rewrite /val /Zmodp_subType.
+rewrite -modZp /p -lock.
+SearchAbout "/".
+SearchAbout Zmodp.repr.
+assert(case: (boolP (b == 0)) => [/eqP|] Hb)
+SearchAbout div.
+SearchAbout Znumtheory.rel_prime Znumtheory.prime.
+assert(Znumtheory.prime (2 ^ 255 - 19)).
+apply primo.
+Check Znumtheory.rel_prime_le_prime.
+Check Zp.Zorder_power_is_1.
+SearchAbout Zp.Zorder.
+SearchAbout Z.divide.
+SearchAbout "^-1".
+GRing.mulr1_eq.
 
-Search Z.mul Z.modulo.
-
-
+SearchAbout Znumtheory.prime.
+SearchAbout Zp.Zorder.
+SearchAbout Z.div Z.pow.
 
 Admitted.
-
+ *)
 Close Scope Z.

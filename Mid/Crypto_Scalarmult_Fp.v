@@ -20,7 +20,7 @@ From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
 
 From stdpp Require Import list.
 
-From Tweetnacl.High Require Import Zmodp opt_ladder ladder curve25519.
+From Tweetnacl.High Require Import Zmodp opt_ladder_extr ladder curve25519.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
 
 Definition Mod := (fun x => Z.modulo x (Z.pow 2 255 - 19)).
@@ -84,6 +84,74 @@ rewrite /Mod /Sel25519 ; flatten.
 intros; simpl.
 apply Zgetbit_bitn.
 Defined.
+
+Definition Fp_Crypto_Scalarmult_rec_gen n p :=
+  let t := montgomery_rec.montgomery_rec 255 n Zmodp.one p Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero p in
+  (get_a t) / (get_c t).
+
+Local Lemma v4inv : Zmodp.repr 4%:R^-1 = 43422033463993573283839119378257965444976244249615211514796594002967423614962.
+Proof.
+replace 43422033463993573283839119378257965444976244249615211514796594002967423614962 with (Zmodp.repr (Zmodp.pi (43422033463993573283839119378257965444976244249615211514796594002967423614962))).
+2: by apply piK ; rewrite /betweenb /p -lock //=.
+by congr (Zmodp.repr); apply GRing.mulr1_eq; apply/eqP; zmodp_compute; compute.
+Qed.
+
+Local Lemma curve25519_a_C121665 : (curve25519.a - 2%:R) / 4%:R = (Zmodp.pi C_121665).
+Proof.
+rewrite /a /C_121665.
+apply/eqP.
+zmodp_compute.
+change ((486662 + 57896044618658097711785492504343953926634992332820282019728792003956564819947)
+ `mod` 57896044618658097711785492504343953926634992332820282019728792003956564819949) with 486660.
+rewrite v4inv.
+compute.
+reflexivity.
+Qed.
+
+Lemma get_a_Fp_Crypto_Scalarnult_eq m:
+∀ (n : ℕ) (p a b c d e f : Zmodp.type), get_a (montgomery_rec.montgomery_rec m n a b c d e f p) =
+get_a (opt_montgomery_rec_extr (K:=curve25519_finECUFieldType) curve25519_mcuType n m p a b c d).
+Proof.
+  induction m as [|m IHm] => n p a b c d e f //=.
+  rewrite /cswap (Nat2Z.id n) (Nat2Z.id m).
+  assert(Hnm:= bitnV n m);
+  move:Hnm => /orP => Hnm;
+  case Hnm => Hnm'.
+  1: assert(bitn n m = 0%nat).
+       by rewrite -nat_eqb_ssr_eq in Hnm' ; apply beq_nat_true.
+  2: assert(bitn n m = 1%nat).
+  2:   by rewrite -nat_eqb_ssr_eq in Hnm' ; apply beq_nat_true.
+  all: by rewrite H => //=; erewrite IHm; rewrite curve25519_a_C121665.
+Qed.
+
+Lemma get_c_Fp_Crypto_Scalarnult_eq m:
+∀ (n : ℕ) (p a b c d e f : Zmodp.type), get_c (montgomery_rec.montgomery_rec m n a b c d e f p) =
+get_c (opt_montgomery_rec_extr (K:=curve25519_finECUFieldType) curve25519_mcuType n m p a b c d).
+Proof.
+  induction m as [|m IHm] => n p a b c d e f //=.
+  rewrite /cswap (Nat2Z.id n) (Nat2Z.id m).
+  assert(Hnm:= bitnV n m);
+  move:Hnm => /orP => Hnm;
+  case Hnm => Hnm'.
+  1: assert(bitn n m = 0%nat).
+       by rewrite -nat_eqb_ssr_eq in Hnm' ; apply beq_nat_true.
+  2: assert(bitn n m = 1%nat).
+  2:   by rewrite -nat_eqb_ssr_eq in Hnm' ; apply beq_nat_true.
+  all: by rewrite H => //=; erewrite IHm; rewrite curve25519_a_C121665.
+Qed.
+
+Lemma Fp_Crypto_Scalarmult_rec_gen_equiv: forall n p,
+  Fp_Crypto_Scalarmult_rec_gen n p = curve25519_ladder n p.
+Proof.
+  intros n p.
+  rewrite /Fp_Crypto_Scalarmult_rec_gen
+          /curve25519_ladder
+          /opt_montgomery
+          opt_montgomery_rec_equiv.
+  f_equal; f_equal.
+  apply get_a_Fp_Crypto_Scalarnult_eq.
+  apply get_c_Fp_Crypto_Scalarnult_eq.
+Qed.
 
 Lemma abstract_fn_rev_eq_a_Fp : ∀ (m p : ℤ) (N : nat) (PP : Zmodp.type) (n pp:Z),
   0 ≤ m →
@@ -150,4 +218,6 @@ Proof.
   rewrite /Zmodp.p -lock.
   reflexivity.
 Qed.
+
+
 
