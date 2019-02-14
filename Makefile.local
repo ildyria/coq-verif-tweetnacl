@@ -4,12 +4,12 @@ clean::
 	$(HIDE)rm */.*.aux 2> /dev/null || true
 	$(HIDE)rm */*.glob 2> /dev/null || true
 	$(HIDE)rm */*.v.d 2> /dev/null || true
-	$(HIDE)rm graph.dpd 2> /dev/null || true
-	$(HIDE)rm graph.png 2> /dev/null || true
+	$(HIDE)rm *.dpd 2> /dev/null || true
 
 DPD = $(wildcard *.dpd)
 DOT = $(DPD:%.dpd=%.dot)
 PNG = $(DPD:%.dpd=%.png)
+PDF = $(DPD:%.dpd=%.pdf)
 
 %.dot: %.dpd
 	dpd2dot $<
@@ -17,4 +17,8 @@ PNG = $(DPD:%.dpd=%.png)
 %.png: %.dot
 	dot -Tpng $< -o $@
 
+%.pdf: %.dot
+	dot -Tpdf $< -o $@
+
 graph: $(PNG)
+pdf: $(PDF)

@@ -26,7 +26,7 @@ def main():
 
     output = requires + '\n'
     output += 'Require dpdgraph.dpdgraph.\n'
-    output += 'Set DependGraph File "graph.dpd".\n'
+    output += 'Set DependGraph File "main.dpd".\n'
     output += prints + '.\n'
     # print(list_parse)
     print(output)
@@ -49,7 +49,7 @@ def main():
 
     output = requires + '\n'
     output += 'Require dpdgraph.dpdgraph.\n'
-    output += 'Set DependGraph File "graph.dpd".\n'
+    output += 'Set DependGraph File "high.dpd".\n'
     output += prints + '.\n'
     # print(list_parse)
     print(output)
