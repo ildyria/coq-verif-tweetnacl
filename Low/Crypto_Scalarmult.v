@@ -10,10 +10,7 @@ From Tweetnacl.Gen Require Import ABCDEF.
 From Tweetnacl.Gen Require Import abstract_fn_rev.
 From Tweetnacl.Gen Require Import abstract_fn_rev_eq.
 From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
-(* From Tweetnacl.Low Require Import A. *)
-(* From Tweetnacl.Low Require Import Z. *)
 From Tweetnacl.Low Require Import M.
-(* From Tweetnacl.Low Require Import S. *)
 From Tweetnacl.Low Require Import Pack25519.
 From Tweetnacl.Low Require Import Unpack25519.
 From Tweetnacl.Low Require Import Inv25519.
@@ -98,7 +95,7 @@ Definition Crypto_Scalarmult n p :=
   let c := get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)) in
   Pack25519 (M.M a (Inv25519 c)).
 
-Lemma impl_omega_simpl_0 : ∀ x : ℤ, (λ x0 : ℤ, 0 ≤ x0 ∧ x0 < 2 ^ 16) x → -38 ≤ x ∧ x < 2 ^ 16 + 38.
+Local Lemma impl_omega_simpl_0 : ∀ x : ℤ, (λ x0 : ℤ, 0 ≤ x0 ∧ x0 < 2 ^ 16) x → -38 ≤ x ∧ x < 2 ^ 16 + 38.
 Proof.
   intros ; simpl in *.
   change (2^16 + 38) with 65574.
@@ -106,7 +103,7 @@ Proof.
   omega.
 Qed.
 
-Lemma impl_omega_simpl_1 : ∀ x : ℤ, (λ x0 : ℤ, -38 ≤ x0 ∧ x0 < 2 ^ 16 + 38) x → - 2 ^ 26 < x ∧ x < 2 ^ 26.
+Local Lemma impl_omega_simpl_1 : ∀ x : ℤ, (λ x0 : ℤ, -38 ≤ x0 ∧ x0 < 2 ^ 16 + 38) x → - 2 ^ 26 < x ∧ x < 2 ^ 26.
 Proof.
   intros ; simpl in *.
   change (2^16 + 38) with 65574 in H.
@@ -114,7 +111,7 @@ Proof.
   omega.
 Qed.
 
-Lemma impl_omega_simpl_2 : ∀ x : ℤ, (λ x0 : ℤ, -38 ≤ x0 ∧ x0 < 2 ^ 16 + 38) x → - 2 ^ 62 < x ∧ x < 2 ^ 62.
+Local Lemma impl_omega_simpl_2 : ∀ x : ℤ, (λ x0 : ℤ, -38 ≤ x0 ∧ x0 < 2 ^ 16 + 38) x → - 2 ^ 62 < x ∧ x < 2 ^ 62.
 Proof.
   intros ; simpl in *.
   change (2^16 + 38) with 65574 in H.

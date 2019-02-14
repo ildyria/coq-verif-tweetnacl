@@ -87,7 +87,7 @@ Defined.
 
 Definition Fp_Crypto_Scalarmult_rec_gen n p :=
   let t := montgomery_rec.montgomery_rec 255 n Zmodp.one p Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero p in
-  (get_a t) / (get_c t).
+  (get_a t) * (get_c t)^-1.
 
 Local Lemma v4inv : Zmodp.repr 4%:R^-1 = 43422033463993573283839119378257965444976244249615211514796594002967423614962.
 Proof.

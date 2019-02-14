@@ -51,7 +51,7 @@ Section OptimizedLadder.
 
 Lemma opt_montgomery_rec_equiv:
   forall m n x a b c d,
-  opt_montgomery_rec M n m x a b c d = get_a (opt_montgomery_rec_extr n m x a b c d) / get_c (opt_montgomery_rec_extr n m x a b c d).
+  opt_montgomery_rec M n m x a b c d = get_a (opt_montgomery_rec_extr n m x a b c d) * (get_c (opt_montgomery_rec_extr n m x a b c d))^-1.
 Proof.
 elim => [|m IHm] n x a b c d //=.
 by do! case: (cswap _ _ _) => *.

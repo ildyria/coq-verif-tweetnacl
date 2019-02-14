@@ -22,6 +22,8 @@ _CoqProject
 *#
 .#*
 *.aux
+graph.dpd
+graph.png
 
 *.bck
 *.bak
