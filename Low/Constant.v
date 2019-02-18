@@ -3,12 +3,19 @@ From Tweetnacl Require Import ListsOp.Export.
 Require Import stdpp.list.
 Open Scope Z.
 
-Definition c_121665 :list Z := [ 56129; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0 ].
+Module Low.
+
+Definition C_121665 :list Z := [ 56129; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0 ].
+Definition C_0 := [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
+Definition C_1 := [1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
+Definition C_25519 := [65517;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;32767].
+
+End Low.
 
 (* Eval compute in ZofList 16 c_121665. *)
 
-Lemma C_121665_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) c_121665.
-Proof. unfold c_121665;
+Lemma C_121665_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) Low.C_121665.
+Proof. unfold Low.C_121665;
 repeat match goal with
   | _ => change (2^16) with 65536 ; omega
   | |- _ /\ _ => split
@@ -17,29 +24,26 @@ repeat match goal with
 end.
 Qed.
 
-Lemma Zlength_c_121665 : Zlength c_121665 = 16.
+Lemma Zlength_c_121665 : Zlength Low.C_121665 = 16.
 Proof. go. Qed.
 Close Scope Z.
 
-Lemma length_c_121665 : length c_121665 = 16.
+Lemma length_c_121665 : length Low.C_121665 = 16.
 Proof. go. Qed.
 
 Open Scope Z.
 
-Definition list25519 := [65517;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;65535;32767].
 Lemma list_of_P: forall l,
-  l = list25519 ->
+  l = Low.C_25519 ->
   (ZofList 16 l) = Z.pow 2 255 - 19.
 Proof. intros; subst; compute ; reflexivity. Qed.
 
-Definition nul16 := [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
-Definition One16 := [1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0].
-Lemma Zlength_nul16 : Zlength nul16 = 16.
+Lemma Zlength_nul16 : Zlength Low.C_0 = 16.
 Proof. go. Qed.
-Lemma Zlength_One16 : Zlength One16 = 16.
+Lemma Zlength_One16 : Zlength Low.C_1 = 16.
 Proof. go. Qed.
-Lemma One16_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) One16.
-Proof. unfold One16;
+Lemma One16_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) Low.C_1.
+Proof. unfold Low.C_1;
 repeat match goal with
   | _ => change (2^16) with 65536 ; omega
   | |- _ /\ _ => split
@@ -47,8 +51,8 @@ repeat match goal with
   | _ => apply Forall_nil ; trivial
 end.
 Qed.
-Lemma nul16_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) nul16.
-Proof. unfold nul16;
+Lemma nul16_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) Low.C_0.
+Proof. unfold Low.C_0;
 repeat match goal with
   | _ => change (2^16) with 65536 ; omega
   | |- _ /\ _ => split

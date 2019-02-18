@@ -15,7 +15,7 @@ Ltac getResidueToZ :=
   try orewrite Z.shiftl_mul_pow2.
 
 Ltac ZCar25519ToZ := 
-  unfold Zcar25519 in *;
+  unfold Mid.car25519 in *;
   getResidueToZ.
 
 Fact lt_0_256: 0 < 2 ^ 256.
@@ -60,7 +60,7 @@ Lemma ZCarry25519_neg_str: forall x m,
   38*-2^(m - 256) <= ℤcar25519 x < 2^256.
 Proof.
   intros x m Hm Hxmin Hxmax.
-  unfold Zcar25519.
+  unfold Mid.car25519.
   getCarryToZ.
   replace (38 * - 2 ^ (m - 256)) with (38 * - 2 ^ (m - 256) + 0) by omega.
   split.
@@ -157,7 +157,7 @@ Lemma ZCarry25519_sup_bounds_str2: forall x m,
   ℤcar25519 x < 2 ^ 256 - 38 + 2 ^ 256.
 Proof.
   intros.
-  unfold Zcar25519.
+  unfold Mid.car25519.
   assert(H': getResidue 256 x < 2 ^ 256).
     apply getResidue_bounds ; omega.
   remember (getResidue 256 x) as y.
@@ -179,7 +179,7 @@ Lemma ZCarry25519_sup_bounds_str3: forall x m,
   ℤcar25519 x < 2 ^ 256 - 38 + 2 ^ 256.
 Proof.
   intros.
-  unfold Zcar25519.
+  unfold Mid.car25519.
   assert(H': getResidue 256 x < 2 ^ 256).
     apply getResidue_bounds ; omega.
   remember (getResidue 256 x) as y.
@@ -213,7 +213,7 @@ Proof.
   repeat match goal with
     | _ => omega
     | _ => progress intros
-    | _ => progress unfold Zcar25519 ; unfold getCarry in *; try orewrite Z.shiftr_div_pow2
+    | _ => progress unfold Mid.car25519 ; unfold getCarry in *; try orewrite Z.shiftr_div_pow2
     | [ |- _ + _ = ?x ] =>  rewrite Z.add_comm ; oreplace x (x + 0) ; f_equal
     | _ => progress rewrite getResidue_mod_eq ; unfold getResidue_mod
     | _ => rewrite Z.mul_comm ; apply Z_eq_mult ; apply Zdiv_small ; omega
@@ -281,10 +281,10 @@ Qed.
 Lemma sndCar_neg_str: 
   forall x,
    -2^250 < x < 0 ->
-   0 <= Zcar25519 x < 2 ^ 256.
+   0 <= Mid.car25519 x < 2 ^ 256.
 Proof.
   intros x Hx.
-  unfold Zcar25519.
+  unfold Mid.car25519.
   rewrite (getCarryNeg x Hx).
   orewrite getResidue_mod_eq.
   unfold getResidue_mod.
@@ -309,7 +309,7 @@ Qed.
 Lemma sndCar_neg: 
   forall x,
    -2^52 < x < 0 ->
-   0 <= Zcar25519 x < 2 ^ 256.
+   0 <= Mid.car25519 x < 2 ^ 256.
 Proof.
   intros x Hx.
   apply sndCar_neg_str.
@@ -322,13 +322,13 @@ Lemma secondIterCar:
   forall x,
     2 ^256 <= x ->
     x < 2 ^ 256 - 38 + 2 ^ 256 ->
-    Zcar25519 x < 2 ^ 256.
+    Mid.car25519 x < 2 ^ 256.
 Proof.
   assert(0 < 2^256 ) by reflexivity.
   assert(2 ^ 256 - 38 + 2 ^ 256 < 2 ^ 257) by Psatz.nia.
   repeat match goal with
     | _ => progress intros
-    | _ => progress unfold Zcar25519
+    | _ => progress unfold Mid.car25519
     | _ => progress unfold getResidue
     | _ => progress unfold getCarry
     | _ => progress orewrite Z.shiftl_mul_pow2
@@ -341,9 +341,9 @@ Lemma doubleCar_str_case:
   forall x y m,
    256 <= m < 506 ->
    2^256 <= x < 2 ^ m ->
-   y = Zcar25519 x ->
+   y = Mid.car25519 x ->
    2^256 <= y ->
-   Zcar25519 y < 2 ^ 256.
+   Mid.car25519 y < 2 ^ 256.
 Proof.
   assert(0 < 2^256 ) by reflexivity.
   repeat match goal with
@@ -359,8 +359,8 @@ Lemma doubleCar_str:
   forall x y m,
    256 <= m < 506 ->
    0 <= x < 2 ^ m ->
-   y = Zcar25519 x ->
-   Zcar25519 y < 2 ^ 256.
+   y = Mid.car25519 x ->
+   Mid.car25519 y < 2 ^ 256.
 Proof.
 (*Print Zcar25519. Print getCarry.*)
   intros x y m Hm Hx Hy.
@@ -382,8 +382,8 @@ Qed.
 Lemma doubleCar:
   forall x y,
    0 <= x < 2 ^ 302 ->
-   y = Zcar25519 x ->
-   Zcar25519 y < 2 ^ 256.
+   y = Mid.car25519 x ->
+   Mid.car25519 y < 2 ^ 256.
 Proof.
   intros ; apply (doubleCar_str x _ 302) ; go.
 Qed.
@@ -391,8 +391,8 @@ Qed.
 Lemma doubleCar_ext_str: forall x y m,
   256 <= m < 500 ->
   -2^m < x < 2^m ->
-  y = Zcar25519 x ->
-   0 <= Zcar25519 y < 2 ^ 256.
+  y = Mid.car25519 x ->
+   0 <= Mid.car25519 y < 2 ^ 256.
 Proof.
   intros x y m Hm Hx Hy.
   assert(Hx_dec: -2^m < x < 0 \/ 0 <= x < 2^m) by omega.
@@ -433,8 +433,8 @@ Qed.
 Lemma doubleCar_ext:
   forall x y,
    -2^302 < x < 2 ^ 302 ->
-   y = Zcar25519 x ->
-   0 <= Zcar25519 y < 2 ^ 256.
+   y = Mid.car25519 x ->
+   0 <= Mid.car25519 y < 2 ^ 256.
 Proof.
   intros x y Hx Hy ; eapply (doubleCar_ext_str _ _ 302) ; go.
 Qed.
@@ -442,9 +442,9 @@ Qed.
 Lemma trippleCar:
   forall x y z,
    0 <= x < 2 ^ 302 ->
-   y = Zcar25519 x ->
-   z = Zcar25519 y ->
-   Zcar25519 z < 2 ^ 256.
+   y = Mid.car25519 x ->
+   z = Mid.car25519 y ->
+   Mid.car25519 z < 2 ^ 256.
 Proof.
   intros ; subst.
   rewrite Zcarry25519_fixpoint ; try eapply doubleCar ; eauto.

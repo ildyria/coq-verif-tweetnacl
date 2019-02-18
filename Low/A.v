@@ -103,17 +103,21 @@ End Integer.
 
 Close Scope Z.
 
+Module Low.
+
 Definition A a b := ZsumList a b.
+
+End Low.
 
 Lemma A_length : forall a b,
   length a = 16 ->
   length b = 16 ->
-  length (A a b) = 16.
-Proof. intros; rewrite /A ZsumList_length_max H H0 //. Qed.
+  length (Low.A a b) = 16.
+Proof. intros; rewrite ZsumList_length_max H H0 //. Qed.
 
 Open Scope Z.
 
-Lemma A_correct: forall n a b, ZofList n (A a b) = (ZofList n a) + (ZofList n b).
+Lemma A_correct: forall n a b, ZofList n (Low.A a b) = (ZofList n a) + (ZofList n b).
 Proof.
   intros n a b.
   rewrite /A.
@@ -123,28 +127,28 @@ Qed.
 Lemma A_Zlength : forall a b,
   Zlength a = 16 ->
   Zlength b = 16 ->
-  Zlength (A a b) = 16.
-Proof. intros; rewrite /A ZsumList_Zlength_max H H0 //. Qed.
+  Zlength (Low.A a b) = 16.
+Proof. intros; rewrite ZsumList_Zlength_max H H0 //. Qed.
 
 Lemma A_bound_length_le : forall m1 n1 m2 n2 a b,
   length a = length b ->
   Forall (fun x => m1 <= x <= n1) a -> 
   Forall (fun x => m2 <= x <= n2) b -> 
-  Forall (fun x => m1 + m2 <= x <= n1 + n2) (A a b).
-Proof. intros; rewrite /A ; apply ZsumList_bound_length_le ; auto. Qed.
+  Forall (fun x => m1 + m2 <= x <= n1 + n2) (Low.A a b).
+Proof. intros; apply ZsumList_bound_length_le ; auto. Qed.
 
 Lemma A_bound_Zlength_le : forall m1 n1 m2 n2 a b,
   Zlength a = Zlength b ->
   Forall (fun x => m1 <= x <= n1) a -> 
   Forall (fun x => m2 <= x <= n2) b -> 
-  Forall (fun x => m1 + m2 <= x <= n1 + n2) (A a b).
-Proof. intros; rewrite /A ; apply ZsumList_bound_Zlength_le ; auto. Qed.
+  Forall (fun x => m1 + m2 <= x <= n1 + n2) (Low.A a b).
+Proof. intros; apply ZsumList_bound_Zlength_le ; auto. Qed.
 
 Lemma A_bound_Zlength_lt : forall m1 n1 m2 n2 a b,
   Zlength a = Zlength b ->
   Forall (fun x => m1 < x < n1) a -> 
   Forall (fun x => m2 < x < n2) b -> 
-  Forall (fun x => m1 + m2 < x < n1 + n2) (A a b).
-Proof. intros; rewrite /A ; apply ZsumList_bound_Zlength_lt ; auto. Qed.
+  Forall (fun x => m1 + m2 < x < n1 + n2) (Low.A a b).
+Proof. intros; apply ZsumList_bound_Zlength_lt ; auto. Qed.
 
 Close Scope Z.

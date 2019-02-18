@@ -11,7 +11,7 @@ Open Scope Z.
 (*
  * Define the iteration step over Lists
  *)
-Definition step_pow := step_pow M Sq.
+Definition step_pow := step_pow Low.M Low.S.
 
 (*
  * Equivalence over GF.
@@ -24,7 +24,7 @@ Proof.
 intros.
 rewrite /step_pow /Inv25519_gen.step_pow /step_pow_Z.
 flatten;
-rewrite /step_pow /Sq mult_GF_Zlengh => //.
+rewrite /step_pow /Low.S mult_GF_Zlengh => //.
 rewrite Zmult_mod mult_GF_Zlengh -?Zmult_mod => //.
 apply M_Zlength => //.
 Qed.
@@ -32,7 +32,7 @@ Qed.
 (*
  * Define the recursion over list
  *)
-Definition pow_fn_rev := pow_fn_rev M Sq.
+Definition pow_fn_rev := pow_fn_rev Low.M Low.S.
 
 Lemma pow_fn_rev_0 : forall b c g,
   pow_fn_rev 0 b c g = c.

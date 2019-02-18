@@ -4,8 +4,10 @@ From Tweetnacl Require Import Mid.Car25519.
 
 Open Scope Z.
 
+Module Mid.
+
 Definition A a b := Z.add a b.
-Definition M a b := Zcar25519 (Zcar25519 (Z.mul a b)).
+Definition M a b := Mid.car25519 (Mid.car25519 (Z.mul a b)).
 Definition Zub a b := Z.sub a b.
 Definition Sq a := M a a.
 Definition C_0 := 0.
@@ -53,5 +55,7 @@ rewrite Z.mul_mod.
 reflexivity.
 compute ; go.
 Qed.
+
+End Mid.
 
 Close Scope Z.

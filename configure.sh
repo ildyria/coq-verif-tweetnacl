@@ -14,9 +14,9 @@ done
 
 if test "$nohigh" = "true"; then
 	echo "no-high"
-	filt='^C|^slides|^readings|^High'
+	filt='^C|^slides|^readings|^High|^gen'
 else
-	filt='^C|^slides|^readings'
+	filt='^C|^slides|^readings|^gen'
 fi
 
 # generate the path for coqide and voqv

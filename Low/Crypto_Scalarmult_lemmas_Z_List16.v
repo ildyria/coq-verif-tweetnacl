@@ -61,8 +61,8 @@ Defined.
 
 Lemma abstract_fn_rev_eq_a_Z : ∀ (m p : ℤ) (CN : List32B) (L16ONE L16NUL L16UP : List16 ℤ) (Cn Up:list Z) (n u:Z),
   0 ≤ m →
-  List16_to_List L16ONE = One16 ->
-  List16_to_List L16NUL = nul16 ->
+  List16_to_List L16ONE = Low.C_1 ->
+  List16_to_List L16NUL = Low.C_0 ->
   List16_to_List L16UP = Up ->
   List32_to_List CN = Cn ->
   ZofList 16 Up = u ->
@@ -80,15 +80,15 @@ Proof.
   clear Heq1.
   move:Hm.
   rewrite /P /P' /List16_Z_Eq ?HL16ONE ?HL16NUL ?HL16UP ?HL32CN ?Hu ?Hn.
-  change (ℤ16.lst nul16) with 0.
-  change (ℤ16.lst One16) with 1.
+  change (ℤ16.lst Low.C_0) with 0.
+  change (ℤ16.lst Low.C_1) with 1.
   trivial.
 Qed.
 
 Lemma abstract_fn_rev_eq_c_Z : ∀ (m p : ℤ) (CN : List32B) (L16ONE L16NUL L16UP : List16 ℤ) (Cn Up:list Z) (n u:Z),
   0 ≤ m →
-  List16_to_List L16ONE = One16 ->
-  List16_to_List L16NUL = nul16 ->
+  List16_to_List L16ONE = Low.C_1 ->
+  List16_to_List L16NUL = Low.C_0 ->
   List16_to_List L16UP = Up ->
   List32_to_List CN = Cn ->
   ZofList 16 Up = u ->
@@ -106,8 +106,8 @@ Proof.
   clear Heq1.
   move:Hm.
   rewrite /P /P' /List16_Z_Eq ?HL16ONE ?HL16NUL ?HL16UP ?HL32CN ?Hu ?Hn.
-  change (ℤ16.lst nul16) with 0.
-  change (ℤ16.lst One16) with 1.
+  change (ℤ16.lst Low.C_0) with 0.
+  change (ℤ16.lst Low.C_1) with 1.
   trivial.
 Qed.
 

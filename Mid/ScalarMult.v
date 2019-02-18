@@ -6,12 +6,14 @@ From Tweetnacl Require Import Gen.montgomery_rec.
 From Tweetnacl Require Import Mid.AMZubSqSel.
 From Tweetnacl Require Import Mid.Reduce.
 From Tweetnacl Require Import Mid.GetBit.
+From Tweetnacl Require Import Mid.Mod.
+From Tweetnacl Require Import Mid.Instances.
 
 Require Import ssreflect.
 
 Open Scope Z.
 
-Local Instance Z_Ops : (Ops Z Z (fun x => Z.modulo x ((Z.pow 2 255) - 19))) := {}.
+(* Local Instance Z_Ops : (Ops Z Z (fun x => Z.modulo x ((Z.pow 2 255) - 19))) := {}.
 Proof.
 apply A.
 apply M.
@@ -29,8 +31,9 @@ intros ; apply Zub_mod_eq.
 intros ; apply Sq_mod_eq.
 intros ; apply Zmod_mod.
 Defined.
+ *)
 
-Definition Zmontgomery_rec := montgomery_rec.
-Definition Zmontgomery_fn := abstract_fn_rev.
+Definition Zmontgomery_rec := @montgomery_rec _ _ modP Z_Ops.
+Definition Zmontgomery_fn := @abstract_fn_rev _ _ modP Z_Ops.
 
 Close Scope Z.

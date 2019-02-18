@@ -88,14 +88,14 @@ intros i [] ; reflexivity.
 Defined.
 Local Lemma abstract_fn_rev_eq_a_Z_List : ∀ (m p : ℤ) (CN : List32B) (L16ONE L16NUL L16UP : List16 ℤ) (Cn Up:list Z) (n u:Z),
   0 ≤ m →
-  List16_to_List L16ONE = One16 ->
-  List16_to_List L16NUL = nul16 ->
+  List16_to_List L16ONE = Low.C_1 ->
+  List16_to_List L16NUL = Low.C_0 ->
   List16_to_List L16UP = Up ->
   List32_to_List CN = Cn ->
   ZofList 16 Up = u ->
   ZofList 8 Cn = n ->
 
-  Mod (ZofList 16 (get_a (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up))) =
+  Mod (ZofList 16 (get_a (abstract_fn_rev m p Cn Low.C_1 Up Low.C_0 Low.C_1 Low.C_0 Low.C_0 Up))) =
   Mod (get_a (abstract_fn_rev m p n 1 u 0 1 0 0 u)).
 Proof.
   intros m p CN L16ONE L16NUL L16UP Cn Up n u.
@@ -115,14 +115,14 @@ Qed.
 
 Local Lemma abstract_fn_rev_eq_c_Z_List : ∀ (m p : ℤ) (CN : List32B) (L16ONE L16NUL L16UP : List16 ℤ) (Cn Up:list Z) (n u:Z),
   0 ≤ m →
-  List16_to_List L16ONE = One16 ->
-  List16_to_List L16NUL = nul16 ->
+  List16_to_List L16ONE = Low.C_1 ->
+  List16_to_List L16NUL = Low.C_0 ->
   List16_to_List L16UP = Up ->
   List32_to_List CN = Cn ->
   ZofList 16 Up = u ->
   ZofList 8 Cn = n ->
 
-  Mod (ZofList 16 (get_c (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up))) =
+  Mod (ZofList 16 (get_c (abstract_fn_rev m p Cn Low.C_1 Up Low.C_0 Low.C_1 Low.C_0 Low.C_0 Up))) =
   Mod (get_c (abstract_fn_rev m p n 1 u 0 1 0 0 u)).
 Proof.
   intros m p CN L16ONE L16NUL L16UP Cn Up n u.
@@ -143,18 +143,18 @@ Lemma abstract_fn_rev_eq_List_Z_a: ∀ (m p : ℤ) Cn Up,
   0 ≤ m →
   Zlength Up = 16 ->
   Forall (fun x => 0 <= x < 2^8) Cn ->
-  Mod (ZofList 16 (get_a (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up))) =
+  Mod (ZofList 16 (get_a (abstract_fn_rev m p Cn Low.C_1 Up Low.C_0 Low.C_1 Low.C_0 Low.C_0 Up))) =
   Mod (get_a (abstract_fn_rev m p (ZofList 8 Cn) 1 (ZofList 16 Up) 0 1 0 0 (ZofList 16 Up))).
 Proof.
   intros m p Cn Up Hm HUp HCn.
   erewrite <- abstract_fn_rev_eq_a_Z_List.
   reflexivity.
   assumption.
-  pose(x := Len One16 Zlength_One16).
-  assert( List16_to_List x = One16) by reflexivity.
+  pose(x := Len Low.C_1 Zlength_One16).
+  assert( List16_to_List x = Low.C_1) by reflexivity.
   eassumption.
-  pose(x := Len nul16 Zlength_nul16).
-  assert( List16_to_List x = nul16) by reflexivity.
+  pose(x := Len Low.C_0 Zlength_nul16).
+  assert( List16_to_List x = Low.C_0) by reflexivity.
   eassumption.
   pose(x := Len Up HUp).
   assert( List16_to_List x = Up) by reflexivity.
@@ -171,18 +171,18 @@ Lemma abstract_fn_rev_eq_List_Z_c: ∀ (m p : ℤ) Cn Up,
   0 ≤ m →
   Zlength Up = 16 ->
   Forall (fun x => 0 <= x < 2^8) Cn ->
-  Mod (ZofList 16 (get_c (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up))) =
+  Mod (ZofList 16 (get_c (abstract_fn_rev m p Cn Low.C_1 Up Low.C_0 Low.C_1 Low.C_0 Low.C_0 Up))) =
   Mod (get_c (abstract_fn_rev m p (ZofList 8 Cn) 1 (ZofList 16 Up) 0 1 0 0 (ZofList 16 Up))).
 Proof.
   intros m p Cn Up Hm HUp HCn.
   erewrite <- abstract_fn_rev_eq_c_Z_List.
   reflexivity.
   assumption.
-  pose(x := Len One16 Zlength_One16).
-  assert( List16_to_List x = One16) by reflexivity.
+  pose(x := Len Low.C_1 Zlength_One16).
+  assert( List16_to_List x = Low.C_1) by reflexivity.
   eassumption.
-  pose(x := Len nul16 Zlength_nul16).
-  assert( List16_to_List x = nul16) by reflexivity.
+  pose(x := Len Low.C_0 Zlength_nul16).
+  assert( List16_to_List x = Low.C_0) by reflexivity.
   eassumption.
   pose(x := Len Up HUp).
   assert( List16_to_List x = Up) by reflexivity.

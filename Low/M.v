@@ -10,17 +10,21 @@ From Tweetnacl Require Export Mid.ScalMult.
 From Tweetnacl Require Export Low.Car25519.
 From Tweetnacl Require Export Low.Car25519_bounds.
 
+Module Low.
+
 Definition M (a b : list Z) : list Z := (car25519 (car25519 (mult_3 
                   (M2_fix (Z.of_nat 15%nat)
                     (M1_fix a b)
                   )
                   ))).
 
+End Low.
+
 Lemma M_eq_length : forall a b,
   length a = 16 ->
   length b = 16 -> 
-  M a b = (car25519 (car25519 (Tweetnacl.Mid.M.M a b))).
-Proof. move=> a b Ha Hb ; rewrite /M /Tweetnacl.Mid.M.M.
+  Low.M a b = (car25519 (car25519 (Tweetnacl.Mid.M.M a b))).
+Proof. move=> a b Ha Hb ; rewrite /Low.M /Tweetnacl.Mid.M.M.
 do 3 f_equal.
 orewrite M2_fix_eq_M2.
 orewrite M1_fix_eq_M1.
@@ -31,10 +35,10 @@ Qed.
 Lemma M_length : forall a b, 
   length a = 16 ->
   length b = 16 -> 
-  length (M a b) = 16.
+  length (Low.M a b) = 16.
 Proof.
   intros.
-  unfold M.
+  unfold Low.M.
   apply car25519_length.
   apply car25519_length.
   rewrite firstn_length.
@@ -48,13 +52,13 @@ Open Scope Z.
 Lemma M_eq_Zlength : forall a b,
   Zlength a = 16 ->
   Zlength b = 16 -> 
-  M a b = (car25519 (car25519 (Tweetnacl.Mid.M.M a b))).
+  Low.M a b = (car25519 (car25519 (M a b))).
 Proof. convert_length_to_Zlength M_eq_length. Qed.
 
 Lemma M_Zlength : forall a b, 
   Zlength a = 16 ->
   Zlength b = 16 -> 
-  Zlength (M a b) = 16.
+  Zlength (Low.M a b) = 16.
 Proof. convert_length_to_Zlength M_length. Qed.
 
 Lemma M_bound_length : forall a b,
@@ -62,9 +66,9 @@ Lemma M_bound_length : forall a b,
   (length b = 16)%nat ->
   Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) a ->
   Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) b ->
-  Forall (fun x => -38 <= x < Z.pow 2 16 + 38) (M a b).
+  Forall (fun x => -38 <= x < Z.pow 2 16 + 38) (Low.M a b).
 Proof.
-intros. unfold M.
+intros. unfold Low.M.
 eapply Zcar25519_bounds_length_2 ; try reflexivity.
 rewrite firstn_length.
 orewrite M2_fix_length.
@@ -104,7 +108,7 @@ Lemma M_bound_Zlength : forall a b,
   Zlength b = 16 ->
   Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) a ->
   Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) b ->
-  Forall (fun x => -38 <= x < Z.pow 2 16 + 38) (M a b).
+  Forall (fun x => -38 <= x < Z.pow 2 16 + 38) (Low.M a b).
 Proof. convert_length_to_Zlength M_bound_length. Qed.
 
 Close Scope Z.
@@ -112,7 +116,7 @@ Close Scope Z.
 Lemma mult_GF_length : forall a b,
   length a = 16 ->
   length b = 16 -> 
-   (ℤ16.lst M a b) :𝓖𝓕 = ((ℤ16.lst a) * (ℤ16.lst b)) :𝓖𝓕.
+   (ℤ16.lst Low.M a b) :𝓖𝓕 = ((ℤ16.lst a) * (ℤ16.lst b)) :𝓖𝓕.
 Proof.
   move=> a b Ha Hb.
   assert(Zlength a = 16%Z).
@@ -144,7 +148,7 @@ Open Scope Z.
 Lemma mult_GF_Zlengh : forall a b,
   Zlength a = 16 ->
   Zlength b = 16 -> 
-   (ℤ16.lst M a b) :𝓖𝓕 = ((ℤ16.lst a) * (ℤ16.lst b)) :𝓖𝓕.
+   (ℤ16.lst Low.M a b) :𝓖𝓕 = ((ℤ16.lst a) * (ℤ16.lst b)) :𝓖𝓕.
 Proof. convert_length_to_Zlength mult_GF_length. Qed.
 
 Close Scope Z.

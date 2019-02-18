@@ -2,7 +2,8 @@ Require Import Tweetnacl.Libs.Export.
 
 Open Scope Z.
 
-Definition Zgetbit (i:Z) (l: Z) := 
+Module Mid.
+Definition getbit (i:Z) (l: Z) := 
   if (Z.ltb l 0) then
     0
   else
@@ -11,4 +12,5 @@ Definition Zgetbit (i:Z) (l: Z) :=
   else
   Z.land (Z.shiftr l i) 1.
 
+End Mid.
 Close Scope Z.

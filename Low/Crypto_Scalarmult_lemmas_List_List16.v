@@ -57,12 +57,12 @@ Defined.
 
 Lemma abstract_fn_rev_eq_a_list : ∀ (m p : ℤ) (CN : List32B) (L16ONE L16NUL L16UP : List16 ℤ) (Cn Up:list Z),
   0 ≤ m →
-  List16_to_List L16ONE = One16 ->
-  List16_to_List L16NUL = nul16 ->
+  List16_to_List L16ONE = Low.C_1 ->
+  List16_to_List L16NUL = Low.C_0 ->
   List16_to_List L16UP = Up ->
   List32_to_List CN = Cn ->
   P (get_a (abstract_fn_rev m p CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP)) =
-  get_a (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up).
+  get_a (abstract_fn_rev m p Cn Low.C_1 Up Low.C_0 Low.C_1 Low.C_0 Low.C_0 Up).
 Proof.
   intros m p CN L16ONE L16NUL L16UP Cn Up.
   intros Hm.
@@ -81,12 +81,12 @@ Qed.
 
 Lemma abstract_fn_rev_eq_c_list : ∀ (m p : ℤ) (CN : List32B) (L16ONE L16NUL L16UP : List16 ℤ) (Cn Up:list Z),
   0 ≤ m →
-  List16_to_List L16ONE = One16 ->
-  List16_to_List L16NUL = nul16 ->
+  List16_to_List L16ONE = Low.C_1 ->
+  List16_to_List L16NUL = Low.C_0 ->
   List16_to_List L16UP = Up ->
   List32_to_List CN = Cn ->
   P (get_c (abstract_fn_rev m p CN L16ONE L16UP L16NUL L16ONE L16NUL L16NUL L16UP)) =
-  get_c (abstract_fn_rev m p Cn One16 Up nul16 One16 nul16 nul16 Up).
+  get_c (abstract_fn_rev m p Cn Low.C_1 Up Low.C_0 Low.C_1 Low.C_0 Low.C_0 Up).
 Proof.
   intros m p CN L16ONE L16NUL L16UP Cn Up.
   intros Hm.

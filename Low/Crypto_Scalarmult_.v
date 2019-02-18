@@ -21,12 +21,13 @@ From Tweetnacl.Low Require Import S.
 (* From Tweetnacl.Low Require Import Inv25519. *)
 From Tweetnacl.Low Require Import Constant.
 
+From Tweetnacl.Mid Require Import Instances.
 
-Instance List_Z_Ops : Ops (list Z) (list Z) id := {}.
+(* Instance List_Z_Ops : Ops (list Z) (list Z) id := {}.
 Proof.
-apply A.A.
-apply M.M.
-apply Z.Zub.
+apply Low.A.
+apply Low.M.
+apply Low.Z.
 apply S.Sq.
 apply nul16.
 apply One16.
@@ -40,10 +41,10 @@ simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
-Defined.
+Defined. *)
 
 Definition CSM := Crypto_Scalarmult List_Z_Ops.
-Instance List_Z_Ops_Prop : (@Ops_List List_Z_Ops) :=  {}.
+(* Instance List_Z_Ops_Prop : (@Ops_List List_Z_Ops) :=  {}.
 Proof.
 apply A.A_Zlength.
 apply M.M_Zlength.
@@ -69,7 +70,7 @@ apply Sel25519.Sel25519_bound_le_lt_trans_le_id.
 apply C_121665_bounds.
 apply nul16_bounds.
 apply One16_bounds.
-Defined.
+Defined. *)
 (* 
 Local Instance List_Z_Ops_Prop_Correct  : @Ops_Prop_List_Z List_Z_Ops Z_Ops := {}.
 Proof.

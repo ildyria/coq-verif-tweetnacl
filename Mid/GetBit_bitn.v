@@ -84,8 +84,8 @@ all: destruct H1 as [He|He].
 rewrite He in H; compute in H ; discriminate.
 Qed.
 
-Lemma Zgetbit_Ztestbit_1 (n k : Z) : (0 <= n)%Z -> (0 <= k)%Z -> (Zgetbit k n =? 1)%Z = Z.testbit n k.
-Proof. intros Hn Hk. rewrite /Zgetbit.
+Lemma Zgetbit_Ztestbit_1 (n k : Z) : (0 <= n)%Z -> (0 <= k)%Z -> (Mid.getbit k n =? 1)%Z = Z.testbit n k.
+Proof. intros Hn Hk. rewrite /Mid.getbit.
 destruct (k <? 0)%Z eqn:?.
 apply Z.ltb_lt in Heqb.
 omega.
@@ -95,8 +95,8 @@ omega.
 by rewrite Zland1_odd Z.testbit_odd.
 Qed.
 
-Lemma Zgetbit_Ztestbit_0 (n k : Z) : (0 <= n)%Z -> (0 <= k)%Z -> (Zgetbit k n =? 0)%Z = ~~ Z.testbit n k.
-Proof. intros Hn Hk. rewrite /Zgetbit.
+Lemma Zgetbit_Ztestbit_0 (n k : Z) : (0 <= n)%Z -> (0 <= k)%Z -> (Mid.getbit k n =? 0)%Z = ~~ Z.testbit n k.
+Proof. intros Hn Hk. rewrite /Mid.getbit.
 destruct (k <? 0)%Z eqn:?.
 apply Z.ltb_lt in Heqb.
 omega.
@@ -107,11 +107,11 @@ by rewrite Zland1_negodd Z.testbit_odd.
 Qed.
 
 Lemma Zgetbit_bitn_1 (n k : nat) :
-  (Zgetbit (Z.of_nat k) (Z.of_nat n) =? 1)%Z = (bitn n k == 1).
+  (Mid.getbit (Z.of_nat k) (Z.of_nat n) =? 1)%Z = (bitn n k == 1).
 Proof. rewrite Zgetbit_Ztestbit_1 ; [|apply Nat2Z.is_nonneg|apply Nat2Z.is_nonneg]. rewrite bitn_Ztestbit //. Qed.
 
 Lemma Zgetbit_bitn_0 (n k : nat) :
-  (Zgetbit (Z.of_nat k) (Z.of_nat n) =? 0)%Z = (bitn n k == 0).
+  (Mid.getbit (Z.of_nat k) (Z.of_nat n) =? 0)%Z = (bitn n k == 0).
 Proof.
 rewrite Zgetbit_Ztestbit_0; [|apply Nat2Z.is_nonneg|apply Nat2Z.is_nonneg].
 rewrite bitn_Ztestbit.
@@ -152,7 +152,7 @@ assert(Hl := Zland_0_1 x).
 destruct Hl as [Hl|Hl] ; rewrite Hl ; simpl ; split ; intros ; trivial ; discriminate.
 Qed.
 
-Theorem Zgetbit_bitn : forall n k, Z.of_nat (bitn (Z.to_nat n) (Z.to_nat k)) = Zgetbit k n.
+Theorem Zgetbit_bitn : forall n k, Z.of_nat (bitn (Z.to_nat n) (Z.to_nat k)) = Mid.getbit k n.
 Proof.
 intros.
 assert(Hn: (n < 0 \/ 0 <= n)%Z) by omega.
@@ -168,7 +168,7 @@ simpl Z.of_nat; symmetry.
 all: apply Z.eqb_eq.
 1: rewrite -Zgetbit_bitn_0 in H2.
 2: rewrite -Zgetbit_bitn_1 in H2.
-all: rewrite /Zgetbit.
+all: rewrite /Mid.getbit.
 all: destruct (n <? 0)%Z eqn:?.
 reflexivity.
 1,3: apply Z.ltb_ge in Heqb ; omega.
@@ -196,8 +196,8 @@ all: apply Z.eqb_eq.
 1: rewrite -Zgetbit_bitn_0 in H2.
 2: rewrite -Zgetbit_bitn_1 in H2.
 rewrite HK0 in H2.
-all: rewrite /Zgetbit in H2.
-all: rewrite /Zgetbit.
+all: rewrite /Mid.getbit in H2.
+all: rewrite /Mid.getbit.
 all: replace (Z.of_nat 0 <? 0)%Z with false in H2.
 2,4: reflexivity.
 all: destruct (k <? 0)%Z eqn:?.

@@ -20,11 +20,13 @@ From Tweetnacl Require Import Mid.Crypto_Scalarmult_Fp.
 From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg prime div.
 
+From Tweetnacl Require Import Mod.
+From Tweetnacl Require Import Instances.
 Open Scope Z.
 
 Section ZCrypto_Scalarmult_gen.
 
-Context (Z_Ops : (Ops Z Z) (fun x => Z.modulo x ((Z.pow 2 255) - 19))).
+Context (Z_Ops : (Ops Z Z) modP).
 
 Definition ZCrypto_Scalarmult_rev_gen n p :=
   let t := abstract_fn_rev 255 254 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
@@ -35,7 +37,7 @@ Definition ZCrypto_Scalarmult_rec_gen n p :=
   ZPack25519 (Z.mul (get_a t) (ZInv25519 (get_c t))).
 
 End ZCrypto_Scalarmult_gen.
-
+(* 
 Local Instance Z_Ops : (Ops Z Z (fun x => Z.modulo x (Z.pow 2 255 - 19))) := {}.
 Proof.
 apply A.
@@ -55,10 +57,11 @@ intros ; apply Sq_mod_eq.
 intros ; apply Zmod_mod.
 Defined.
 
-
+ *)
 (* @Timmy this is the definition you want to prove correct with respect to your specifications *)
+
 Definition ZCrypto_Scalarmult n p :=
-  let t := Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
+  let t := @Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
   ZPack25519 (Z.mul (get_a t) (ZInv25519 (get_c t))).
 
 (* This is the equivalence between ladders defined as fn with type class and ladders defined as recursive *)
@@ -78,7 +81,7 @@ Proof.
   reflexivity.
 Qed.
 
-Local Instance Z25519_Ops : (Ops Zmodp.type nat id) := {}.
+(* Local Instance Z25519_Ops : (Ops Zmodp.type nat id) := {}.
 Proof.
 apply Zmodp.add.
 apply Zmodp.mul.
@@ -96,7 +99,7 @@ reflexivity.
 reflexivity.
 reflexivity.
 Defined.
-
+ *)
 (* Local Instance Z_Ops : (Ops Z Z Mod) := {}.
 Proof.
 apply A.
@@ -117,7 +120,7 @@ intros ; apply Zmod_mod.
 Defined.
  *)
 
-Local Instance Z25519_Z_Eq : @Ops_Mod_P Zmodp.type nat Z Mod id Z25519_Ops Z_Ops := {
+(* Local Instance Z25519_Z_Eq : @Ops_Mod_P Zmodp.type nat Z Mod id Z25519_Ops Z_Ops := {
 P := val;
 P' := Z.of_nat
 }.
@@ -137,7 +140,7 @@ intros; simpl.
 rewrite /Mod /Sel25519 ; flatten.
 intros; simpl.
 apply Zgetbit_bitn.
-Defined.
+Defined. *)
 
 (* TODO : move this *)
 Local Lemma Zunpack: forall x, 0 <= x < 2^255 - 19 -> 0 <= ZUnpack25519 x < 2 ^ 255 - 19.
@@ -177,8 +180,9 @@ assert(Mequiv:= M_eq GETA (GETC ^-1)).
 cbn in Mequiv.
 remember (Zmodp.repr (GETA / GETC)%R :𝓖𝓕) as HM.
 cbn in HeqHM.
+rewrite /modP in Mequiv.
 rewrite Mequiv in HeqHM.
-rewrite /M in HeqHM.
+rewrite /Mid.M in HeqHM.
 do 2 rewrite -Zcar25519_correct in HeqHM.
 clear Mequiv.
 rewrite Zmult_mod in HeqHM.
@@ -197,9 +201,9 @@ f_equal.
   assert(Hnn: ℤ.ℕ Z.to_nat (Zclamp n) = Zclamp n).
     rewrite Z2Nat.id //.
   assert(Habstr:= abstract_fn_rev_eq_a_Fp (254 + 1) 254 (Z.to_nat (Zclamp n)) (Zmodp.pi (ZUnpack25519 x)) (Zclamp n) (ZUnpack25519 x) H255 Hxxx Hnn).
-  rewrite /Mod in Habstr.
+  rewrite /modP in Habstr.
   rewrite /P in Habstr.
-  rewrite /Crypto_Scalarmult_Fp.Z25519_Z_Eq in Habstr.
+  rewrite /Z25519_Z_Eq in Habstr.
   rewrite /val in Habstr.
   rewrite /Zmodp_subType in Habstr.
   symmetry.
@@ -217,9 +221,9 @@ f_equal.
   assert(Hnn: ℤ.ℕ Z.to_nat (Zclamp n) = Zclamp n).
     rewrite Z2Nat.id //.
   assert(Habstr:= abstract_fn_rev_eq_c_Fp (254 + 1) 254 (Z.to_nat (Zclamp n)) (Zmodp.pi (ZUnpack25519 x)) (Zclamp n) (ZUnpack25519 x) H255 Hxxx Hnn).
-  rewrite /Mod in Habstr.
+  rewrite /modP in Habstr.
   rewrite /P in Habstr.
-  rewrite /Crypto_Scalarmult_Fp.Z25519_Z_Eq in Habstr.
+  rewrite /Z25519_Z_Eq in Habstr.
   rewrite /val in Habstr.
   rewrite /Zmodp_subType in Habstr.
   symmetry.

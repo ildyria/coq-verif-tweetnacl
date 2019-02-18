@@ -1,14 +1,16 @@
-Require Import stdpp.list.
 Require Import ssreflect.
 From Tweetnacl Require Import Libs.Export.
-From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Mid.Reduce.
 
-Definition Zcar25519 (n:ℤ) : ℤ  :=  38 * getCarry 256 n +  getResidue 256 n.
+Module Mid.
 
-Notation ℤcar25519 := Zcar25519.
+Definition car25519 (n:ℤ) : ℤ  :=  38 * getCarry 256 n +  getResidue 256 n.
 
-Lemma Zcar25519_correct: forall n, n:𝓖𝓕 = (Zcar25519 n) :𝓖𝓕.
+End Mid.
+
+Notation ℤcar25519 := Mid.car25519.
+
+Lemma Zcar25519_correct: forall n, n:𝓖𝓕 = (Mid.car25519 n) :𝓖𝓕.
 Proof.
   intro n.
   unfold ℤcar25519.

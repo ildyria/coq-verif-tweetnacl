@@ -491,7 +491,7 @@ Qed.
 Definition select_m_t m t : (list Z * list Z) :=
   let new_m := m_from_t m t in
   let b := 1 - getbit_25519 new_m in
-    (Sel25519 b new_m t, Sel25519 b t new_m).
+    (Low.Sel25519 b new_m t, Low.Sel25519 b t new_m).
 
 Lemma get_m_select_m_t_Zlength : forall m t,
   Zlength m = 16 ->
@@ -526,7 +526,7 @@ Proof.
     omega.
   destruct getbit_25519_dec as [getbit_25519_dec|getbit_25519_dec];
   rewrite getbit_25519_dec;
-  Grind_add_Z ; rewrite /Sel25519 /list_cswap.
+  Grind_add_Z ; rewrite /Low.Sel25519 /list_cswap.
   2: rewrite Z.eqb_refl ; assumption.
   destruct (1 =? 0) ; try assumption.
   apply nth_15_m_fromt_t_signed_pos in getbit_25519_dec ; try assumption.
@@ -687,7 +687,7 @@ Proof.
   {
   rewrite HHH.
   Grind_add_Z.
-  rewrite /Sel25519 /list_cswap.
+  rewrite /Low.Sel25519 /list_cswap.
   destruct (0 =? 0) eqn:? ; try discriminate.
   destruct HHH' as [HHH'|HHH'] ; rewrite HHH'.
   Grind_add_Z.
@@ -708,7 +708,7 @@ Proof.
     assert(getbit_25519 (m_from_t m t) = 0).
     apply getbit_25519_equiv_pos ; try assumption.
     rewrite ZofList_m_from_t ; try assumption; omega.
-    rewrite H /Sel25519 /list_cswap.
+    rewrite H /Low.Sel25519 /list_cswap.
     Grind_add_Z.
     destruct (1 =? 0) eqn:? ; try discriminate.
 

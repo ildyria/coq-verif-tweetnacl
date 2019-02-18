@@ -30,16 +30,17 @@ From Tweetnacl.Mid Require Import Crypto_Scalarmult.
 From Tweetnacl.Mid Require Import AMZubSqSel.
 From Tweetnacl.Mid Require Import ScalarMult.
 From Tweetnacl.Low Require Import Crypto_Scalarmult_lemmas.
+From Tweetnacl.Mid Require Import Mod.
 
 Open Scope Z.
 
 Section Crypto_Scalarmult.
 
-Definition Mod := (fun x => Z.modulo x (Z.pow 2 255 - 19)).
-Context (Z_Ops            : (Ops Z Z) Mod).
+(* Definition Mod := (fun x => Z.modulo x (Z.pow 2 255 - 19)). *)
+Context (Z_Ops            : (Ops Z Z) modP).
 Context (List_Z_Ops       : Ops (list Z) (list Z) id).
 Context (List_Z_Ops_Prop          : @Ops_List List_Z_Ops).
-Context (List_Z_Ops_Prop_Correct  : @Ops_Prop_List_Z Mod List_Z_Ops Z_Ops).
+Context (List_Z_Ops_Prop_Correct  : @Ops_Prop_List_Z modP List_Z_Ops Z_Ops).
 Local Instance List16_Ops         : (Ops (@List16 Z) (List32B) id) := {}.
 Proof.
 apply A_List16.
@@ -58,7 +59,7 @@ simpl ; reflexivity.
 simpl ; reflexivity.
 simpl ; reflexivity.
 Defined.
-Local Instance List16_Z_Eq      : @Ops_Mod_P (@List16 Z) (List32B) Z Mod id List16_Ops Z_Ops := {
+Local Instance List16_Z_Eq      : @Ops_Mod_P (@List16 Z) (List32B) Z modP id List16_Ops Z_Ops := {
 P l := (ZofList 16 (List16_to_List l));
 P' l := (ZofList 8 (List32_to_List l));
 }.
@@ -91,9 +92,9 @@ intros i [] ; reflexivity.
 Defined.
 
 Definition Crypto_Scalarmult n p :=
-  let a := get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)) in
-  let c := get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)) in
-  Pack25519 (M.M a (Inv25519 c)).
+  let a := get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
+  let c := get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
+  Pack25519 (Low.M a (Inv25519 c)).
 
 Local Lemma impl_omega_simpl_0 : ∀ x : ℤ, (λ x0 : ℤ, 0 ≤ x0 ∧ x0 < 2 ^ 16) x → -38 ≤ x ∧ x < 2 ^ 16 + 38.
 Proof.
@@ -122,7 +123,7 @@ Qed.
 Local Lemma Zlength_a : forall n p,
   Zlength n = 32 ->
   Zlength p = 32 ->
-Zlength (get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p))) = 16.
+Zlength (get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p))) = 16.
 Proof.
   intros.
   apply get_a_montgomery_fn_Zlength.
@@ -135,7 +136,7 @@ Qed.
 Local Lemma Zlength_c : forall n p,
   Zlength n = 32 ->
   Zlength p = 32 ->
-Zlength (get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p))) = 16.
+Zlength (get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p))) = 16.
 Proof.
   intros.
   apply get_c_montgomery_fn_Zlength.
@@ -145,11 +146,11 @@ Proof.
   all : go.
 Qed.
 
-Local Lemma One_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) One16.
+Local Lemma One_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) Low.C_1.
 Proof.
 repeat rewrite Forall_cons ; jauto_set ; try apply Forall_nil ; compute ; go.
 Qed.
-Local Lemma nul_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) nul16.
+Local Lemma nul_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) Low.C_0.
 Proof.
 repeat rewrite Forall_cons ; jauto_set ; try apply Forall_nil ; compute ; go.
 Qed.
@@ -160,12 +161,12 @@ Local Lemma M_bounded :  forall (n p:list Z),
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
 Forall (λ x : ℤ, - 2 ^ 62 < x ∧ x < 2 ^ 62)
-  (M.M
+  (Low.M
      (get_a
-        (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16 (Unpack25519 p)))
+        (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)))
      (Inv25519
         (get_c
-           (montgomery_fn List_Z_Ops 255 254 (clamp n) One16 (Unpack25519 p) nul16 One16 nul16 nul16
+           (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0
               (Unpack25519 p))))).
 Proof.
   intros n p Hln Hlp Hbn Hbp.
@@ -203,6 +204,65 @@ Proof.
   apply impl_omega_simpl_1.
 Qed.
 
+Local Lemma get_a_abstract_fn_montgomery_fn n p:
+Zlength n = 32 ->
+Zlength p = 32 ->
+Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
+Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
+Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 16) (Unpack25519 p) ->
+Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) (clamp n) ->
+Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p) ->
+Zlength (Unpack25519 p) = 16 ->
+get_a
+  (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
+     (ZUnpack25519 (ZofList 8 p))) `mod` (2 ^ 255 - 19) =
+(ℤ16.lst get_a
+           (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0
+              (Unpack25519 p))) `mod` (2 ^ 255 - 19).
+Proof.
+move => Hln Hlp Hbn Hbp HUnpack HCn HUnpackEx HlUnpackP.
+rewrite /Zmontgomery_fn /montgomery_fn.
+have H255: 0 <= 255 by omega.
+rewrite Zlength_correct in Hln.
+rewrite Zlength_correct in Hlp.
+rewrite clamp_ZofList_eq ?Unpack25519_eq_ZUnpack25519 => // ; try omega.
+symmetry.
+apply (abstract_fn_rev_eq_List_Z_a (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct) => //.
+Qed.
+
+Local Lemma get_c_abstract_fn_montgomery_fn n p:
+Zlength n = 32 ->
+Zlength p = 32 ->
+Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
+Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
+Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 16) (Unpack25519 p) ->
+Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) (clamp n) ->
+Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p) ->
+Zlength (Unpack25519 p) = 16 ->
+ZInv25519
+  (get_c
+     (abstract_fn_rev 255 254 (Zclamp (ZofList 8 n)) 1 (ZUnpack25519 (ZofList 8 p)) 0 1 0 0
+        (ZUnpack25519 (ZofList 8 p)))) `mod` (2 ^ 255 - 19) =
+(ℤ16.lst Inv25519
+           (get_c
+              (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0
+                 Low.C_0 (Unpack25519 p)))) `mod` (2 ^ 255 - 19).
+Proof.
+move => Hln Hlp Hbn Hbp HUnpack HCn HUnpackEx HlUnpackP.
+rewrite Inv25519_Z_GF.
+2: by apply Zlength_c.
+rewrite Inv25519_Z_correct /ZInv25519 pow_mod.
+symmetry.
+rewrite pow_mod.
+2,3: by compute.
+f_equal ; f_equal.
+have H255: 0 <= 255 by omega.
+rewrite Zlength_correct in Hln.
+rewrite Zlength_correct in Hlp.
+rewrite /Zmontgomery_fn /montgomery_fn clamp_ZofList_eq ?Unpack25519_eq_ZUnpack25519 => // ; try omega.
+apply (abstract_fn_rev_eq_List_Z_c (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct) => //.
+Qed.
+
 Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength n = 32 ->
   Zlength p = 32 ->
@@ -212,12 +272,12 @@ Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
 Proof.
   intros n p Hln Hlp Hbn Hbp.
   rewrite /Crypto_Scalarmult /ZCrypto_Scalarmult_rev_gen.
-  assert(HUnpack:= Unpack25519_bounded p Hbp).
-  assert(HCn:= clamp_bound n Hbn).
-  assert(HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p)).
-    eapply list.Forall_impl ; [eassumption | apply impl_omega_simpl_0].
-  assert(HlUnpackP: Zlength (Unpack25519 p) = 16).
-    apply Unpack25519_Zlength ; assumption.
+  have HUnpack:= Unpack25519_bounded p Hbp.
+  have HCn:= clamp_bound n Hbn.
+  have HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p)
+    by eapply list.Forall_impl ; [eassumption | apply impl_omega_simpl_0].
+  have HlUnpackP: Zlength (Unpack25519 p) = 16
+    by apply Unpack25519_Zlength.
   rewrite Pack25519_mod_25519.
   2: {
   apply M_Zlength.
@@ -238,27 +298,10 @@ Proof.
   rewrite -Zmult_mod_idemp_r.
   f_equal.
   f_equal.
-  symmetry.
-  2: rewrite Inv25519_Z_GF.
-  3: apply Zlength_c ; assumption.
-  2: rewrite Inv25519_Z_correct /ZInv25519.
-  2: rewrite pow_mod.
-  2: symmetry.
-  2: rewrite pow_mod.
-  3,4: compute; discriminate.
-  2: f_equal ; f_equal.
-  1,2: rewrite /Zmontgomery_fn /montgomery_fn.
-  1,2: assert(H255: 0 <= 255) by omega.
-  1,2: rewrite clamp_ZofList_eq ?Unpack25519_eq_ZUnpack25519.
-  apply (abstract_fn_rev_eq_List_Z_a (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct).
-  8: apply (abstract_fn_rev_eq_List_Z_c (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct).
-  all: try assumption.
-  all: rewrite Zlength_correct in Hln.
-  all: rewrite Zlength_correct in Hlp.
-  all: try omega.
+  apply get_a_abstract_fn_montgomery_fn => //.
+  apply get_c_abstract_fn_montgomery_fn => //.
 Qed.
 
 End Crypto_Scalarmult.
-
 
 Close Scope Z.

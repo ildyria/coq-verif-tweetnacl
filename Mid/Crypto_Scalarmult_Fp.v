@@ -15,6 +15,7 @@ From Tweetnacl Require Import Mid.Pack25519.
 From Tweetnacl Require Import Mid.Car25519.
 From Tweetnacl Require Import Mid.Inv25519.
 From Tweetnacl Require Import Mid.ScalarMult.
+From Tweetnacl Require Import Mid.Mod.
 From Tweetnacl.Gen Require Import abstract_fn_rev_eq.
 From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
 
@@ -23,7 +24,8 @@ From stdpp Require Import list.
 From Tweetnacl.High Require Import Zmodp opt_ladder_extr ladder curve25519.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
 
-Definition Mod := (fun x => Z.modulo x (Z.pow 2 255 - 19)).
+From Tweetnacl.Mid Require Import Instances.
+(* Definition Mod := (fun x => Z.modulo x (Z.pow 2 255 - 19)).
 
 Local Instance Z25519_Ops : (Ops Zmodp.type nat id) := {}.
 Proof.
@@ -42,9 +44,9 @@ reflexivity.
 reflexivity.
 reflexivity.
 reflexivity.
-Defined.
+Defined. *)
 
-Local Instance Z_Ops : (Ops Z Z Mod) := {}.
+(* Local Instance Z_Ops : (Ops Z Z Mod) := {}.
 Proof.
 apply A.
 apply M.
@@ -61,8 +63,8 @@ intros ; apply M_mod_eq.
 intros ; apply Zub_mod_eq.
 intros ; apply Sq_mod_eq.
 intros ; apply Zmod_mod.
-Defined.
-
+Defined. *)
+(* 
 Local Instance Z25519_Z_Eq : @Ops_Mod_P Zmodp.type nat Z Mod id Z25519_Ops Z_Ops := {
 P := val;
 P' := Z.of_nat
@@ -83,7 +85,7 @@ intros; simpl.
 rewrite /Mod /Sel25519 ; flatten.
 intros; simpl.
 apply Zgetbit_bitn.
-Defined.
+Defined. *)
 
 Definition Fp_Crypto_Scalarmult_rec_gen n p :=
   let t := montgomery_rec.montgomery_rec 255 n Zmodp.one p Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero p in
@@ -157,14 +159,14 @@ Lemma abstract_fn_rev_eq_a_Fp : ∀ (m p : ℤ) (N : nat) (PP : Zmodp.type) (n p
   0 ≤ m →
   val PP = pp ->
   Z.of_nat N = n ->
-  Mod (P (get_a (abstract_fn_rev m p N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP)))
-  = Mod (get_a (abstract_fn_rev m p n 1%Z pp 0%Z 1%Z 0%Z 0%Z pp)).
+  modP (P (get_a (abstract_fn_rev m p N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP)))
+  = modP (get_a (abstract_fn_rev m p n 1%Z pp 0%Z 1%Z 0%Z 0%Z pp)).
 Proof.
   intros m p N PP n pp.
   intros Hm.
   intros HPP.
   intros HN.
-  assert(Heq1:= @abstract_fn_rev_eq_a Zmodp.type nat Z id Mod Z25519_Ops Z_Ops Z25519_Z_Eq m p).
+  assert(Heq1:= @abstract_fn_rev_eq_a Zmodp.type nat Z id modP Z25519_Ops Z_Ops Z25519_Z_Eq m p).
   specialize Heq1 with N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP.
   apply Heq1 in Hm.
   clear Heq1.
@@ -190,14 +192,14 @@ Lemma abstract_fn_rev_eq_c_Fp : ∀ (m p : ℤ) (N : nat) (PP : Zmodp.type) (n p
   0 ≤ m →
   val PP = pp ->
   Z.of_nat N = n ->
-  Mod (P (get_c (abstract_fn_rev m p N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP)))
-  = Mod (get_c (abstract_fn_rev m p n 1%Z pp 0%Z 1%Z 0%Z 0%Z pp)).
+  modP (P (get_c (abstract_fn_rev m p N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP)))
+  = modP (get_c (abstract_fn_rev m p n 1%Z pp 0%Z 1%Z 0%Z 0%Z pp)).
 Proof.
   intros m p N PP n pp.
   intros Hm.
   intros HPP.
   intros HN.
-  assert(Heq1:= @abstract_fn_rev_eq_c Zmodp.type nat Z id Mod Z25519_Ops Z_Ops Z25519_Z_Eq m p).
+  assert(Heq1:= @abstract_fn_rev_eq_c Zmodp.type nat Z id modP Z25519_Ops Z_Ops Z25519_Z_Eq m p).
   specialize Heq1 with N Zmodp.one PP Zmodp.zero Zmodp.one Zmodp.zero Zmodp.zero PP.
   apply Heq1 in Hm.
   clear Heq1.
