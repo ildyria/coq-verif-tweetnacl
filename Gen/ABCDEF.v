@@ -1,5 +1,7 @@
 From Tweetnacl.Gen Require Import AMZubSqSel.
 
+Module Gen.
+
 Section ABCDEF.
 
 Context {T : Type}.
@@ -71,3 +73,5 @@ Definition ff r (a b c d e f x:T) :=
   Sq (Zub (Sel25519 r a b) (Sel25519 r c d)).
 
 End ABCDEF.
+
+End Gen.

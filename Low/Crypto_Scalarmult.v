@@ -146,11 +146,11 @@ Proof.
   all : go.
 Qed.
 
-Local Lemma One_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) Low.C_1.
+Local Lemma C_1_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) Low.C_1.
 Proof.
 repeat rewrite Forall_cons ; jauto_set ; try apply Forall_nil ; compute ; go.
 Qed.
-Local Lemma nul_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) Low.C_0.
+Local Lemma C_0_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) Low.C_0.
 Proof.
 repeat rewrite Forall_cons ; jauto_set ; try apply Forall_nil ; compute ; go.
 Qed.
@@ -170,38 +170,27 @@ Forall (λ x : ℤ, - 2 ^ 62 < x ∧ x < 2 ^ 62)
               (Unpack25519 p))))).
 Proof.
   intros n p Hln Hlp Hbn Hbp.
-  assert(HUnpack:= Unpack25519_bounded p Hbp).
-  assert(HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p)).
-    eapply list.Forall_impl.
+  have HUnpack:= Unpack25519_bounded p Hbp.
+  have HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p).
+    eapply list.Forall_impl => //.
     eassumption.
     apply impl_omega_simpl_0.
-  assert(HlUnpackP: Zlength (Unpack25519 p) = 16).
-    apply Unpack25519_Zlength.
-    assumption.
+  have HlUnpackP: Zlength (Unpack25519 p) = 16.
+    apply Unpack25519_Zlength => //.
   eapply list.Forall_impl.
   apply M_bound_Zlength.
   5: apply impl_omega_simpl_2.
   2: apply Inv25519_Zlength.
-  2: apply Zlength_c ; assumption.
-  1: apply Zlength_a ; assumption.
-  eapply list.Forall_impl.
-  apply get_a_montgomery_fn_bound.
-  all: try assumption.
-  omega.
-  all: try apply Zlength_One16.
-  all: try apply nul_bound_ext.
-  all: try apply One_bound_ext.
-  apply impl_omega_simpl_1.
-  eapply list.Forall_impl.
-  apply Inv25519_bound_Zlength.
-  apply Zlength_c ; assumption.
-  apply get_c_montgomery_fn_bound.
-  all: try assumption.
-  omega.
-  all: try apply Zlength_One16.
-  all: try apply nul_bound_ext.
-  all: try apply One_bound_ext.
-  apply impl_omega_simpl_1.
+  2: apply Zlength_c => //.
+  1: apply Zlength_a => //.
+  all: eapply list.Forall_impl.
+  3: apply Inv25519_bound_Zlength.
+  3: apply Zlength_c => //.
+  3: apply get_c_montgomery_fn_bound => //.
+  apply get_a_montgomery_fn_bound => //.
+  all: try apply C_0_bound_ext.
+  all: try apply C_1_bound_ext.
+  all: apply impl_omega_simpl_1.
 Qed.
 
 Local Lemma get_a_abstract_fn_montgomery_fn n p:

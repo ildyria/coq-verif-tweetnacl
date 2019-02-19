@@ -24,11 +24,11 @@ repeat match goal with
 end.
 Qed.
 
-Lemma Zlength_c_121665 : Zlength Low.C_121665 = 16.
+Lemma Zlength_C_121665 : Zlength Low.C_121665 = 16.
 Proof. go. Qed.
 Close Scope Z.
 
-Lemma length_c_121665 : length Low.C_121665 = 16.
+Lemma length_C_121665 : length Low.C_121665 = 16.
 Proof. go. Qed.
 
 Open Scope Z.
@@ -38,11 +38,11 @@ Lemma list_of_P: forall l,
   (ZofList 16 l) = Z.pow 2 255 - 19.
 Proof. intros; subst; compute ; reflexivity. Qed.
 
-Lemma Zlength_nul16 : Zlength Low.C_0 = 16.
+Lemma Zlength_C_0 : Zlength Low.C_0 = 16.
 Proof. go. Qed.
-Lemma Zlength_One16 : Zlength Low.C_1 = 16.
+Lemma Zlength_C_1 : Zlength Low.C_1 = 16.
 Proof. go. Qed.
-Lemma One16_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) Low.C_1.
+Lemma C_1_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) Low.C_1.
 Proof. unfold Low.C_1;
 repeat match goal with
   | _ => change (2^16) with 65536 ; omega
@@ -51,7 +51,7 @@ repeat match goal with
   | _ => apply Forall_nil ; trivial
 end.
 Qed.
-Lemma nul16_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) Low.C_0.
+Lemma C_0_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) Low.C_0.
 Proof. unfold Low.C_0;
 repeat match goal with
   | _ => change (2^16) with 65536 ; omega

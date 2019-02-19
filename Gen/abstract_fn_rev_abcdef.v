@@ -17,7 +17,7 @@ Context {O : Ops T T' Mod}.
 
 Lemma abstract_fn_rev_a : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fa (Getbit (p - n) z)
+  Gen.fa (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -35,7 +35,7 @@ symmetry ; apply Z.leb_gt ; omega.
 Qed.
 Lemma abstract_fn_rev_b : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fb (Getbit (p - n) z)
+  Gen.fb (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -53,7 +53,7 @@ symmetry ; apply Z.leb_gt ; omega.
 Qed.
 Lemma abstract_fn_rev_c : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fc (Getbit (p - n) z)
+  Gen.fc (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -71,7 +71,7 @@ symmetry ; apply Z.leb_gt ; omega.
 Qed.
 Lemma abstract_fn_rev_d : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fd (Getbit (p - n) z)
+  Gen.fd (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -89,7 +89,7 @@ symmetry ; apply Z.leb_gt ; omega.
 Qed.
 Lemma abstract_fn_rev_e : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  fe (Getbit (p - n) z)
+  Gen.fe (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))
@@ -107,7 +107,7 @@ symmetry ; apply Z.leb_gt ; omega.
 Qed.
 Lemma abstract_fn_rev_f : forall n p (z:T') (a b c d e f x : T),
   0 <= n ->
-  ff (Getbit (p - n) z)
+  Gen.ff (Getbit (p - n) z)
    (get_a (abstract_fn_rev n p z a b c d e f x))
    (get_b (abstract_fn_rev n p z a b c d e f x))
    (get_c (abstract_fn_rev n p z a b c d e f x))

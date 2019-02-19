@@ -56,11 +56,11 @@ Local Ltac down := match goal with
   end.
 
 Lemma fa_eq : forall r (a b c d e f x:T),
-  Mod (fa r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fa r a b c d e f x)).
+  Mod (Gen.fa r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (Gen.fa r a b c d e f x)).
 Proof.
   intros.
-  unfold fa.
+  unfold Gen.fa.
   propagate.
   f_equal.
   down ; symmetry; down; propagate.
@@ -75,11 +75,11 @@ Proof.
 Qed.
 
 Lemma fa_eq_mod : forall r (a b c d e f x:U),
-  Mod (fa r a b c d e f x) =
-  Mod (fa r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (Gen.fa r a b c d e f x) =
+  Mod (Gen.fa r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  unfold fa.
+  unfold Gen.fa.
   propagate.
   f_equal.
   down ; symmetry; down.
@@ -93,11 +93,11 @@ Proof.
 Qed.
 
 Lemma fb_eq : forall r (a b c d e f x:T),
-  Mod (fb r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fb r a b c d e f x)).
+  Mod (Gen.fb r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (Gen.fb r a b c d e f x)).
 Proof.
   intros.
-  unfold fb.
+  unfold Gen.fb.
   propagate.
   f_equal.
   down ; symmetry ; rewrite Mod_ZSq_eq ; propagate.
@@ -112,11 +112,11 @@ Proof.
 Qed.
 
 Lemma fb_eq_mod : forall r (a b c d e f x:U),
-  Mod (fb r a b c d e f x) =
-  Mod (fb r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (Gen.fb r a b c d e f x) =
+  Mod (Gen.fb r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  unfold fb.
+  unfold Gen.fb.
   propagate.
   f_equal.
   down ; symmetry ; rewrite Mod_ZSq_eq.
@@ -130,11 +130,11 @@ Proof.
 Qed.
 
 Lemma fc_eq : forall r (a b c d e f x:T),
-  Mod (fc r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fc r a b c d e f x)).
+  Mod (Gen.fc r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (Gen.fc r a b c d e f x)).
 Proof.
   intros.
-  unfold fc.
+  unfold Gen.fc.
   propagate.
   f_equal.
   1 : {
@@ -159,11 +159,11 @@ Proof.
 Qed.
 
 Lemma fc_eq_mod : forall r (a b c d e f x:U),
-  Mod (fc r a b c d e f x) =
-  Mod (fc r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (Gen.fc r a b c d e f x) =
+  Mod (Gen.fc r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  unfold fc.
+  unfold Gen.fc.
   propagate.
   f_equal.
   1 : {
@@ -195,11 +195,11 @@ Proof.
 Qed.
 
 Lemma fd_eq : forall r (a b c d e f x:T),
-  Mod (fd r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fd r a b c d e f x)).
+  Mod (Gen.fd r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (Gen.fd r a b c d e f x)).
 Proof.
   intros.
-  unfold fd.
+  unfold Gen.fd.
   propagate.
   f_equal.
   down ; symmetry; down; propagate;
@@ -222,11 +222,11 @@ Proof.
 Qed.
 
 Lemma fd_eq_mod : forall r (a b c d e f x:U),
-  Mod (fd r a b c d e f x) =
-  Mod (fd r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (Gen.fd r a b c d e f x) =
+  Mod (Gen.fd r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  unfold fd.
+  unfold Gen.fd.
   propagate.
   f_equal.
   2 : {
@@ -258,11 +258,11 @@ Proof.
 Qed.
 
 Lemma fe_eq : forall r (a b c d e f x:T),
-  Mod (fe r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (fe r a b c d e f x)).
+  Mod (Gen.fe r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (Gen.fe r a b c d e f x)).
 Proof.
   intros.
-  unfold fe.
+  unfold Gen.fe.
   propagate.
   down ; symmetry; rewrite Mod_ZA_eq ; propagate.
   f_equal ; f_equal ; down ; symmetry; down ; propagate;
@@ -271,22 +271,22 @@ Proof.
 Qed.
 
 Lemma fe_eq_mod : forall r (a b c d e f x:U),
-  Mod (fe r a b c d e f x) =
-  Mod (fe r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (Gen.fe r a b c d e f x) =
+  Mod (Gen.fe r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  unfold fe.
+  unfold Gen.fe.
   down ; symmetry ; rewrite Mod_ZA_eq ; f_equal ; f_equal;
   down ; symmetry ; down ; f_equal ; f_equal;
   down ; symmetry ; down ; propagate ; down ; reflexivity.
 Qed.
 
 Lemma ff_eq : forall r (a b c d e f x:T),
-  Mod (ff r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
-  Mod (P (ff r a b c d e f x)).
+  Mod (Gen.ff r (P a) (P b) (P c) (P d) (P e) (P f) (P x)) =
+  Mod (P (Gen.ff r a b c d e f x)).
 Proof.
   intros.
-  unfold ff.
+  unfold Gen.ff.
   propagate.
   down ; symmetry; rewrite Mod_ZSq_eq ; propagate;
   f_equal ; f_equal ; down ; symmetry; down ; propagate.
@@ -294,11 +294,11 @@ Proof.
 Qed.
 
 Lemma ff_eq_mod : forall r (a b c d e f x:U),
-  Mod (ff r a b c d e f x) =
-  Mod (ff r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
+  Mod (Gen.ff r a b c d e f x) =
+  Mod (Gen.ff r (Mod a) (Mod b) (Mod c) (Mod d) (Mod e) (Mod f) (Mod x)).
 Proof.
   intros.
-  unfold ff.
+  unfold Gen.ff.
   down ; symmetry ; rewrite Mod_ZSq_eq ; f_equal ; f_equal.
   down ; symmetry ; down ; f_equal ; f_equal ; propagate ; down ; reflexivity.
 Qed.

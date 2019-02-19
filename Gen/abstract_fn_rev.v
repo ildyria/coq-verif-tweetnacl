@@ -24,12 +24,12 @@ Function abstract_fn_rev (m p:Z) (z:T') (a b c d e f x:T) {measure Z.to_nat m} :
     match (abstract_fn_rev (m - 1) p z a b c d e f x) with
         | (a,b,c,d,e,f) =>
         let r := Getbit (p - (m - 1)) z in
-        (fa r a b c d e f x,
-        fb r a b c d e f x,
-        fc r a b c d e f x,
-        fd r a b c d e f x,
-        fe r a b c d e f x,
-        ff r a b c d e f x)
+        (Gen.fa r a b c d e f x,
+        Gen.fb r a b c d e f x,
+        Gen.fc r a b c d e f x,
+        Gen.fd r a b c d e f x,
+        Gen.fe r a b c d e f x,
+        Gen.ff r a b c d e f x)
       end.
 Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
 
@@ -43,12 +43,12 @@ Lemma abstract_fn_rev_n : forall n p z a b c d e f x,
    match (abstract_fn_rev (n - 1) p z a b c d e f x) with
         | (a,b,c,d,e,f) =>
         let r := Getbit (p - (n - 1)) z in
-        (fa r a b c d e f x,
-        fb r a b c d e f x,
-        fc r a b c d e f x,
-        fd r a b c d e f x,
-        fe r a b c d e f x,
-        ff r a b c d e f x)
+        (Gen.fa r a b c d e f x,
+        Gen.fb r a b c d e f x,
+        Gen.fc r a b c d e f x,
+        Gen.fd r a b c d e f x,
+        Gen.fe r a b c d e f x,
+        Gen.ff r a b c d e f x)
       end.
 Proof. move=> n p z a b c d e f x Hn.
 rewrite abstract_fn_rev_equation.

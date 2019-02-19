@@ -15,7 +15,7 @@ Context {OP : @Ops_List O}.
 
 Local Ltac solve_small_step_Zlength :=
   intros;
-  rewrite /fa /fb /fc /fd /fe /ff;
+  rewrite /Gen.fa /Gen.fb /Gen.fc /Gen.fd /Gen.fe /Gen.ff;
   repeat match goal with
     | _ => orewrite Sel25519_Zlength
     | _ => orewrite M_Zlength
@@ -29,37 +29,37 @@ Local Ltac solve_small_step_Zlength :=
 Lemma fa_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fa r a b c d e f x) = 16.
+  Zlength (Gen.fa r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
 
 Lemma fb_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fb r a b c d e f x) = 16.
+  Zlength (Gen.fb r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
 
 Lemma fc_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fc r a b c d e f x) = 16.
+  Zlength (Gen.fc r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
 
 Lemma fd_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fd r a b c d e f x) = 16.
+  Zlength (Gen.fd r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
 
 Lemma fe_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (fe r a b c d e f x) = 16.
+  Zlength (Gen.fe r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
 
 Lemma ff_Zlength : forall r a b c d e f x,
   Zlength a = 16 -> Zlength b = 16 -> Zlength c = 16 ->
   Zlength d = 16 -> Zlength e = 16 -> Zlength f = 16 -> Zlength x = 16 ->
-  Zlength (ff r a b c d e f x) = 16.
+  Zlength (Gen.ff r a b c d e f x) = 16.
 Proof. solve_small_step_Zlength. Qed.
 
 Local Ltac Simplify_this :=
@@ -76,7 +76,7 @@ Lemma fa_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (fa r a b c d e f x).
+    Forall (fun x => -38 <= x < 2^16 + 38) (Gen.fa r a b c d e f x).
 Proof.
   intros ; simpl.
   apply Sel25519_bound_lt_le_id.
@@ -175,7 +175,7 @@ Lemma fb_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (fb r a b c d e f x).
+    Forall (fun x => -38 <= x < 2^16 + 38) (Gen.fb r a b c d e f x).
 Proof.
   intros.
   simpl.
@@ -281,7 +281,7 @@ Lemma fc_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => 0 <= x < 2^16) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (fc r a b c d e f x).
+    Forall (fun x => -38 <= x < 2^16 + 38) (Gen.fc r a b c d e f x).
 Proof.
   intros.
   simpl.
@@ -451,7 +451,7 @@ Lemma fd_bound : forall r a b c d e f x,
     Forall (fun x => -38 <= x < 2^16 + 38) c ->
     Forall (fun x => -38 <= x < 2^16 + 38) d ->
     Forall (fun x => 0 <= x < 2^16) x ->
-    Forall (fun x => -38 <= x < 2^16 + 38) (fd r a b c d e f x).
+    Forall (fun x => -38 <= x < 2^16 + 38) (Gen.fd r a b c d e f x).
 Proof.
   intros.
   simpl.

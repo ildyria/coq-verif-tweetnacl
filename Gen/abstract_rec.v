@@ -18,12 +18,12 @@ Fixpoint abstract_rec (m : nat) (z:T') (a b c d e f x : T) : (T * T * T * T * T 
   | S n => 
       let r := Getbit (Z.of_nat n) z in
       abstract_rec n z 
-        (fa r a b c d e f x)
-        (fb r a b c d e f x)
-        (fc r a b c d e f x)
-        (fd r a b c d e f x)
-        (fe r a b c d e f x)
-        (ff r a b c d e f x)
+        (Gen.fa r a b c d e f x)
+        (Gen.fb r a b c d e f x)
+        (Gen.fc r a b c d e f x)
+        (Gen.fd r a b c d e f x)
+        (Gen.fe r a b c d e f x)
+        (Gen.ff r a b c d e f x)
         x
     end.
 

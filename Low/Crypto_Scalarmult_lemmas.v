@@ -150,10 +150,10 @@ Proof.
   erewrite <- abstract_fn_rev_eq_a_Z_List.
   reflexivity.
   assumption.
-  pose(x := Len Low.C_1 Zlength_One16).
+  pose(x := Len Low.C_1 Zlength_C_1).
   assert( List16_to_List x = Low.C_1) by reflexivity.
   eassumption.
-  pose(x := Len Low.C_0 Zlength_nul16).
+  pose(x := Len Low.C_0 Zlength_C_0).
   assert( List16_to_List x = Low.C_0) by reflexivity.
   eassumption.
   pose(x := Len Up HUp).
@@ -178,10 +178,10 @@ Proof.
   erewrite <- abstract_fn_rev_eq_c_Z_List.
   reflexivity.
   assumption.
-  pose(x := Len Low.C_1 Zlength_One16).
+  pose(x := Len Low.C_1 Zlength_C_1).
   assert( List16_to_List x = Low.C_1) by reflexivity.
   eassumption.
-  pose(x := Len Low.C_0 Zlength_nul16).
+  pose(x := Len Low.C_0 Zlength_C_0).
   assert( List16_to_List x = Low.C_0) by reflexivity.
   eassumption.
   pose(x := Len Up HUp).

@@ -16,7 +16,7 @@ Context {Mod : T -> T}.
 Context {O : Ops T T' Mod}.
 
 Lemma abstract_step_rev_a : forall n p (z : T') (a b c d e f x : T),
-  fa (Getbit (Z.of_nat (p - n)) z)
+  Gen.fa (Getbit (Z.of_nat (p - n)) z)
    (get_a (abstract_rec_rev n p z a b c d e f x))
    (get_b (abstract_rec_rev n p z a b c d e f x))
    (get_c (abstract_rec_rev n p z a b c d e f x))
@@ -32,7 +32,7 @@ destruct k as (((((a0,b0),c0),d0),e0),f0); reflexivity.
 Qed.
 
 Lemma abstract_step_rev_b : forall n p (z : T') (a b c d e f x : T),
-  fb (Getbit (Z.of_nat (p - n)) z)
+  Gen.fb (Getbit (Z.of_nat (p - n)) z)
    (get_a (abstract_rec_rev n p z a b c d e f x))
    (get_b (abstract_rec_rev n p z a b c d e f x))
    (get_c (abstract_rec_rev n p z a b c d e f x))
@@ -48,7 +48,7 @@ destruct k as (((((a0,b0),c0),d0),e0),f0); reflexivity.
 Qed.
 
 Lemma abstract_step_rev_c : forall n p (z : T') (a b c d e f x : T),
-  fc (Getbit (Z.of_nat (p - n)) z)
+  Gen.fc (Getbit (Z.of_nat (p - n)) z)
    (get_a (abstract_rec_rev n p z a b c d e f x))
    (get_b (abstract_rec_rev n p z a b c d e f x))
    (get_c (abstract_rec_rev n p z a b c d e f x))
@@ -64,7 +64,7 @@ destruct k as (((((a0,b0),c0),d0),e0),f0); reflexivity.
 Qed.
 
 Lemma abstract_step_rev_d : forall n p (z : T') (a b c d e f x : T),
-  fd (Getbit (Z.of_nat (p - n)) z)
+  Gen.fd (Getbit (Z.of_nat (p - n)) z)
    (get_a (abstract_rec_rev n p z a b c d e f x))
    (get_b (abstract_rec_rev n p z a b c d e f x))
    (get_c (abstract_rec_rev n p z a b c d e f x))
@@ -80,7 +80,7 @@ destruct k as (((((a0,b0),c0),d0),e0),f0); reflexivity.
 Qed.
 
 Lemma abstract_step_rev_e : forall n p (z : T') (a b c d e f x : T),
-  fe (Getbit (Z.of_nat (p - n)) z)
+  Gen.fe (Getbit (Z.of_nat (p - n)) z)
    (get_a (abstract_rec_rev n p z a b c d e f x))
    (get_b (abstract_rec_rev n p z a b c d e f x))
    (get_c (abstract_rec_rev n p z a b c d e f x))
@@ -96,7 +96,7 @@ destruct k as (((((a0,b0),c0),d0),e0),f0); reflexivity.
 Qed.
 
 Lemma abstract_step_rev_f : forall n p (z : T') (a b c d e f x : T),
-  ff (Getbit (Z.of_nat (p - n)) z)
+  Gen.ff (Getbit (Z.of_nat (p - n)) z)
    (get_a (abstract_rec_rev n p z a b c d e f x))
    (get_b (abstract_rec_rev n p z a b c d e f x))
    (get_c (abstract_rec_rev n p z a b c d e f x))

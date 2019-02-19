@@ -106,9 +106,9 @@ apply M.M_Zlength.
 apply Z.Zub_Zlength.
 apply S.Sq_Zlength.
 apply Sel25519.Sel25519_Zlength.
-apply Constant.Zlength_c_121665.
-apply Constant.Zlength_c_121665.
-apply Constant.Zlength_c_121665.
+apply Constant.Zlength_C_121665.
+apply Constant.Zlength_C_0.
+apply Constant.Zlength_C_1.
 apply M.M_bound_Zlength.
 apply S.Sq_bound_Zlength.
 apply A.A_bound_Zlength_le.
@@ -123,6 +123,6 @@ apply Sel25519.Sel25519_bound_lt_lt_id.
 apply Sel25519.Sel25519_bound_le_le_id.
 apply Sel25519.Sel25519_bound_le_lt_trans_le_id.
 apply C_121665_bounds.
-apply nul16_bounds.
-apply One16_bounds.
+apply C_0_bounds.
+apply C_1_bounds.
 Defined.
