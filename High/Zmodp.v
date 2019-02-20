@@ -283,7 +283,7 @@ Qed.
 Definition Zmodp_inv (x : type) : type :=
   match Zinv x with
   | Zinv_spec_zero _ => zero
-  | @Zinv_spec_unit _ _ y _ => pi y
+  | @Zinv_spec_unit _ _ y _ => pi (Z.modulo y p)
   end.
 
 Lemma modZp0 (x : type) : x mod p = 0 -> x == 0%R.
@@ -297,8 +297,10 @@ move=> x Hx_neq0.
 rewrite /Zmodp_inv; case: (Zinv x); first by move/modZp0/eqP; move/eqP: Hx_neq0.
 move=> Hxmodp_neq0 y Exy.
 apply/eqP; rewrite eqE; apply/eqP=> /=.
-rewrite Z.mul_mod_idemp_l; last exact: Hp_neq0.
-by rewrite [1 mod p]Z.mod_small; last by move: Hp_gt1=> ?; omega.
+have HP:= Hp_gt1.
+rewrite ?Z.mul_mod_idemp_l; last exact: Hp_neq0.
+by rewrite [1 mod p]Z.mod_small ; last by move: Hp_gt1=> ?; omega.
+omega.
 Qed.
 
 Lemma inv0 : Zmodp_inv 0%R = 0%R.
