@@ -19,19 +19,28 @@ z[31]=(n[31]&127)|64;
 z[0]&=248;
 *)
 
-Eval compute in (ZofList 8 [Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
+(* Eval compute in (ZofList 8 [Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
 Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
 Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
-Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]).
-Eval compute in Z.ones 255.
-(* 57896044618658097711785492504343953926634992332820282019728792003956564819967 *)
-Eval compute in (ZofList 8 [248;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
+Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]). *)
+(* Eval compute in Z.ones 255.
+(* 57896044618658097711785492504343953926634992332820282019728792003956564819967 *) *)
+(* Eval compute in (ZofList 8 [248;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
 Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
 Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
-Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]).
+Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]). *)
 (* 57896044618658097711785492504343953926634992332820282019728792003956564819960 *)
 
 Definition Zclamp (n : Z) : Z :=
   (Z.lor (Z.land n 57896044618658097711785492504343953926634992332820282019728792003956564819960) (Z.shiftl 64 (31 * 8))).
+
+Lemma Zclamp_min n : 0 <= n -> 
+  0 <= Zclamp n.
+Proof.
+move => Hn.
+rewrite /Zclamp.
+apply Z.lor_nonneg; split => //.
+apply Z.land_nonneg ; right => //.
+Qed.
 
 Close Scope Z.

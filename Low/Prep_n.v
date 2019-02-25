@@ -134,4 +134,17 @@ repeat rewrite Z.lor_0_r.
 reflexivity.
 Qed.
 
+(* Local Lemma Zclamp_ZofList_Bound: forall l,
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) l ->
+  0 <= Zclamp (ZofList 8 l).
+Proof.
+  move => l Hl.
+  apply Zclamp_min.
+  apply ZofList_pos => //.
+  rewrite /ZList_pos.
+  eapply Forall_impl.
+  apply Hl.
+  move => x /= ; omega.
+Qed.
+ *)
 Close Scope Z.
