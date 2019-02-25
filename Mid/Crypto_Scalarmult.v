@@ -39,8 +39,6 @@ Definition ZCrypto_Scalarmult_rec_gen n p :=
 
 End ZCrypto_Scalarmult_gen.
 
-(* @Timmy this is the definition you want to prove correct with respect to your specifications *)
-
 Definition ZCrypto_Scalarmult n p :=
   let t := @Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
   ZPack25519 (Z.mul (get_a t) (ZInv25519 (get_c t))).
@@ -62,23 +60,13 @@ Proof.
   reflexivity.
 Qed.
 
-(* TODO : move this *)
-Local Lemma Zunpack: forall x, 0 <= x < 2^255 - 19 -> 0 <= ZUnpack25519 x < 2 ^ 255 - 19.
-Proof.
-move => x Hx.
-rewrite /ZUnpack25519.
-rewrite Z.land_ones //=.
-rewrite Zmod_small //=.
-split ; omega.
-Qed.
-
 Lemma ZCrypto_Scalarmult_curve25519_ladder n x :
   0 <= x < 2 ^ 255 - 19 ->
   0 <= Zclamp n ->
   ZCrypto_Scalarmult n x = val (curve25519_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi (ZUnpack25519 x))).
 Proof.
 intros Hx Hn.
-assert(Hxx:= Zunpack x Hx).
+assert(Hxx:= Zunpack_bounded x Hx).
 rewrite /ZCrypto_Scalarmult.
 rewrite -Fp_Crypto_Scalarmult_rec_gen_equiv.
 rewrite /ZPack25519.
@@ -101,6 +89,7 @@ cbn in Mequiv.
 remember (Zmodp.repr (GETA / GETC)%R :𝓖𝓕) as HM.
 cbn in HeqHM.
 rewrite /modP in Mequiv.
+Opaque montgomery_rec.
 rewrite Mequiv in HeqHM.
 rewrite /Mid.M in HeqHM.
 do 2 rewrite -Zcar25519_correct in HeqHM.
@@ -121,6 +110,7 @@ f_equal.
   assert(Hnn: ℤ.ℕ Z.to_nat (Zclamp n) = Zclamp n).
     rewrite Z2Nat.id //.
   assert(Habstr:= abstract_fn_rev_eq_a_Fp (254 + 1) 254 (Z.to_nat (Zclamp n)) (Zmodp.pi (ZUnpack25519 x)) (Zclamp n) (ZUnpack25519 x) H255 Hxxx Hnn).
+  Opaque abstract_fn_rev.
   rewrite /modP in Habstr.
   rewrite /P in Habstr.
   rewrite /Z25519_Z_Eq in Habstr.
@@ -141,12 +131,12 @@ f_equal.
   assert(Hnn: ℤ.ℕ Z.to_nat (Zclamp n) = Zclamp n).
     rewrite Z2Nat.id //.
   assert(Habstr:= abstract_fn_rev_eq_c_Fp (254 + 1) 254 (Z.to_nat (Zclamp n)) (Zmodp.pi (ZUnpack25519 x)) (Zclamp n) (ZUnpack25519 x) H255 Hxxx Hnn).
+  Opaque abstract_fn_rev.
   rewrite /modP in Habstr.
   rewrite /P in Habstr.
   rewrite /Z25519_Z_Eq in Habstr.
   rewrite /val in Habstr.
   rewrite /Zmodp_subType in Habstr.
-  symmetry.
   rewrite -Habstr.
   remember (get_c
         (abstract_fn_rev (254 + 1) 254 (Z.to_nat (Zclamp n)) Zmodp.one (Zmodp.pi (ZUnpack25519 x))

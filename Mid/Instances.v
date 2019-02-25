@@ -1,12 +1,8 @@
 From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import Mod.
-(* From Tweetnacl Require Import Gen.Get_abcdef. *)
 From Tweetnacl Require Import Gen.AMZubSqSel.
 From Tweetnacl Require Import Gen.AMZubSqSel_Prop.
-From Tweetnacl.Gen Require Import AMZubSqSel_List.
-(* From Tweetnacl Require Import Gen.abstract_fn_rev. *)
-(* From Tweetnacl Require Import Gen.montgomery_rec. *)
-(* From Tweetnacl Require Import Gen.montgomery_rec_eq. *)
+From Tweetnacl Require Import Gen.AMZubSqSel_List.
 From Tweetnacl Require Import Mid.Car25519.
 From Tweetnacl Require Import Mid.AMZubSqSel.
 From Tweetnacl Require Import Mid.GetBit.
@@ -61,6 +57,19 @@ reflexivity.
 reflexivity.
 Defined.
 
+Instance Zmod_Z_Eq : @Ops_Mod_P Z Z Z modP modP Z_Ops Z_Ops := {
+P := modP;
+P' := id
+}.
+Proof.
+all: move=> * //.
+rewrite -Mod_ZA_eq /modP Zmod_mod //.
+rewrite -Mod_ZM_eq /modP Zmod_mod //.
+rewrite -Mod_ZZub_eq /modP Zmod_mod //.
+rewrite -Mod_ZSq_eq /modP Zmod_mod //.
+rewrite -Mod_ZSel25519_eq /modP Zmod_mod //.
+Defined.
+
 Instance Z25519_Z_Eq : @Ops_Mod_P Zmodp.type nat Z modP id Z25519_Ops Z_Ops := {
 P := val;
 P' := Z.of_nat
@@ -77,7 +86,6 @@ by simpl; rewrite /C_1 /p -lock.
 intros; simpl; rewrite /modP /Mid.Sel25519 ; flatten.
 intros; simpl; apply Zgetbit_bitn.
 Defined.
-
 
 Instance List_Z_Ops : Ops (list Z) (list Z) id := {}.
 Proof.

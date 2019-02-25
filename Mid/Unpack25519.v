@@ -19,7 +19,16 @@ z[31]=(n[31]&127)|64;
 z[0]&=248;
 *)
 
-Eval compute in Z.ones 255.
+(* Eval compute in Z.ones 255. *)
 (* 57896044618658097711785492504343953926634992332820282019728792003956564819967 *)
 
 Definition ZUnpack25519 (n : Z) : Z := Z.land n (Z.ones 255).
+
+Lemma Zunpack_bounded: forall x, 0 <= x < 2^255 - 19 -> 0 <= ZUnpack25519 x < 2 ^ 255 - 19.
+Proof.
+move => x Hx.
+rewrite /ZUnpack25519.
+rewrite Z.land_ones //=.
+rewrite Zmod_small //=.
+split ; omega.
+Qed.
