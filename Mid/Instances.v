@@ -1,4 +1,5 @@
 From Tweetnacl Require Import Libs.Export.
+From Tweetnacl Require Import ListsOp.ZofList.
 From Tweetnacl Require Import Mod.
 From Tweetnacl Require Import Gen.AMZubSqSel.
 From Tweetnacl Require Import Gen.AMZubSqSel_Prop.
@@ -15,6 +16,7 @@ From Tweetnacl.Low Require Import S.
 From Tweetnacl.Low Require Import Constant.
 From Tweetnacl.Low Require Import Sel25519.
 From Tweetnacl.Low Require Import GetBit.
+From Tweetnacl.Low Require Import AMZubSqSel_Correct.
 
 From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg prime div.
@@ -133,4 +135,17 @@ apply Sel25519.Sel25519_bound_le_lt_trans_le_id.
 apply C_121665_bounds.
 apply C_0_bounds.
 apply C_1_bounds.
+Defined.
+
+Instance List_Z_Ops_Prop_Correct : (@Ops_Prop_List_Z modP List_Z_Ops Z_Ops) := {}.
+Proof.
+- apply A.A_correct.
+- move => a b Ha Hb // ; rewrite /modP M.mult_GF_Zlengh /Mid.M -?Car25519.Zcar25519_correct //.
+- apply Z.Zub_correct.
+- move => a Ha //; rewrite /modP /Sq /List_Z_Ops /Z_Ops /Low.S /Mid.Sq M.mult_GF_Zlengh /Mid.M -?Car25519.Zcar25519_correct //.
+- reflexivity.
+- reflexivity.
+- reflexivity.
+- move=>  b p q //. rewrite /Sel25519 /List_Z_Ops /Z_Ops /Low.Sel25519 /Sel25519.list_cswap /Mid.Sel25519; flatten.
+- move=> b p Hp ; apply getbit_repr => //.
 Defined.

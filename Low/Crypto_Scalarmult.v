@@ -31,13 +31,14 @@ From Tweetnacl.Mid Require Import AMZubSqSel.
 From Tweetnacl.Mid Require Import ScalarMult.
 From Tweetnacl.Low Require Import Crypto_Scalarmult_lemmas.
 From Tweetnacl.Mid Require Import Mod.
+From Tweetnacl.Mid Require Import Instances.
 
 Open Scope Z.
 
-Section Crypto_Scalarmult.
+(* Section Crypto_Scalarmult. *)
 
 (* Definition Mod := (fun x => Z.modulo x (Z.pow 2 255 - 19)). *)
-Context (Z_Ops            : (Ops Z Z) modP).
+(* Context (Z_Ops            : (Ops Z Z) modP).
 Context (List_Z_Ops       : Ops (list Z) (list Z) id).
 Context (List_Z_Ops_Prop          : @Ops_List List_Z_Ops).
 Context (List_Z_Ops_Prop_Correct  : @Ops_Prop_List_Z modP List_Z_Ops Z_Ops).
@@ -89,7 +90,7 @@ reflexivity.
 reflexivity.
 intros b [] [] ; reflexivity.
 intros i [] ; reflexivity.
-Defined.
+Defined. *)
 
 Definition Crypto_Scalarmult n p :=
   let a := get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
@@ -126,11 +127,9 @@ Local Lemma Zlength_a : forall n p,
 Zlength (get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p))) = 16.
 Proof.
   intros.
-  apply get_a_montgomery_fn_Zlength.
-  eassumption.
-  3,8: apply Unpack25519_Zlength.
-  all: try omega ; try assumption.
-  all : go.
+  apply get_a_montgomery_fn_Zlength => //.
+  apply List_Z_Ops_Prop.
+  all: apply Unpack25519_Zlength => //.
 Qed.
 
 Local Lemma Zlength_c : forall n p,
@@ -139,11 +138,9 @@ Local Lemma Zlength_c : forall n p,
 Zlength (get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p))) = 16.
 Proof.
   intros.
-  apply get_c_montgomery_fn_Zlength.
-  eassumption.
-  3,8: apply Unpack25519_Zlength.
-  all: try omega ; try assumption.
-  all : go.
+  apply get_c_montgomery_fn_Zlength => //.
+  apply List_Z_Ops_Prop.
+  all: apply Unpack25519_Zlength => //.
 Qed.
 
 Local Lemma C_1_bound_ext: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) Low.C_1.
@@ -188,6 +185,7 @@ Proof.
   3: apply Zlength_c => //.
   3: apply get_c_montgomery_fn_bound => //.
   apply get_a_montgomery_fn_bound => //.
+  1, 6: apply List_Z_Ops_Prop.
   all: try apply C_0_bound_ext.
   all: try apply C_1_bound_ext.
   all: apply impl_omega_simpl_1.
@@ -257,10 +255,10 @@ Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength p = 32 ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult n p) = ZCrypto_Scalarmult_rev_gen Z_Ops (ZofList 8 n) (ZofList 8 p).
+  ZofList 8 (Crypto_Scalarmult n p) = ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
 Proof.
   intros n p Hln Hlp Hbn Hbp.
-  rewrite /Crypto_Scalarmult /ZCrypto_Scalarmult_rev_gen.
+  rewrite /Crypto_Scalarmult ZCrypto_Scalarmult_eq /ZCrypto_Scalarmult_rev_gen.
   have HUnpack:= Unpack25519_bounded p Hbp.
   have HCn:= clamp_bound n Hbn.
   have HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p)
@@ -285,12 +283,12 @@ Proof.
   symmetry.
   rewrite -Zmult_mod_idemp_l.
   rewrite -Zmult_mod_idemp_r.
+  Opaque abstract_fn_rev.
+  Opaque montgomery_fn.
   f_equal.
   f_equal.
   apply get_a_abstract_fn_montgomery_fn => //.
   apply get_c_abstract_fn_montgomery_fn => //.
 Qed.
-
-End Crypto_Scalarmult.
 
 Close Scope Z.
