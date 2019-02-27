@@ -27,4 +27,11 @@ Proof.
 Qed.
 
 Lemma curve25519_prime : prime (2^255 - 19).
-Proof. apply: prime_ssrprime; rewrite Zof_nat_25519; exact: primo. Qed.
+Proof. apply: prime_ssrprime ; rewrite Zof_nat_25519; exact: primo. Qed.
+
+Lemma curve25519_numtheory_prime : Znumtheory.prime (2^255 - 19).
+Proof. change (2^255 - 19)%Z with 57896044618658097711785492504343953926634992332820282019728792003956564819949%Z. exact: primo. Qed.
+
+Lemma ZmodP_mod2_eq_1: BinInt.Z.modulo (2^255 - 19) 2 = 1%Z.
+Proof. done. Qed.
+
