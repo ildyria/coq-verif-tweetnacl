@@ -4,6 +4,7 @@ From Tweetnacl.High Require Import curve25519_prime_cert prime_ssrprime.
 Local Open Scope positive_scope.
 
 Require Import Znat.
+Require Import ZArith.Zpow_facts.
 
 Lemma inj_pow : forall n m : nat, Z.of_nat (n ^ m) = (Z.of_nat n ^ Z.of_nat m)%Z.
 Proof.
@@ -34,4 +35,10 @@ Proof. change (2^255 - 19)%Z with 5789604461865809771178549250434395392663499233
 
 Lemma ZmodP_mod2_eq_1: BinInt.Z.modulo (2^255 - 19) 2 = 1%Z.
 Proof. done. Qed.
+
+Lemma legendre_compute: 
+(-1 mod (2 ^ 255 - 19))%Z = 236839902240 ^ ((locked (2 ^ 255 - 19)%Z - 1) / 2) mod locked (2 ^ 255 - 19)%Z.
+Proof.
+rewrite -Zpow_mod_correct -lock ; vm_compute ; congruence.
+Qed.
 

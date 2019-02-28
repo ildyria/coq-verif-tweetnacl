@@ -11,8 +11,6 @@ From Tweetnacl.High Require Import prime_ssrprime.
 From Reciprocity Require Import Reciprocity.Reciprocity.
 Import BinInt.
 
-(* Require Import ZArith.
- *)
 Open Scope ring_scope.
 Import GRing.Theory.
 
@@ -39,9 +37,6 @@ Canonical Structure curve25519_ecuFieldType :=
   Eval hnf in ECUFieldType Zmodp.type curve25519_ecuFieldMixin.
 Canonical Structure curve25519_finECUFieldType :=
   Eval hnf in [finECUFieldType of Zmodp.type].
-
-Axiom legendre_compute: 
--1 mod (2 ^ 255 - 19) = 236839902240 ^ ((locked (2 ^ 255 - 19)%Z - 1) / 2) mod locked (2 ^ 255 - 19)%Z.
 
 Lemma curve25519_residute (x : Zmodp.type) : x ^+ 2 != a ^+ 2 - 4%:R.
 Proof.
