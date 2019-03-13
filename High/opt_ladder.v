@@ -90,7 +90,8 @@ Section OptimizedLadder.
   Qed.
 
   Local Lemma opt_montgomery_rec_ok (n m : nat) (p q : mc M) (a b c d : K) :
-    n < 2^m -> p#x0 != 0 ->
+    n < 2^m -> 
+    p#x0 != 0 ->
     hom_ok a c -> hom_ok b d ->
     q#x = inf_div a c -> (p + q)#x = inf_div b d ->
     opt_montgomery_rec n m (p#x0) a b c d = (p *+ n + q *+ 2^m)#x0.

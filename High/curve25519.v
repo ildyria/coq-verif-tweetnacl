@@ -81,10 +81,10 @@ Definition curve25519_ladder n x :=
   @opt_montgomery curve25519_finECUFieldType curve25519_mcuType n 255 x.
 
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
-Local Notation "p '#x'" := (point_x p) (at level 30).
-Local Notation "\- x"   := (@MCGroup.neg _ x).
-Local Notation "x \+ y" := (@MCGroup.add _ curve25519_mcuType x y).
-Local Notation "x \- y" := (x \+ (\- y)).
+(* Local Notation "p '#x'" := (point_x p) (at level 30).
+(* Local Notation "\- x"   := (@MCGroup.neg _ x). *) *)
+(* Local Notation "x \+ y" := (@MCGroup.add _ curve25519_mcuType x y). *)
+(* Local Notation "x \- y" := (x \+ (\- y)). *)
 
 Theorem curve25519_ladder_ok (n : nat) x :
     (n < 2^255)%nat -> x != 0 ->

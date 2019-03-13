@@ -5,8 +5,6 @@ From mathcomp Require Import ssreflect ssrbool eqtype ssralg prime div.
 From Tweetnacl Require Import Mod.
 
 Open Scope Z.
-(* Require Import Znat.
- *)
 
 Lemma Z25519_is_prime: Znumtheory.prime (2 ^ 255 - 19).
 Proof.

@@ -60,6 +60,10 @@ Definition p := locked (2^255 - 19).
 
 Fact Hp_gt0 : p > 0.
 Proof. by unlock p; rewrite Z.gt_lt_iff; apply/Z.ltb_spec0. Qed.
+
+Fact Z_of_nat_to_nat_p : Z.of_nat (Z.to_nat p) = p.
+Proof. have := Hp_gt0 ; unlock p => Hp; apply Z2Nat.id => //. Qed.
+
 (* Faster proof:
 unlock p.
 rewrite Z.gt_lt_iff Z.lt_0_sub.
@@ -103,7 +107,7 @@ Lemma modZp (x : type) : x mod p = x.
 Proof. by apply: Zmod_small; apply/betweenbP; case: x. Qed.
 
 Lemma reprK (x : type) : pi x = x.
-Proof. by apply: val_inj; apply: modZp. Qed.
+Proof. apply: val_inj. apply: modZp. Qed.
 
 Lemma piK (x : Z) : betweenb 0 p x -> repr (pi x) = x.
 Proof. by move/betweenbP=> Hx /=; apply: Zmod_small. Qed.
@@ -336,14 +340,10 @@ Ltac zmodp_compute := rewrite ?(Zmodp_addE, Zmodp_mulE) eqE /=; unlock p=> /=.
 (* Now create the finalg variants too. *)
 Canonical Structure Zmodp_finZmodType := Eval hnf in [finZmodType of type].
 Canonical Structure Zmodp_finRingType := Eval hnf in [finRingType of type].
-Canonical Structure Zmodp_finComRingType :=
-  Eval hnf in [finComRingType of type].
-Canonical Structure Zmodp_finUnitRingType :=
-  Eval hnf in [finUnitRingType of type].
-Canonical Structure Zmodp_finComUnitRingType :=
-  Eval hnf in [finComUnitRingType of type].
-Canonical Structure Zmodp_finIdomainType :=
-  Eval hnf in [finIdomainType of type].
+Canonical Structure Zmodp_finComRingType := Eval hnf in [finComRingType of type].
+Canonical Structure Zmodp_finUnitRingType := Eval hnf in [finUnitRingType of type].
+Canonical Structure Zmodp_finComUnitRingType := Eval hnf in [finComUnitRingType of type].
+Canonical Structure Zmodp_finIdomainType := Eval hnf in [finIdomainType of type].
 Canonical Structure Zmodp_finFieldType := Eval hnf in [finFieldType of type].
 
 Export Zmodp_finite.Exports Zmodp_zmod.Exports Zmodp_ring.Exports.

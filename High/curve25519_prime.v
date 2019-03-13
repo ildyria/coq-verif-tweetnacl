@@ -1,6 +1,6 @@
 From Coqprime Require Import PocklingtonRefl.
 From mathcomp Require Import ssreflect ssrbool prime.
-From Tweetnacl.High Require Import curve25519_prime_cert prime_ssrprime.
+From Tweetnacl.High Require Export curve25519_prime_cert prime_ssrprime.
 Local Open Scope positive_scope.
 
 Require Import Znat.
