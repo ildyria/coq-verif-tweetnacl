@@ -26,7 +26,7 @@
 
 \date[18, Mar. 2019]{
   Journée GT Méthodes Formelles pour la Sécurité\\
-  18th March 2019}
+  March 18$^{th}$, 2019}
 
 \setbeamertemplate{navigation symbols}{}
 \begin{document}
@@ -1185,182 +1185,182 @@ PRE [ _o OF (tptr tlg), _a OF (tptr tlg), _b OF (tptr tlg) ]
 \end{center}
 \end{frame}
 
-
-\section{car25519}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%     SLIDE 15
+% \section{car25519}
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]{car25519 - specification}
-  \begin{center}
-
-\begin{lstlisting}[language=cnacl, caption=car25519 | propagation, label=cod:languageC151]
-  FOR(i,15) {
-    o[i]+=(1LL<<16);    # add 2^16
-    c=o[i]>>16;         # get the carry (bits > 16)
-    o[(i+1)]+=c-1;      # propagate to the next limb
-    o[i]-=c<<16;        # remove the carry
-  }
-\end{lstlisting}
-
-\begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC152]
-(*
-  getCarry n m      is equivalent to    m >> n
-  getResidute n m   is equivalent to    m mod 2^n
-*)
-
-Fixpoint Carrying_n (p:\N) (a:\Z) (l:list \Z) : list \Z := match p,a,l with
-| _,  0,[]     => []
-| _,  a,[]     => [a]
-| 0%\N,  a,h::q => (a + h) :: q
-| S p,a,h :: q => getResidute n (a + h) :: Carrying_n p (getCarry n (a + h)) q
-end.
-
-Corollary CarrynPreserve:
-  forall (m: \N) (l: list \Z),
-    \Z.of_list l = \Z.of_list Carrying_n m 0 l.
-Qed.
-\end{lstlisting}
-
-Remark: the add $2^{16}$ step has been ignored.
-  \end{center}
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %
+% %     SLIDE 15
+% %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%     SLIDE 16
+% \begin{frame}[fragile]{car25519 - specification}
+%   \begin{center}
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]{car25519 - specification}
-  \begin{center}
-
-\begin{lstlisting}[language=cnacl, caption=car25519 | back, label=cod:languageC161]
-  o[15]+=(1LL<<16);     # add 2^16
-  c=o[15]>>16;          # get the carry (bits > 16)
-  o[0]+=38*(c-1);       # propagate to the first limb
-  o[15]-=c<<16;         # remove the carry
-\end{lstlisting}
-
-\begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC162]
-Definition backCarry (l:list Z) : (list Z) :=
-  match l with
-  | [] => []
-  | h :: q => let v := nth 15 l 0 in
-              (h + 38 * getCarry 16 v) :: slice 14 q ++ [getResidute 16 v]
-  end.
-
-Lemma backCarry_25519:
-  forall (l:list \Z),
-    (length l <= 16)%\N ->
-      (\Z.of_list l) :\GF  = ((\Z.of_list backCarry l) :\GF).
-Qed.
-\end{lstlisting}
-
-  \end{center}
-\end{frame}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{lstlisting}[language=cnacl, caption=car25519 | propagation, label=cod:languageC151]
+%   FOR(i,15) {
+%     o[i]+=(1LL<<16);    # add 2^16
+%     c=o[i]>>16;         # get the carry (bits > 16)
+%     o[(i+1)]+=c-1;      # propagate to the next limb
+%     o[i]-=c<<16;        # remove the carry
+%   }
+% \end{lstlisting}
 %
-%     SLIDE 17
+% \begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC152]
+% (*
+%   getCarry n m      is equivalent to    m >> n
+%   getResidute n m   is equivalent to    m mod 2^n
+% *)
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]{car25519 - correctness \& bounds}
-  \begin{center}
-\begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC171]
-Definition car25519 (l:list \Z) : list \Z := backCarry (Carrying_n 16 15 0 l).
-
-Lemma car25519_correct:
-  forall (l: list \Z),
-    (length l = 16)%\N ->
-      (\Z.of_list l) :\GF  = (\Z.of_list car25519 l) :\GF.
-Qed.
-
-Lemma car25519_bound :
-  forall (i: \N) (l: list \Z),
-    (length l = 16)%\N ->
-    (i <> 0)%\N ->
-      nth i (car25519 l) 0 < 2^16.
-Qed.
-\end{lstlisting}
-  \end{center}
-\end{frame}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fixpoint Carrying_n (p:\N) (a:\Z) (l:list \Z) : list \Z := match p,a,l with
+% | _,  0,[]     => []
+% | _,  a,[]     => [a]
+% | 0%\N,  a,h::q => (a + h) :: q
+% | S p,a,h :: q => getResidute n (a + h) :: Carrying_n p (getCarry n (a + h)) q
+% end.
 %
-%     SLIDE 18
+% Corollary CarrynPreserve:
+%   forall (m: \N) (l: list \Z),
+%     \Z.of_list l = \Z.of_list Carrying_n m 0 l.
+% Qed.
+% \end{lstlisting}
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]{car25519 - bounds}
-  \begin{center}
-\begin{lstlisting}[language=Coq, caption=car25519, label=cod:languageC181]
-Lemma t2256is38 : (2^256 :\GF) = (38 :\GF).
-Proof. compute. reflexivity. Qed.
-
-Definition Zcar25519 (n: \Z) : \Z  :=  38 * getCarry 256 n +  getResidute 256 n.
-
-Lemma Zcar25519_correct:
-  forall (n: \Z), n :\GF = (Zcar25519 n) :\GF.
-Qed.
-
-Lemma Zcar25519_eq_car25519:
-  forall (l : list \Z),
-  (length l = 16)%\N ->
-    Zcar25519 (\Z.of_list l) = \Z.of_list (car25519 l).
-Qed.
-\end{lstlisting}
-
-  \end{center}
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Remark: the add $2^{16}$ step has been ignored.
+%   \end{center}
+% \end{frame}
 %
-%     SLIDE 19
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]{car25519 - bounds}
-  \begin{center}
-\begin{lstlisting}[language=Coq, caption=car25519, label=cod:languageC191]
-Lemma ZCarry25519_min:
-  forall (x: \Z),
-    0 < x ->
-      0 < Zcar25519 x.
-Qed.
-
-Lemma ZCarry25519_sup_bounds:
-  forall (x: \Z),
-    x < 2 ^ 302 ->
-    0 < x ->
-      Zcar25519 x < 2 ^ 257.
-Qed.
-
-Lemma Zcarry25519_fixpoint :
-  forall (x: \Z),
-  0 < x < 2 ^ 256 ->
-    Zcar25519 x = x.
-Qed.
-
-Theorem doubleCar:
-  forall (x y: \Z),
-    0 <= x < 2 ^ 302 ->
-    y = Zcar25519 x ->
-      Zcar25519 y < 2 ^ 256.
-Qed.
-\end{lstlisting}
-
-  \end{center}
-\end{frame}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %
+% %     SLIDE 16
+% %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{frame}[fragile]{car25519 - specification}
+%   \begin{center}
+%
+% \begin{lstlisting}[language=cnacl, caption=car25519 | back, label=cod:languageC161]
+%   o[15]+=(1LL<<16);     # add 2^16
+%   c=o[15]>>16;          # get the carry (bits > 16)
+%   o[0]+=38*(c-1);       # propagate to the first limb
+%   o[15]-=c<<16;         # remove the carry
+% \end{lstlisting}
+%
+% \begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC162]
+% Definition backCarry (l:list Z) : (list Z) :=
+%   match l with
+%   | [] => []
+%   | h :: q => let v := nth 15 l 0 in
+%               (h + 38 * getCarry 16 v) :: slice 14 q ++ [getResidute 16 v]
+%   end.
+%
+% Lemma backCarry_25519:
+%   forall (l:list \Z),
+%     (length l <= 16)%\N ->
+%       (\Z.of_list l) :\GF  = ((\Z.of_list backCarry l) :\GF).
+% Qed.
+% \end{lstlisting}
+%
+%   \end{center}
+% \end{frame}
+%
+%
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %
+% %     SLIDE 17
+% %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{frame}[fragile]{car25519 - correctness \& bounds}
+%   \begin{center}
+% \begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC171]
+% Definition car25519 (l:list \Z) : list \Z := backCarry (Carrying_n 16 15 0 l).
+%
+% Lemma car25519_correct:
+%   forall (l: list \Z),
+%     (length l = 16)%\N ->
+%       (\Z.of_list l) :\GF  = (\Z.of_list car25519 l) :\GF.
+% Qed.
+%
+% Lemma car25519_bound :
+%   forall (i: \N) (l: list \Z),
+%     (length l = 16)%\N ->
+%     (i <> 0)%\N ->
+%       nth i (car25519 l) 0 < 2^16.
+% Qed.
+% \end{lstlisting}
+%   \end{center}
+% \end{frame}
+%
+%
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %
+% %     SLIDE 18
+% %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{frame}[fragile]{car25519 - bounds}
+%   \begin{center}
+% \begin{lstlisting}[language=Coq, caption=car25519, label=cod:languageC181]
+% Lemma t2256is38 : (2^256 :\GF) = (38 :\GF).
+% Proof. compute. reflexivity. Qed.
+%
+% Definition Zcar25519 (n: \Z) : \Z  :=  38 * getCarry 256 n +  getResidute 256 n.
+%
+% Lemma Zcar25519_correct:
+%   forall (n: \Z), n :\GF = (Zcar25519 n) :\GF.
+% Qed.
+%
+% Lemma Zcar25519_eq_car25519:
+%   forall (l : list \Z),
+%   (length l = 16)%\N ->
+%     Zcar25519 (\Z.of_list l) = \Z.of_list (car25519 l).
+% Qed.
+% \end{lstlisting}
+%
+%   \end{center}
+% \end{frame}
+%
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %
+% %     SLIDE 19
+% %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{frame}[fragile]{car25519 - bounds}
+%   \begin{center}
+% \begin{lstlisting}[language=Coq, caption=car25519, label=cod:languageC191]
+% Lemma ZCarry25519_min:
+%   forall (x: \Z),
+%     0 < x ->
+%       0 < Zcar25519 x.
+% Qed.
+%
+% Lemma ZCarry25519_sup_bounds:
+%   forall (x: \Z),
+%     x < 2 ^ 302 ->
+%     0 < x ->
+%       Zcar25519 x < 2 ^ 257.
+% Qed.
+%
+% Lemma Zcarry25519_fixpoint :
+%   forall (x: \Z),
+%   0 < x < 2 ^ 256 ->
+%     Zcar25519 x = x.
+% Qed.
+%
+% Theorem doubleCar:
+%   forall (x y: \Z),
+%     0 <= x < 2 ^ 302 ->
+%     y = Zcar25519 x ->
+%       Zcar25519 y < 2 ^ 256.
+% Qed.
+% \end{lstlisting}
+%
+%   \end{center}
+% \end{frame}
 
 \end{document}
