@@ -1,0 +1,183 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%			SLIDE 1
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Elliptic Curves 101}
+
+  % \newcommand{\PP}{\mathcal{P}}
+  % \newcommand{\KK}{\mathcal{K}}
+  % \newcommand{\PK}{x}
+  % \newcommand{\PKX}{Q}
+  % \newcommand{\X}{{\bf x}}
+  % \newcommand{\E}{\mathcal{E}}
+  % \newcommand{\K}{\mathcal{K}}
+  % \newcommand{\J}{\mathcal{J}}
+
+  \newcommand{\XX}[1]{\ensuremath{{\textbf{x}}(#1)}}
+
+  \begin{center}
+  \begin{tikzpicture}
+      \newcommand*{\xlen}{-4}
+      \newcommand*{\ylen}{1.5}
+
+      \coordinate (cquoops) at (\xlen, \ylen);
+      \coordinate (cquosca) at (\xlen, \ylen-0.8);
+      \coordinate (cquoadd) at (\xlen, \ylen-1.6);
+      \coordinate (cquoxdbladd) at (\xlen, \ylen-2.4);
+
+      \coordinate (cgroupops) at (\xlen, 3*\ylen);
+      \coordinate (cgroupsca) at (\xlen, 3*\ylen-0.7);
+      \coordinate (cgroupadd) at (\xlen, 3*\ylen-1.4);
+
+      \node [anchor=west] (groupops) at (cgroupops)
+      {\underline{\emph{Operations on $E: B y^2 = x^3 + A x^2 + x$}}};
+      \node [anchor=west] (groupsca) at (cgroupsca)
+      {$\textcolor{rured}{(1)}\,\,P \mapsto [2]P$};
+      \node [anchor=west] (groupadd) at (cgroupadd)
+      {$\textcolor{rured}{(2)}\,\,\big\{P,Q\big\}\mapsto P + Q$};
+
+      \visible<8->{
+      \node [anchor=west] (quoops) at (cquoops)
+      {\underline{\emph{Operations on $\mathbb{F}_p$}}};
+      \node [anchor=west] (quosca) at (cquosca)
+      {$\textcolor{rured}{(1)}\,\,\XX{P} \mapsto \XX{[2]P}$};
+      }
+      \visible<16->{
+      \node [anchor=west] (quoadd) at (cquoadd)
+      {$\textcolor{rured}{(2)}\,\,\Big\{\XX{P},\XX{Q}\Big\}
+      \mapsto \Big\{\XX{P+Q},\XX{P-Q}\Big\}$};
+      }
+
+      \visible<17->{
+      \node [anchor=west] (cquoxdbladd) at (cquoxdbladd)
+      {$\implies\,\,\Big\{\XX{P},\XX{Q},\XX{P-Q}\Big\}
+      \mapsto \XX{P+Q}$};
+      }
+
+      \newcommand*{\aaa}{-6}
+      \newcommand*{\bbb}{7}
+
+      \newcommand*{\px}{-1.85}
+      \newcommand*{\py}{3.4305}
+      \newcommand*{\dfdxp}{4.2675}
+      \newcommand*{\dfdyp}{-2*\py}
+
+      \newcommand*{\pxd}{4.0868}
+      \newcommand*{\pyd}{7.4716}
+
+      \newcommand*{\qx}{0.9}
+      \newcommand*{\qy}{1.5261}
+
+      \newcommand*{\pqx}{1.42956}
+      \newcommand*{\pqy}{-1.15937}
+
+      \newcommand*{\qpx}{4.19886}
+      \newcommand*{\qpy}{7.4716}
+
+      \begin{axis}
+      [
+          axis x line = center,
+          axis line style = thick,
+          xlabel = $\mathbb{F}_p$,
+          axis y line = none,
+          ticks = none,
+          xmin=-4,
+          xmax=8,
+          ymin=-9,
+          ymax=9,
+          samples=200,
+          domain=-2.9005:5,
+          smooth
+      ]
+          \addplot [rured,ultra thick] {sqrt(x^3+\aaa*x+\bbb)};
+          \addplot [rured,ultra thick] {-sqrt(x^3+\aaa*x+\bbb)};
+
+          \only<2-8>{
+          \addplot [msblue,ultra thick,mark=*] coordinates {(\px,sqrt(\px^3+\aaa*\px+\bbb)};
+          }
+
+          \only<3-8>{
+          \addplot [msblue,ultra thick,mark=*] coordinates {(\px,-sqrt(\px^3+\aaa*\px+\bbb)};
+          }
+
+          \only<4>{
+          \draw [thick,<-,dashed] ([yshift=0.8mm]axis cs:\px,0) -- (axis cs:\px,\py);
+          \draw [thick,<-,dashed] ([yshift=-0.8mm]axis cs:\px,0) -- (axis cs:\px,-\py);
+          }
+
+          \only<4->{
+          \addplot [msgreen,ultra thick,mark=*] coordinates {(\px,0)};
+          }
+
+          \only<5-6>{
+          \addplot [thick,dashed] {\py - (\dfdxp / \dfdyp) * ( x - \px )};
+          \addplot [msyellow,ultra thick,mark=*] coordinates {(\pxd,sqrt(\pxd^3+\aaa*\pxd+\bbb)};
+          }
+
+          \only<6>{
+          \draw [thick,<-,dashed] ([yshift=0.8mm]axis cs:\pxd,0) -- (axis cs:\pxd,\pyd);
+          }
+
+          \only<6-8>{
+          \addplot [orange,ultra thick,mark=*] coordinates {(\pxd,0)};
+          }
+
+          \only<7>{
+          \addplot [thick,dashed] {-\py - (\dfdxp / -\dfdyp) * ( x - \px )};
+          \addplot [msyellow,ultra thick,mark=*] coordinates {(\pxd,-sqrt(\pxd^3+\aaa*\pxd+\bbb)};
+          \draw [thick,<-,dashed] ([yshift=-0.8mm]axis cs:\pxd,0) -- (axis cs:\pxd,-\pyd);
+          }
+
+          \only<9->{
+          \addplot [msgreen,ultra thick,mark=*] coordinates {(\qx,0)};
+          }
+
+          \only<10->{
+          \addplot [msblue,ultra thick,mark=*] coordinates {(\px,sqrt(\px^3+\aaa*\px+\bbb)};
+          \addplot [msblue,ultra thick,mark=*] coordinates {(\px,-sqrt(\px^3+\aaa*\px+\bbb)};
+          \addplot [msblue,ultra thick,mark=*] coordinates {(\qx,sqrt(\qx^3+\aaa*\qx+\bbb)};
+          \addplot [msblue,ultra thick,mark=*] coordinates {(\qx,-sqrt(\qx^3+\aaa*\qx+\bbb)};
+          }
+
+          \only<11>{
+          \addplot [thick,dashed] { (\py - \qy) / (\px - \qx)*(x - \qx) + \qy};
+          }
+          \only<12>{
+          \addplot [thick,dashed] { (-\py + \qy) / (\px - \qx)*(x - \qx) - \qy};
+          }
+          \only<13>{
+          \addplot [thick,dashed] { (-\py - \qy) / (\px - \qx)*(x - \qx) + \qy};
+          }
+          \only<14>{
+          \addplot [thick,dashed] { (\py + \qy) / (\px - \qx)*(x - \qx) - \qy};
+          }
+
+          \only<11->{
+          \addplot [msyellow,ultra thick,mark=*] coordinates {(\pqx,sqrt(\pqx^3+\aaa*\pqx+\bbb)};
+          }
+          \only<12->{
+          \addplot [msyellow,ultra thick,mark=*] coordinates {(\pqx,-sqrt(\pqx^3+\aaa*\pqx+\bbb)};
+          }
+          \only<13->{
+          \addplot [msyellow,ultra thick,mark=*] coordinates {(\qpx,sqrt(\qpx^3+\aaa*\qpx+\bbb)};
+          }
+          \only<14->{
+          \addplot [msyellow,ultra thick,mark=*] coordinates {(\qpx,-sqrt(\qpx^3+\aaa*\qpx+\bbb)};
+          }
+
+          \only<15>{
+          \draw [thick,<-,dashed] ([yshift=0.8mm]axis cs:\pqx,0) -- (axis cs:\pqx,-\pqy);
+          \draw [thick,<-,dashed] ([yshift=-0.8mm]axis cs:\pqx,0) -- (axis cs:\pqx,\pqy);
+          \draw [thick,<-,dashed] ([yshift=-0.8mm]axis cs:\qpx,0) -- (axis cs:\qpx,-\qpy);
+          \draw [thick,<-,dashed] ([yshift=0.8mm]axis cs:\qpx,0) -- (axis cs:\qpx,\qpy);
+          }
+
+          \only<15->{
+          \addplot [orange,ultra thick,mark=*] coordinates {(\pqx,0)};
+          \addplot [orange,ultra thick,mark=*] coordinates {(\qpx,0)};
+          }
+      \end{axis}
+  \end{tikzpicture}
+  \end{center}
+\end{frame}

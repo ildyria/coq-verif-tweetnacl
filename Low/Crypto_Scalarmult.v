@@ -35,63 +35,6 @@ From Tweetnacl.Mid Require Import Instances.
 
 Open Scope Z.
 
-(* Section Crypto_Scalarmult. *)
-
-(* Definition Mod := (fun x => Z.modulo x (Z.pow 2 255 - 19)). *)
-(* Context (Z_Ops            : (Ops Z Z) modP).
-Context (List_Z_Ops       : Ops (list Z) (list Z) id).
-Context (List_Z_Ops_Prop          : @Ops_List List_Z_Ops).
-Context (List_Z_Ops_Prop_Correct  : @Ops_Prop_List_Z modP List_Z_Ops Z_Ops).
-Local Instance List16_Ops         : (Ops (@List16 Z) (List32B) id) := {}.
-Proof.
-apply A_List16.
-apply M_List16.
-apply Zub_List16.
-apply Sq_List16.
-apply C_0_List16.
-apply C_1_List16.
-apply C_121665_List16.
-apply Sel25519_List16.
-apply getbit_List32B.
-simpl ; reflexivity.
-simpl ; reflexivity.
-simpl ; reflexivity.
-simpl ; reflexivity.
-simpl ; reflexivity.
-simpl ; reflexivity.
-Defined.
-Local Instance List16_Z_Eq      : @Ops_Mod_P (@List16 Z) (List32B) Z modP id List16_Ops Z_Ops := {
-P l := (ZofList 16 (List16_to_List l));
-P' l := (ZofList 8 (List32_to_List l));
-}.
-Proof.
-- intros [a Ha] [b Hb] ; simpl List16_to_List; rewrite -A_correct; reflexivity.
-- intros [a Ha] [b Hb] ; simpl List16_to_List.
-  apply AMZubSqSel_Correct.mult_GF_Zlengh ; assumption.
-- intros [a Ha] [b Hb] ; simpl ; f_equal ; rewrite -Zub_correct; reflexivity.
-- intros [a Ha] ; simpl List16_to_List ; apply Sq_GF_Zlengh ; try assumption.
-- simpl List16_to_List ; f_equal; rewrite -C_121665_correct ; reflexivity.
-- simpl List16_to_List ; f_equal; rewrite -C_0_correct ; reflexivity.
-- simpl List16_to_List ; f_equal; rewrite -C_1_correct ; reflexivity.
-- intros b [p Hp] [q Hq] ; simpl List16_to_List ; f_equal ; rewrite -Sel25519_correct ; reflexivity.
-- intros b [p Hp] ; simpl ; symmetry ; rewrite GetBit_correct ; try assumption ; reflexivity.
-Defined.
-Local Instance List16_List_Z_Eq : @Ops_Mod_P (List16 Z) (List32B) (list Z) id id List16_Ops List_Z_Ops := {
-P := List16_to_List;
-P' := List32_to_List
-}.
-Proof.
-intros [] [] ; reflexivity.
-intros [] [] ; reflexivity.
-intros [] [] ; reflexivity.
-intros [] ; reflexivity.
-reflexivity.
-reflexivity.
-reflexivity.
-intros b [] [] ; reflexivity.
-intros i [] ; reflexivity.
-Defined. *)
-
 Definition Crypto_Scalarmult n p :=
   let a := get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
   let c := get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
