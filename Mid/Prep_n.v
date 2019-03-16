@@ -34,13 +34,21 @@ Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]). *)
 Definition Zclamp (n : Z) : Z :=
   (Z.lor (Z.land n 57896044618658097711785492504343953926634992332820282019728792003956564819960) (Z.shiftl 64 (31 * 8))).
 
-Lemma Zclamp_min n : 0 <= n -> 
-  0 <= Zclamp n.
+Lemma Zclamp_min n : 0 <= Zclamp n.
 Proof.
-move => Hn.
 rewrite /Zclamp.
 apply Z.lor_nonneg; split => //.
 apply Z.land_nonneg ; right => //.
+Qed.
+
+Lemma Zclamp_max n : Zclamp n < 2^255.
+Proof.
+rewrite /Zclamp.
+apply Z_lor_bound => //.
+have ->: Z.land n 57896044618658097711785492504343953926634992332820282019728792003956564819960 = Z.land (Z.land n 57896044618658097711785492504343953926634992332820282019728792003956564819960) (Z.ones 255).
+rewrite -Z.land_assoc => //=.
+rewrite Z.land_ones => //.
+apply Z_mod_lt => //.
 Qed.
 
 Close Scope Z.

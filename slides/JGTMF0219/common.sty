@@ -220,134 +220,134 @@
 \endmdframed
 }
 
-
 %
-%   DEFINITION OF COQ PERSONNAL SYNTAX COLORING
-%
-\lstdefinelanguage{CoqD}{
-%
-% Anything betweeen $ becomes LaTeX math mode
-mathescape=true,
-% Comments may or not include Latex commands
-texcl=false,
-% Vernacular commands
-morekeywords=[1]{Section, Module, End, Require, Import, Export,
-  Variable, Variables, Parameter, Parameters, Axiom, Hypothesis,
-  Hypotheses, Notation, Local, Tactic, Reserved, Scope, Open, Close,
-  Bind, Delimit, Definition, Let, Ltac, Fixpoint, CoFixpoint, Add,
-  Morphism, Relation, Implicit, Arguments, Unset, Contextual,
-  Strict, Prenex, Implicits, Inductive, CoInductive, Record,
-  Structure, Canonical, Coercion, Context, Class, Global, Instance,
-  Program, Infix, Theorem, Lemma, Corollary, Proposition, Fact,
-  Remark, Example, Proof, Goal, Save, Qed, Defined, Hint, Resolve,
-  Rewrite, View, Search, Show, Print, Printing, All, Eval, Check,
-  Projections, inside, outside, Def}
-morekeywords=[2]{list, Z, positive, bool, K, Prop, nat, T, Type},
-morekeywords=[3]{forall, fun, match, end, with, measure, if, then, else, let, in, ring},
-morekeywords=[4]{Forall, ZofList, Zlength},
-morekeywords=[5]{ 0, 1, 2, 3, 4, 16, 32, 254, true, false},
-sensitive=true,
+% %
+% %   DEFINITION OF COQ PERSONNAL SYNTAX COLORING
+% %
+% \lstdefinelanguage{CoqD}{
+% %
+% % Anything betweeen $ becomes LaTeX math mode
 % mathescape=true,
-alsoletter= {0123456789^} ,
-% Comments delimiters, we do turn this off for the manual
-morecomment=[s]{(*}{*)},
-% Spaces are not displayed as a special character
-showstringspaces=false,
+% % Comments may or not include Latex commands
+% texcl=false,
+% % Vernacular commands
+% morekeywords=[1]{Section, Module, End, Require, Import, Export,
+%   Variable, Variables, Parameter, Parameters, Axiom, Hypothesis,
+%   Hypotheses, Notation, Local, Tactic, Reserved, Scope, Open, Close,
+%   Bind, Delimit, Definition, Let, Ltac, Fixpoint, CoFixpoint, Add,
+%   Morphism, Relation, Implicit, Arguments, Unset, Contextual,
+%   Strict, Prenex, Implicits, Inductive, CoInductive, Record,
+%   Structure, Canonical, Coercion, Context, Class, Global, Instance,
+%   Program, Infix, Theorem, Lemma, Corollary, Proposition, Fact,
+%   Remark, Example, Proof, Goal, Save, Qed, Defined, Hint, Resolve,
+%   Rewrite, View, Search, Show, Print, Printing, All, Eval, Check,
+%   Projections, inside, outside, Def}
+% morekeywords=[2]{list, Z, positive, bool, K, Prop, nat, T, Type},
+% morekeywords=[3]{forall, fun, match, end, with, measure, if, then, else, let, in, ring},
+% morekeywords=[4]{Forall, ZofList, Zlength},
+% morekeywords=[5]{ 0, 1, 2, 3, 4, 16, 32, 254, true, false},
+% sensitive=true,
+% % mathescape=true,
+% alsoletter= {0123456789^} ,
+% % Comments delimiters, we do turn this off for the manual
+% morecomment=[s]{(*}{*)},
+% % Spaces are not displayed as a special character
+% showstringspaces=false,
+% %
+% % String delimiters
+% morestring=[b]",
+% morestring=[d],
+% % Size of tabulations
+% tabsize=3,
+% % Style for sorts keywords
+% % Enables ASCII chars 128 to 255
+% extendedchars=false,
+% % Case sensitivity
+% sensitive=true,
+% % Automatic breaking of long lines
+% breaklines=false,
+% % Default style fors listings
+% % basicstyle=\small,
+% % Position of captions is bottom
+% captionpos=b,
+% backgroundcolor=\color{black!2}, % set the background color
+% % backgroundcolor=\color{doc@lstbackground}, % set the background color
+% % flexible columns
+% columns=[l]flexible,
+% keywordstyle=\color{doc@lstkeyword},
+% keywordstyle=[1]\color{doc@lstidentifiers2},
+% keywordstyle=[2]\color{doc@lstconstants},
+% keywordstyle=[3]\color{doc@lstkeyword2},
+% keywordstyle=[4]\color{doc@lstfunctions},
+% keywordstyle=[5]\color{doc@lstnumbers},
+% literate=
+%     % {\\forall}{{\color{dkgreen}{$\forall\;$}}}1
+%     % {\\exists}{{$\exists\;$}}1
+%     {<-}{{$\leftarrow\;$}}1
+%     {=>}{{$\Rightarrow\;$}}1
+%     {==}{{\texttt{==}\;}}1
+%     {==?}{{$=$?}}1
+%     {==>}{{\texttt{==>}\;}}1
+%     {->}{{$\rightarrow\;$}}1
+%     {<->}{{$\leftrightarrow\;$}}1
+%     {<}{{$\!<\!$}}1
+%     {<>}{{$\neq$}}1
+%     {!=}{{$\neq$}}1
+%     {<=}{{$\!\leq\!$}}1
+%     % {\#}{{$^\star$}}1
+%     % {\\o}{{$\circ\;$}}1
+%     % {\@}{{$\cdot$}}1
+%     % {\/\\}{{$\wedge\;$}}1
+%     % {\\\/}{{$\vee\;$}}1
+%     % {++}{{\texttt{++}}}1
+%     % {~}{{\ }}1
+%     % {\@\@}{{$@$}}1
+%     {\\ldots}{{$\ldots$}}1
+%     {\\mapsto}{{$\mapsto\;$}}1
+%     {:GF}{{\color{doc@lstfunctions}{:$GF$}}}1
+%     {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
+%     {2^16}{{\color{doc@lstnumbers}{$2^{16}$}}}1
+%     {2^26}{{\color{doc@lstnumbers}{$2^{26}$}}}1
+%     {2^62}{{\color{doc@lstnumbers}{$2^{62}$}}}1
+%     {2^256}{{\color{doc@lstnumbers}{$2^{256}$}}}1
+%     {2^255-19}{{\color{doc@lstnumbers}{$2^{255}-19$}}}1
+%     {2^255-21}{{\color{doc@lstnumbers}{$2^{255}-21$}}}1
+%     {fun}{{\color{doc@lstkeyword2}{$\lambda\!\!$}}}1
+%     {\\hline}{{\rule{\linewidth}{0.5pt}}}1
+%     {Z16.lst}{{\color{doc@lstfunctions}{$\mathbb{Z}$16.lst}}}1
+%     {\\N}{{$\mathbb{N}$}}1
+%     {\\Z}{{$\mathbb{Z}$}}1
+%     {\\K}{{$\mathbb{K}$}}1
+%     {^n}{{$^n$}}1
+%     {^2}{{$^2$}}1
+%     {^3}{{$^3$}}1
+%     {^255}{{$^{255}$}}1
+%     {p1}{{p$_1$}}1
+%     {p2}{{p$_2$}}1
+%     {x1}{{x$_1$}}1
+%     {x2}{{x$_2$}}1
+%     {y1}{{y$_1$}}1
+%     {y2}{{y$_2$}}1
+%     {xs}{{x$_s$}}1
+%     {\\boxplus}{{$\boxplus$}}1
+%     {\\circ}{{$\circ$}}1
+%     {\\GF}{{$\mathbb{F}_{2^{255}-19}$}}1
+%     {\\infty}{{$\infty$}}1
+% %
+% %
+% }[keywords,comments,strings]
 %
-% String delimiters
-morestring=[b]",
-morestring=[d],
-% Size of tabulations
-tabsize=3,
-% Style for sorts keywords
-% Enables ASCII chars 128 to 255
-extendedchars=false,
-% Case sensitivity
-sensitive=true,
-% Automatic breaking of long lines
-breaklines=false,
-% Default style fors listings
-% basicstyle=\small,
-% Position of captions is bottom
-captionpos=b,
-backgroundcolor=\color{black!2}, % set the background color
-% backgroundcolor=\color{doc@lstbackground}, % set the background color
-% flexible columns
-columns=[l]flexible,
-keywordstyle=\color{doc@lstkeyword},
-keywordstyle=[1]\color{doc@lstidentifiers2},
-keywordstyle=[2]\color{doc@lstconstants},
-keywordstyle=[3]\color{doc@lstkeyword2},
-keywordstyle=[4]\color{doc@lstfunctions},
-keywordstyle=[5]\color{doc@lstnumbers},
-literate=
-    % {\\forall}{{\color{dkgreen}{$\forall\;$}}}1
-    % {\\exists}{{$\exists\;$}}1
-    {<-}{{$\leftarrow\;$}}1
-    {=>}{{$\Rightarrow\;$}}1
-    {==}{{\texttt{==}\;}}1
-    {==?}{{$=$?}}1
-    {==>}{{\texttt{==>}\;}}1
-    {->}{{$\rightarrow\;$}}1
-    {<->}{{$\leftrightarrow\;$}}1
-    {<}{{$\!<\!$}}1
-    {<>}{{$\neq$}}1
-    {!=}{{$\neq$}}1
-    {<=}{{$\!\leq\!$}}1
-    % {\#}{{$^\star$}}1
-    % {\\o}{{$\circ\;$}}1
-    % {\@}{{$\cdot$}}1
-    % {\/\\}{{$\wedge\;$}}1
-    % {\\\/}{{$\vee\;$}}1
-    % {++}{{\texttt{++}}}1
-    % {~}{{\ }}1
-    % {\@\@}{{$@$}}1
-    {\\ldots}{{$\ldots$}}1
-    {\\mapsto}{{$\mapsto\;$}}1
-    {:GF}{{\color{doc@lstfunctions}{:$GF$}}}1
-    {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
-    {2^16}{{\color{doc@lstnumbers}{$2^{16}$}}}1
-    {2^26}{{\color{doc@lstnumbers}{$2^{26}$}}}1
-    {2^62}{{\color{doc@lstnumbers}{$2^{62}$}}}1
-    {2^256}{{\color{doc@lstnumbers}{$2^{256}$}}}1
-    {2^255-19}{{\color{doc@lstnumbers}{$2^{255}-19$}}}1
-    {2^255-21}{{\color{doc@lstnumbers}{$2^{255}-21$}}}1
-    {fun}{{\color{doc@lstkeyword2}{$\lambda\!\!$}}}1
-    {\\hline}{{\rule{\linewidth}{0.5pt}}}1
-    {Z16.lst}{{\color{doc@lstfunctions}{$\mathbb{Z}$16.lst}}}1
-    {\\N}{{$\mathbb{N}$}}1
-    {\\Z}{{$\mathbb{Z}$}}1
-    {\\K}{{$\mathbb{K}$}}1
-    {^n}{{$^n$}}1
-    {^2}{{$^2$}}1
-    {^3}{{$^3$}}1
-    {^255}{{$^{255}$}}1
-    {p1}{{p$_1$}}1
-    {p2}{{p$_2$}}1
-    {x1}{{x$_1$}}1
-    {x2}{{x$_2$}}1
-    {y1}{{y$_1$}}1
-    {y2}{{y$_2$}}1
-    {xs}{{x$_s$}}1
-    {\\boxplus}{{$\boxplus$}}1
-    {\\circ}{{$\circ$}}1
-    {\\GF}{{$\mathbb{F}_{2^{255}-19}$}}1
-    {\\infty}{{$\infty$}}1
+% \lstnewenvironment{coqD}{
+% \mdframed[backgroundcolor=doc@lstbackground]%
+% \lstset{language=CoqD}}{
+% \endmdframed
+% }
 %
+% % pour inliner dans le texte
+% \def\coqDe{\lstinline[language=CoqD, basicstyle=\ttfamily\normalsize]}
+% % pour inliner dans les tableaux / displaymath...
+% \def\coqDes{\lstinline[language=CoqD, basicstyle=\scriptsize]}
 %
-}[keywords,comments,strings]
-
-\lstnewenvironment{coqD}{
-\mdframed[backgroundcolor=doc@lstbackground]%
-\lstset{language=CoqD}}{
-\endmdframed
-}
-
-% pour inliner dans le texte
-\def\coqDe{\lstinline[language=CoqD, basicstyle=\ttfamily\normalsize]}
-% pour inliner dans les tableaux / displaymath...
-\def\coqDes{\lstinline[language=CoqD, basicstyle=\scriptsize]}
-
 
 
 %
@@ -457,18 +457,18 @@ literate=
     % {\\exists}{{$\exists\;$}}1
     {<-}{{$\leftarrow\;$}}1
     {=>}{{$\Rightarrow\;$}}1
-    {==}{{\texttt{==}\;}}1
     {==>}{{\texttt{==>}\;}}1
 %    {:>}{{\texttt{:>}\;}}1
     {->}{{$\rightarrow\;$}}1
     {<->}{{$\leftrightarrow\;$}}1
-    {<==}{{$\leq\;$}}1
+    {<=}{{$\leq\;$}}1
+    {==}{{\texttt{==}\;}}1
     {\#}{{$^\star$}}1
     {\\o}{{$\circ\;$}}1
     % {\@}{{$\cdot$}}1
     {\/\\}{{$\wedge\;$}}1
     {\\\/}{{$\vee\;$}}1
-    {<}{{$\!<\!$}}1
+    {<<}{{$\!<\!$}}1
     {<>}{{$\neq$}}1
     {!=}{{$\neq$}}1
     {++}{{\texttt{++}}}1
@@ -492,6 +492,9 @@ literate=
     {^m}{{$^m$}}1
     {^2}{{$^2$}}1
     {^3}{{$^3$}}1
+    {^nd}{{$^{nd}$}}1
+    {^rd}{{$^{rd}$}}1
+    {^th}{{$^{th}$}}1
     {^255}{{$^{255}$}}1
     {p1}{{p$_1$}}1
     {p2}{{p$_2$}}1

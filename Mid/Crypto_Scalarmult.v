@@ -62,12 +62,9 @@ Proof.
 Qed.
 
 Lemma ZCrypto_Scalarmult_curve25519_ladder n x :
-  0 <= n ->
   ZCrypto_Scalarmult n x = val (curve25519_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi (modP (ZUnpack25519 x)))).
 Proof.
-intros Hn0.
-(* assert(Hxx:= Zunpack_bounded x Hx). *)
-assert (Hn:= Zclamp_min n Hn0).
+assert (Hn:= Zclamp_min n).
 rewrite /ZCrypto_Scalarmult.
 remember (Zclamp n) as N.
 remember (ZUnpack25519 x) as X.

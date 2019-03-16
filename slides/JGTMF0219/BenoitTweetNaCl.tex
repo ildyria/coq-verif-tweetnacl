@@ -123,11 +123,14 @@ Notation "(| x , y |)" := (@EC_In _ x y).
 
 (* Get the x coordinate of p or 0 *)
 Definition point_x0 (p : point \K) :=
-  if p is (|x, _|) then x else 0.
+  if p is (|x, _ |) then x else 0.
 
 Notation "p.x" := (point_x0 p).
 \end{lstlisting}
 \end{center}
+\chapternote{A Formal Library for Elliptic Curves in the Coq Proof Assistant --
+Evmorfia-Iro Bartzia, Pierre-Yves Strub
+\url{https://hal.inria.fr/hal-01102288}}
 \end{frame}
 
 
@@ -261,7 +264,7 @@ Definition opt_montgomery (n m : \N) (x : \K) : \K :=
 
 Lemma opt_montgomery_ok :
   forall (n m: \N) (xp : \K) (P : mc M),
-  n < 2^m
+  n << 2^m
   -> xp != 0
 
   -> P.x = xp
@@ -292,7 +295,7 @@ Definition curve25519_ladder n x = opt_montgomery n 255 x.
 
 Lemma curve25519_ladder_ok :
   forall (n: \N) (xp : \GF) (P : mc Curve25519),
-  n < 2^255
+  n << 2^255
   -> xp != 0
 
   -> P.x = xp
@@ -457,7 +460,7 @@ sv M(gf o,const gf a,const gf b)    # Multiplication (school book)
   \begin{center}
 
   \begin{tikzpicture}[textstyle/.style={black, anchor= south west, align=center}]
-      \draw (2.75,0) node[textstyle, anchor=west, draw=yellow, fill=yellow!20, thick, minimum width=5.5cm,minimum height=5cm] {};
+      \draw (2.75,0) node[textstyle, anchor=west, draw=none, fill=doc@lstbackground, thick, minimum width=5.5cm,minimum height=5cm] {};
       \node[inner sep=0pt] (russell) at (5.5,1.5) {\includegraphics[width=.1\textwidth]{coq_logo.png}};
       \node[inner sep=0pt] (russell) at (5.5,-1.5) {\includegraphics[width=.15\textwidth]{chain.png}};
       \draw (-1,0) node[textstyle, anchor=east, draw=black, thick, minimum width=1cm,minimum height=2cm] {code.c};
@@ -481,9 +484,10 @@ sv M(gf o,const gf a,const gf b)    # Multiplication (school book)
 
 \begin{frame}[fragile]{Specification: ZofList}
   \begin{center}
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq, basicstyle=\normalsize]
 Variable n: \Z.
 Hypothesis Hn: n > 0.
+
 
 (*
   in C we have gf[16] here we consider a list of integers (list \Z)
@@ -498,7 +502,7 @@ Fixpoint ZofList (a : list \Z) : \Z :=
   | h :: q => h + 2^n * ZofList q
   end.
 
-Notation "\Z.lst A" := (ZofList A).
+Notation "\Z.of_list A" := (ZofList A).
 \end{lstlisting}
   \end{center}
 \end{frame}
@@ -524,15 +528,15 @@ Notation "a \boxplus b" := (A a b) (at level 60).
 
 Corollary A_correct:
   forall (a b: list \Z),
-    (\Z.lst a \boxplus b) = (\Z.lst a) + (\Z.lst b).
+    \Z.of_list (a \boxplus b) = (\Z.of_list a) + (\Z.of_list b).
 Qed.
 
 
 Lemma A_bound_len:
   forall (m1 n1 m2 n2: \Z) (a b: list \Z),
     length a = length b ->
-    Forall (fun x => m1 < x < n1) a ->
-    Forall (fun x => m2 < x < n2) b ->
+    Forall (fun x => m1 << x << n1) a ->
+    Forall (fun x => m2 << x << n2) b ->
       Forall (fun x => m1 + m2 < x < n1 + n2) (a \boxplus b).
 Qed.
 
@@ -640,46 +644,277 @@ POST [ tint ]
 
 \section{Crypto\_Scalarmult n P.x = ([n]P).x ?}
 
-\begin{frame}[fragile]{Specification: Addition}
+\begin{frame}[fragile]{Generic Operations}
 \begin{center}
-\begin{lstlisting}[language=Coq]
 
+\begin{lstlisting}[language=Coq]
+Class Ops (T T': Type) (Mod: T -> T):=
+{
+  A:   T -> T -> T;                 (* Addition       over T *)
+  M:   T -> T -> T;                 (* Multiplication over T *)
+  Zub: T -> T -> T;                 (* Substraction   over T *)
+  Sq:  T -> T;                       (* Squaring       over T *)
+  C_0: T;                             (* Constant 0       in T *)
+  C_1: T;                             (* Constant 1       in T *)
+  C_121665: T;                        (* Constant 121665  in T *)
+  Sel25519: \Z -> T -> T -> T;      (* Select the 2^nd or 3^rd argument depending of Z *)
+  Getbit:   \Z -> T' -> \Z;           (* Return the i^th bit of T' *)
+
+  (* Mod conservation *)
+  Mod_ZSel25519_eq : forall b p q,  Mod (Sel25519 b p q) = Sel25519 b (Mod p) (Mod q);
+  Mod_ZA_eq :        forall p q,    Mod (A p q)          = Mod (A (Mod p) (Mod q));
+  Mod_ZM_eq :        forall p q,    Mod (M p q)          = Mod (M (Mod p) (Mod q));
+  Mod_ZZub_eq :      forall p q,    Mod (Zub p q)        = Mod (Zub (Mod p) (Mod q));
+  Mod_ZSq_eq :       forall p,      Mod (Sq p)           = Mod (Sq (Mod p));
+
+  Mod_red :          forall p,      Mod (Mod p)          = (Mod p)
+}.
 \end{lstlisting}
 \end{center}
 \end{frame}
 
+\begin{frame}[fragile]{Generic Montgomery Ladder}
+\begin{center}
+\begin{lstlisting}[language=Coq]
+Context {T : Type}.
+Context {T' : Type}.
+Context {Mod : T -> T}.
+Context {O : Ops T T' Mod}.
+
+Fixpoint montgomery_rec (m : \N) (z : T') (a b c d e f x : T) : (T * T * T * T * T * T) :=
+  match m with
+  | 0 => (a,b,c,d,e,f)
+  | S n =>
+      let r := Getbit (\Z.of_nat n) z in
+      let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+      let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+      let e := A a c in
+      let a := Zub a c in
+      let c := A b d in
+      let b := Zub b d in
+      let d := Sq e in
+      let f := Sq a in
+      let a := M c a in
+      let c := M b e in
+      let e := A a c in
+      let a := Zub a c in
+      let b := Sq a in
+      let c := Zub d f in
+      let a := M c C_121665 in
+      let a := A a d in
+      let c := M c a in
+      let a := M d f in
+      let d := M b x in
+      let b := Sq e in
+      let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+      let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+      montgomery_rec n z a b c d e f x
+    end.
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Operations Equivalence}
+\begin{center}
+
+\begin{lstlisting}[language=Coq]
+Class Ops_Mod_P {T T' U:Type}
+                {Mod:U -> U} {ModT:T -> T}
+                `(Ops T T' ModT) `(Ops U U Mod)  :=
+{
+P:  T  -> U;    (* Projection from T  to U *)
+P': T' -> U;    (* Projection from T' to U *)
+
+A_eq:        forall a b, Mod (P (A a b))   = Mod (A (P a) (P b));
+M_eq:        forall a b, Mod (P (M a b))   = Mod (M (P a) (P b));
+Zub_eq:      forall a b, Mod (P (Zub a b)) = Mod (Zub (P a) (P b));
+Sq_eq:       forall a,   Mod (P (Sq a))    = Mod (Sq (P a));
+
+C_121665_eq: P C_121665 = C_121665;
+C_0_eq:      P C_0 = C_0;
+C_1_eq:      P C_1 = C_1;
+
+Sel25519_eq: forall b p q,  Mod (P (Sel25519 b p q)) = Mod (Sel25519 b (P p) (P q));
+Getbit_eq:   forall i p,    Getbit i p = Getbit i (P' p);
+}.
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]{Generic Montgomery Equivalence}
+\begin{center}
+
+\begin{lstlisting}[language=Coq]
+Context {T:    Type}.
+Context {T':   Type}.
+Context {U:    Type}.
+Context {ModT: T -> T}.
+Context {Mod:  U -> U}.
+Context {TO:   Ops T T' ModT}.
+Context {UO:   Ops U U  Mod}.
+Context {UTO: @Ops_Mod_P T T' U Mod ModT TO UO}.
+
+
+(* montgomery_rec over T is equivalent to montgomery_rec over U *)
+Corollary montgomery_rec_eq_a: forall (n:\N) (z:T') (a b c d e f x: T),
+  0 <= m ->
+  Mod (P (get_a (montgomery_rec n z a b c d e f x))) =                              (* over T *)
+  Mod (get_a (montgomery_rec n (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).  (* over U *)
+Qed.
+
+Corollary montgomery_rec_eq_c: forall (n:\N) (z:T') (a b c d e f x: T),
+  0 <= m ->
+  Mod (P (get_c (montgomery_rec n z a b c d e f x))) =                              (* over T *)
+  Mod (get_c (montgomery_rec n (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).  (* over U *)
+Qed.
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]{Instanciating}
+\vspace{-0.5cm}
+\begin{center}
+\begin{lstlisting}[language=Coq]
+Definition modP (x: \Z) := x mod 2^255-19.
+
+(* Operations over \Z *)
+Instance Z_Ops :      Ops \Z \Z modP := {}.
+
+(* Operations over \GF *)
+Instance Z25519_Ops : Ops \GF \N id := {}.
+
+(* Equivalence between \Z (with modP) and \Z *)
+Instance Zmod_Z_Eq :   @Ops_Mod_P Z Z Z modP modP Z_Ops Z_Ops :=
+{ P := modP; P' := id }.
+
+(* Equivalence between \Z (with modP) and \GF *)
+Instance Z25519_Z_Eq : @Ops_Mod_P Zmodp.type nat Z modP id Z25519_Ops Z_Ops :=
+{ P := val; P' := \Z.of_nat }.
+
+Inductive List16 (T:Type) := Len (l:list T): Zlength l = 16 -> List16 T.
+Inductive List32B :=         L32B (l:list \Z): Forall (fun x => 0 <= x << 2^8) l -> List32B.
+
+(* Operations over List16,List32 *)
+Instance List16_Ops : Ops (@List16 \Z) List32B id := {}.
+
+(* Equivalence between List16,List32 and \Z *)
+Instance List16_Z_Eq : @Ops_Mod_P (@List16 \Z) (List32B) Z Mod id List16_Ops Z_Ops :=
+{  P l := (ZofList 16 (List16_to_List l));       P' l := (ZofList 8 (List32_to_List l));  }.
+
+(* Operations over list of \Z *)
+Instance List_Z_Ops : Ops (list \Z) (list \Z) id := {}.
+
+(* Equivalence between List16,List32 and list of \Z *)
+Instance List16_List_Z_Eq : @Ops_Mod_P (List16 \Z) (List32B) (list \Z) id id List16_Ops List_Z_Ops :=
+{  P := List16_to_List;         P' := List32_to_List      }.
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]{Full Equivalence}
+\vspace{-0.2cm}
+\begin{center}
+\begin{tikzpicture}
+
+\draw[draw=none,fill=doc@lstbackground] (-8,1) -- (3,1) -- (3,-7.5) -- (-8,-7.5) -- cycle;
+\draw (-8,-7.5) node[inner sep=0pt, above right] {\includegraphics[width=.1\textwidth]{coq_logo.png}};
+
+\draw (0,0) node[above,draw, minimum width=4cm, minimum height=0.65cm] (GF) {\coqes{Ops \GF \N id}};
+\draw (0,-1.5) node[above,draw, minimum width=4cm, minimum height=0.65cm] (Zmod) {\coqes{Ops \Z(with modP) \Z(with modP) modP}};
+\draw (0,-3) node[above,draw, minimum width=4cm, minimum height=0.65cm] (Z) {\coqes{Ops \Z \Z modP}};
+\draw (0,-4.5) node[above,draw, minimum width=4cm, minimum height=0.65cm] (L16) {\coqes{Ops (@List16 \Z) List32B id}};
+\draw (0,-6) node[above,draw, minimum width=4cm, minimum height=0.65cm] (L) {\coqes{Ops (list \Z) (list \Z) id}};
+
+\draw[double,<->,>=stealth] (GF.south) -- (Zmod.north) node[midway, right]{\coqes{Z25519_Z_Eq}};
+\draw[double,<->,>=stealth] (Zmod.south) -- (Z.north) node[midway, right]{\coqes{Zmod_Z_Eq}};
+\draw[double,<->,>=stealth] (Z.south) -- (L16.north) node[midway, right]{\coqes{List16_Z_Eq}};
+\draw[double,<->,>=stealth] (L16.south) -- (L.north) node[midway, right]{\coqes{List16_List_Z_Eq}};
+
+\draw[<-] (GF.west) --++ (-1.5,0) node[left] {\coqes{curve25519_ladder n xp}}                     node[midway,above] {\scriptsize defined with};
+\draw[<-] (Z.west)  --++ (-1.5,0) node[left] {\coqes{ZCrypto_Scalarmult (ZofList n) (ZofList p)}}  node[midway,above] {\scriptsize defined with};
+\draw[<-] (L.west)  --++ (-1.5,0) node[left] (CSM) {\coqes{Crypto_Scalarmult n p}}                 node[midway,above] {\scriptsize defined with};
+
+\draw (-6.25,-7.4) node[above right,draw,dashed,minimum width=3.5cm, minimum height=0.45cm] (TNACL) {\scriptsize \texttt{tweetnacl.v} (output of clightgen)};
+
+\draw[double,<->,>=stealth] (CSM.south) -- (TNACL.north) node[midway, right]{\includegraphics[width=.07\textwidth]{chain.png}};
+
+\end{tikzpicture}
+
+\end{center}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Final Theorems}
+\vspace{-0.5cm}
+\begin{center}
+
 % Definition Crypto_Scalarmult n p :=
-%   let a := get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
-%   let c := get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
-%   Pack25519 (Low.M a (Inv25519 c)).
-
+%   let N := clamp n in
+%   let P := Unpack25519 p in
+%   let t := montgomery_rec 255 N C_1 P C_0 C_1 C_0 C_0 P in
+%   Pack25519 (Low.M (get_a t) (Inv25519 (get_c t))).
+%
 % Definition ZCrypto_Scalarmult n p :=
-%   let t := @Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
+%   let N := Zclamp n in
+%   let P := ZUnpack25519 p in
+%   let t := montgomery_rec 255 N 1 P 0 1 0 0 P in
 %   ZPack25519 (Z.mul (get_a t) (ZInv25519 (get_c t))).
-
+%
 % Lemma ZCrypto_Scalarmult_curve25519_ladder n x :
-%   0 <= n ->
-%   ZCrypto_Scalarmult n x = val (curve25519_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi (modP (ZUnpack25519 x)))).
+%   ZCrypto_Scalarmult n x =
+%       val (curve25519_ladder (Z.to_nat (Zclamp n))
+%                              (Zmodp.pi (modP (ZUnpack25519 x)))).
 
-% Theorem CSM_Eq : forall (n p:list Z),
-%   Zlength n = 32 ->
-%   Zlength p = 32 ->
-%   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
-%   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-%   ZofList 8 (Crypto_Scalarmult n p) = val (curve25519_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
+\begin{lstlisting}[language=Coq]
+Theorem Crypto_Scalarmult_Eq :
+  forall (n p:list \Z),
+
+  Zlength n = 32 ->                               (* n is a list of 32 unsigned bytes *)
+  Forall (fun x => 0 <= x /\ x << 2^8) n ->
+
+  Zlength p = 32 ->                               (* p is a list of 32 unsigned bytes *)
+  Forall (fun x => 0 <= x /\ x << 2^8) p ->
+
+  ZofList 8 (Crypto_Scalarmult n p) =
+      val (curve25519_ladder (Z.to_nat (Zclamp (ZofList 8 n)))
+                             (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
+
+ (* The operations in Crypto_Scalarmult converted to \Z yield   *)
+ (* to the exact same result as the ladder over \GF       *)
 
 
 
 
-% Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
-%   Zlength n = 32 ->
-%   Zlength p = 32 ->
-%   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
-%   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-%   ZofList 8 (Crypto_Scalarmult n p) = ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
+Lemma curve25519_ladder_ok :
+   forall (n: \N) (xp : \GF) (P : mc Curve25519),
+   n << 2^255
+   -> xp != 0
 
+   -> P.x = xp
+     (* if xp is the x coordinate of P *)
 
+   -> curve25519_ladder n xp = ([n]P).x.
+     (* curve25519_ladder n xp is the x coordinate of [n]P *)
+\end{lstlisting}
+\end{center}
+\end{frame}
 
+%
+% \begin{frame}[standout]
+%   \Huge What's left ?
+% \end{frame}
+%
+% \begin{frame}[fragile]
+%     \begin{itemize}
+%       \item[\color{ruDarkTeal}$\blacktriangleright$] Adding some glue between this theorem and the lemma.
+%       \item[\color{ruDarkTeal}$\blacktriangleright$] Twist ?.
+%     \end{itemize}
+% \end{frame}
+%
 
 
 
@@ -701,7 +936,7 @@ POST [ tint ]
 %  }
 % \end{lstlisting}
 %
-% \begin{lstlisting}[language=CoqD, caption=Multiplication, label=cod:languageC102]
+% \begin{lstlisting}[language=Coq, caption=Multiplication, label=cod:languageC102]
 % Fixpoint ZscalarMult (a: \Z) (b: list \Z) : list \Z := match b with
 % | [] => []
 % | h :: q => a * h :: ZscalarMult a q
@@ -734,30 +969,30 @@ POST [ tint ]
 %
 % \begin{frame}[fragile]{Multiplication - correctness}
 %   \begin{center}
-% \begin{lstlisting}[language=CoqD, caption=Multiplication | proof of correctness, label=cod:languageC111]
+% \begin{lstlisting}[language=Coq, caption=Multiplication | proof of correctness, label=cod:languageC111]
 % Notation "A :\GF" := (A mod (2^255-19)) (at level 40).
 %
 % Corollary mult1_correct :
 %   forall (a b: list \Z),
-%     \Z.lst mult_1 a b =  (\Z.lst a) * (\Z.lst b).
+%     \Z.of_list mult_1 a b =  (\Z.of_list a) * (\Z.of_list b).
 % Qed.
 %
 % Lemma mult_2_correct :
 %   forall (l: list \Z),
-%     (\Z.lst mult_2 l) = (\Z.lst l) + 38 * \Z.lst tail 16 l.
+%     (\Z.of_list mult_2 l) = (\Z.of_list l) + 38 * \Z.of_list tail 16 l.
 % Qed.
 %
 % Lemma reduce_slice_GF:
 %   forall (l: list \Z),
 %     \Z.\N length l < 32 ->
-%       (\Z.lst mult_3 (mult_2 l)) :\GF = (\Z.lst l) :\GF.
+%       (\Z.of_list mult_3 (mult_2 l)) :\GF = (\Z.of_list l) :\GF.
 % Qed.
 %
 % Corollary mult_GF:
 %   forall (a b: list \Z),
 %     \Z.\N length a = 16 ->
 %     \Z.\N length b = 16 ->
-%       (\Z.lst M a b) :\GF = (\Z.lst a) * (\Z.lst b) :\GF.
+%       (\Z.of_list M a b) :\GF = (\Z.of_list a) * (\Z.of_list b) :\GF.
 % Qed.
 % \end{lstlisting}
 %
@@ -799,7 +1034,7 @@ POST [ tint ]
 %
 % \begin{frame}[fragile]{Multiplication - bounds}
 %   \begin{center}
-% \begin{lstlisting}[language=CoqD, caption=Multiplication | Proofs of bounds, label=cod:languageC131]
+% \begin{lstlisting}[language=Coq, caption=Multiplication | Proofs of bounds, label=cod:languageC131]
 % Lemma ZscalarMult_bound_const:
 %   forall (m2 n2 a: \Z) (b: list \Z),
 %     0 < a ->
@@ -844,7 +1079,7 @@ POST [ tint ]
 %
 % \begin{frame}[fragile]{Multiplication - bounds}
 %   \begin{center}
-% \begin{lstlisting}[language=CoqD, caption=M | Proofs of bounds, label=cod:languageC141]
+% \begin{lstlisting}[language=Coq, caption=M | Proofs of bounds, label=cod:languageC141]
 % Lemma mult_bound:
 %   forall (m1 n1 m2 n2 m3 n3: Z) (a b: list Z),
 %     (fun x => m1 < x < n1) 0 ->
@@ -870,7 +1105,7 @@ POST [ tint ]
 %     x &< 26
 %   \end{align*}
 %   Thus we will avoid any over/underflows if the inputs are within the $]-2^{26},2^{26}[$ ranges:
-%  \begin{lstlisting}[language=CoqD, caption=M | Proofs of bounds, label=cod:languageC141]
+%  \begin{lstlisting}[language=Coq, caption=M | Proofs of bounds, label=cod:languageC141]
 % Lemma mult_bound_strong:
 %   forall (a b: list Z),
 %     (length a = 16)%\N ->
@@ -971,7 +1206,7 @@ PRE [ _o OF (tptr tlg), _a OF (tptr tlg), _b OF (tptr tlg) ]
   }
 \end{lstlisting}
 
-\begin{lstlisting}[language=CoqD, caption=car25519 | Proofs of correctness, label=cod:languageC152]
+\begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC152]
 (*
   getCarry n m      is equivalent to    m >> n
   getResidute n m   is equivalent to    m mod 2^n
@@ -986,7 +1221,7 @@ end.
 
 Corollary CarrynPreserve:
   forall (m: \N) (l: list \Z),
-    \Z.lst l = \Z.lst Carrying_n m 0 l.
+    \Z.of_list l = \Z.of_list Carrying_n m 0 l.
 Qed.
 \end{lstlisting}
 
@@ -1011,7 +1246,7 @@ Remark: the add $2^{16}$ step has been ignored.
   o[15]-=c<<16;         # remove the carry
 \end{lstlisting}
 
-\begin{lstlisting}[language=CoqD, caption=car25519 | Proofs of correctness, label=cod:languageC162]
+\begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC162]
 Definition backCarry (l:list Z) : (list Z) :=
   match l with
   | [] => []
@@ -1022,7 +1257,7 @@ Definition backCarry (l:list Z) : (list Z) :=
 Lemma backCarry_25519:
   forall (l:list \Z),
     (length l <= 16)%\N ->
-      (\Z.lst l) :\GF  = ((\Z.lst backCarry l) :\GF).
+      (\Z.of_list l) :\GF  = ((\Z.of_list backCarry l) :\GF).
 Qed.
 \end{lstlisting}
 
@@ -1039,13 +1274,13 @@ Qed.
 
 \begin{frame}[fragile]{car25519 - correctness \& bounds}
   \begin{center}
-\begin{lstlisting}[language=CoqD, caption=car25519 | Proofs of correctness, label=cod:languageC171]
+\begin{lstlisting}[language=Coq, caption=car25519 | Proofs of correctness, label=cod:languageC171]
 Definition car25519 (l:list \Z) : list \Z := backCarry (Carrying_n 16 15 0 l).
 
 Lemma car25519_correct:
   forall (l: list \Z),
     (length l = 16)%\N ->
-      (\Z.lst l) :\GF  = (\Z.lst car25519 l) :\GF.
+      (\Z.of_list l) :\GF  = (\Z.of_list car25519 l) :\GF.
 Qed.
 
 Lemma car25519_bound :
@@ -1068,7 +1303,7 @@ Qed.
 
 \begin{frame}[fragile]{car25519 - bounds}
   \begin{center}
-\begin{lstlisting}[language=CoqD, caption=car25519, label=cod:languageC181]
+\begin{lstlisting}[language=Coq, caption=car25519, label=cod:languageC181]
 Lemma t2256is38 : (2^256 :\GF) = (38 :\GF).
 Proof. compute. reflexivity. Qed.
 
@@ -1081,7 +1316,7 @@ Qed.
 Lemma Zcar25519_eq_car25519:
   forall (l : list \Z),
   (length l = 16)%\N ->
-    Zcar25519 (\Z.lst l) = \Z.lst (car25519 l).
+    Zcar25519 (\Z.of_list l) = \Z.of_list (car25519 l).
 Qed.
 \end{lstlisting}
 
@@ -1097,7 +1332,7 @@ Qed.
 
 \begin{frame}[fragile]{car25519 - bounds}
   \begin{center}
-\begin{lstlisting}[language=CoqD, caption=car25519, label=cod:languageC191]
+\begin{lstlisting}[language=Coq, caption=car25519, label=cod:languageC191]
 Lemma ZCarry25519_min:
   forall (x: \Z),
     0 < x ->

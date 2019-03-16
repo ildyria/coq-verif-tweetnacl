@@ -92,6 +92,6 @@ Theorem curve25519_ladder_ok (n : nat) x :
 Proof.
 move => Hn Hx p Hp.
 rewrite /curve25519_ladder.
-apply opt_montgomery_ok => //=.
+apply opt_montgomery_ok=> //=.
 apply curve25519_residute.
 Qed.

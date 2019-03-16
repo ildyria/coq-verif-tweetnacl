@@ -4,12 +4,6 @@ From Tweetnacl.Gen Require Export AMZubSqSel_List.
 
 Open Scope Z.
 
-Inductive Z_List_Bound_es := 
-  LB (l:list Z) n vmin vmax:
-    Zlength l = n ->
-    Forall (fun x => vmin <= x < vmax) l ->
-    Z_List_Bound_es.
-
 Inductive List16 (T:Type) :=
   Len (l:list T):
     Zlength l = 16 ->
