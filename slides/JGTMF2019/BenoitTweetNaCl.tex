@@ -13,16 +13,18 @@
 }}
 
 %% preamble
-\title{Verification of Tweetnacl’s Curve25519}
+\title{Verification of TweetNaCl's Curve25519}
 % \subtitle{Coq }
 \author[Beno\^{i}t Viguier MSc]{
-  \normalsize Beno\^{i}t Viguier MSc \\
-  {\small (\texttt{$\lambda$ x y. x@y.nl}) benoit viguier} \\
-  {\small \url{https://www.viguier.nl}}\\ \medskip}
+Peter Schwabe,
+\textbf{Beno\^{i}t Viguier},
+Timmy Weerwag,
+Freek Wiedijk\\
+}
 
 \institute[Radboud University Nijmegen]{
   Institute for Computing and Information Sciences -- Digital Security \\
-  Radboud University Nijmegen}
+  Radboud University, Nijmegen}
 
 \date[18, Mar. 2019]{
   Journée GT Méthodes Formelles pour la Sécurité\\
@@ -252,9 +254,10 @@ Definition opt_montgomery (n m : \N) (x : \K) : \K :=
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{Correctness of the montgomery ladder}
+\begin{frame}[fragile]{Correctness of the Montgomery ladder}
 \begin{center}
 \begin{lstlisting}[language=Coq, basicstyle=\large]
+
 
 
 
@@ -289,7 +292,8 @@ Lemma opt_montgomery_ok :
 (* \K = \GF *)
 (* A = 486662   *)
 (* B = 1        *)
-(* Curve25519 : y^2 = x^3 + 486662 * x^2 + x *)
+(* Curve25519 : B * y^2 = x^3 +      A * x^2 + x *)
+(*                  y^2 = x^3 + 486662 * x^2 + x *)
 
 Definition curve25519_ladder n x = opt_montgomery n 255 x.
 
@@ -370,7 +374,7 @@ int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
 \begin{frame}[fragile]{Number representation}
   \begin{center}
 
-  256 bits integers does not fit into a 64 bits containers...
+  256-bits integers do not fit into a 64-bits containers...
 
   \begin{tikzpicture}[textstyle/.style={black, anchor= south west, align=center}]
 
@@ -493,7 +497,7 @@ Hypothesis Hn: n > 0.
   in C we have gf[16] here we consider a list of integers (list \Z)
   of length 16 in this case.
 
-  ZofList convert a list \Z into it's \Z value
+  ZofList converts a list \Z into its \Z value
   assume a radix: 2^n
 *)
 Fixpoint ZofList (a : list \Z) : \Z :=
@@ -758,13 +762,11 @@ Context {UTO: @Ops_Mod_P T T' U Mod ModT TO UO}.
 
 (* montgomery_rec over T is equivalent to montgomery_rec over U *)
 Corollary montgomery_rec_eq_a: forall (n:\N) (z:T') (a b c d e f x: T),
-  0 <= m ->
   Mod (P (get_a (montgomery_rec n z a b c d e f x))) =                              (* over T *)
   Mod (get_a (montgomery_rec n (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).  (* over U *)
 Qed.
 
 Corollary montgomery_rec_eq_c: forall (n:\N) (z:T') (a b c d e f x: T),
-  0 <= m ->
   Mod (P (get_c (montgomery_rec n z a b c d e f x))) =                              (* over T *)
   Mod (get_c (montgomery_rec n (P' z) (P a) (P b) (P c) (P d) (P e) (P f) (P x))).  (* over U *)
 Qed.
@@ -800,7 +802,7 @@ Inductive List32B :=         L32B (l:list \Z): Forall (fun x => 0 <= x << 2^8) l
 Instance List16_Ops : Ops (@List16 \Z) List32B id := {}.
 
 (* Equivalence between List16,List32 and \Z *)
-Instance List16_Z_Eq : @Ops_Mod_P (@List16 \Z) (List32B) Z Mod id List16_Ops Z_Ops :=
+Instance List16_Z_Eq : @Ops_Mod_P (@List16 \Z) (List32B) Z modP id List16_Ops Z_Ops :=
 {  P l := (ZofList 16 (List16_to_List l));       P' l := (ZofList 8 (List32_to_List l));  }.
 
 (* Operations over list of \Z *)
