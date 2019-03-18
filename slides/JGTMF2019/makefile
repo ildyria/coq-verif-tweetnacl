@@ -1,7 +1,7 @@
 LATEXMK = ./latexrun.py
 READ = evince
 SOURCES := $(wildcard *.tex)
-STY := $(wildcard *.sty)
+DEPS := $(wildcard *.sty) ECC101/frame.tex
 PDFS := $(notdir $(SOURCES:.tex=.pdf))
 
 
@@ -12,7 +12,7 @@ cleanpdf:
 
 force: cleanpdf $(PDFS)
 
-%.pdf: %.tex $(STY)
+%.pdf: %.tex $(DEPS)
 	echo $*.tex
 	$(LATEXMK) $*.tex
 
