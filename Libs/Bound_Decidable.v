@@ -1,4 +1,4 @@
-Set Warnings "-notation-overridden".
+(* Set Warnings "-notation-overridden".
 
 Require Export Coq.ZArith.ZArith.
 (* Require Export Coq.Lists.List. *)
@@ -43,4 +43,4 @@ Section Bound.
 End Bound.
 
 
-Close Scope Z.
+Close Scope Z. *)

@@ -1,9 +1,10 @@
-Set Warnings "-notation-overridden,-parsing".
+(* Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div ssralg.
 From Tweetnacl.High Require Import mc.
 From Tweetnacl.High Require Import mcgroup.
 From Tweetnacl.High Require Import ladder.
 From Tweetnacl.High Require Import Zmodp.
+From Tweetnacl.High Require Import Zmodp2.
 From Tweetnacl.High Require Import opt_ladder.
 From Tweetnacl.High Require Import montgomery.
 From Tweetnacl.High Require Import curve25519_prime.
@@ -14,10 +15,10 @@ Import BinInt.
 Open Scope ring_scope.
 Import GRing.Theory.
 
-Definition a : Zmodp.type := Zmodp.pi 486662.
-Definition b : Zmodp.type := 1%R.
+Definition a : Zmodp2.type := Zmodp2.piZ (486662,0%Z).
+Definition b : Zmodp2.type := Zmodp2.piZ (1%Z,0%Z)%R.
 
-Lemma asq_neq4 : a^+2 != 4%:R.
+Lemma asq_neq4 : a^+2 != (4,0)%:R.
 Proof. by rewrite expr2; zmodp_compute. Qed.
 
 Lemma b_neq0 : b != 0.
@@ -91,3 +92,4 @@ rewrite /curve25519_ladder.
 apply opt_montgomery_ok=> //=.
 apply curve25519_residute.
 Qed.
+ *)
