@@ -88,6 +88,7 @@ Definition zero : type := pi 0.
 Definition one : type := pi 1.
 Definition opp (x : type) : type := pi (p - x).
 Definition add (x y : type) : type := pi (x + y).
+Definition sub (x y : type) : type := pi (x - y).
 Definition mul (x y : type) : type := pi (x * y).
 
 End Zmodp.
@@ -174,6 +175,13 @@ rewrite /= Zplus_mod_idemp_l Z.sub_add Z_mod_same; first by [].
 exact: Hp_gt0.
 Qed.
 
+Lemma add_sub : forall (x y:type), sub x y = add x (opp y).
+Proof.
+move=> x y; apply: val_inj => /=.
+have H:= Hp_neq0.
+rewrite -(Zminus_mod_idemp_l p) Z.mod_same ?Zplus_mod_idemp_r //.
+Qed.
+
 Module Exports.
 Definition Zmodp_zmodMixin :=
   ZmodMixin add_assoc add_comm add_left_id add_left_inv.
@@ -206,7 +214,7 @@ Module Zmodp_ring.
 
 Lemma mul_assoc : associative mul.
 Proof.
-move=> x y z; apply: val_inj.
+move=> x y z. apply: val_inj.
 by rewrite /= Zmult_mod_idemp_r Zmult_mod_idemp_l Zmult_assoc.
 Qed.
 
@@ -348,3 +356,21 @@ Canonical Structure Zmodp_finFieldType := Eval hnf in [finFieldType of type].
 
 Export Zmodp_finite.Exports Zmodp_zmod.Exports Zmodp_ring.Exports.
 Export Zmodp_field.Exports.
+
+Import GRing.Theory.
+
+Lemma Zmodp_ring : ring_theory zero one add mul sub opp eq.
+Proof.
+apply mk_rt.
+apply Zmodp_zmod.add_left_id.
+apply Zmodp_zmod.add_comm.
+apply Zmodp_zmod.add_assoc.
+apply Zmodp_ring.mul_left_id.
+apply Zmodp_ring.mul_comm.
+apply Zmodp_ring.mul_assoc.
+apply Zmodp_ring.mul_left_distr.
+apply Zmodp_zmod.add_sub.
+move => x. rewrite Zmodp_zmod.add_comm Zmodp_zmod.add_left_inv //.
+Defined.
+
+Add Ring Zmodp_ring : Zmodp_ring.
