@@ -1,7 +1,5 @@
 From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.Gen Require Import AMZubSqSel.
-From Tweetnacl.Gen Require Import UPIC.
-
 
 Class Ops_Mod_P {T T' U:Type} {Mod:U -> U} {ModT:T -> T} `(Ops T T' ModT) `(Ops U U Mod)  :=
 {

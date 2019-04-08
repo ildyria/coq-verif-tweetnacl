@@ -79,7 +79,7 @@ Module Zmodp.
 Inductive type := Zmodp x of betweenb 0 p x.
 
 Lemma Z_mod_betweenb x y : y > 0 -> betweenb 0 y (x mod y).
-Proof. by move=> H; apply/betweenbP; apply: Z_mod_lt. Qed.
+Proof. by move=> H; apply/betweenbP; apply: Z_mod_lt. Defined.
 
 Definition pi (x : Z) : type := Zmodp (Z_mod_betweenb x Hp_gt0).
 Coercion repr (x : type) : Z := let: @Zmodp x _ := x in x.
@@ -90,6 +90,21 @@ Definition opp (x : type) : type := pi (p - x).
 Definition add (x y : type) : type := pi (x + y).
 Definition sub (x y : type) : type := pi (x - y).
 Definition mul (x y : type) : type := pi (x * y).
+
+Definition eqb x y := match x, y with
+  | Zmodp x _ , Zmodp y _ => Z.eqb x y
+end.
+
+Lemma Zeqb_eqb x y : Z.eqb x y -> eqb (pi x) (pi y).
+Proof.
+move/Z.eqb_spec ->.
+rewrite /eqb.
+case (pi y) => yi _.
+apply Z.eqb_refl.
+Qed.
+
+Lemma Zeqb_eq x y : Z.eqb x y -> pi x = pi y.
+Proof. by move/Z.eqb_spec ->. Qed.
 
 End Zmodp.
 Import Zmodp.
@@ -192,6 +207,47 @@ End Exports.
 End Zmodp_zmod.
 Import Zmodp_zmod.Exports.
 
+Module Refl.
+
+Lemma eqb_Zeqb x y : eqb  x y -> Z.eqb x y.
+Proof.
+move=> H.
+rewrite -(reprK x).
+rewrite -(reprK y).
+apply/Z.eqb_spec.
+move: H.
+simpl.
+rewrite /eqb.
+case_eq y => yi Hyi Heqyi.
+case_eq x => xi Hxi Heqxi /=.
+by move/Z.eqb_spec ->.
+Qed.
+
+Lemma eqb_spec (x y: type) : reflect (x = y) (eqb x y).
+Proof.
+apply Bool.iff_reflect.
+split.
++ move => ->.
+  rewrite /eqb.
+  case x => xi Hxi.
+  case y => yi Hyi.
+  by apply Z.eqb_refl.
++ 
+move=> H.
+rewrite -(reprK x).
+rewrite -(reprK y).
+move: H.
+rewrite /eqb.
+case x.
+case y.
+move=> xi Hxi yi Hyi /=.
+by move/Zeqb_eq.
+Qed.
+
+End Refl.
+
+Import Refl.
+
 Lemma Zmodp_addE x y : (pi x + pi y)%R = pi (x + y).
 Proof.
 apply/eqP; rewrite eqE; apply/eqP=> /=.
@@ -223,7 +279,7 @@ Proof. by move=> x y; apply: val_inj; rewrite /= Zmult_comm. Qed.
 
 Lemma mul_left_id : left_id one mul.
 Proof.
-move=> x; apply: val_inj. rewrite /=.
+move=> x. apply: val_inj. rewrite /=.
 rewrite Z.mod_1_l; last exact: Z.gt_lt Hp_gt1.
 by rewrite Z.mul_1_l; apply: modZp.
 Qed.

@@ -9,22 +9,11 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 
 Open Scope Z.
+Import Zmodp.
 Open Scope ring_scope.
 Import GRing.Theory.
 
-Import Zmodp.
-
 Module Zmodp2.
-
-(* Lemma prime_p : prime.prime (Z.to_nat p).
-Proof. apply prime_ssrprime. rewrite Z_of_nat_to_nat_p /p -lock; apply primo. Qed.
-
-Lemma pow2_pos : is_true (leq (S O) (S (S O))).
-Proof. done. Qed.
-
-Check sval.
-Definition GFp2 := sval (PrimePowerField prime_p pow2_pos).
-*)
 
 Inductive type := Zmodp2 (x: Zmodp.type) (y:Zmodp.type).
 
@@ -36,16 +25,34 @@ Coercion reprZ (x : type) : Z*Z := let: Zmodp2 (@Zmodp u _) (@Zmodp v _) := x in
 Definition zero : type := pi (Zmodp.zero, Zmodp.zero).
 Definition one : type := pi (Zmodp.one, Zmodp.zero).
 Definition opp (x : type) : type := pi (Zmodp.opp x.1 , Zmodp.opp x.2).
-Definition add (x y : type) : type := pi (x.1 + y.1, x.2 + y.2).
-Definition mul (x y : type) : type := pi (x.1 * y.1 - x.2 * y.2 , x.1 * y.2 + x.2 * y.1).
+Definition add (x y : type) : type := pi (Zmodp.add x.1 y.1, Zmodp.add x.2 y.2).
+Definition sub (x y : type) : type := pi (Zmodp.sub x.1 y.1, Zmodp.sub x.2 y.2).
+Definition mul (x y : type) : type := pi (Zmodp.sub (Zmodp.mul x.1 y.1) (Zmodp.mul x.2 y.2), Zmodp.add (Zmodp.mul x.1 y.2) (Zmodp.mul x.2 y.1)).
 
 Lemma pi_of_reprK : cancel repr pi.
 Proof. by case. Qed.
 
+Definition eqb (x y : type) := match x, y with
+  | Zmodp2 x1 x2, Zmodp2 y1 y2 => Zmodp.eqb x1 y1 && Zmodp.eqb x2 y2
+end.
+
+Lemma eqb_spec (x y: type) : reflect (x = y) (eqb x y).
+Proof.
+apply Bool.iff_reflect.
+split.
++ move => ->.
+  rewrite /eqb.
+  case y => y1 y2.
+  by apply/andP ; split ; apply /Refl.eqb_spec.
++ rewrite /eqb.
+  case x => x1 x2.
+  case y => y1 y2.
+  by move/andP => [] /Refl.eqb_spec -> /Refl.eqb_spec ->.
+Qed.
+
 End Zmodp2.
 
 Import Zmodp2.
-
 
 Definition Zmodp2_eqMixin := CanEqMixin pi_of_reprK.
 Canonical Structure Zmodp2_eqType := Eval hnf in EqType type Zmodp2_eqMixin.
@@ -70,36 +77,48 @@ Proof. by case x. Qed.
 Lemma piZK (x : Z*Z) : betweenb 0 p x.1 -> betweenb 0 p x.2 -> reprZ (piZ x) = x.
 Proof. by case x => u v /= ; move/betweenbP => Hu /betweenbP => Hv /= ; f_equal; apply: Zmod_small. Qed.
 
+Lemma Zmodp2_const x1 x2 y1 y2: x1 = y1 -> x2 = y2 -> Zmodp2 x1 x2 = Zmodp2 y1 y2.
+Proof. move=> -> -> //. Qed.
 
+(* Lemma type_dec x : x = zero \/ x <> zero.
+Proof.
+case x => [x1 x2].
+case_eq (Zmodp.eqb x1 Zmodp.zero); move/Refl.eqb_spec.
+case_eq (Zmodp.eqb x2 Zmodp.zero); move/Refl.eqb_spec.
+by move=> -> -> ; left => //.
+by move=> Hx2 Hx1 ; right => H ; apply Hx2 ; inversion H.
+by move=> Hx1 ; right => H ; apply Hx1 ; inversion H.
+Qed. *)
 
 Module Zmodp2_zmod.
 
-Lemma add_assoc : associative add.
-Proof.
-move=> [x1 x2] [y1 y2] [z1 z2] ; rewrite /add /= ; f_equal; f_equal; apply Zmodp_zmod.add_assoc.
-Qed.
-
 Lemma add_comm : commutative add.
 Proof.
-move=> [x1 x2] [y1 y2] ; rewrite /add /= ; f_equal; f_equal; apply Zmodp_zmod.add_comm.
+move=> [x1 x2] [y1 y2] ; rewrite /add /= ; f_equal; f_equal ; ring.
 Qed.
 
 Lemma add_left_id : left_id zero add.
 Proof. move => [x1 x2]. rewrite /add /=.
-have ->: Zmodp.zero + x1 = x1.
-  by apply Zmodp_zmod.add_left_id.
-have ->: Zmodp.zero + x2 = x2.
-  by apply Zmodp_zmod.add_left_id.
+rewrite Zmodp_zmod.add_left_id.
+rewrite Zmodp_zmod.add_left_id.
 reflexivity.
 Qed.
 
 Lemma add_left_inv : left_inverse zero opp add.
 Proof. move => [x1 x2]. rewrite /add /=.
-have ->: Zmodp.opp x1 + x1 = 0.
-  by apply Zmodp_zmod.add_left_inv.
-have ->: Zmodp.opp x2 + x2 = 0.
-  by apply Zmodp_zmod.add_left_inv.
+rewrite Zmodp_zmod.add_left_inv.
+rewrite Zmodp_zmod.add_left_inv.
 reflexivity.
+Qed.
+
+Lemma add_assoc : associative add.
+Proof. move=> [x1 x2] [y1 y2] [z1 z2] ; rewrite /add /= ; f_equal; f_equal; apply Zmodp_zmod.add_assoc. Qed.
+
+Lemma add_sub : forall (x y:type), sub x y = add x (opp y).
+Proof.
+move=> x y.
+rewrite /sub /add /opp.
+f_equal; f_equal => /= ; ring.
 Qed.
 
 Module Exports.
@@ -112,10 +131,10 @@ End Exports.
 End Zmodp2_zmod.
 Import Zmodp2_zmod.Exports.
 
-Lemma Zmodp2_addE x y : (pi x + pi y)%R = pi (x + y).
+Lemma Zmodp2_addE x y : (pi x + pi y)%R = pi (x.1 + y.1, x.2 + y.2).
 Proof. reflexivity. Qed.
 
-Lemma Zmodp_oppE x : (-pi x)%R = pi (-x).
+Lemma Zmodp2_oppE x : (-pi x)%R = pi (-x).
 Proof. reflexivity. Qed.
 
 Fact Hp_gt1 : p > 1.
@@ -125,18 +144,16 @@ Module Zmodp2_ring.
 
 Lemma mul_comm : commutative mul.
 Proof. move=> [x1 x2] [y1 y2] ; rewrite /mul /=.
-have Hab: forall a b:Zmodp.type, a + b = b + a.
-  by apply Zmodp_zmod.add_comm.
-rewrite (Hab (y1 * x2) _ ).
-f_equal ; f_equal ; f_equal; [|f_equal| | ];
-apply Zmodp_ring.mul_comm.
+f_equal; f_equal; ring.
 Qed.
-
 
 Lemma mul_assoc : associative mul.
 Proof.
 move=> [x1 x2] [y1 y2] [z1 z2] ; rewrite /mul /= . f_equal.
-f_equal ; apply val_inj => /=.
+f_equal.
++ ring.
++ ring.
+(*  ; apply val_inj => /=.
 + rewrite Zminus_mod_idemp_r.
   rewrite -(Zplus_mod (y1 * z1)).
   rewrite Zmult_mod_idemp_r.
@@ -172,48 +189,31 @@ f_equal ; apply val_inj => /=.
             x1 * (y1 * z2 + y2 * z1) + x2 * (y1 * z1 + ( - y2 * z2)) + (x2 * p))%Z by ring.
   have ->: ((x1 * y1 + (p - x2 * y2)) * z2 + (x1 * y2 + x2 * y1) * z1 = 
             x1 * (y1 * z2 + y2 * z1) + x2 * (y1 * z1 + ( - y2 * z2)) + (z2 * p))%Z by ring.
-  by rewrite ?Z_mod_plus_full.
+  by rewrite ?Z_mod_plus_full. *)
 Qed.
 
 Lemma mul_left_id : left_id one mul.
 Proof.
 move=> [x1 x2]. rewrite /mul /=.
-have ->: Zmodp.one * x1 = x1.
-  by apply Zmodp_ring.mul_left_id.
-have ->: Zmodp.one * x2 = x2.
-  by apply Zmodp_ring.mul_left_id.
-have ->: Zmodp.zero * x2 = Zmodp.zero.
-  reflexivity.
-have ->: Zmodp.zero * x1 = Zmodp.zero.
-  reflexivity.
-have ->: -Zmodp.zero = Zmodp.zero.
-  apply val_inj => /=.
-  rewrite Zminus_mod_idemp_r.
-  rewrite -Zminus_mod_idemp_l.
-  rewrite Z_mod_same_full.
-  reflexivity.
-  have ->: x1 + Zmodp.zero = Zmodp.zero + x1.
-    apply val_inj => /=.
-    rewrite Zmod_0_l.
-    rewrite Z.add_0_r.
-    reflexivity.
-  have ->: x2 + Zmodp.zero = Zmodp.zero + x2.
-    apply val_inj => /=.
-    rewrite Zmod_0_l.
-    rewrite Z.add_0_r.
-    reflexivity.
-  have ->: Zmodp.zero + x1 = x1.
-    by apply Zmodp_zmod.add_left_id.
-  have ->: Zmodp.zero + x2 = x2.
-    by apply Zmodp_zmod.add_left_id.
-  reflexivity.
+rewrite Zmodp_ring.mul_left_id.
+rewrite Zmodp_ring.mul_left_id.
+have ->: Zmodp.mul Zmodp.zero x2 = Zmodp.zero => //.
+have ->: Zmodp.mul Zmodp.zero x1 = Zmodp.zero => //.
+rewrite Zmodp_zmod.add_sub.
+have ->: Zmodp.opp Zmodp.zero = Zmodp.zero by ring.
+have ->: Zmodp.add x1 Zmodp.zero = x1 by ring.
+have ->: Zmodp.add x2 Zmodp.zero = x2 by ring.
+reflexivity.
 Qed.
 
 Lemma mul_left_distr : left_distributive mul add.
 Proof.
 move=> [x1 x2] [y1 y2] [z1 z2]. rewrite /mul /add /=. f_equal.
-f_equal; apply val_inj => /=.
-+ rewrite Zmult_mod_idemp_l.
+f_equal.
+ring.
+ring.
+(* + apply val_inj => /=.
+  rewrite Zmult_mod_idemp_l.
   rewrite Zmult_mod_idemp_l.
   rewrite Zminus_mod_idemp_r.
   rewrite -Zplus_mod.
@@ -227,14 +227,15 @@ f_equal; apply val_inj => /=.
   have ->: (x1 * z1 + (p - x2 * z2) + (y1 * z1 + (p - y2 * z2)) = 
           (x1 + y1) * z1 + - (x2 + y2) * z2 + 2 * p)%Z by ring.
   by rewrite ?Z_mod_plus_full.
-+ rewrite Zmult_mod_idemp_l.
++ apply val_inj => /=.
+  rewrite Zmult_mod_idemp_l.
   rewrite Zmult_mod_idemp_l.
   rewrite -Zplus_mod.
   rewrite -(Zplus_mod (x1 * z2)).
   rewrite -(Zplus_mod (y1 * z2)).
   rewrite -Zplus_mod.
   f_equal.
-  ring.
+  ring. *)
 Qed.
 
 Lemma one_neq_zero : one != zero.
@@ -244,121 +245,142 @@ apply/eqP => H ; inversion H; move: H1.
 by rewrite Zmod_0_l Zmod_1_l; last exact: Z.gt_lt Hp_gt1.
 Qed.
 
+Lemma two_neq_zero : (one + one) != zero.
+Proof.
+rewrite /one /zero; f_equal.
+zmodp_compute.
+apply/eqP => H ; inversion H; clear H; move: H1.
+rewrite /p -lock.
+by compute.
+Qed.
+
+Lemma three_neq_zero : (one + one + one) != zero.
+Proof.
+rewrite /one /zero; f_equal.
+zmodp_compute.
+apply/eqP => H ; inversion H; clear H; move: H1.
+rewrite /p -lock.
+by compute.
+Qed.
+
+
 Module Exports.
-Definition Zmodp_ringMixin := Eval hnf in ComRingMixin mul_assoc mul_comm mul_left_id mul_left_distr one_neq_zero.
-Canonical Structure Zmodp_ringType := Eval hnf in RingType type Zmodp_ringMixin.
-Canonical Structure Zmodp_comRingType := Eval hnf in ComRingType type mul_comm.
+Definition Zmodp2_ringMixin := Eval hnf in ComRingMixin mul_assoc mul_comm mul_left_id mul_left_distr one_neq_zero.
+Canonical Structure Zmodp2_ringType := Eval hnf in RingType type Zmodp2_ringMixin.
+Canonical Structure Zmodp2_comRingType := Eval hnf in ComRingType type mul_comm.
 End Exports.
 
 End Zmodp2_ring.
 Import Zmodp2_ring.Exports.
 
-Lemma Zmodp_mulE x y : (pi x * pi y)%R = pi (x.1 * y.1 - x.2 * y.2, x.1 * y.2 + x.2 * y.1).
+Lemma Zmodp2_mulE x y : (pi x * pi y)%R = pi (x.1 * y.1 - x.2 * y.2, x.1 * y.2 + x.2 * y.1).
 Proof.
 apply/eqP; rewrite eqE; apply/eqP=> /=.
-reflexivity.
-(* apply: esym. f_equal; apply val_inj => /=.
-apply: Z.mul_mod.
-apply val_inj.
-by apply: esym; apply: Z.mul_mod; apply: Hp_neq0.
- *)Qed.
+rewrite Zmodp_zmod.add_sub.
+apply: esym. f_equal; apply val_inj => /=.
+Qed.
 
 Fact Hp_prime : prime p.
 Proof. by unlock p; apply: primo. Qed.
 
-(* Inductive Zinv_spec (x : Z) : Set :=
+Inductive Zinv_spec (x : type) : Type :=
 | Zinv_spec_zero : x = zero -> Zinv_spec x
-| Zinv_spec_unit : x mod p <> 0 -> forall y, (y * x) mod p = 1 -> Zinv_spec x.
- *)
-(* TODO: I don't like the use of the opaque [euclid]. *)
-(* Lemma Zinv x : Zinv_spec x.
+| Zinv_spec_unit : x <> zero -> forall y, (y * x)%R = one -> Zinv_spec x.
+
+Fixpoint pow (n:nat) (x:type) := match n with
+  | 0%nat => one
+  | S n => (x * pow n x)%R
+end.
+
+Axiom Zinv_pow : forall (x :type), x <> zero -> pow (Z.to_nat (Z.pow p 2 - 1)%Z) x = one.
+
+Lemma Zinv x : Zinv_spec x.
 Proof.
-case: (Z.eqb_spec (x mod p) 0); first exact: Zinv_spec_zero.
-move=> Hx.
-have [u v d Euv Hgcd]: Euclid (x mod p) p by apply: euclid.
-wlog: u v d Euv Hgcd / (0 <= d) => [|Hd].
-  case: (Z.leb_spec0 0 d) => Hd; first by apply; first exact: Euv.
-  apply Z.nle_gt in Hd.
-  have Hd2 : 0 <= -d by omega.
-  have Hgcd2 : Zis_gcd (x mod p) p (-d)
-    by apply: Zis_gcd_opp; apply: Zis_gcd_sym.
-  apply; [| exact: Hgcd2 | exact: Hd2].
-  rewrite -Euv Z.opp_add_distr -!Z.mul_opp_l.
-  by congr (_ + _).
-apply: (@Zinv_spec_unit _ Hx u).
-rewrite -Z.mul_mod_idemp_r; last exact: Hp_neq0.
-apply: Zdivide_mod_minus; first by move: Hp_gt1=> ?; omega.
-rewrite /Z.divide; exists (-v).
-rewrite Z.mul_opp_l -Z.add_move_0_r -Z.add_sub_swap Z.sub_move_0_r Euv.
-rewrite -(Zis_gcd_gcd _ _ _ _ Hgcd); last exact: Hd.
-rewrite Zgcd_1_rel_prime.
-apply: rel_prime_le_prime; first exact: Hp_prime.
-suff: 0 <= x mod p < p
-  by move=> ?; omega.
-by apply: Z.mod_pos_bound; apply: Z.gt_lt; apply: Hp_gt0.
-Qed. *)(* 
-
-Definition Zmodp_inv (x : type) : type :=
-  match Zinv x with
-  | Zinv_spec_zero _ => zero
-  | @Zinv_spec_unit _ _ y _ => pi (Z.modulo y p)
-  end.
-
-Lemma modZp0 (x : type) : x mod p = 0 -> x == 0%R.
-Proof. by rewrite modZp => Hx_eq0; rewrite -[x]reprK Hx_eq0. Qed.
-
-Module Zmodp_field.
-
-Lemma mulVx : GRing.Field.axiom Zmodp_inv.
-Proof.
-move=> x Hx_neq0.
-rewrite /Zmodp_inv; case: (Zinv x); first by move/modZp0/eqP; move/eqP: Hx_neq0.
-move=> Hxmodp_neq0 y Exy.
-apply/eqP; rewrite eqE; apply/eqP=> /=.
-have HP:= Hp_gt1.
-rewrite ?Z.mul_mod_idemp_l; last exact: Hp_neq0.
-by rewrite [1 mod p]Z.mod_small ; last by move: Hp_gt1=> ?; omega.
-omega.
+case_eq (eqb x zero) ; move/eqb_spec.
++ move => -> ; exact: Zinv_spec_zero.
++ move=> Hx.
+apply (@Zinv_spec_unit x Hx (pow (Z.to_nat (Z.pow p 2 - 2)) x)).
+have := Zinv_pow Hx.
+have ->: Z.to_nat (p ^ 2 - 1)%Z = (Z.to_nat (p ^ 2 - 2 + 1)%Z) by f_equal ; omega.
+change (p ^2 - 2 + 1)%Z with (Z.succ (p^2 -2))%Z.
+rewrite Z2Nat.inj_succ /=.
+2: by rewrite /p -lock ; compute.
+move => <-.
+apply Zmodp2_ring.mul_comm.
 Qed.
 
-Lemma inv0 : Zmodp_inv 0%R = 0%R.
+Definition Zmodp2_inv (x : type) : type :=
+  match Zinv x with
+  | Zinv_spec_zero _ => zero
+  | @Zinv_spec_unit _ _ y _ => pi y
+  end.
+
+Module Zmodp2_field.
+
+Lemma mulVx : GRing.Field.axiom Zmodp2_inv.
 Proof.
-rewrite /Zmodp_inv; case: (Zinv 0); first done.
-have : 0 mod p = 0 by apply: Z.mod_0_l; exact: Hp_neq0.
+move=> x Hx_neq0.
+rewrite /Zmodp2_inv.
+case: (Zinv x).
++ by move/eqP: Hx_neq0.
++ move=> Hxx_neq0 y.
 done.
 Qed.
 
+Lemma inv0 : Zmodp2_inv 0%R = 0%R.
+Proof.
+rewrite /Zmodp2_inv; case: (Zinv 0); done.
+Qed.
+
 Module Exports.
-Definition Zmodp_unitRingMixin := Eval hnf in FieldUnitMixin mulVx inv0.
-Canonical Structure Zmodp_unitRingType :=
-  Eval hnf in UnitRingType type Zmodp_unitRingMixin.
-Canonical Structure Zmodp_comUnitRingType :=
+Definition Zmodp2_unitRingMixin := Eval hnf in FieldUnitMixin mulVx inv0.
+Canonical Structure Zmodp2_unitRingType :=
+  Eval hnf in UnitRingType type Zmodp2_unitRingMixin.
+Canonical Structure Zmodp2_comUnitRingType :=
   Eval hnf in [comUnitRingType of type].
 
-Lemma Zmodp_fieldMixin : GRing.Field.mixin_of Zmodp_unitRingType.
+Lemma Zmodp2_fieldMixin : GRing.Field.mixin_of Zmodp2_unitRingType.
 Proof. by move=> x Hx_neq0; rewrite qualifE /=. Qed.
 
-Definition Zmodp_idomainMixin := FieldIdomainMixin Zmodp_fieldMixin.
-Canonical Structure Zmodp_idomainType :=
-  Eval hnf in IdomainType type Zmodp_idomainMixin.
-Canonical Structure Zmodp_fieldType :=
-  Eval hnf in FieldType type Zmodp_fieldMixin.
+Definition Zmodp2_idomainMixin := FieldIdomainMixin Zmodp2_fieldMixin.
+Canonical Structure Zmodp2_idomainType :=
+  Eval hnf in IdomainType type Zmodp2_idomainMixin.
+Canonical Structure Zmodp2_fieldType :=
+  Eval hnf in FieldType type Zmodp2_fieldMixin.
 End Exports.
 
-End Zmodp_field.
-Import Zmodp_field.Exports.
+End Zmodp2_field.
+Import Zmodp2_field.Exports.
 
 (* Useful tactic to compute boolean equalities. *)
-Ltac zmodp_compute := rewrite ?(Zmodp_addE, Zmodp_mulE) eqE /=; unlock p=> /=.
+Ltac zmodp2_compute := rewrite ?(Zmodp2_addE, Zmodp2_mulE) eqE /=; unlock p=> /=.
 
 (* Now create the finalg variants too. *)
-Canonical Structure Zmodp_finZmodType := Eval hnf in [finZmodType of type].
-Canonical Structure Zmodp_finRingType := Eval hnf in [finRingType of type].
-Canonical Structure Zmodp_finComRingType := Eval hnf in [finComRingType of type].
-Canonical Structure Zmodp_finUnitRingType := Eval hnf in [finUnitRingType of type].
-Canonical Structure Zmodp_finComUnitRingType := Eval hnf in [finComUnitRingType of type].
-Canonical Structure Zmodp_finIdomainType := Eval hnf in [finIdomainType of type].
-Canonical Structure Zmodp_finFieldType := Eval hnf in [finFieldType of type].
+Canonical Structure Zmodp2_finZmodType := Eval hnf in [finZmodType of type].
+Canonical Structure Zmodp2_finRingType := Eval hnf in [finRingType of type].
+Canonical Structure Zmodp2_finComRingType := Eval hnf in [finComRingType of type].
+Canonical Structure Zmodp2_finUnitRingType := Eval hnf in [finUnitRingType of type].
+Canonical Structure Zmodp2_finComUnitRingType := Eval hnf in [finComUnitRingType of type].
+Canonical Structure Zmodp2_finIdomainType := Eval hnf in [finIdomainType of type].
+Canonical Structure Zmodp2_finFieldType := Eval hnf in [finFieldType of type].
 
-Export Zmodp_finite.Exports Zmodp_zmod.Exports Zmodp_ring.Exports.
-Export Zmodp_field.Exports. *)
+Export Zmodp2_zmod.Exports Zmodp2_ring.Exports.
+Export Zmodp2_field.Exports.
+
+Import GRing.Theory.
+
+Lemma Zmodp2_ring : ring_theory zero one add mul sub opp eq.
+Proof.
+apply mk_rt.
+apply Zmodp2_zmod.add_left_id.
+apply Zmodp2_zmod.add_comm.
+apply Zmodp2_zmod.add_assoc.
+apply Zmodp2_ring.mul_left_id.
+apply Zmodp2_ring.mul_comm.
+apply Zmodp2_ring.mul_assoc.
+apply Zmodp2_ring.mul_left_distr.
+apply Zmodp2_zmod.add_sub.
+move => x. rewrite Zmodp2_zmod.add_comm Zmodp2_zmod.add_left_inv //.
+Defined.
+
+Add Ring Zmodp2_ring : Zmodp2_ring.
