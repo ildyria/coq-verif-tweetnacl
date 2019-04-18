@@ -484,3 +484,19 @@ rewrite /p -lock //.
 rewrite Z.mul_1_l.
 apply modZp.
 Qed.
+
+Lemma eq_inv_2' : forall (x m:Zmodp.type), ((Zmodp.pi 2) * m = x)%R -> (m = (Zmodp.pi 28948022309329048855892746252171976963317496166410141009864396001978282409975%Z) * x)%R.
+Proof.
+move => m x <-.
+apply val_inj => /=.
+rewrite Z.mul_mod_idemp_l ; last apply Hp_neq0.
+rewrite Z.mul_mod_idemp_l ; last apply Hp_neq0.
+rewrite Z.mul_mod_idemp_r ; last apply Hp_neq0.
+rewrite Z.mul_assoc.
+rewrite -Z.mul_mod_idemp_l ; last apply Hp_neq0.
+have ->: (28948022309329048855892746252171976963317496166410141009864396001978282409975 * 2) mod p = 1.
+rewrite /p -lock //.
+rewrite Z.mul_1_l.
+symmetry ; 
+apply modZp.
+Qed.

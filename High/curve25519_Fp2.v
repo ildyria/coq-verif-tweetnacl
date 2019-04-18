@@ -35,27 +35,27 @@ move/eqP => H.
 inversion H.
 Qed.
 
-Canonical Structure curve25519_mcuType := Build_mcuType b_neq0 asq_neq4.
+Canonical Structure curve25519_Fp2_mcuType := Build_mcuType b_neq0 asq_neq4.
 
-Lemma curve25519_chi2 : 2%:R != 0 :> Zmodp2.type.
+Lemma curve25519_Fp2_chi2 : 2%:R != 0 :> Zmodp2.type.
 Proof.
 simpl.
 have -> : 2%:R = Zmodp2.one + Zmodp2.one :> Zmodp2.type by rewrite Zmodp2_addE.
 apply Zmodp2_ring.two_neq_zero.
 Qed.
 
-Lemma curve25519_chi3 : 3%:R != 0 :> Zmodp2.type.
+Lemma curve25519_Fp2_chi3 : 3%:R != 0 :> Zmodp2.type.
 Proof.
 have -> : 3%:R = Zmodp2.one + Zmodp2.one + Zmodp2.one :> Zmodp2.type.
 2: apply Zmodp2_ring.three_neq_zero.
 by apply/eqP; zmodp2_compute; zmodp_compute; apply/andP; split; zmodp_compute.
 Qed.
 
-Definition curve25519_ecuFieldMixin :=
-  ECUFieldMixin curve25519_chi2 curve25519_chi3.
-Canonical Structure curve25519_ecuFieldType :=
-  Eval hnf in ECUFieldType Zmodp2.type curve25519_ecuFieldMixin.
-Canonical Structure curve25519_finECUFieldType :=
+Definition curve25519_Fp2_ecuFieldMixin :=
+  ECUFieldMixin curve25519_Fp2_chi2 curve25519_Fp2_chi3.
+Canonical Structure curve25519_Fp2_ecuFieldType :=
+  Eval hnf in ECUFieldType Zmodp2.type curve25519_Fp2_ecuFieldMixin.
+Canonical Structure curve25519_Fp2_finECUFieldType :=
   Eval hnf in [finECUFieldType of Zmodp2.type].
 
 (* Lemma curve25519_residute (x : Zmodp.type) : x ^+ 2 != a ^+ 2 - 4%:R.
@@ -97,17 +97,17 @@ destruct (ClassicalDescription.excluded_middle_informative _).
     rewrite modZp => <- //.
 Qed. *)
 
-Definition curve25519_ladder n x :=
-  @opt_montgomery curve25519_finECUFieldType curve25519_mcuType n 255 x.
+Definition curve25519_Fp2_ladder n x :=
+  @opt_montgomery curve25519_Fp2_finECUFieldType curve25519_Fp2_mcuType n 255 x.
 
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
 
-Theorem curve25519_ladder_ok (n : nat) (x : Zmodp.type) :
+Theorem curve25519_Fp2_ladder_ok (n : nat) (x : Zmodp.type) :
     (n < 2^255)%nat -> x != 0 ->
-    forall (p : mc curve25519_mcuType), p#x0 = Zmodp2.pi (x, Zmodp.zero) -> curve25519_ladder n (Zmodp2.pi (x, Zmodp.zero)) = (p *+ n)#x0.
+    forall (p : mc curve25519_Fp2_mcuType), p#x0 = Zmodp2.pi (x, Zmodp.zero) -> curve25519_Fp2_ladder n (Zmodp2.pi (x, Zmodp.zero)) = (p *+ n)#x0.
 Proof.
 move => Hn Hx p Hp.
-rewrite /curve25519_ladder.
+rewrite /curve25519_Fp2_ladder.
 apply opt_montgomery_ok=> //=.
 2: by apply/eqP => H ; inversion H ; subst.
 Admitted.

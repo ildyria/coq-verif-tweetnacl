@@ -27,7 +27,7 @@ Definition one : type := pi (Zmodp.one, Zmodp.zero).
 Definition opp (x : type) : type := pi (Zmodp.opp x.1 , Zmodp.opp x.2).
 Definition add (x y : type) : type := pi (Zmodp.add x.1 y.1, Zmodp.add x.2 y.2).
 Definition sub (x y : type) : type := pi (Zmodp.sub x.1 y.1, Zmodp.sub x.2 y.2).
-Definition mul (x y : type) : type := pi (Zmodp.sub (Zmodp.mul x.1 y.1) (Zmodp.mul x.2 y.2), Zmodp.add (Zmodp.mul x.1 y.2) (Zmodp.mul x.2 y.1)).
+Definition mul (x y : type) : type := pi (Zmodp.add (Zmodp.mul x.1 y.1) (Zmodp.mul (Zmodp.pi 2) (Zmodp.mul x.2 y.2)), Zmodp.add (Zmodp.mul x.1 y.2) (Zmodp.mul x.2 y.1)).
 
 Lemma pi_of_reprK : cancel repr pi.
 Proof. by case. Qed.
@@ -199,9 +199,7 @@ rewrite Zmodp_ring.mul_left_id.
 rewrite Zmodp_ring.mul_left_id.
 have ->: Zmodp.mul Zmodp.zero x2 = Zmodp.zero => //.
 have ->: Zmodp.mul Zmodp.zero x1 = Zmodp.zero => //.
-rewrite Zmodp_zmod.add_sub.
-have ->: Zmodp.opp Zmodp.zero = Zmodp.zero by ring.
-have ->: Zmodp.add x1 Zmodp.zero = x1 by ring.
+have ->: Zmodp.add x1 (Zmodp.mul (Zmodp.pi 2) Zmodp.zero) = x1 by ring.
 have ->: Zmodp.add x2 Zmodp.zero = x2 by ring.
 reflexivity.
 Qed.
@@ -273,10 +271,9 @@ End Exports.
 End Zmodp2_ring.
 Import Zmodp2_ring.Exports.
 
-Lemma Zmodp2_mulE x y : (pi x * pi y)%R = pi (x.1 * y.1 - x.2 * y.2, x.1 * y.2 + x.2 * y.1).
+Lemma Zmodp2_mulE x y : (pi x * pi y)%R = pi (x.1 * y.1 + (Zmodp.pi 2) * (x.2 * y.2), x.1 * y.2 + x.2 * y.1).
 Proof.
 apply/eqP; rewrite eqE; apply/eqP=> /=.
-rewrite Zmodp_zmod.add_sub.
 apply: esym. f_equal; apply val_inj => /=.
 Qed.
 
