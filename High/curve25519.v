@@ -26,10 +26,10 @@ Proof. exact: oner_neq0. Qed.
 Canonical Structure curve25519_mcuType := Build_mcuType b_neq0 asq_neq4.
 
 Lemma curve25519_chi2 : 2%:R != 0 :> Zmodp.type.
-Proof. by zmodp_compute. Qed.
+Proof. by zmodp_compute. Defined.
 
 Lemma curve25519_chi3 : 3%:R != 0 :> Zmodp.type.
-Proof. by zmodp_compute. Qed.
+Proof. by zmodp_compute. Defined.
 
 Definition curve25519_ecuFieldMixin :=
   ECUFieldMixin curve25519_chi2 curve25519_chi3.

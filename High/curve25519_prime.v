@@ -42,3 +42,14 @@ Proof.
 rewrite -Zpow_mod_correct -lock ; vm_compute ; congruence.
 Qed.
 
+Lemma legendre_compute2:
+(-1 mod (2 ^ 255 - 19))%Z = (2 mod (2 ^ 255 - 19)) ^ ((locked (2 ^ 255 - 19)%Z - 1) / 2) mod locked (2 ^ 255 - 19)%Z.
+Proof.
+rewrite -Zpow_mod_correct -lock ; vm_compute ; congruence.
+Qed.
+
+Lemma legendre_compute28948022309329048855892746252171976963317496166410141009864396001978282409975:
+(-1 mod (2 ^ 255 - 19))%Z = (28948022309329048855892746252171976963317496166410141009864396001978282409975 mod (2 ^ 255 - 19)) ^ ((locked (2 ^ 255 - 19)%Z - 1) / 2) mod locked (2 ^ 255 - 19)%Z.
+Proof.
+rewrite -Zpow_mod_correct -lock ; vm_compute ; congruence.
+Qed.

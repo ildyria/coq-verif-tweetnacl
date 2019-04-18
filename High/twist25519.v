@@ -15,7 +15,7 @@ Open Scope ring_scope.
 Import GRing.Theory.
 
 Definition a : Zmodp.type := Zmodp.pi 486662.
-Definition b : Zmodp.type := -1%R.
+Definition b : Zmodp.type := Zmodp.pi 2.
 
 Lemma asq_neq4 : a^+2 != 4%:R.
 Proof. by rewrite expr2; zmodp_compute. Qed.
@@ -26,10 +26,10 @@ Proof. by rewrite /b; zmodp_compute. Qed.
 Canonical Structure twist25519_mcuType := Build_mcuType b_neq0 asq_neq4.
 
 Lemma twist25519_chi2 : 2%:R != 0 :> Zmodp.type.
-Proof. by zmodp_compute. Qed.
+Proof. by zmodp_compute. Defined.
 
 Lemma twist25519_chi3 : 3%:R != 0 :> Zmodp.type.
-Proof. by zmodp_compute. Qed.
+Proof. by zmodp_compute. Defined.
 
 Definition twist25519_ecuFieldMixin :=
   ECUFieldMixin twist25519_chi2 twist25519_chi3.
