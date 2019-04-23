@@ -467,8 +467,23 @@ apply Zmodp_zmod.add_sub.
 move => x. rewrite Zmodp_zmod.add_comm Zmodp_zmod.add_left_inv //.
 Defined.
 
+Lemma Zmodp_GRingSort_ringType : @ring_theory (GRing.Zmodule.sort Zmodp_ringType) zero one add mul sub opp eq.
+Proof.
+apply mk_rt.
+apply Zmodp_zmod.add_left_id.
+apply Zmodp_zmod.add_comm.
+apply Zmodp_zmod.add_assoc.
+apply Zmodp_ring.mul_left_id.
+apply Zmodp_ring.mul_comm.
+apply Zmodp_ring.mul_assoc.
+apply Zmodp_ring.mul_left_distr.
+apply Zmodp_zmod.add_sub.
+move => x. rewrite Zmodp_zmod.add_comm Zmodp_zmod.add_left_inv //.
+Defined.
+
 Add Ring Zmodp_ring : Zmodp_ring.
 Add Ring Zmodp_ringType : Zmodp_ringTypeR.
+Add Ring Zmodp_GRingSort_ringType : Zmodp_GRingSort_ringType.
 
 Lemma eq_inv_2 : forall (x m:Zmodp.type), (m = (Zmodp.pi 28948022309329048855892746252171976963317496166410141009864396001978282409975%Z) * x)%R -> ((Zmodp.pi 2) * m = x)%R.
 Proof.
@@ -485,7 +500,7 @@ rewrite Z.mul_1_l.
 apply modZp.
 Qed.
 
-Lemma eq_inv_2' : forall (x m:Zmodp.type), ((Zmodp.pi 2) * m = x)%R -> (m = (Zmodp.pi 28948022309329048855892746252171976963317496166410141009864396001978282409975%Z) * x)%R.
+(* Lemma eq_inv_2' : forall (x m:Zmodp.type), ((Zmodp.pi 2) * m = x)%R -> (m = (Zmodp.pi 28948022309329048855892746252171976963317496166410141009864396001978282409975%Z) * x)%R.
 Proof.
 move => m x <-.
 apply val_inj => /=.
@@ -499,4 +514,4 @@ rewrite /p -lock //.
 rewrite Z.mul_1_l.
 symmetry ; 
 apply modZp.
-Qed.
+Qed. *)

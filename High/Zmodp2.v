@@ -380,4 +380,19 @@ apply Zmodp2_zmod.add_sub.
 move => x. rewrite Zmodp2_zmod.add_comm Zmodp2_zmod.add_left_inv //.
 Defined.
 
+Lemma Zmodp2_ring2 : @ring_theory (GRing.Ring.sort Zmodp2_ringType) Zmodp2.zero Zmodp2.one Zmodp2.add Zmodp2.mul Zmodp2.sub Zmodp2.opp eq.
+Proof.
+apply mk_rt.
+apply Zmodp2_zmod.add_left_id.
+apply Zmodp2_zmod.add_comm.
+apply Zmodp2_zmod.add_assoc.
+apply Zmodp2_ring.mul_left_id.
+apply Zmodp2_ring.mul_comm.
+apply Zmodp2_ring.mul_assoc.
+apply Zmodp2_ring.mul_left_distr.
+apply Zmodp2_zmod.add_sub.
+move => x. rewrite Zmodp2_zmod.add_comm Zmodp2_zmod.add_left_inv //.
+Defined.
+
 Add Ring Zmodp2_ring : Zmodp2_ring.
+Add Ring Zmodp2_ring2 : Zmodp2_ring2.
