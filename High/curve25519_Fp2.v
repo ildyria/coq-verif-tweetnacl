@@ -26,7 +26,6 @@ Proof.
 rewrite expr2 /a.
 change (Zmodp2.piZ (486662, 0%Z)) with (Zmodp2.pi (Zmodp.pi 486662, Zmodp.pi 0)).
 rewrite Zmodp2_mulE /=.
-change (Zmodp.pi 0) with Zmodp.zero.
 apply/eqP => H.
 inversion H ; clear H.
 move/eqP: H1.

@@ -77,7 +77,8 @@ Section OptimizedLadder.
   Qed.
 
   Local Notation "\- x"   := (@MCGroup.neg _ x).
-  Local Notation "x \+ y" := (@MCGroup.add _ M x y).
+(*   Local Notation "x \+ y" := (@MCGroup.add _ M x y). *)
+  Local Notation "x \+ y" := (@MCGroup.add_no_check _ M x y).
   Local Notation "x \- y" := (x \+ (\- y)).
 
   Local Lemma opt_montgomery_rec_small (n m k : nat) (x a b c d : K) : k >= m ->

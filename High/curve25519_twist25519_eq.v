@@ -117,7 +117,6 @@ Proof.
 Qed.
 
 Lemma x_is_on_curve_or_twist: forall x,
-(*   (x != 0)%R -> *)
   (exists (p : mc curve25519_mcuType), p#x0 = x) \/
   (exists (p' : mc twist25519_mcuType), p'#x0 = x).
 Proof.
@@ -138,3 +137,4 @@ move => [] y [Hy|Hy] ; [left|right].
   exists (MC OC) => //.
  }
 Qed.
+

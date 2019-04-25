@@ -179,20 +179,47 @@ Module MCGroup.
               (| xs, - s * (xs - x1) - y1 |)
         end.
 
+    Definition add_no_check (p1 p2 : point K) :=
+        match p1, p2 with
+        | ∞, _ => p2 | _, ∞ => p1
+
+        | (|x1, y1|), (|x2, y2|) =>
+          if   x1 == x2
+          then if   (y1 == y2) && (y1 != 0)
+               then
+                 let s  := (3%:R * x1^+2 + 2%:R * M#a * x1 + 1) / (2%:R * M#b * y1) in
+                 let xs := s^+2 * M#b - M#a - 2%:R * x1 in
+                   (| xs, - s * (xs - x1) - y1 |)
+               else
+                 ∞
+          else
+            let s  := (y2 - y1) / (x2 - x1) in
+            let xs := s^+2 * M#b - M#a - x1 - x2 in
+              (| xs, - s * (xs - x1) - y1 |)
+        end.
+
+    Lemma add_no_check_eq (p1 p2:point K) :
+      oncurve M p1 ->
+      oncurve M p2 ->
+      add_no_check p1 p2 = add p1 p2.
+    Proof.
+      rewrite /add_no_check /add => -> -> //.
+    Qed.
+
     Lemma zeroO : oncurve M ∞.
-    Proof. by []. Qed.
+    Proof. by []. Defined.
 
     Lemma negO : forall p, oncurve M p -> oncurve M (neg p).
-    Proof. by case=> [|x y] //=; rewrite sqrrN. Qed.
+    Proof. by case=> [|x y] //=; rewrite sqrrN. Defined.
 
     Lemma oncurveN p: (oncurve M p) = (oncurve M (neg p)).
     Proof.
       apply/idP/idP; move/negO => //.
       by case: p => [|x y] //=; rewrite opprK.
-    Qed.
+    Defined.
 
     Lemma oncurveN_fin x y: oncurve M (|x, -y|) = oncurve M (|x, y|).
-    Proof. by move: (oncurveN (|x, y|)). Qed.
+    Proof. by move: (oncurveN (|x, y|)). Defined.
 
     Local Notation sizep := (size : {poly _} -> _).
 
@@ -255,7 +282,7 @@ Module MCGroup.
         have nz_x2Bx1: x2 - x1 != 0 by rewrite subr_eq0 eq_sym.
         congr (_ + _); apply/(@mulfI _ (x2 - x1)) => //.
         by rewrite !mulrBr !mulrA [_ / _]mulrAC divff // !simp; ssring.
-    Qed.
+    Defined.
 
     Lemma line_outcveE p q:
          ~~ (oncurve M (|p.1, p.2|) && oncurve M (|q.1, q.2|))
@@ -421,12 +448,24 @@ Module MCGroup.
       apply/eqP; rewrite -mul_polyC !(horner_exp, hornerE) /=.
       rewrite -![(_ / u) * _]mulrA -![M#b * _ * _]mulrA -!expr2.
       by rewrite !exprMn; congr (_ * _); rewrite -[c-_]opprK opprB sqrrN.
+    Defined.
+
+    Lemma addO' (p q: mc M): oncurve M (add_no_check p q).
+    Proof.
+    destruct p as [p Hp], q as [q Hq].
+    rewrite (add_no_check_eq Hp Hq).
+    apply addO.
     Qed.
 
     Lemma add0o : {in (oncurve M), left_id ∞ add}.
     Proof.
       move=> p; rewrite /in_mem /= => oncve_p.
       by rewrite /add /= oncve_p.
+    Qed.
+
+    Lemma add0o' : {in (oncurve M), left_id ∞ add_no_check}.
+    Proof.
+      done.
     Qed.
 
     Lemma addNo : left_inverse ∞ neg add.
@@ -437,6 +476,15 @@ Module MCGroup.
       + by rewrite (eqP Hy0) oppr0 eqxx //.
       + rewrite oppr_eq0 Hy0 andbT; case HyN: (y == -y) => //=.
         by absurd false=> //; rewrite -Hy0 -eqrN_eq0 HyN.
+    Qed.
+
+    Lemma addNo' : {in (oncurve M), left_inverse ∞ neg add_no_check}.
+    Proof.
+      move=> p.
+      rewrite /in_mem /mem => /= Hp.
+      rewrite add_no_check_eq //.
+      2: rewrite -oncurveN //.
+      apply addNo.
     Qed.
 
     Lemma addoC : commutative add.
@@ -467,20 +515,42 @@ Module MCGroup.
       by rewrite addrC.
     Qed.
 
+    Lemma addoC' : prop_in2 (mem (oncurve M)) (P:=fun x y : point K =>  eq (add_no_check x y) (add_no_check y x))
+ (inPhantom (commutative add_no_check)).
+    Proof.
+      move=> p q.
+      rewrite /in_mem /mem => /= Hp Hq.
+      rewrite ?add_no_check_eq //.
+      apply addoC.
+    Qed.
+
     Notation   zeromc := (MC zeroO).
     Definition negmc  := [fun p     : mc M => MC (negO [oc of p])].
-    Definition addmc  := [fun p1 p2 : mc M => MC (addO p1 p2)].
+    Definition addmc  := [fun p1 p2 : mc M => MC (addO' p1 p2)].
 
-    Lemma addNm : left_inverse zeromc negmc addmc.
+(*     Lemma addNm : left_inverse zeromc negmc addmc.
     Proof. by move=> [p Hp]; apply/eqP; rewrite eqE /= addNo. Qed.
+ *)
+    Lemma addNm : left_inverse zeromc negmc addmc.
+    Proof. by move=> [p Hp]; apply/eqP; rewrite eqE /= addNo'. Qed.
 
-    Lemma add0m : left_id zeromc addmc.
+(*     Lemma add0m : left_id zeromc addmc.
     Proof. by move=> [p Hp]; apply/eqP; rewrite eqE /= add0o. Qed.
+ *)
+    Lemma add0m : left_id zeromc addmc.
+    Proof. by move=> [p Hp]; apply/eqP; rewrite eqE /=. Qed.
 
-    Lemma addmC : commutative addmc.
+(*     Lemma addmC : commutative addmc.
     Proof.
       move=> [p1 Hp1] [p2 Hp2]; apply/eqP=> /=.
       by rewrite eqE /= addoC.
     Qed.
+ *)
+    Lemma addmC : commutative addmc.
+    Proof.
+      move=> [p1 Hp1] [p2 Hp2]; apply/eqP=> /=.
+      by rewrite eqE /= addoC'.
+    Qed.
+
   End Defs.
 End MCGroup.

@@ -131,6 +131,14 @@ Section MCEC.
         by congr (|_, _|); ssfield; rewrite ?neq0 //.
   Qed.
 
+  Lemma ec_of_mc_pointD' : forall p q, oncurve M p -> oncurve M q ->
+    ec_of_mc_point (MCGroup.add_no_check M p q) = ECGroup.add E (ec_of_mc_point p) (ec_of_mc_point q).
+  Proof.
+    move => p q Hp Hq.
+    rewrite MCGroup.add_no_check_eq //.
+    by apply ec_of_mc_pointD.
+  Qed.
+
   Lemma ec_of_mc_pointN : forall p,
     ec_of_mc_point (MCGroup.neg p) = ECGroup.neg (ec_of_mc_point p).
   Proof. by move=> [|x y] //=; rewrite mulNr. Qed.
@@ -140,7 +148,9 @@ Section MCAssocFin.
   Variable K : finECUFieldType.
   Variable M : mcuType K.
 
-  Local Notation "x \+ y" := (@MCGroup.add _ _ x y).
+(*   Local Notation "x \+ y" := (@MCGroup.add _ _ x y). *)
+
+  Local Notation "x \+ y" := (@MCGroup.add_no_check _ _ x y).
 
   Lemma addmA_fin: associative (@MCGroup.addmc K M).
   Proof.
@@ -149,12 +159,12 @@ Section MCAssocFin.
     pose oncve_q := [oc of q].
     pose oncve_r := [oc of r].
     apply/eqP; rewrite !eqE /=; apply/eqP.
-    rewrite -[p \+ _](ec_of_mc_pointK M) !ec_of_mc_pointD //;
-      last exact: MCGroup.addO.
+    rewrite -[p \+ _](ec_of_mc_pointK M) !ec_of_mc_pointD' //;
+      last exact: MCGroup.addO'.
     move: (addeA_fin (ec_of_mc p) (ec_of_mc q) (ec_of_mc r)).
     move/eqP; rewrite !eqE /= => /eqP ->.
-    rewrite -!ec_of_mc_pointD // ?ec_of_mc_pointK //;
-      last exact: MCGroup.addO.
+    rewrite -!ec_of_mc_pointD' // ?ec_of_mc_pointK //;
+      last exact: MCGroup.addO'.
   Qed.
 
   Definition finmc_zmodMixin := 
@@ -171,6 +181,6 @@ Section MCAssocFin.
     pose oncve_p := [oc of p].
     pose oncve_q := [oc of q].
     apply/eqP; rewrite !eqE /=; apply/eqP.
-    by rewrite ec_of_mc_pointD -?MCGroup.oncurveN // ec_of_mc_pointN.
+    by rewrite ec_of_mc_pointD' -?MCGroup.oncurveN // ec_of_mc_pointN.
   Qed.
 End MCAssocFin.
