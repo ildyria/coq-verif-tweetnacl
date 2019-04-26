@@ -103,6 +103,69 @@ Proof.
   - apply ontwist25519.
 Qed.
 
+Definition curve_Fp_to_Fp2 (p: point Zmodp.type) : (point Zmodp2.type) :=
+match p with
+  | EC_Inf => EC_Inf Zmodp2.type
+  | EC_In x y => EC_In (Zmodp2.Zmodp2 x 0) (Zmodp2.Zmodp2 y 0)
+end.
+
+Definition twist_Fp_to_Fp2 (p: point Zmodp.type) : (point Zmodp2.type) :=
+match p with
+  | EC_Inf => EC_Inf Zmodp2.type
+  | EC_In x y => EC_In (Zmodp2.Zmodp2 x 0) (Zmodp2.Zmodp2 0 y)
+end.
+
+Lemma curve_add_Fp_to_Fp2 : forall (p q: point Zmodp_ringType) (p' q': point Zmodp2_ringType),
+  p' = curve_Fp_to_Fp2 p ->
+  q' = curve_Fp_to_Fp2 q ->
+  MCGroup.add_no_check curve25519_Fp2_mcuType p' q' = curve_Fp_to_Fp2 (MCGroup.add_no_check curve25519_mcuType p q).
+Proof.
+  move => [|xp yp] [|xq yq] [|xp' yp'] [|xq' yq'] //= [] -> -> [] -> ->.
+  rewrite /curve25519.a /curve25519.b.
+  match goal with
+    | [ |- _ = ?A ] => remember A as Freezer
+  end.
+  rewrite /eq_op /Equality.op /=.
+  rewrite /eq_op /Equality.op /=.
+  rewrite !eq_refl ?Bool.andb_true_r.
+  rewrite ?expr2.
+  have ->: 2%:R = Zmodp2.Zmodp2 (2%:R) 0 => //.
+  have ->: 3%:R = Zmodp2.Zmodp2 (3%:R) 0 => //.
+  Zmodpify => /=.
+  ringify.
+  subst Freezer.
+  ring_simplify_this.
+  case_eq (xp == xq) => -> //=.
+  case_eq ((yp == yq) && (yp != 0)) => -> //=.
+Qed.
+
+Lemma twist_add_Fp_to_Fp2 : forall (p q: point Zmodp_ringType) (p' q': point Zmodp2_ringType),
+  p' = twist_Fp_to_Fp2 p ->
+  q' = twist_Fp_to_Fp2 q ->
+  MCGroup.add_no_check curve25519_Fp2_mcuType p' q' = twist_Fp_to_Fp2 (MCGroup.add_no_check twist25519_mcuType p q).
+Proof.
+  move => [|xp yp] [|xq yq] [|xp' yp'] [|xq' yq'] //= [] -> -> [] -> ->.
+  rewrite /twist25519.a /twist25519.b.
+  match goal with
+    | [ |- _ = ?A ] => remember A as Freezer
+  end.
+  rewrite /eq_op /Equality.op /=.
+  rewrite /eq_op /Equality.op /=.
+  rewrite !eq_refl ?Bool.andb_true_r.
+  rewrite ?expr2.
+  have ->: 2%:R = Zmodp2.Zmodp2 (2%:R) 0 => //.
+  have ->: 3%:R = Zmodp2.Zmodp2 (3%:R) 0 => //.
+  Zmodpify => /=.
+  subst Freezer.
+  ringify.
+  ring_simplify_this.
+  case_eq (xp == xq) => -> ; rewrite -Zmodp_mul_comm_2 ?GRing.mulrA //=.
+  case_eq ((yp == yq) && (yp != 0)) => -> //=.
+Qed.
+
+
+
+
 (* a great definition ... *)
 (* Definition curve_to_Fp2 (p: mc curve25519_mcuType) : (mc curve25519_Fp2_mcuType) :=
 match p with
@@ -114,15 +177,11 @@ match p with
 end.
  *)
 (* a not so great definition ... *)
-Definition curve_to_Fp2 (p: point Zmodp.type) : (point Zmodp2.type) :=
-match p with
-  | EC_Inf => EC_Inf Zmodp2.type
-  | EC_In x y => EC_In (Zmodp2.Zmodp2 x 0) (Zmodp2.Zmodp2 y 0)
-end.
 
-(* Lemma curve_to_Fp2_inf : curve_to_Fp2 (MC (MCGroup.zeroO curve25519_mcuType)) = MC (MCGroup.zeroO curve25519_Fp2_mcuType).
+(* 
+Lemma curve_to_Fp2_inf : curve_to_Fp2 (MC (MCGroup.zeroO curve25519_mcuType)) = MC (MCGroup.zeroO curve25519_Fp2_mcuType).
 Proof. done. Qed.
- *)
+*)
 (* Lemma curve_to_Fp2_xy x y (P: oncurve curve25519_mcuType (|x , y|)): curve_to_Fp2 (MC P) = MC (oncurve25519_impl x y P).
 Proof. done. Qed.
  *)
@@ -141,41 +200,14 @@ match p with
 end.
  *)
 (* a not so great definition ... *)
-Definition twist_to_Fp2 (p: point Zmodp.type) : (point Zmodp2.type) :=
+(* Definition twist_to_Fp2 (p: point Zmodp.type) : (point Zmodp2.type) :=
 match p with
   | EC_Inf => EC_Inf Zmodp2.type
   | EC_In x y => EC_In (Zmodp2.Zmodp2 x 0) (Zmodp2.Zmodp2 0 y)
 end.
+ *)
 
 
-Lemma add_stable : forall (p q: point Zmodp_ringType) (p' q': point Zmodp2_ringType),
-  p' = curve_to_Fp2 p ->
-  q' = curve_to_Fp2 q ->
-  MCGroup.add_no_check curve25519_Fp2_mcuType p' q' = curve_to_Fp2 (MCGroup.add_no_check curve25519_mcuType p q).
-Proof.
-  move => [|xp yp] [|xq yq] [|xp' yp'] [|xq' yq'] //=.
-  move => [] -> -> [] -> ->.
-  rewrite /curve25519.a /curve25519.b.
-  match goal with
-    | [ |- _ = ?A ] => remember A as Freezer
-  end.
-  rewrite /eq_op.
-  rewrite /Equality.op /=.
-  rewrite /eq_op.
-  rewrite /Equality.op /=.
-  rewrite !eq_refl.
-  rewrite ?Bool.andb_true_r.
-  rewrite ?expr2.
-  ring_simplify_this.
-  have ->: 2%:R = Zmodp2.Zmodp2 (2%:R) 0 => //.
-  have ->: 3%:R = Zmodp2.Zmodp2 (3%:R) 0 => //.
-  Zmodpify => /=.
-  ringify.
-  subst Freezer.
-  ring_simplify_this.
-  case_eq (xp == xq) => -> //=.
-  case_eq ((yp == yq) && (yp != 0)) => -> //=.
-Qed.
 
 
 (* Lemma nP_is_nP2 : forall (x1 x2 xs: Zmodp.type),
