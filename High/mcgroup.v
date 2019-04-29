@@ -114,9 +114,9 @@ Section MCEC.
     move=> [|x1 y1] [|x2 y2] oncve_p oncve_q //.
     + rewrite MCGroup.add0o // ECGroup.add0o //.
       by apply: ec_of_mc_point_ok.
-    + rewrite ECGroup.addoC MCGroup.addoC MCGroup.add0o // ECGroup.add0o //.
+    + rewrite ECGroup.addoC MCGroup.addoC // MCGroup.add0o // ECGroup.add0o //.
       by apply: ec_of_mc_point_ok.
-    + rewrite /MCGroup.add /ECGroup.add oncve_p oncve_q.
+    + rewrite /MCGroup.add /ECGroup.add.
       rewrite !ec_of_mc_point_ok //=.
       rewrite (inj_eq (addIr _)) !(inj_eq (divIf _)) ?mcu_b_neq0 //.
       rewrite mulf_eq0 invr_eq0 (negbTE (mcu_b_neq0 M)) orbF.
@@ -132,10 +132,9 @@ Section MCEC.
   Qed.
 
   Lemma ec_of_mc_pointD' : forall p q, oncurve M p -> oncurve M q ->
-    ec_of_mc_point (MCGroup.add_no_check M p q) = ECGroup.add E (ec_of_mc_point p) (ec_of_mc_point q).
+    ec_of_mc_point (MCGroup.add M p q) = ECGroup.add E (ec_of_mc_point p) (ec_of_mc_point q).
   Proof.
     move => p q Hp Hq.
-    rewrite MCGroup.add_no_check_eq //.
     by apply ec_of_mc_pointD.
   Qed.
 
@@ -148,9 +147,7 @@ Section MCAssocFin.
   Variable K : finECUFieldType.
   Variable M : mcuType K.
 
-(*   Local Notation "x \+ y" := (@MCGroup.add _ _ x y). *)
-
-  Local Notation "x \+ y" := (@MCGroup.add_no_check _ _ x y).
+  Local Notation "x \+ y" := (@MCGroup.add _ _ x y).
 
   Lemma addmA_fin: associative (@MCGroup.addmc K M).
   Proof.

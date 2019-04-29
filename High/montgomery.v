@@ -19,8 +19,7 @@ Section MontgomerysFormulas.
   Variable M : mcuType K.
 
   Local Notation "\- x"   := (@MCGroup.neg _ x).
-(*   Local Notation "x \+ y" := (@MCGroup.add _ M x y). *)
-  Local Notation "x \+ y" := (@MCGroup.add_no_check _ M x y).
+  Local Notation "x \+ y" := (@MCGroup.add _ M x y).
   Local Notation "x \- y" := (x \+ (\- y)).
 
   Lemma same_x_opposite_points p1_x p1_y p2_x p2_y :
@@ -72,7 +71,7 @@ Section MontgomerysFormulas.
       rewrite Hp1 Hp2 in p1_neq_p2 x1_eq_x2 oncve_p1 oncve_p2 *.
       by apply: same_x_opposite_points.
     have p1_plus_p2_inf: p3 = ∞
-      by rewrite /p3 p1_eq_p2N MCGroup.addNo' //.
+      by rewrite /p3 p1_eq_p2N MCGroup.addNo //.
     have p3_not_fin: ~~point_is_fin p3
       by rewrite p1_plus_p2_inf //.
     by rewrite -(andbN (point_is_fin p3)) p3_not_fin Hfin_p3.
@@ -93,7 +92,7 @@ Section MontgomerysFormulas.
     have oncve_p2N: oncurve M (\-p2) by apply: MCGroup.negO.
     rewrite /p3 /p4 Hp1 Hp2 /=.
     rewrite ?Hp1 ?Hp2 in oncve_p1 oncve_p2 oncve_p2N x1_neq_x2.
-    rewrite /MCGroup.add_no_check (negbTE x1_neq_x2) /=.
+    rewrite /MCGroup.add (negbTE x1_neq_x2) /=.
     clear Hp1 Hp2 Hall_fin Hfin_p1 Hfin_p2 p3 p4 p1_neq_p2 p1 p2.
     case: (boolP (x1 * x2 == 0)).
     * move=> x1_x2_eq0 {oncve_p2N}.
@@ -194,9 +193,9 @@ Section MontgomerysFormulas.
     rewrite /p3 -p1_eq_p2 Hp1.
     have y1_neq0: y1 != 0.
       apply/(@contraL _ (point_is_fin p3)) => [y1_eq0|]; last by [].
-      by rewrite /p3 -p1_eq_p2 /MCGroup.add_no_check Hp1 !eq_refl y1_eq0.
+      by rewrite /p3 -p1_eq_p2 /MCGroup.add Hp1 !eq_refl y1_eq0.
     rewrite {}Hp1 in oncve_p1.
-    rewrite /MCGroup.add_no_check !eq_refl y1_neq0 /=.
+    rewrite /MCGroup.add !eq_refl y1_neq0 /=.
     set c := (_ / _)^+2.
     rewrite -[4%:R * x1 * _]mulrA [x1 * _]mulrC -2!mulrA.
     have ->: x1 * (x1^+2 + M#a * x1 + 1) = x1^+3 + M#a * x1^+2 + x1 by ssring.
@@ -221,8 +220,7 @@ Section MontgomerysHomFormulas.
   Variable M : mcuType K.
 
   Local Notation "\- x"   := (@MCGroup.neg _ x).
-(*   Local Notation "x \+ y" := (@MCGroup.add _ M x y). *)
-  Local Notation "x \+ y" := (@MCGroup.add_no_check _ M x y).
+  Local Notation "x \+ y" := (@MCGroup.add _ M x y).
   Local Notation "x \- y" := (x \+ (\- y)).
 
   Inductive K_infty :=
@@ -310,7 +308,7 @@ Section MontgomerysHomFormulas.
   Proof.
     move=> p1 p2 oncve_p1 oncve_p2 p1_neq_p2 p1_neq_p2N.
     suff : (p1 \+ p2 != ∞) by case: (p1 \+ p2).
-    rewrite /MCGroup.add_no_check /=.
+    rewrite /MCGroup.add /=.
     case: (boolP (p1_x == p2_x)) => // /eqP p1x_eq_p2x.
     move: p1_neq_p2N.
     have -> : p1 = \- p2 by apply: (same_x_opposite_points (M:=M)).
@@ -363,7 +361,7 @@ Section MontgomerysHomFormulas.
     oncurve M p -> p_x != 0 -> point_is_fin (p \+ p).
   Proof.
     move=> p oncve_p p_x_neq0.
-    rewrite /p /MCGroup.add_no_check !eq_refl.
+    rewrite /p /MCGroup.add !eq_refl.
     by rewrite -(@point_x_eq0_point_y_eq0 p_x) // p_x_neq0.
   Qed.
 
@@ -382,15 +380,15 @@ Section MontgomerysHomFormulas.
     move=> Hp1x Hp2x Hp4x.
     case: (boolP (p1 == p2)) => [/eqP p1_eq_p2 | p1_neq_p2].
       move: Hp4x.
-      rewrite p1_eq_p2 MCGroup.addoC' ; oncurves => /=.
-      rewrite MCGroup.addNo'; oncurves => /= => /eqP.
+      rewrite p1_eq_p2 MCGroup.addoC ; oncurves => /=.
+      rewrite MCGroup.addNo; oncurves => /= => /eqP.
       by rewrite eq_sym inf_div_K_Inf (negbTE z4_neq_0).
     case: p1 => [| p1_x p1_y] in oncve_p1 Hp1x Hp4x p1_neq_p2 *.
       move: Hp1x => /eqP; rewrite eq_sym inf_div_K_Inf => /eqP z1_eq_0.
       have x1_neq_0 : x1 != 0
         by move: z1_eq_0 H1_ok => -> /orP; elim; rewrite ?eq_refl.
       move: Hp4x.
-      rewrite MCGroup.add0o' ?point_x_neg; last by apply: MCGroup.negO.
+      rewrite MCGroup.add0o ?point_x_neg; last by apply: MCGroup.negO.
       rewrite Hp2x /inf_div (negbTE z4_neq_0).
       case: ifP => [| /negbT z2_neq_0]; first by [].
       case; rewrite -[x4 / z4](mulfK z2_neq_0) => /(divIf z2_neq_0) Hx2.
@@ -414,7 +412,7 @@ Section MontgomerysHomFormulas.
       have x2_neq_0 : x2 != 0
         by move: z2_eq_0 H2_ok => -> /orP; elim; rewrite ?eq_refl.
       move: Hp4x.
-      rewrite /MCGroup.add_no_check /=.
+      rewrite /MCGroup.add /=.
       rewrite /= in Hp1x.
       rewrite Hp1x {1 2}/inf_div (negbTE z4_neq_0).
       case: ifP => [| /negbT z1_neq_0]; first by [].
@@ -438,7 +436,7 @@ Section MontgomerysHomFormulas.
     case: (boolP ((|p1_x, p1_y|) == (|p2_x, -p2_y|))) => [/eqP H | p1_neq_Np2].
       rewrite H in Hp1x *.
       rewrite /= in Hp1x Hp2x.
-      rewrite -[(|p2_x, (- p2_y)|)]/(\- (|p2_x, p2_y|)) MCGroup.addNo' ; oncurves => /=.
+      rewrite -[(|p2_x, (- p2_y)|)]/(\- (|p2_x, p2_y|)) MCGroup.addNo ; oncurves => /=.
       have z1_neq_0 : z1 != 0 by apply/inf_div_K_Fin/sym_eq; exact Hp1x.
       have z2_neq_0 : z2 != 0 by apply/inf_div_K_Fin/sym_eq; exact Hp2x.
       have Hx1 : x1 = x2 / z2 * z1.
@@ -589,7 +587,6 @@ Section MontgomerysHomFormulas.
       inversion p_eq_0.
       rewrite {}p_eq_0 in oncve_p Hpx *.
       rewrite !eq_refl /=.
-(*       rewrite /MCGroup.add_no_check !eq_refl /=. *)
       have x1z1_4_eq_0 : x1z1_4 = 0.
         by rewrite /x1z1_4 x1_eq_0 add0r sub0r sqrrN subrr.
       have /eqP : z3 = 0 by rewrite /z3 x1z1_4_eq_0 mul0r.
@@ -616,7 +613,7 @@ Section MontgomerysHomFormulas.
         by ssring.
       by rewrite mulf_neq0 // aux_no_square.
     have pDp_fin : point_is_fin (p \+ p).
-      by rewrite /MCGroup.add_no_check /p !eq_refl py_neq_0.
+      by rewrite /MCGroup.add /p !eq_refl py_neq_0.
     apply/eqP; rewrite -point_x0_point_x //; apply/eqP.
     rewrite !eq_refl py_neq_0 /=.
     have Hall_fin : all (@point_is_fin K) [:: p; p \+ p] by rewrite /= pDp_fin.
@@ -629,7 +626,7 @@ Section MontgomerysHomFormulas.
     have Hp: p = p => //.
     have Hp2: p = (|p_x, p_y|) => //.
     have := montgomery_eq oncve_p Hp Hall_fin.
-      rewrite /MCGroup.add_no_check Hp2 !eq_refl py_neq_0 /=.
+      rewrite /MCGroup.add Hp2 !eq_refl py_neq_0 /=.
     move=>->.
     rewrite Hpx /x3 /z3 /x1z1_4.
     by ssfield.
