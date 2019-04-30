@@ -153,12 +153,13 @@ From mathcomp Require Import ssrnat.
 Theorem twist25519_ladder_really_ok (n : nat) x :
     (n < 2^255)%nat -> x != 0 ->
     forall (p  : mc twist25519_mcuType),
-    (twist25519_Fp_to_Fp2 p)#x0 /p = x -> twist25519_ladder n x = ((twist25519_Fp_to_Fp2 p) *+ n)#x0 /p.
+    twist25519_Fp_to_Fp2 p #x0 = Zmodp2.Zmodp2 x 0 ->
+    twist25519_ladder n x = ((twist25519_Fp_to_Fp2 p) *+ n)#x0 /p.
 Proof.
   move => Hn Hx p Hp.
   have Hp' := tFp_to_Fp2_cancel p.
   have Hp'' : p #x0 = x.
-  by rewrite Hp'.
+    rewrite Hp' Hp //.
   rewrite (twist25519_ladder_ok n x Hn Hx p Hp'').
   rewrite -nP_is_nP2.
   rewrite tFp_to_Fp2_cancel //.

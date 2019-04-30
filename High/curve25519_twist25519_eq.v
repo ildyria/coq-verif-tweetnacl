@@ -9,10 +9,10 @@ From Tweetnacl.High Require Import opt_ladder.
 From Tweetnacl.High Require Import curve25519_prime.
 From Tweetnacl.High Require Import prime_ssrprime.
 From Reciprocity Require Import Reciprocity.Reciprocity.
+From Tweetnacl.High Require Import Zmodp.
 Require Import ZArith.
 
 Import BinInt.
-
 Open Scope ring_scope.
 Import GRing.Theory.
 
@@ -23,7 +23,8 @@ move => n x.
 rewrite /curve25519_ladder /twist25519_ladder  /opt_montgomery.
 elim 255 => //.
 Qed.
-From Tweetnacl.High Require Import Zmodp.
+
+Open Scope Z.
 
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
 Local Notation "Z.R A" := (Zmodp.repr A) (at level 30).

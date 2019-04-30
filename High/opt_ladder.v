@@ -154,4 +154,18 @@ Section OptimizedLadder.
       - by apply: point_x0_neq0_fin; rewrite p_x_eqx.
   Qed.
 
+  Lemma neg_x : forall (p : mc M),
+    p#x0 = (-p)#x0.
+  Proof.
+    move=> [[|xp yp] Hp] //=.
+  Qed.
+
+  Lemma neg_x_n : forall (n:nat) (p : mc M),
+    (p *+ n)#x0 = ((-p) *+ n)#x0.
+  Proof.
+    move => n p.
+    rewrite GRing.mulNrn.
+    apply neg_x.
+  Qed.
+
 End OptimizedLadder.

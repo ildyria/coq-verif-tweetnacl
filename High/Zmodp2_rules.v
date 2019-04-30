@@ -139,9 +139,7 @@ move => []; move/Refl.eqb_spec.
   apply/eqP => H2a.
   apply: Ha.
   move: H2a.
-  move/(f_equal (fun x => (2%:R^-1) * x)).
-  rewrite GRing.mulrA GRing.mulr0 (mulrC 2%:R^-1) GRing.mulfV ; ring_simplify_this.
-  by zmodp_compute.
+  apply time_2_eq_0.
 Qed.
 
 (*

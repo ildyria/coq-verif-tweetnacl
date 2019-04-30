@@ -50,6 +50,9 @@ split.
   by move/andP => [] /Refl.eqb_spec -> /Refl.eqb_spec ->.
 Qed.
 
+Lemma Zmodp2_inv : forall a b c d, Zmodp2 a c = Zmodp2 b d -> a = b /\ c = d.
+Proof. by move => a b c d H; inversion H. Qed.
+
 End Zmodp2.
 
 Import Zmodp2.

@@ -91,42 +91,70 @@ Proof. reflexivity. Qed.
 Lemma Fp_to_Fp2_eq_T: Fp_to_Fp2 = tFp_to_Fp2.
 Proof. reflexivity. Qed.
 
-From mathcomp Require Import ssrnat.
 Local Notation "p '/p'" := (Fp_to_Fp2 p) (at level 40).
+
+Lemma Fp2_to_Fp :
+  forall (x: Zmodp.type) (p : mc curve25519_Fp2_mcuType),
+  p #x0 = Zmodp2.Zmodp2 x 0 ->
+  (exists c:mc curve25519_mcuType, curve25519_Fp_to_Fp2 c = p) \/ (exists t:mc twist25519_mcuType, twist25519_Fp_to_Fp2 t = p).
+Proof.
+  move => x [[|xp yp] Hp].
+  + (* is p is at infinity *)
+  move => _ ; left.
+  have Hc : oncurve curve25519_mcuType ∞ => //=.
+  exists (MC Hc) => /= ; apply mc_eq => //.
+  + (* if p is (x,y) *)
+  have := Hp.
+  rewrite /oncurve /= /a /b.
+  destruct yp as [yp1 yp2].
+  move => Hp' Hx.
+  have : (Zmodp2.Zmodp2 yp1 yp2) ^+ 2 == (Zmodp2.Zmodp2 x 0) ^+ 3 + Zmodp2.pi (Zmodp.pi 486662, 0) * (Zmodp2.Zmodp2 x 0) ^+ 2 + (Zmodp2.Zmodp2 x 0).
+  rewrite -Hx -(GRing.mul1r (Zmodp2.Zmodp2 yp1 yp2 ^+ 2)) //.
+  rewrite expr3 ?expr2.
+  Zmodpify => /=.
+  have ->: Zmodp2.Zmodp2 yp1 yp2 * Zmodp2.Zmodp2 yp1 yp2 = Zmodp2.Zmodp2 (yp1^+2 + 2%:R * yp2^+2) (2%:R * yp1 * yp2).
+  rewrite /GRing.mul /= /Zmodp2.mul /Zmodp2.pi expr2 /=.
+  ringify .
+  f_equal.
+  rewrite /GRing.mul /= (Zmodp_ring.mul_comm yp2).
+  symmetry.
+  rewrite -Zmodp_ring.mul_assoc.
+  ringify.
+  apply add_eq_mul2.
+  move/eqP.
+  move/Zmodp2.Zmodp2_inv => [].
+  ringify.
+  move => Hxy.
+  rewrite -GRing.mulrA.
+  move/time_2_eq_0/mult_xy_eq_0 => [] Hy; rewrite Hy in Hxy;
+  move: Hxy ; ring_simplify_this => Hxy.
+  - right.
+  have OC : oncurve twist25519_mcuType (| x, yp2 |).
+    by apply/eqP => /= ; rewrite /twist25519.a /twist25519.b ?expr2 ?expr3' ; ringify.
+  exists (MC OC) => /=.
+  apply mc_eq ; congruence.
+  - left.
+  have OC : oncurve curve25519_mcuType (| x, yp1 |).
+    by apply/eqP => /= ; rewrite /curve25519.a /curve25519.b ?expr2 ?expr3' mul1r; ringify.
+  exists (MC OC) => /=.
+  apply mc_eq ; congruence.
+Qed.
+
+From mathcomp Require Import ssrnat.
 
 Lemma curve25519_ladder_maybe_ok (n : nat) x :
     (n < 2^255)%nat -> x != 0 ->
-    forall (p'  : mc curve25519_Fp2_mcuType),
-    (exists p, curve25519_Fp_to_Fp2 p #x0 /p = x) \/ (exists p, twist25519_Fp_to_Fp2 p #x0 /p = x) ->
-    p'#x0 /p = x -> curve25519_ladder n x = (p' *+ n)#x0 /p.
+    forall (p  : mc curve25519_Fp2_mcuType),
+    p #x0 = Zmodp2.Zmodp2 x 0 ->
+    curve25519_ladder n x = (p *+ n)#x0 /p.
 Proof.
-  move => Hn Hx p' [[p Hp]|[p Hp]] Hp'.
-(*   have [[p Hp]|[p Hp]]:= x_is_on_curve_or_twist x. *)
-  rewrite (curve25519_ladder_really_ok n x Hn Hx p Hp) -Fp_to_Fp2_eq_C.
-  f_equal.
-  f_equal.
-  f_equal.
-  f_equal.
-  destruct p, p' => /=.
-  apply mc_eq.
-  destruct p, p0 => //=.
-  move: Hp Hp' Hx => /= <- //=.
-  move: Hp Hp' Hx => /= <- <- //=.
-  move: Hp Hp' => /= -> <-.
-Admitted.
-
-Theorem curve25519_ladder_really_ok (n : nat) (x:Zmodp.type) :
-    (n < 2^255)%nat -> x != 0 ->
-    forall (p'  : mc curve25519_Fp2_mcuType),
-    p'#x0 /p = x -> curve25519_ladder n x = (p' *+ n)#x0 /p.
-Proof.
-  have : (exists p, curve25519_Fp_to_Fp2 p #x0 /p = x) \/ (exists p, twist25519_Fp_to_Fp2 p #x0 /p = x).
-  have := (x_is_on_curve_or_twist x).
-  move => [[p Hp]|[p Hp]].
-  by left; exists p;  move: p Hp => [[| xp yp] Hp] /=.
-  by right; exists p;  move: p Hp => [[| xp yp] Hp] /=.
-  intros ; apply curve25519_ladder_maybe_ok => //.
+  move => Hn Hx p Hp.
+  have [[c] Hc|[t] Ht] := Fp2_to_Fp x p Hp.
+  + have Hcx0: curve25519_Fp_to_Fp2 c #x0 = Zmodp2.Zmodp2 x 0 by rewrite Hc.
+    rewrite (curve25519_ladder_really_ok n x Hn Hx c Hcx0) -Fp_to_Fp2_eq_C Hc //.
+  + have Htx0: twist25519_Fp_to_Fp2 t #x0 = Zmodp2.Zmodp2 x 0 by rewrite Ht.
+    rewrite curve_twist_eq.
+    rewrite (twist25519_ladder_really_ok n x Hn Hx t Htx0) -Fp_to_Fp2_eq_T Ht //.
 Qed.
-
 
 Close Scope ring_scope.

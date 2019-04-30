@@ -500,6 +500,28 @@ rewrite Z.mul_1_l.
 apply modZp.
 Qed.
 
+Open Scope ring_scope.
+Lemma add_eq_mul2: forall (x:Zmodp.type),
+  2%:R * x = x + x.
+Proof.
+  move => x.
+  have -> : 2%:R = 1%:R + 1%:R :> Zmodp.type by apply val_inj => //=.
+  rewrite GRing.mulrDl GRing.mul1r //.
+Qed.
+
+Lemma time_2_eq_0 (a:Zmodp.type) : 2%:R * a = 0 ->  a = 0.
+Proof.
+  move/(f_equal (fun x => (2%:R^-1) * x)).
+  rewrite GRing.mulrA GRing.mulr0 (mulrC 2%:R^-1) GRing.mulfV.
+  rewrite GRing.mul1r //.
+  by zmodp_compute.
+Qed.
+
+Lemma mult_xy_eq_0: forall (x y: Zmodp.type),
+  x * y = 0 -> x = 0 \/ y = 0.
+Proof. by move => x y/eqP; rewrite mulf_eq0 ; move/orP => []/eqP -> ; [left|right]. Qed.
+
+Close Scope ring_scope.
 (* Lemma eq_inv_2' : forall (x m:Zmodp.type), ((Zmodp.pi 2) * m = x)%R -> (m = (Zmodp.pi 28948022309329048855892746252171976963317496166410141009864396001978282409975%Z) * x)%R.
 Proof.
 move => m x <-.
