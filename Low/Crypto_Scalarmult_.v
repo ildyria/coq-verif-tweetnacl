@@ -1,6 +1,6 @@
 From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.ListsOp Require Import Export.
-From mathcomp Require Import ssreflect eqtype ssralg ssrnat.
+From mathcomp Require Import ssreflect eqtype ssralg ssrnat ssrbool.
 
 From Tweetnacl.Gen Require Import AMZubSqSel.
 From Tweetnacl.Low Require Import Crypto_Scalarmult.
@@ -20,7 +20,10 @@ Require Import ZArith.Zpow_facts.
 From Tweetnacl.Mid Require Import Instances.
 
 From Tweetnacl.High Require Import Zmodp.
+From Tweetnacl.High Require Import Zmodp2.
 From Tweetnacl.High Require Import curve25519.
+From Tweetnacl.High Require Import curve25519_Fp2.
+From Tweetnacl.High Require Import curve_twist_incl_Fp2.
 From Tweetnacl.High Require Import curve25519_prime.
 From Tweetnacl.High Require Import montgomery.
 From Tweetnacl.High Require Import mc.
@@ -48,14 +51,20 @@ Qed.
  *)
 Open Scope ring_scope.
 Import GRing.Theory.
-Import ssrnat.
+
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
+Local Notation "p '/p'" := (Fp_to_Fp2 p) (at level 40).
+
+Local Lemma expn_pown : forall n x, Nat.pow x n = expn x n.
+Proof.
+  elim => [| n IHn] x /=.
+  by rewrite expn0.
+  rewrite expnS IHn.
+  done.
+Qed.
 
 Local Lemma Zclamp_istrue N: is_true (ssrnat.leq (S (Z.to_nat (Zclamp N))) (ssrnat.expn 2 255)).
 Proof.
-Admitted.
-(* SearchAbout ssrnat.expn.
-SearchAbout ssrnat.expn Nat.pow.
 have := Zclamp_max N.
 have := Zclamp_min N.
 move: (Zclamp N) => M Hm.
@@ -64,51 +73,27 @@ have ->: (Z.to_nat (2^255) = Nat.pow 2 255)%nat.
 rewrite -(Nat2Z.id (Nat.pow 2 255)%N).
 apply f_equal.
 symmetry.
-have Hinj := inj_pow 2%N 255%N.
-rewrite Hinj.
-change (ℤ.ℕ 2) with 2.
-change (ℤ.ℕ 255) with 255.
-reflexivity.
-move: (2^255)%nat => T.
-move => H.
-apply/ltP. => H.
+have -> := inj_pow 2%N 255%N => //.
+rewrite expn_pown.
+by move/ltP.
+Qed.
 
+Local Notation "'Fp2_x' P" := (Zmodp2.Zmodp2 (Zmodp.pi (modP P)) 0) (at level 30).
+Local Notation "P '_x0'" := (val ((P )#x0 /p)) (at level 30).
 
-move => ->.
-change (2^255)%N with 57896044618658097711785492504343953926634992332820282019728792003956564819968%N.
-Eval compute in (2^255).
-apply f_equal.
-rewrite /expn.
-rewrite /expn_rec.
-rewrite /iterop.
-Search iterop.
-
-Search expn Z.to_nat.
-f_equal.
-rewrite -Z_of_nat_to_nat_p.
-Nat2Z.id
-Z2Nat.id
-SearchAbout Z.to_nat expn.
-move/ltP => Hm.
-Search Z.to_nat Z.lt.
-omega.
-//.
-rewrite /Zclamp.
-Eval compute in (Z.ones 255).
-change (57896044618658097711785492504343953926634992332820282019728792003956564819960) with (Z.ones 255).
- *)
-Theorem Crypto_Scalarmult_Correct: forall (n p:list Z) (P:mc curve25519_mcuType),
+Theorem Crypto_Scalarmult_Correct: forall (n p:list Z) (P:mc curve25519_Fp2_mcuType),
   Zlength n = 32 ->
   Zlength p = 32 ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) n ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
-  (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p)))) = P#x0 ->
-  ZofList 8 (Crypto_Scalarmult n p) = val ((P *+ (Z.to_nat (Zclamp (ZofList 8 n))))#x0).
+  Fp2_x (ZUnpack25519 (ZofList 8 p)) = P#x0 ->
+  ZofList 8 (Crypto_Scalarmult n p) = (P *+ (Z.to_nat (Zclamp (ZofList 8 n)))) _x0.
 Proof.
   move=> n p P Hn Hp Hbn Hbp HP.
   rewrite CSM_Eq //.
   f_equal.
-  apply curve25519_ladder_ok => //.
+  apply curve25519_ladder_maybe_ok => //.
   move: (ZofList 8 n) => N.
   apply Zclamp_istrue.
+  (* YES OF COURSE ! x != 0 !! *)
 Admitted.

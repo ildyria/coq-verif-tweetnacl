@@ -142,8 +142,9 @@ Qed.
 
 From mathcomp Require Import ssrnat.
 
-Lemma curve25519_ladder_maybe_ok (n : nat) x :
-    (n < 2^255)%nat -> x != 0 ->
+Lemma curve25519_ladder_maybe_ok (n : nat) (x:Zmodp.type) :
+    (n < 2^255)%nat ->
+    x != 0 ->
     forall (p  : mc curve25519_Fp2_mcuType),
     p #x0 = Zmodp2.Zmodp2 x 0 ->
     curve25519_ladder n x = (p *+ n)#x0 /p.
