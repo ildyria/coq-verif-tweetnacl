@@ -23,8 +23,6 @@ Open Scope ring_scope.
 Import GRing.Theory.
 
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
-Local Notation "Z.R A" := (Zmodp.repr A) (at level 30).
-Local Notation "-. A" := (Zmodp.opp A) (at level 30).
 
 Lemma oncurve_inf : oncurve curve25519_Fp2_mcuType (EC_Inf Zmodp2.type).
 Proof. done. Defined.
@@ -77,14 +75,10 @@ Definition Fp_to_Fp2 p := match p with
   | Zmodp2.Zmodp2 x y => x
   end.
 
-Lemma Fp_to_Fp2_t : forall p:mc twist25519_mcuType,
-  p#x0 = Fp_to_Fp2 ((twist25519_Fp_to_Fp2 p)#x0).
+Lemma Fp_to_Fp2_t : forall p:mc twist25519_mcuType, p#x0 = Fp_to_Fp2 ((twist25519_Fp_to_Fp2 p)#x0).
 Proof. by case; case. Qed.
-
-Lemma Fp_to_Fp2_c : forall p:mc curve25519_mcuType,
-  p#x0 = Fp_to_Fp2 ((curve25519_Fp_to_Fp2 p)#x0).
+Lemma Fp_to_Fp2_c : forall p:mc curve25519_mcuType, p#x0 = Fp_to_Fp2 ((curve25519_Fp_to_Fp2 p)#x0).
 Proof. by case; case. Qed.
-
 Lemma Fp_to_Fp2_eq_C: Fp_to_Fp2 = cFp_to_Fp2.
 Proof. reflexivity. Qed.
 
@@ -144,18 +138,22 @@ From mathcomp Require Import ssrnat.
 
 Lemma curve25519_ladder_maybe_ok (n : nat) (x:Zmodp.type) :
     (n < 2^255)%nat ->
-    x != 0 ->
     forall (p  : mc curve25519_Fp2_mcuType),
     p #x0 = Zmodp2.Zmodp2 x 0 ->
     curve25519_ladder n x = (p *+ n)#x0 /p.
 Proof.
-  move => Hn Hx p Hp.
-  have [[c] Hc|[t] Ht] := Fp2_to_Fp x p Hp.
-  + have Hcx0: curve25519_Fp_to_Fp2 c #x0 = Zmodp2.Zmodp2 x 0 by rewrite Hc.
-    rewrite (curve25519_ladder_really_ok n x Hn Hx c Hcx0) -Fp_to_Fp2_eq_C Hc //.
-  + have Htx0: twist25519_Fp_to_Fp2 t #x0 = Zmodp2.Zmodp2 x 0 by rewrite Ht.
-    rewrite curve_twist_eq.
-    rewrite (twist25519_ladder_really_ok n x Hn Hx t Htx0) -Fp_to_Fp2_eq_T Ht //.
+  move => Hn p Hp.
+  have /orP[Hx|Hx] := orNb (x == 0).
+  + have [[c] Hc|[t] Ht] := Fp2_to_Fp x p Hp.
+    + have Hcx0: curve25519_Fp_to_Fp2 c #x0 = Zmodp2.Zmodp2 x 0 by rewrite Hc.
+      rewrite (curve25519_ladder_really_ok n x Hn Hx c Hcx0) -Fp_to_Fp2_eq_C Hc //.
+    + have Htx0: twist25519_Fp_to_Fp2 t #x0 = Zmodp2.Zmodp2 x 0 by rewrite Ht.
+      rewrite curve_twist_eq.
+      rewrite (twist25519_ladder_really_ok n x Hn Hx t Htx0) -Fp_to_Fp2_eq_T Ht //.
+  + move/eqP: Hx Hp => ->.
+    rewrite curve25519_0.
+    have -> : Zmodp2.Zmodp2 0 0 = 0 => //=.
+    move/(p_x0_0_eq_0 n) => -> //.
 Qed.
 
 Close Scope ring_scope.

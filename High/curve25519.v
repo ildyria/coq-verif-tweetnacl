@@ -55,3 +55,10 @@ apply opt_montgomery_ok=> //=.
 rewrite /a.
 apply a_not_square.
 Qed.
+
+Lemma curve25519_0 (n : nat) :
+  curve25519_ladder n 0 = 0.
+Proof.
+  rewrite /curve25519_ladder.
+  apply opt_montgomery_0.
+Qed.

@@ -163,6 +163,16 @@ Lemma Zmodp_mul_comm_2 (a:Zmodp.type) : 2%:R * a = a * 2%:R.
 Proof. by rewrite /GRing.mul /= Zmodp_ring.mul_comm. Qed.
 
 
+
+
+
+
+
+
+
+
+
+
 (*
  * Big rewrite tactic
  *)

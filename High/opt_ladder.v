@@ -168,4 +168,39 @@ Section OptimizedLadder.
     apply neg_x.
   Qed.
 
+Local Ltac ring_simplify_this :=
+  repeat match goal with
+  | _ => rewrite expr2
+  | _ => rewrite exprS
+  | _ => rewrite GRing.mul1r
+  | _ => rewrite GRing.mulr1
+  | _ => rewrite GRing.mul0r
+  | _ => rewrite GRing.mulr0
+  | _ => rewrite GRing.add0r
+  | _ => rewrite GRing.oppr0
+  | _ => rewrite GRing.addr0
+  | _ => done
+end.
+
+
+Lemma opt_montgomery_rec_0 : forall (m n: nat) a b d,
+  opt_montgomery_rec n m 0 a b 0 d = 0.
+Proof.
+  elim => [| m IHm] n a b d /=.
+  + rewrite GRing.invr0 mulr0 //.
+  + have/orP := bitnV n m.
+    move => []/eqP => ->.
+    all: rewrite /cswap => /=.
+    all: ring_simplify_this.
+    all: rewrite addrN.
+    all: ring_simplify_this.
+Qed.
+
+Theorem opt_montgomery_0 (n m: nat):
+  opt_montgomery n m 0 = 0.
+Proof.
+  rewrite /opt_montgomery.
+  apply opt_montgomery_rec_0.
+Qed.
+
 End OptimizedLadder.

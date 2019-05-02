@@ -23,8 +23,6 @@ Open Scope ring_scope.
 Import GRing.Theory.
 
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
-Local Notation "Z.R A" := (Zmodp.repr A) (at level 30).
-Local Notation "-. A" := (Zmodp.opp A) (at level 30).
 
 (* Conversion between twist25519 over F_p and F_p2 *)
 Definition twist_Fp_to_Fp2 (p: point Zmodp.type) : (point Zmodp2.type) :=
@@ -60,7 +58,6 @@ match p with
   | MC u P => MC (on_twist_Fp_to_Fp2 u P)
 end.
 
-
 Local Lemma twist_add_Fp_to_Fp2 : forall (p q: point Zmodp_ringType) (p' q': point Zmodp2_ringType),
   p' = twist_Fp_to_Fp2 p ->
   q' = twist_Fp_to_Fp2 q ->
@@ -85,7 +82,7 @@ Proof.
   case_eq ((yp == yq) && (yp != 0)) => -> //=.
 Qed.
 
-Local Lemma on_twist_add_Fp_to_Fp2 : forall (p q: point Zmodp_ringType),
+(* Local Lemma on_twist_add_Fp_to_Fp2 : forall (p q: point Zmodp_ringType),
   oncurve twist25519_mcuType p ->
   oncurve twist25519_mcuType q ->
    oncurve curve25519_Fp2_mcuType (twist_Fp_to_Fp2 (MCGroup.add twist25519_mcuType p q)).
@@ -105,7 +102,7 @@ Proof.
   by move => [p Hp] [q Hq] => /=; apply on_twist_add_Fp_to_Fp2.
 Qed.
 
-
+ *)
 Local Lemma twist25519_add_Fp_to_Fp2_ : forall (p q: mc twist25519_mcuType) (p' q': mc curve25519_Fp2_mcuType),
   p' = twist25519_Fp_to_Fp2 p ->
   q' = twist25519_Fp_to_Fp2 q ->

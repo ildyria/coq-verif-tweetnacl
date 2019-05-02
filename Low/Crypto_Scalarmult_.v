@@ -95,5 +95,4 @@ Proof.
   apply curve25519_ladder_maybe_ok => //.
   move: (ZofList 8 n) => N.
   apply Zclamp_istrue.
-  (* YES OF COURSE ! x != 0 !! *)
-Admitted.
+Qed.
