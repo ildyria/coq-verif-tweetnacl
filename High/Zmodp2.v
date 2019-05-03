@@ -2,7 +2,7 @@ Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
 From mathcomp Require Import fintype ssralg finalg finfield prime.
 Require Import ZArith ZArith.Znumtheory.
-From Tweetnacl.High Require Import curve25519_prime Zmodp prime_ssrprime.
+From Tweetnacl.High Require Import curve25519_prime Zmodp Zmodp_Ring prime_ssrprime.
 From mathcomp Require Import galois.
 
 Set Implicit Arguments.
@@ -292,21 +292,43 @@ Fixpoint pow (n:nat) (x:type) := match n with
   | S n => (x * pow n x)%R
 end.
 
-Axiom Zinv_pow : forall (x :type), x <> zero -> pow (Z.to_nat (Z.pow p 2 - 1)%Z) x = one.
+Local Lemma pi_2 : Zmodp.pi 2 = 2%:R.
+Proof. by apply/eqP ; zmodp_compute. Qed.
+Local Lemma pi_3 : Zmodp.pi 3 = 3%:R.
+Proof. by apply/eqP ; zmodp_compute. Qed.
+
+Local Ltac ringify := repeat match goal with
+  | [ |- context[Zmodp.pi 2]] => rewrite pi_2
+  | [ |- context[Zmodp.mul ?a ?b]] => have ->: (Zmodp.mul a b) = a * b => //
+  | [ |- context[Zmodp.add ?a (Zmodp.opp ?b)]] => have ->: (Zmodp.add a (Zmodp.opp b)) = a - b => //
+  | [ |- context[Zmodp.opp ?a]] => have ->: Zmodp.opp a = -a => //
+  | [ |- context[Zmodp.add ?a ?b]] => have ->: (Zmodp.add a b) = a + b => //
+  | [ |- context[Zmodp.one] ] => have ->: Zmodp.one = 1 => //
+  | [ |- context[Zmodp.zero] ] => have ->: Zmodp.zero = 0 => //
+  end.
 
 Lemma Zinv x : Zinv_spec x.
 Proof.
 case_eq (eqb x zero) ; move/eqb_spec.
 + move => -> ; exact: Zinv_spec_zero.
-+ move=> Hx.
-apply (@Zinv_spec_unit x Hx (pow (Z.to_nat (Z.pow p 2 - 2)) x)).
-have := Zinv_pow Hx.
-have ->: Z.to_nat (p ^ 2 - 1)%Z = (Z.to_nat (p ^ 2 - 2 + 1)%Z) by f_equal ; omega.
-change (p ^2 - 2 + 1)%Z with (Z.succ (p^2 -2))%Z.
-rewrite Z2Nat.inj_succ /=.
-2: by rewrite /p -lock ; compute.
-move => <-.
-apply Zmodp2_ring.mul_comm.
++ destruct x as [x y] => Hxy.
+apply (@Zinv_spec_unit (Zmodp2 x y) Hxy (Zmodp2 (x/(x^+2-2%:R*y^+2)) (-y/(x^+2-2%:R*y^+2)))).
+rewrite /GRing.mul /= /mul /=.
+ringify.
+have ->: x / (x ^+ 2 - 2%:R * y ^+ 2) * x + 2%:R * (- y / (x ^+ 2 - 2%:R * y ^+ 2) * y) = (x ^+2 - 2%:R * y^+2) / (x ^+ 2 - 2%:R * y ^+ 2).
+remember (x ^+ 2 - 2%:R * y ^+ 2) as M.
+by rewrite (mulrC x) (mulrC (-y)) ?mulrA (mulrC (2%:R)) -?mulrA -mulrDr mulrC mulNr mulrN HeqM ?expr2.
+have ->: x / (x ^+ 2 - 2%:R * y ^+ 2) * y + - y / (x ^+ 2 - 2%:R * y ^+ 2) * x = 0.
+remember (x ^+ 2 - 2%:R * y ^+ 2) as M.
+by rewrite (mulrC x) (mulrC (-y)) -?mulrA (mulrC x) mulNr mulrN addrN.
+rewrite mulfV //.
+apply x2_eq_2_y2.
+apply/orP.
+move/eqP: Hxy.
+apply/contraR.
+case_eq (x != 0) ; move/eqP;
+case_eq (y != 0) ; move/eqP => //= => -> -> _.
+apply/eqP => //=.
 Qed.
 
 Definition Zmodp2_inv (x : type) : type :=
