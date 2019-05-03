@@ -113,7 +113,7 @@ It is to be noted that the \texttt{clightgen} tool has not been formally verifie
 While the final state of a For loops can be computed by a simple recursive function,
 we must define invariants that are true for each step of the iteration.
 
-\begin{coqD}
+\begin{Coq}
 Variable T : Type.
 Variable g : nat -> T -> T.
 
@@ -135,7 +135,7 @@ Definition rec_fn_rev (n:nat) (s:T) :=
 Lemma Tail_Head_equiv :
   forall (n:nat) (s:T),
   rec_fn n s = rec_fn_rev n s.
-\end{coqD}
+\end{Coq}
 
 
 In order to prove the for loops, we must define invariants.

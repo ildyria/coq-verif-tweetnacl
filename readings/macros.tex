@@ -22,140 +22,144 @@
   \vrule height0.75em width0.5em depth0.25em\fi}
 
 
-\DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\Vol}{Vol}
-\DeclareMathOperator*{\Supp}{Supp}
-\newcommand{\cR}{\ensuremath{\mathcal R}}
-\newcommand{\cS}{\ensuremath{\mathcal S}}
-
-\newcommand{\CVPDf}{\ensuremath{\algo{CVP}_{\tilde{D}_4}}}
-\newcommand{\CVPDfZf}{\ensuremath{\algo{CVP}_{D_4/\ZZ^4}}}
-\newcommand{\LDEncode}{\algo{Encode}}
-\newcommand{\LDDecode}{\algo{Decode}}
+% \DeclareMathOperator*{\argmin}{arg\,min}
+% \DeclareMathOperator*{\Vol}{Vol}
+% \DeclareMathOperator*{\Supp}{Supp}
+% \newcommand{\cR}{\ensuremath{\mathcal R}}
+% \newcommand{\cS}{\ensuremath{\mathcal S}}
+%
+% \newcommand{\CVPDf}{\ensuremath{\algo{CVP}_{\tilde{D}_4}}}
+% \newcommand{\CVPDfZf}{\ensuremath{\algo{CVP}_{D_4/\ZZ^4}}}
+% \newcommand{\LDEncode}{\algo{Encode}}
+% \newcommand{\LDDecode}{\algo{Decode}}
 
 
 
 \usepackage{soul}\let\strikethrough\st\let\st\undefined
 
-\newcommand{\T}{L}
+% \newcommand{\T}{L}
 
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\K}{\ensuremath{\mathbb{K}}}
+\newcommand{\ZZ}{\ensuremath{\mathbb{Z}}}
 \newcommand{\corr}{\,\hat{=}\,}
+\newcommand{\E}{\ensuremath{\mathcal{E}}}
+\newcommand{\Oinf}{\ensuremath{\mathcal{O}}}
+\newcommand{\F}[1]{\ensuremath{\mathbb{F}_{#1}}}
 
-\newcommand{\RR}{\ensuremath{\mathbb{R}}}
+% \newcommand{\RR}{\ensuremath{\mathbb{R}}}
 \newcommand{\N}{\ensuremath{\mathbb{N}}}
 
 \newcommand{\mbf}{\ensuremath{\mathbf}}
-\newcommand{\rando}{\ensuremath{\xleftarrow{\$}}}
-\newcommand{\la}{\ensuremath{\leftarrow}}
+% \newcommand{\rando}{\ensuremath{\xleftarrow{\$}}}
+% \newcommand{\la}{\ensuremath{\leftarrow}}
 
-\newcommand{\MD}{\ensuremath{\mathcal{D}}\xspace}
-\newcommand{\MS}{\ensuremath{\mathcal{D}}\xspace}
-\newcommand{\MA}{\ensuremath{\mathcal{A}}\xspace}
-\newcommand{\MB}{\ensuremath{\mathcal{B}}\xspace}
-\newcommand{\MP}{\ensuremath{\mathcal{P}}\xspace}
-\newcommand{\tA}{\ensuremath{t_{\mathcal{A}}}}
-\newcommand{\eA}{\ensuremath{\varepsilon_{\mathcal{A}}}}
-\newcommand{\tS}{\ensuremath{t_{\mathcal{D}}}}
-\newcommand{\eS}{\ensuremath{\varepsilon_{\mathcal{D}}}}
+% \newcommand{\MD}{\ensuremath{\mathcal{D}}\xspace}
+% \newcommand{\MS}{\ensuremath{\mathcal{D}}\xspace}
+% \newcommand{\MA}{\ensuremath{\mathcal{A}}\xspace}
+% \newcommand{\MB}{\ensuremath{\mathcal{B}}\xspace}
+% \newcommand{\MP}{\ensuremath{\mathcal{P}}\xspace}
+% \newcommand{\tA}{\ensuremath{t_{\mathcal{A}}}}
+% \newcommand{\eA}{\ensuremath{\varepsilon_{\mathcal{A}}}}
+% \newcommand{\tS}{\ensuremath{t_{\mathcal{D}}}}
+% \newcommand{\eS}{\ensuremath{\varepsilon_{\mathcal{D}}}}
 
-\newcommand{\vX}{\mathcal X}
-\newcommand{\vY}{\mathcal Y}
+% \newcommand{\vX}{\mathcal X}
+% \newcommand{\vY}{\mathcal Y}
 
 
-\newcommand{\MR}{\ensuremath{\mathcal{R}}\xspace}
-\newcommand{\tR}{\ensuremath{t_{\mathcal{R}}}}
-\newcommand{\eR}{\ensuremath{\varepsilon_{\mathcal{R}}}}
+% \newcommand{\MR}{\ensuremath{\mathcal{R}}\xspace}
+% \newcommand{\tR}{\ensuremath{t_{\mathcal{R}}}}
+% \newcommand{\eR}{\ensuremath{\varepsilon_{\mathcal{R}}}}
+%
+% \newcommand{\tD}{\ensuremath{t_{\mathcal{D}}}}
+% \newcommand{\eD}{\ensuremath{\varepsilon_{\mathcal{D}}}}
+% \newcommand{\sis}{\textsf{SIS}\xspace}
+% \newcommand{\isis}{\textsf{ISIS}\xspace}
+% \newcommand{\lwe}{\textsf{LWE}\xspace}
+% \newcommand{\dlwe}{\textsf{LWE}\xspace}
+% \newcommand{\rdlwe}{\textsf{R-LWE}\xspace}
+%
+% \newcommand{\ee}{\ensuremath{\varepsilon}}
+%
+% \newcommand{\sS}{\ensuremath{\sigma}}
+% \newcommand{\sE}{\ensuremath{\sigma}}
+% \newcommand{\DS}{\ensuremath{D_{\sS}}}
+% \newcommand{\DE}{\ensuremath{D_{\sE}}}
+% %\newcommand{\Dy}{\ensuremath{D_y}}
+% \newcommand{\Dy}{\ensuremath{[-B, B]}}
+% \newcommand{\Dysc}{\ensuremath{D_{y,\mat{Sc}}}}
+% \newcommand{\Dz}{\ensuremath{D_z}}
+% \newcommand{\bit}{\ensuremath{\{0,1\}}}
+% \newcommand{\eqdef}{\stackrel{\mathrm{def}}=}
+% \newcommand{\rand}{\getsr}
 
-\newcommand{\tD}{\ensuremath{t_{\mathcal{D}}}}
-\newcommand{\eD}{\ensuremath{\varepsilon_{\mathcal{D}}}}
-\newcommand{\sis}{\textsf{SIS}\xspace}
-\newcommand{\isis}{\textsf{ISIS}\xspace}
-\newcommand{\lwe}{\textsf{LWE}\xspace}
-\newcommand{\dlwe}{\textsf{LWE}\xspace}
-\newcommand{\rdlwe}{\textsf{R-LWE}\xspace}
+% \newcommand{\rounddq}[1]{\ensuremath{\lfloor #1 \rceil_{d,q}}}
+% \newcommand{\roundd}[1]{\ensuremath{\lfloor #1 \rceil_d}}
+% \newcommand{\norm}[1]{\ensuremath{||#1||}}
 
-\newcommand{\ee}{\ensuremath{\varepsilon}}
+% \newcommand{\KeyGen}{\keygen}
+% \newcommand{\Sign}{\sign}
+% \newcommand{\Verify}{\verify}
+% \newcommand{\keygen}{\ensuremath{\mathsf{KeyGen}}}
+% \newcommand{\sign}{\ensuremath{\mathsf{Sign}}}
+% \newcommand{\verify}{\ensuremath{\mathsf{Verify}}}
+% \newcommand{\start}{\underline{\ensuremath{\mathsf{Start}}}\xspace}
+% \newcommand{\randO}{\ensuremath{\underline{\mathsf{Rand}}^{O_c}}\xspace}
+% \newcommand{\signO}{\ensuremath{\underline{\mathsf{Sign}}^{O_c}}\xspace}
+% \newcommand{\finishO}{\ensuremath{\underline{\mathsf{Finish}}^{O_c}}}
+% \newcommand{\instance}{\underline{\ensuremath{\mathsf{Instance}}}}
+% \newcommand{\Sample}{\ensuremath{\mathsf{Sample}}}
 
-\newcommand{\sS}{\ensuremath{\sigma}}
-\newcommand{\sE}{\ensuremath{\sigma}}
-\newcommand{\DS}{\ensuremath{D_{\sS}}}
-\newcommand{\DE}{\ensuremath{D_{\sE}}}
-%\newcommand{\Dy}{\ensuremath{D_y}}
-\newcommand{\Dy}{\ensuremath{[-B, B]}}
-\newcommand{\Dysc}{\ensuremath{D_{y,\mat{Sc}}}}
-\newcommand{\Dz}{\ensuremath{D_z}}
-\newcommand{\bit}{\ensuremath{\{0,1\}}}
-\newcommand{\eqdef}{\stackrel{\mathrm{def}}=}
-\newcommand{\rand}{\getsr}
+% \newcommand{\keygenQ}{\ensuremath{\mathsf{KeyGen}}}
+% \newcommand{\signQ}{\ensuremath{\mathsf{Sign}}}
+% \newcommand{\verifyQ}{\ensuremath{\mathsf{Verify}}}
+% \newcommand{\CHgen}{\ensuremath{\mathsf{ChGen}}}
 
-\newcommand{\rounddq}[1]{\ensuremath{\lfloor #1 \rceil_{d,q}}}
-\newcommand{\roundd}[1]{\ensuremath{\lfloor #1 \rceil_d}}
-\newcommand{\norm}[1]{\ensuremath{||#1||}}
+% \newcommand{\inputtext}{\textsf{INPUT:}\;}
+% \newcommand{\outputtext}{\textsf{OUTPUT:}\;}
+% \newcommand{\iftext}{\mathbf{if\;}}
+% \newcommand{\elsetext}{\mathbf{else\;}}
+% \newcommand{\then}{\mathbf{then\;}}
+% \newcommand{\return}{\mathbf{return\;}}
 
-\newcommand{\KeyGen}{\keygen}
-\newcommand{\Sign}{\sign}
-\newcommand{\Verify}{\verify}
-\newcommand{\keygen}{\ensuremath{\mathsf{KeyGen}}}
-\newcommand{\sign}{\ensuremath{\mathsf{Sign}}}
-\newcommand{\verify}{\ensuremath{\mathsf{Verify}}}
-\newcommand{\start}{\underline{\ensuremath{\mathsf{Start}}}\xspace}
-\newcommand{\randO}{\ensuremath{\underline{\mathsf{Rand}}^{O_c}}\xspace}
-\newcommand{\signO}{\ensuremath{\underline{\mathsf{Sign}}^{O_c}}\xspace}
-\newcommand{\finishO}{\ensuremath{\underline{\mathsf{Finish}}^{O_c}}}
-\newcommand{\instance}{\underline{\ensuremath{\mathsf{Instance}}}}
-\newcommand{\Sample}{\ensuremath{\mathsf{Sample}}}
-
-\newcommand{\keygenQ}{\ensuremath{\mathsf{KeyGen}}}
-\newcommand{\signQ}{\ensuremath{\mathsf{Sign}}}
-\newcommand{\verifyQ}{\ensuremath{\mathsf{Verify}}}
-\newcommand{\CHgen}{\ensuremath{\mathsf{ChGen}}}
-
-\newcommand{\inputtext}{\textsf{INPUT:}\;}
-\newcommand{\outputtext}{\textsf{OUTPUT:}\;}
-\newcommand{\iftext}{\mathbf{if\;}}
-\newcommand{\elsetext}{\mathbf{else\;}}
-\newcommand{\then}{\mathbf{then\;}}
-\newcommand{\return}{\mathbf{return\;}}
-
-\newcommand{\mat}[1]{\mathbf{#1}}
-\renewcommand{\vec}[1]{\mathbf{#1}}
-\newcommand{\modq}{\ensuremath{\; (\bmod \; q)}}
+% \newcommand{\mat}[1]{\mathbf{#1}}
+% \renewcommand{\vec}[1]{\mathbf{#1}}
+% \newcommand{\modq}{\ensuremath{\; (\bmod \; q)}}
 %\newcommand{\modq}{\ensuremath{\; (q)}}
-\newcommand{\ip}[2]{\ensuremath{\langle {#1},{#2}\rangle}}
+% \newcommand{\ip}[2]{\ensuremath{\langle {#1},{#2}\rangle}}
 
-\newcommand{\adv}{\ensuremath{\mathcal{A}}}
-\newcommand{\secpar}{\ensuremath{\lambda}}
+% \newcommand{\adv}{\ensuremath{\mathcal{A}}}
+% \newcommand{\secpar}{\ensuremath{\lambda}}
 
-\newcommand{\sk}{\ensuremath{\mathsf{sk}}\xspace}
-\newcommand{\pk}{\ensuremath{\mathsf{vk}}\xspace}
-\newcommand{\sst}{\ensuremath{\mathsf{st}}\xspace}
+% \newcommand{\sk}{\ensuremath{\mathsf{sk}}\xspace}
+% \newcommand{\pk}{\ensuremath{\mathsf{vk}}\xspace}
+% \newcommand{\sst}{\ensuremath{\mathsf{st}}\xspace}
 
-\newcommand{\CH}{\ensuremath{\mathcal{CH}}}
-\newcommand{\ch}{\ensuremath{\mathsf{CH}}}
-\newcommand{\Mek}{\ensuremath{\mathsf{M_{ek}}}}
-\newcommand{\Yek}{\ensuremath{\mathsf{Y_{ek}}}}
-\newcommand{\Rek}{\ensuremath{\mathsf{R_{ek}}}}
-\newcommand{\ek}{\ensuremath{\mathsf{ek}}}
-\newcommand{\td}{\ensuremath{\mathsf{td}}}
-\newcommand{\Gen}{\ensuremath{\mathsf{Gen}}}
+% \newcommand{\CH}{\ensuremath{\mathcal{CH}}}
+% \newcommand{\ch}{\ensuremath{\mathsf{CH}}}
+% \newcommand{\Mek}{\ensuremath{\mathsf{M_{ek}}}}
+% \newcommand{\Yek}{\ensuremath{\mathsf{Y_{ek}}}}
+% \newcommand{\Rek}{\ensuremath{\mathsf{R_{ek}}}}
+% \newcommand{\ek}{\ensuremath{\mathsf{ek}}}
+% \newcommand{\td}{\ensuremath{\mathsf{td}}}
+% \newcommand{\Gen}{\ensuremath{\mathsf{Gen}}}
 
-\newcommand{\negl}{\ensuremath{\mathsf{negl}}}
-
-
-\newcommand{\R}{\mathcal{R}}
-\newcommand{\Rp}{\mathcal{R}_p}
-\newcommand{\Rq}{\mathcal{R}_q}
-\newcommand{\Rqk}[1]{\mathcal{R}_{q,#1}}
-
-\def\getsr{\stackrel{{\scriptscriptstyle \$}}{\leftarrow}}
-\def\gets{{\leftarrow}}
+% \newcommand{\negl}{\ensuremath{\mathsf{negl}}}
 
 
-\newcommand{\Uniform}{\mathcal{U}}
-\newcommand{\UniRk}[1]{\Rqk{#1}}
-\newcommand{\UniRq}{\Rq}
+% \newcommand{\R}{\mathcal{R}}
+% \newcommand{\Rp}{\mathcal{R}_p}
+% \newcommand{\Rq}{\mathcal{R}_q}
+% \newcommand{\Rqk}[1]{\mathcal{R}_{q,#1}}
+
+% \def\getsr{\stackrel{{\scriptscriptstyle \$}}{\leftarrow}}
+% \def\gets{{\leftarrow}}
+
+
+% \newcommand{\Uniform}{\mathcal{U}}
+% \newcommand{\UniRk}[1]{\Rqk{#1}}
+% \newcommand{\UniRq}{\Rq}
 
 
 \newcommand{\zeropo}{{\bf 0}}
@@ -193,13 +197,14 @@
 \newcommand{\Spo}{{\bf S}}
 \newcommand{\Ypo}{{\bf Y}}
 
-\newcommand{\algo}[1]{\textsf{#1}}
+% \newcommand{\algo}[1]{\textsf{#1}}
 
-\newcommand{\PeikertDBL}{\algo{dbl}}
-\newcommand{\PeikertREC}{\algo{rec}}
+% \newcommand{\PeikertDBL}{\algo{dbl}}
+% \newcommand{\PeikertREC}{\algo{rec}}
 
 
-\newcommand{\PowMul}{{\text{\sf PowMul}}}
-\newcommand{\PowMulPsi}{{\text{\sf PowMul}_{\psi}}}
-\newcommand{\ie}{{\it i.e.}}
+% \newcommand{\PowMul}{{\text{\sf PowMul}}}
+% \newcommand{\PowMulPsi}{{\text{\sf PowMul}_{\psi}}}
+\newcommand{\ie}{{\it i.e.}\;}
+\newcommand{\p}{\ensuremath{2^{255}-19}}
 \newcommand{\Zfield}{\ensuremath{\mathbb{Z}_{2^{255}-19}}}

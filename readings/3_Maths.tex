@@ -1,3 +1,29 @@
 \section{Mathematical Model}
 
-\todo[inline]{Timmy needs to write here}
+We extend the work of Evmorfia-Iro Bartzia and Pierre-Yves Strub \cite{DBLP:conf/itp/BartziaS14} to support Montgomery curves.
+
+\subsection{Formalization of Elliptic Curves}
+
+In this section, we consider elliptic curves over a field \K. We assume that the characteristic of \K is neither 2 or 3.
+
+Definition 1. let \K\ be a field. Using an appropriate choice of coordinates, an elliptic curve \E\ is a plane cubic albreaic curve $\E(x,y)$ defined by an equation of the form:
+$$\E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
+where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps or self-intersections). The set of points, written $\E(\K)$, is formed by the solutions $(x,y)$ of \E\ augmented by a distinguished point \Oinf\ (called point at infinity):
+$$\E(\K) = \{(x,y) \in \K \times \K | \E(x,y)\} \cup \{\Oinf\}$$
+In our case, this equation $\E(x,y)$ can be reduced into its Weierstrass form:
+$$y^2 = x^3 + ax + b$$
+Moreover, such curve does not present any singularity if $\Delta(a,b) = 4a^3 + 27b^2$ is not equal to $0$.
+
+In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which represent the points on a specific curve. It is parametrized by a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 -- and \texttt{E : ecuType} -- a record that packs the curve parameters $a$ and $b$ along with the prof that $\Delta(a,b) \neq 0$.
+
+\begin{lstlisting}[language=Coq]
+Record ecuType :=
+  { A : K; B : K; _ : 4 * A^3 + 27 * B^2 != 0}.
+Inductive point := EC_Inf | EC_In of K * K.
+Notation "(| x , y |)" := (EC_In x y).
+Definition oncurve (p: point) :=
+  if p is (| x, y |)
+    then y^2 == x^3 + A * x + B
+    else true.
+Inductive ec : Type := EC p of oncurve p.
+\end{lstlisting}

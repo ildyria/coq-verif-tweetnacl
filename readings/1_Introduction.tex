@@ -11,12 +11,13 @@ application and has been optimized for source code compactness.
 It maintains some degree of readability in order to be
 easily auditable.
 
-This library makes use of Curve25519\cite{Ber06}, an elliptic
-curve defined over the field \Zfield.
-It defines the function \texttt{crypto\_scalarmult} which
-takes as input a scalar $n$ and the $x$ coordinate of a
-point $P$ and returns the $x$ coordinate of the
-point $[n]P$.
+This library makes use of Curve25519\cite{Ber06}, a function over a \F{p}-restricted
+x-coordinate scalar multiplication on $E(\F{p^2})$, where $p$ is the prime number \p
+and E is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
+% It defines the function \texttt{crypto\_scalarmult} which
+% takes as input a scalar $n$ and the $x$ coordinate of a
+% point $P$ and returns the $x$ coordinate of the
+% point $[n]P$.
 
 Coq is a formal system that allows us to machine-check our proofs. The Compcert\cite{Leroy-backend}
 compiler and the Verifiable Software Toolchain (VST)\cite{2012-Appel} are build
