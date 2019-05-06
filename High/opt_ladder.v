@@ -154,7 +154,7 @@ Section OptimizedLadder.
       - by apply: point_x0_neq0_fin; rewrite p_x_eqx.
   Qed.
 
-  Lemma neg_x : forall (p : mc M),
+(*   Lemma neg_x : forall (p : mc M),
     p#x0 = (-p)#x0.
   Proof.
     move=> [[|xp yp] Hp] //=.
@@ -167,7 +167,7 @@ Section OptimizedLadder.
     rewrite GRing.mulNrn.
     apply neg_x.
   Qed.
-
+ *)
 Local Ltac ring_simplify_this :=
   repeat match goal with
   | _ => rewrite expr2

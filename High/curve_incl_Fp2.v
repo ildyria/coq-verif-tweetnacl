@@ -82,27 +82,6 @@ Proof.
   case_eq ((yp == yq) && (yp != 0)) => -> //=.
 Qed.
 
-(* Local Lemma on_curve_add_Fp_to_Fp2 : forall (p q: point Zmodp_ringType),
-  oncurve curve25519_mcuType p ->
-  oncurve curve25519_mcuType q ->
-   oncurve curve25519_Fp2_mcuType (curve_Fp_to_Fp2 (MCGroup.add curve25519_mcuType p q)).
-Proof.
-  move=> p q Hp Hq.
-  pose p' := curve_Fp_to_Fp2 p.
-  pose q' := curve_Fp_to_Fp2 q.
-  rewrite -(curve_add_Fp_to_Fp2 p q p' q') => //.
-  have OCp' : oncurve curve25519_Fp2_mcuType p' by subst p' ; apply on_curve_Fp_to_Fp2.
-  have OCq' : oncurve curve25519_Fp2_mcuType q' by subst q' ; apply on_curve_Fp_to_Fp2.
-  by apply MCGroup.addO'.
-Qed.
- *)
-(* Lemma on_curve25519_add_Fp_to_Fp2: forall (p q: mc curve25519_mcuType),
-  oncurve curve25519_Fp2_mcuType (curve25519_Fp_to_Fp2 (p + q)).
-Proof.
-  by move => [p Hp] [q Hq] => /=; apply on_curve_add_Fp_to_Fp2.
-Qed.
- *)
-
 Local Lemma curve25519_add_Fp_to_Fp2' : forall (p q: mc curve25519_mcuType) (p' q': mc curve25519_Fp2_mcuType),
   p' = curve25519_Fp_to_Fp2 p ->
   q' = curve25519_Fp_to_Fp2 q ->

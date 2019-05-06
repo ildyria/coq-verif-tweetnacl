@@ -287,11 +287,6 @@ Inductive Zinv_spec (x : type) : Type :=
 | Zinv_spec_zero : x = zero -> Zinv_spec x
 | Zinv_spec_unit : x <> zero -> forall y, (y * x)%R = one -> Zinv_spec x.
 
-Fixpoint pow (n:nat) (x:type) := match n with
-  | 0%nat => one
-  | S n => (x * pow n x)%R
-end.
-
 Local Lemma pi_2 : Zmodp.pi 2 = 2%:R.
 Proof. by apply/eqP ; zmodp_compute. Qed.
 Local Lemma pi_3 : Zmodp.pi 3 = 3%:R.

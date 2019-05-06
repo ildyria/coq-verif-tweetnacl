@@ -283,7 +283,7 @@ Section MontgomerysHomFormulas.
     by move/eqP; case.
   Qed.
 
-  Lemma point_x0_neq0_point_x x z p : p#x0 != 0 ->
+(*   Lemma point_x0_neq0_point_x x z p : p#x0 != 0 ->
     p#x = inf_div x z -> p#x0 = x / z.
   Proof.
     move=> Hneq0 Hp.
@@ -294,7 +294,7 @@ Section MontgomerysHomFormulas.
       have z_neq0 : z != 0 by apply: inf_div_K_Fin; apply/sym_eq; exact: H.
       by have : false by apply: contra_eqT => [_|]; first by exact: z_neq0.
     + by case: p Hneq0 Hp; first by rewrite eq_refl.
-  Qed.
+  Qed. *)
 
   Definition hom_ok (x z : K) := (x != 0) || (z != 0).
 

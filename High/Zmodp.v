@@ -61,16 +61,6 @@ Definition p := locked (2^255 - 19).
 Fact Hp_gt0 : p > 0.
 Proof. by unlock p; rewrite Z.gt_lt_iff; apply/Z.ltb_spec0. Qed.
 
-Fact Z_of_nat_to_nat_p : Z.of_nat (Z.to_nat p) = p.
-Proof. have := Hp_gt0 ; unlock p => Hp; apply Z2Nat.id => //. Qed.
-
-(* Faster proof:
-unlock p.
-rewrite Z.gt_lt_iff Z.lt_0_sub.
-apply: (@Z.lt_trans _ (2^5)); first by apply/Z.ltb_spec0.
-by apply: Z.pow_lt_mono_r; do [apply/Z.ltb_spec0 | apply/Z.leb_spec0].
-*)
-
 Lemma Hp_neq0 : p <> 0.
 Proof. move: Hp_gt0=> ?; omega. Qed.
 
@@ -128,7 +118,7 @@ Proof. apply: val_inj. apply: modZp. Qed.
 Lemma piK (x : Z) : betweenb 0 p x -> repr (pi x) = x.
 Proof. by move/betweenbP=> Hx /=; apply: Zmod_small. Qed.
 
-Lemma x_eq_0 : forall x:Z,
+(* Lemma x_eq_0 : forall x:Z,
 0 <= x < p -> x <> 0 -> x mod p <> 0.
 Proof.
 move=> x Hx Hx' Hx''.
@@ -138,18 +128,7 @@ rewrite Z.mod_divide; last by rewrite /p -lock.
 move => Hx'.
 rewrite -(Zmod_small x p Hx).
 by apply Zdivide_mod.
-Qed.
-
-Lemma oppZ (x:Z) : betweenb 0 p x -> repr (pi (-x)) = (- (pi x)) mod p.
-Proof. move/betweenbP=> Hx /=.
-have := Z.eq_dec x 0.
-move => [].
-+ move => -> //=.
-+ move => Hx'.
-rewrite Z_mod_nz_opp_full ; last by apply x_eq_0 => //=.
-rewrite Z_mod_nz_opp_full ; last by rewrite Zmod_mod; apply x_eq_0 => //=.
-rewrite Zmod_mod //.
-Qed.
+Qed. *)
 
 Module Zmodp_finite.
 
@@ -231,20 +210,6 @@ End Zmodp_zmod.
 Import Zmodp_zmod.Exports.
 
 Module Refl.
-
-Lemma eqb_Zeqb x y : eqb  x y -> Z.eqb x y.
-Proof.
-move=> H.
-rewrite -(reprK x).
-rewrite -(reprK y).
-apply/Z.eqb_spec.
-move: H.
-simpl.
-rewrite /eqb.
-case_eq y => yi Hyi Heqyi.
-case_eq x => xi Hxi Heqxi /=.
-by move/Z.eqb_spec ->.
-Qed.
 
 Lemma eqb_spec (x y: type) : reflect (x = y) (eqb x y).
 Proof.
@@ -453,37 +418,7 @@ apply Zmodp_zmod.add_sub.
 move => x. rewrite Zmodp_zmod.add_comm Zmodp_zmod.add_left_inv //.
 Defined.
 
-Lemma Zmodp_ringTypeR : @ring_theory Zmodp_ringType zero one add mul sub opp eq.
-Proof.
-apply mk_rt.
-apply Zmodp_zmod.add_left_id.
-apply Zmodp_zmod.add_comm.
-apply Zmodp_zmod.add_assoc.
-apply Zmodp_ring.mul_left_id.
-apply Zmodp_ring.mul_comm.
-apply Zmodp_ring.mul_assoc.
-apply Zmodp_ring.mul_left_distr.
-apply Zmodp_zmod.add_sub.
-move => x. rewrite Zmodp_zmod.add_comm Zmodp_zmod.add_left_inv //.
-Defined.
-
-Lemma Zmodp_GRingSort_ringType : @ring_theory (GRing.Zmodule.sort Zmodp_ringType) zero one add mul sub opp eq.
-Proof.
-apply mk_rt.
-apply Zmodp_zmod.add_left_id.
-apply Zmodp_zmod.add_comm.
-apply Zmodp_zmod.add_assoc.
-apply Zmodp_ring.mul_left_id.
-apply Zmodp_ring.mul_comm.
-apply Zmodp_ring.mul_assoc.
-apply Zmodp_ring.mul_left_distr.
-apply Zmodp_zmod.add_sub.
-move => x. rewrite Zmodp_zmod.add_comm Zmodp_zmod.add_left_inv //.
-Defined.
-
 Add Ring Zmodp_ring : Zmodp_ring.
-Add Ring Zmodp_ringType : Zmodp_ringTypeR.
-Add Ring Zmodp_GRingSort_ringType : Zmodp_GRingSort_ringType.
 
 Lemma eq_inv_2 : forall (x m:Zmodp.type), (m = (Zmodp.pi 28948022309329048855892746252171976963317496166410141009864396001978282409975%Z) * x)%R -> ((Zmodp.pi 2) * m = x)%R.
 Proof.
@@ -522,18 +457,3 @@ Lemma mult_xy_eq_0: forall (x y: Zmodp.type),
 Proof. by move => x y/eqP; rewrite mulf_eq0 ; move/orP => []/eqP -> ; [left|right]. Qed.
 
 Close Scope ring_scope.
-(* Lemma eq_inv_2' : forall (x m:Zmodp.type), ((Zmodp.pi 2) * m = x)%R -> (m = (Zmodp.pi 28948022309329048855892746252171976963317496166410141009864396001978282409975%Z) * x)%R.
-Proof.
-move => m x <-.
-apply val_inj => /=.
-rewrite Z.mul_mod_idemp_l ; last apply Hp_neq0.
-rewrite Z.mul_mod_idemp_l ; last apply Hp_neq0.
-rewrite Z.mul_mod_idemp_r ; last apply Hp_neq0.
-rewrite Z.mul_assoc.
-rewrite -Z.mul_mod_idemp_l ; last apply Hp_neq0.
-have ->: (28948022309329048855892746252171976963317496166410141009864396001978282409975 * 2) mod p = 1.
-rewrite /p -lock //.
-rewrite Z.mul_1_l.
-symmetry ; 
-apply modZp.
-Qed. *)

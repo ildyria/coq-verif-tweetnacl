@@ -32,8 +32,6 @@ end.
 
 Lemma pi_2 : Zmodp.pi 2 = 2%:R.
 Proof. by apply/eqP ; zmodp_compute. Qed.
-Lemma pi_3 : Zmodp.pi 3 = 3%:R.
-Proof. by apply/eqP ; zmodp_compute. Qed.
 
 Ltac ringify := repeat match goal with
   | [ |- context[Zmodp.pi 2]] => rewrite pi_2
@@ -92,12 +90,6 @@ apply GRing.mulr1_eq.
 rewrite Zmodp2_mul_Zmodp_a0 GRing.mulfV //.
 by apply/eqP.
 Qed.
-
-Lemma Zmodp2_div_Zmodp_a0 a b : (Zmodp2 a 0) / (Zmodp2 b 0) = Zmodp2 (a/b) 0.
-Proof.
-by rewrite Zmodp2_inv_Zmodp_a0 Zmodp2_mul_Zmodp_a0.
-Qed.
-
 
 (*
  * Operations of the form (a , 0) op (b , 0)
@@ -186,7 +178,6 @@ Ltac Zmodpify := repeat match goal with
   | _ => rewrite Zmodp2_mul_Zmodp_a0
   | _ => rewrite Zmodp2_pow_Zmodp_a0
   | _ => rewrite Zmodp2_inv_Zmodp_a0
-  | _ => rewrite Zmodp2_div_Zmodp_a0
   | _ => rewrite Zmodp2_mul_Zmodp_0a
   | _ => rewrite Zmodp2_mul_Zmodp_ab1
   | _ => rewrite Zmodp2_mul_Zmodp_ab2

@@ -24,9 +24,6 @@ Import GRing.Theory.
 
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
 
-Lemma oncurve_inf : oncurve curve25519_Fp2_mcuType (EC_Inf Zmodp2.type).
-Proof. done. Defined.
-
 Local Lemma oncurve_00 : (oncurve curve25519_Fp2_mcuType (EC_In 0 0)).
 Proof.
   simpl; rewrite /a /b ; apply/eqP.
@@ -75,10 +72,6 @@ Definition Fp_to_Fp2 p := match p with
   | Zmodp2.Zmodp2 x y => x
   end.
 
-Lemma Fp_to_Fp2_t : forall p:mc twist25519_mcuType, p#x0 = Fp_to_Fp2 ((twist25519_Fp_to_Fp2 p)#x0).
-Proof. by case; case. Qed.
-Lemma Fp_to_Fp2_c : forall p:mc curve25519_mcuType, p#x0 = Fp_to_Fp2 ((curve25519_Fp_to_Fp2 p)#x0).
-Proof. by case; case. Qed.
 Lemma Fp_to_Fp2_eq_C: Fp_to_Fp2 = cFp_to_Fp2.
 Proof. reflexivity. Qed.
 

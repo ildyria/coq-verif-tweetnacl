@@ -472,12 +472,6 @@ Module MCGroup.
     by apply addO'.
     Qed.
 
-    Lemma add0o_check : {in (oncurve M), left_id ∞ add_check}.
-    Proof.
-      move=> p; rewrite /in_mem /= => oncve_p //.
-      by rewrite /add_check /= oncve_p.
-    Qed.
-
     Lemma add0o : {in (oncurve M), left_id ∞ add}.
     Proof. done. Qed.
 
