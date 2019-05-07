@@ -1,29 +1,186 @@
 \section{Mathematical Model}
 
-We extend the work of Evmorfia-Iro Bartzia and Pierre-Yves Strub \cite{DBLP:conf/itp/BartziaS14} to support Montgomery curves.
+In this section we extend the work of Bartzia and Strub \cite{DBLP:conf/itp/BartziaS14}
+to support Montgomery curves. We also prove that the montgomery ladder computes
+the x-coordinate of scalar multiplication over \F{p^2}
+(Theorem 2.1 by Bernstein \cite{Ber06}) where $p$ is the prime \p.
 
 \subsection{Formalization of Elliptic Curves}
 
-In this section, we consider elliptic curves over a field \K. We assume that the characteristic of \K is neither 2 or 3.
+In this section, we consider elliptic curves over a field \K. We assume that the
+characteristic of \K is neither 2 or 3.
 
-Definition 1. let \K\ be a field. Using an appropriate choice of coordinates, an elliptic curve \E\ is a plane cubic albreaic curve $\E(x,y)$ defined by an equation of the form:
+\textbf{Definition 1.}
+For a field \K, using an appropriate choice of coordinates, an elliptic curve \E\
+is a plane cubic albreaic curve $\E(x,y)$ defined by an equation of the form:
 $$\E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
-where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps or self-intersections). The set of points, written $\E(\K)$, is formed by the solutions $(x,y)$ of \E\ augmented by a distinguished point \Oinf\ (called point at infinity):
+where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
+or self-intersections). The set of points, written $\E(\K)$, is formed by the
+solutions $(x,y)$ of \E\ augmented by a distinguished point \Oinf\ (called point at infinity):
 $$\E(\K) = \{(x,y) \in \K \times \K | \E(x,y)\} \cup \{\Oinf\}$$
-In our case, this equation $\E(x,y)$ can be reduced into its Weierstrass form:
-$$y^2 = x^3 + ax + b$$
-Moreover, such curve does not present any singularity if $\Delta(a,b) = 4a^3 + 27b^2$ is not equal to $0$.
 
-In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which represent the points on a specific curve. It is parametrized by a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 -- and \texttt{E : ecuType} -- a record that packs the curve parameters $a$ and $b$ along with the prof that $\Delta(a,b) \neq 0$.
+In this case, this equation $\E(x,y)$ can be reduced into its Weierstrass form:
+$$y^2 = x^3 + ax + b$$
+Moreover, such curve does not present any singularity if
+$\Delta(a,b) = 4a^3 + 27b^2$ is not equal to $0$.
+
+In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
+represent the points on a specific curve. It is parametrized by
+a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
+and \texttt{E : ecuType} -- a record that packs the curve parameters $a$ and $b$
+along with the prof that $\Delta(a,b) \neq 0$.
 
 \begin{lstlisting}[language=Coq]
 Record ecuType :=
   { A : K; B : K; _ : 4 * A^3 + 27 * B^2 != 0}.
 Inductive point := EC_Inf | EC_In of K * K.
-Notation "(| x , y |)" := (EC_In x y).
+Notation "(| x, y |)" := (EC_In x y).
 Definition oncurve (p: point) :=
   if p is (| x, y |)
     then y^2 == x^3 + A * x + B
     else true.
 Inductive ec : Type := EC p of oncurve p.
 \end{lstlisting}
+
+Points of an elliptic curve can be equiped with a structure of an abelian group.
+\begin{itemize}
+  \item The negation of a point $P = (x,y)$ by taking the symetric with respect to the x axis $-P = (x, -y)$.
+  \item The addition of two points $P$ and $Q$ is defined by the negation of third intersection
+  of the line passing by $P$ and $Q$ or tangent to $P$ if $P = Q$.
+  \item \Oinf\ is the neutral element under this law: if 3 points are colinear, their sum is equal to \Oinf.
+\end{itemize}
+
+This operaction can be defined in Coq as follow:
+
+\begin{coq}
+Definition neg (p : point) :=
+  if p is (| x, y |) then (| x, -y |) else EC_Inf.
+
+Definition add (p1 p2 : point) :=
+  match p1, p2 with
+    | EC_Inf , _ => p2
+    | _ , EC_Inf => p1
+    | (| x1, y1 |), (| x2, y2 |) =>
+      if x1 == x2 then ... else
+        let s := (y2 - y1) / (x2 - x1) in
+        let xs := s^2 - x1 - x2 in
+          (| xs, - s * (xs - x1 ) - y1 |)
+  end.
+\end{coq}
+
+\subsection{Curve and Twists}
+
+\begin{coq}
+Definition betweenb x y z := (x <=? z) && (z <? y).
+Definition p := locked (2^255 - 19).
+Inductive type := Zmodp x of betweenb 0 p x.
+
+Lemma Z_mod_betweenb x y : y > 0 -> betweenb 0 y (x mod y).
+
+Definition pi (x : Z) : type := Zmodp (Z_mod_betweenb x Hp_gt0).
+Coercion repr (x : type) : Z := let: @Zmodp x _ := x in x.
+
+Definition zero : type := pi 0.
+Definition one : type := pi 1.
+Definition opp (x : type) : type := pi (p - x).
+Definition add (x y : type) : type := pi (x + y).
+Definition sub (x y : type) : type := pi (x - y).
+Definition mul (x y : type) : type := pi (x * y).
+
+Lemma Zmodp_ring : ring_theory zero one add mul sub opp eq.
+\end{coq}
+
+\begin{coq}
+Theorem curve_twist_eq: forall n x,
+  curve25519_ladder n x = twist25519_ladder n x.
+\end{coq}
+
+\begin{coq}
+Theorem x_is_on_curve_or_twist: forall x,
+  (exists (p : mc curve25519_mcuType), p#x0 = x) \/
+  (exists (p' : mc twist25519_mcuType), p'#x0 = x).
+\end{coq}
+
+\subsection{Curve over \F{p^2}}
+
+
+\begin{coq}
+Inductive type := Zmodp2 (x: Zmodp.type) (y:Zmodp.type).
+
+Definition pi (x : Zmodp.type * Zmodp.type) : type := Zmodp2 x.1 x.2.
+Definition piZ (x : Z * Z) : type := Zmodp2 (Zmodp (Z_mod_betweenb x.1 Hp_gt0)) (Zmodp (Z_mod_betweenb x.2 Hp_gt0)).
+Coercion repr (x : type) : Zmodp.type*Zmodp.type := let: Zmodp2 u v := x in (u, v).
+Coercion reprZ (x : type) : Z*Z := let: Zmodp2 (@Zmodp u _) (@Zmodp v _) := x in (u, v).
+
+Definition zero : type := pi (Zmodp.zero, Zmodp.zero).
+Definition one : type := pi (Zmodp.one, Zmodp.zero).
+Definition opp (x : type) : type := pi (Zmodp.opp x.1 , Zmodp.opp x.2).
+Definition add (x y : type) : type := pi (Zmodp.add x.1 y.1, Zmodp.add x.2 y.2).
+Definition sub (x y : type) : type := pi (Zmodp.sub x.1 y.1, Zmodp.sub x.2 y.2).
+Definition mul (x y : type) : type := pi (Zmodp.add (Zmodp.mul x.1 y.1) (Zmodp.mul (Zmodp.pi 2) (Zmodp.mul x.2 y.2)), Zmodp.add (Zmodp.mul x.1 y.2) (Zmodp.mul x.2 y.1)).
+
+Lemma Zmodp2_ring : ring_theory zero one add mul sub opp eq.
+\end{coq}
+
+\begin{coq}
+(* We prove that most operations over F_p^2
+  have a simple equivalent operation over F_p *)
+
+Lemma Zmodp2_add_Zmodp_a0 a b:
+  Zmodp2 a 0 + Zmodp2 b 0 = Zmodp2 (a + b) 0.
+
+Lemma Zmodp2_opp_Zmodp_a0 a:
+  - Zmodp2 a 0 = Zmodp2 (-a) 0.
+
+Lemma Zmodp2_sub_Zmodp_a0 a b:
+  Zmodp2 a 0 - Zmodp2 b 0 = Zmodp2 (a - b) 0.
+
+Lemma Zmodp2_mul_Zmodp_a0 a b :
+  Zmodp2 a 0 * Zmodp2 b 0 = Zmodp2 (a * b) 0.
+
+Lemma Zmodp2_pow_Zmodp_a0 n a:
+  (Zmodp2 a 0)^+n = Zmodp2 (a^+n) 0.
+
+Lemma Zmodp2_inv_Zmodp_a0 a :
+  (Zmodp2 a 0)^-1 = Zmodp2 (a^-1) 0.
+
+Lemma Zmodp2_mul_Zmodp_ab1 a b:
+  Zmodp2 a 0 * Zmodp2 0 b = Zmodp2 0 (a * b).
+
+Lemma Zmodp2_mul_Zmodp_ab2 a b:
+  Zmodp2 0 a * Zmodp2 b 0 = Zmodp2 0 (a * b).
+
+Lemma Zmodp2_add_Zmodp_0a a b:
+  Zmodp2 0 a + Zmodp2 0 b = Zmodp2 0 (a + b).
+
+Lemma Zmodp2_opp_Zmodp_0a a:
+  - Zmodp2 0 a = Zmodp2 0 (-a).
+
+Lemma Zmodp2_sub_Zmodp_0a a b:
+  Zmodp2 0 a - Zmodp2 0 b = Zmodp2 0 (a - b).
+
+Lemma Zmodp2_mul_Zmodp_0a a b:
+  Zmodp2 0 a * Zmodp2 0 b = Zmodp2  (2%:R * a * b) 0.
+
+Lemma Zmodp2_inv_Zmodp_0a a :
+  (Zmodp2 0 a)^-1 = Zmodp2 0 ((2%:R * a)^-1).
+
+Lemma Zmodp_mul_comm_2 (a:Zmodp.type) :
+  2%:R * a = a * 2%:R.
+\end{coq}
+
+\begin{coq}
+Theorem x_is_on_curve_or_twist_implies_x_in_Fp2:
+  forall (x:Zmodp.type),
+    exists (p: mc curve25519_Fp2_mcuType),
+      p#x0 = Zmodp2.Zmodp2 x 0.
+\end{coq}
+
+\begin{coq}
+Lemma curve25519_ladder_maybe_ok (n : nat) (x:Zmodp.type) :
+  (n < 2^255)%nat ->
+  forall (p  : mc curve25519_Fp2_mcuType),
+  p #x0 = Zmodp2.Zmodp2 x 0 ->
+  curve25519_ladder n x = (p *+ n)#x0 /p.
+
+\end{coq}
