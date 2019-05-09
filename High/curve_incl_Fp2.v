@@ -129,16 +129,15 @@ From mathcomp Require Import ssrnat.
 
 Theorem curve25519_ladder_really_ok (n : nat) x :
     (n < 2^255)%nat ->
-    x != 0 ->
     forall (p  : mc curve25519_mcuType),
     (curve25519_Fp_to_Fp2 p)#x0 = Zmodp2.Zmodp2 x 0 ->
     curve25519_ladder n x = ((curve25519_Fp_to_Fp2 p) *+ n)#x0 /p.
 Proof.
-  move => Hn Hx p Hp.
+  move => Hn p Hp.
   have Hp' := cFp_to_Fp2_cancel p.
   have Hp'' : p #x0 = x.
   move: Hp'; rewrite Hp => //=.
-  rewrite (curve25519_ladder_ok n x Hn Hx p Hp'').
+  rewrite (curve25519_ladder_ok n x Hn p Hp'').
   rewrite -nP_is_nP2.
   rewrite cFp_to_Fp2_cancel //.
 Qed.

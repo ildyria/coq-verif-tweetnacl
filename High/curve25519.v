@@ -46,19 +46,19 @@ Definition curve25519_ladder n x :=
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
 
 Theorem curve25519_ladder_ok (n : nat) x :
-    (n < 2^255)%nat -> x != 0 ->
+    (n < 2^255)%nat ->
     forall (p : mc curve25519_mcuType), p#x0 = x -> curve25519_ladder n x = (p *+ n)#x0.
 Proof.
-move => Hn Hx p Hp.
+move => Hn p Hp.
 rewrite /curve25519_ladder.
 apply opt_montgomery_ok=> //=.
 rewrite /a.
 apply a_not_square.
 Qed.
 
-Lemma curve25519_0 (n : nat) :
+(* Lemma curve25519_0 (n : nat) :
   curve25519_ladder n 0 = 0.
 Proof.
   rewrite /curve25519_ladder.
   apply opt_montgomery_0.
-Qed.
+Qed. *)

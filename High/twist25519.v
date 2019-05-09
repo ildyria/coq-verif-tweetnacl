@@ -45,10 +45,10 @@ Definition twist25519_ladder n x :=
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
 
 Theorem twist25519_ladder_ok (n : nat) x :
-    (n < 2^255)%nat -> x != 0 ->
+    (n < 2^255)%nat ->
     forall (p : mc twist25519_mcuType), p#x0 = x -> twist25519_ladder n x = (p *+ n)#x0.
 Proof.
-move => Hn Hx p Hp.
+move => Hn p Hp.
 rewrite /twist25519_ladder.
 apply opt_montgomery_ok => //=.
 rewrite /a.

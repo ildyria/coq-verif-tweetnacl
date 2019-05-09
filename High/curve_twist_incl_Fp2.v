@@ -136,17 +136,12 @@ Lemma curve25519_ladder_maybe_ok (n : nat) (x:Zmodp.type) :
     curve25519_ladder n x = (p *+ n)#x0 /p.
 Proof.
   move => Hn p Hp.
-  have /orP[Hx|Hx] := orNb (x == 0).
-  + have [[c] Hc|[t] Ht] := Fp2_to_Fp x p Hp.
-    + have Hcx0: curve25519_Fp_to_Fp2 c #x0 = Zmodp2.Zmodp2 x 0 by rewrite Hc.
-      rewrite (curve25519_ladder_really_ok n x Hn Hx c Hcx0) -Fp_to_Fp2_eq_C Hc //.
-    + have Htx0: twist25519_Fp_to_Fp2 t #x0 = Zmodp2.Zmodp2 x 0 by rewrite Ht.
-      rewrite curve_twist_eq.
-      rewrite (twist25519_ladder_really_ok n x Hn Hx t Htx0) -Fp_to_Fp2_eq_T Ht //.
-  + move/eqP: Hx Hp => ->.
-    rewrite curve25519_0.
-    have -> : Zmodp2.Zmodp2 0 0 = 0 => //=.
-    move/(p_x0_0_eq_0 n) => -> //.
+  have [[c] Hc|[t] Ht] := Fp2_to_Fp x p Hp.
+  + have Hcx0: curve25519_Fp_to_Fp2 c #x0 = Zmodp2.Zmodp2 x 0 by rewrite Hc.
+    rewrite (curve25519_ladder_really_ok n x Hn c Hcx0) -Fp_to_Fp2_eq_C Hc //.
+  + have Htx0: twist25519_Fp_to_Fp2 t #x0 = Zmodp2.Zmodp2 x 0 by rewrite Ht.
+    rewrite curve_twist_eq.
+    rewrite (twist25519_ladder_really_ok n x Hn t Htx0) -Fp_to_Fp2_eq_T Ht //.
 Qed.
 
 Close Scope ring_scope.

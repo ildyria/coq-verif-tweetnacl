@@ -29,7 +29,7 @@ Reserved Notation "\- x" (at level 50).
 Record mcuType (K : ringType) := {
   cA : K;
   cB : K;
-  _  : cB != 0;
+  pB : cB != 0;
   _  : cA^+2 != 4%:R;
 }.
 
@@ -81,6 +81,12 @@ Section MC.
 
   Lemma oncurve_mc: forall p : mc, oncurve p.
   Proof. exact: valP. Qed.
+
+  Lemma oncurve_0_0: oncurve (|0%:R ,0%:R|).
+  Proof. move => /= ; rewrite ?exprS ?expr0 ?mul0r ?mulr0 ?addr0 ; apply/eqP => //.  Qed.
+
+  Lemma oncurve_inf: oncurve ∞.
+  Proof. done. Qed.
 
   Hint Resolve oncurve_mc.
 End MC.

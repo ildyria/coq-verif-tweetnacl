@@ -137,7 +137,7 @@ Section OptimizedLadder.
       - by apply/eqP; apply: montgomery_hom_eq; rewrite ?E //.
   Qed.
 
-  Lemma opt_montgomery_ok (n m : nat) (x : K) :
+  Lemma opt_montgomery_x (n m : nat) (x : K) :
     n < 2^m -> x != 0 ->
     forall (p : mc M), p#x0 = x -> opt_montgomery n m x = (p *+ n)#x0.
   Proof.
@@ -196,11 +196,53 @@ Proof.
     all: ring_simplify_this.
 Qed.
 
-Theorem opt_montgomery_0 (n m: nat):
+Lemma opt_montgomery_0 (n m: nat):
   opt_montgomery n m 0 = 0.
 Proof.
   rewrite /opt_montgomery.
   apply opt_montgomery_rec_0.
+Qed.
+
+Local Lemma p_x0_0_impl : forall (p: mc M),
+  p #x0 = 0%:R ->
+  p = MC (oncurve_0_0 M) \/ p = MC (oncurve_inf M).
+Proof.
+  move => [] [Hp|xp yp Hp] => /= Hxp.
+  + by right ; apply mc_eq.
+  + left; apply mc_eq.
+  move: Hxp Hp -> => /=.
+  rewrite ?exprS ?expr0 ?mulr1 ?mulr0 ?addr0.
+  have/eqP := M.(pB) => Hb.
+  rewrite mulf_eq0.
+  move /orP => [].
+  by move/eqP.
+  by rewrite mulf_eq0; move /orP => []/eqP ->.
+Qed.
+
+Lemma p_x0_0_eq_0 : forall (n:nat) (p: mc M),
+  p #x0 = 0%:R ->
+  (p *+ n) #x0 = 0%R.
+Proof.
+  elim => [| n IHn] => p.
+  move => _ ; rewrite mulr0n => //=.
+  rewrite mulrS => Hp.
+  have /IHn/p_x0_0_impl := Hp.
+  move => [] ->.
+  all: move/p_x0_0_impl:Hp.
+  all: move => [] ->.
+  all: rewrite /GRing.add //=.
+  rewrite eq_refl => //=.
+Qed.
+
+Lemma opt_montgomery_ok (n m : nat) (x : K) :
+    n < 2^m ->
+    forall (p : mc M), p#x0 = x -> opt_montgomery n m x = (p *+ n)#x0.
+Proof.
+  have /orP[Hx|Hx] := orNb (x == 0) => Hn.
+  apply opt_montgomery_x => //.
+  move/eqP: Hx => -> => p.
+  move/(p_x0_0_eq_0 n) => ->.
+  apply opt_montgomery_0.
 Qed.
 
 End OptimizedLadder.
