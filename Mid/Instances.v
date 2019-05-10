@@ -18,7 +18,7 @@ From Tweetnacl.Low Require Import Sel25519.
 From Tweetnacl.Low Require Import GetBit.
 From Tweetnacl.Low Require Import AMZubSqSel_Correct.
 
-From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.
+From Tweetnacl.High Require Import Zmodp.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg prime div.
 
 Instance Z_Ops : (Ops Z Z modP) := {}.

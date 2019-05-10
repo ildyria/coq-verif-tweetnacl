@@ -18,7 +18,7 @@ From Tweetnacl Require Import Mid.ScalarMult.
 From Tweetnacl Require Import Mid.Crypto_Scalarmult_Fp.
 From Tweetnacl Require Import Mid.Crypto_Scalarmult_Mod.
 
-From Tweetnacl.High Require Import Zmodp opt_ladder curve25519.
+From Tweetnacl.High Require Import Zmodp opt_ladder curve25519_Fp.
 From mathcomp Require Import ssreflect eqtype ssralg.
 
 From Tweetnacl Require Import Mod.
@@ -62,7 +62,7 @@ Proof.
 Qed.
 
 Lemma ZCrypto_Scalarmult_curve25519_ladder n x :
-  ZCrypto_Scalarmult n x = val (curve25519_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi (modP (ZUnpack25519 x)))).
+  ZCrypto_Scalarmult n x = val (curve25519_Fp_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi (modP (ZUnpack25519 x)))).
 Proof.
 assert (Hn:= Zclamp_min n).
 rewrite /ZCrypto_Scalarmult.

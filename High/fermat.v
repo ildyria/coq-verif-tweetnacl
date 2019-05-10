@@ -1,5 +1,7 @@
 From Tweetnacl Require Import Libs.Export.
-From Tweetnacl.High Require Import Zmodp opt_ladder curve25519 curve25519_prime prime_ssrprime.
+From Tweetnacl.High Require Import Zmodp.
+From Tweetnacl.High Require Import prime_and_legendre.
+From Tweetnacl.High Require Import prime_ssrprime.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg prime div.
 
 From Tweetnacl Require Import Mod.

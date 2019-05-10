@@ -21,10 +21,10 @@ From Tweetnacl.Mid Require Import Instances.
 
 From Tweetnacl.High Require Import Zmodp.
 From Tweetnacl.High Require Import Zmodp2.
-From Tweetnacl.High Require Import curve25519.
+From Tweetnacl.High Require Import curve25519_Fp.
 From Tweetnacl.High Require Import curve25519_Fp2.
-From Tweetnacl.High Require Import curve_twist_incl_Fp2.
-From Tweetnacl.High Require Import curve25519_prime.
+From Tweetnacl.High Require Import curve25519_twist25519_Fp_incl_Fp2.
+From Tweetnacl.High Require Import prime_and_legendre.
 From Tweetnacl.High Require Import montgomery.
 From Tweetnacl.High Require Import mc.
 From Tweetnacl.High Require Import mcgroup.
@@ -38,7 +38,7 @@ Theorem CSM_Eq : forall (n p:list Z),
   Zlength p = 32 ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) n ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult n p) = val (curve25519_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
+  ZofList 8 (Crypto_Scalarmult n p) = val (curve25519_Fp_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
 Proof.
 move => n p Hln Hlp HBn HBp.
 rewrite -ZCrypto_Scalarmult_curve25519_ladder.
@@ -92,7 +92,7 @@ Proof.
   move=> n p P Hn Hp Hbn Hbp HP.
   rewrite CSM_Eq //.
   f_equal.
-  apply curve25519_ladder_maybe_ok => //.
+  apply curve25519_Fp2_ladder_ok => //.
   move: (ZofList 8 n) => N.
   apply Zclamp_istrue.
 Qed.

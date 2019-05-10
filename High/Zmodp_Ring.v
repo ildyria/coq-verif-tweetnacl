@@ -2,11 +2,8 @@ Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
 From mathcomp Require Import fintype ssralg finalg.
 Require Import ZArith ZArith.Znumtheory.
-From Tweetnacl.High Require Import curve25519_prime_cert.
-From Tweetnacl.High Require Import curve25519_prime.
-From Tweetnacl.High Require Import prime_ssrprime.
+From Tweetnacl.High Require Import prime_and_legendre Zmodp.
 From Reciprocity Require Import Reciprocity.Reciprocity.
-From Tweetnacl.High Require Import Zmodp.
 Import BinInt.
 
 Require Import Ring.

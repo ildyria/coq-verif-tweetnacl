@@ -21,7 +21,7 @@ From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
 
 From stdpp Require Import list.
 
-From Tweetnacl.High Require Import Zmodp opt_ladder_extr ladder curve25519.
+From Tweetnacl.High Require Import Zmodp opt_ladder_extr ladder curve25519_Fp.
 From mathcomp Require Import ssreflect ssrbool eqtype ssralg.
 
 From Tweetnacl.Mid Require Import Instances.
@@ -37,7 +37,7 @@ replace 434220334639935732838391193782579654449762442496152115147965940029674236
 by congr (Zmodp.repr); apply GRing.mulr1_eq; apply/eqP; zmodp_compute; compute.
 Qed.
 
-Local Lemma curve25519_a_C121665 : (curve25519.a - 2%:R) / 4%:R = (Zmodp.pi C_121665).
+Local Lemma curve25519_a_C121665 : (curve25519_Fp.a - 2%:R) / 4%:R = (Zmodp.pi C_121665).
 Proof.
 rewrite /a /C_121665.
 apply/eqP.
@@ -51,7 +51,7 @@ Qed.
 
 Lemma get_a_Fp_Crypto_Scalarnult_eq m:
 ∀ (n : ℕ) (p a b c d e f : Zmodp.type), get_a (montgomery_rec.montgomery_rec m n a b c d e f p) =
-get_a (opt_montgomery_rec_extr (K:=curve25519_finECUFieldType) curve25519_mcuType n m p a b c d).
+get_a (opt_montgomery_rec_extr curve25519_Fp_mcuType n m p a b c d).
 Proof.
   induction m as [|m IHm] => n p a b c d e f //=.
   rewrite /cswap (Nat2Z.id n) (Nat2Z.id m).
@@ -67,7 +67,7 @@ Qed.
 
 Lemma get_c_Fp_Crypto_Scalarnult_eq m:
 ∀ (n : ℕ) (p a b c d e f : Zmodp.type), get_c (montgomery_rec.montgomery_rec m n a b c d e f p) =
-get_c (opt_montgomery_rec_extr (K:=curve25519_finECUFieldType) curve25519_mcuType n m p a b c d).
+get_c (opt_montgomery_rec_extr curve25519_Fp_mcuType n m p a b c d).
 Proof.
   induction m as [|m IHm] => n p a b c d e f //=.
   rewrite /cswap (Nat2Z.id n) (Nat2Z.id m).
@@ -82,11 +82,11 @@ Proof.
 Qed.
 
 Lemma Fp_Crypto_Scalarmult_rec_gen_equiv: forall n p,
-  Fp_Crypto_Scalarmult_rec_gen n p = curve25519_ladder n p.
+  Fp_Crypto_Scalarmult_rec_gen n p = curve25519_Fp_ladder n p.
 Proof.
   intros n p.
   rewrite /Fp_Crypto_Scalarmult_rec_gen
-          /curve25519_ladder
+          /curve25519_Fp_ladder
           /opt_montgomery
           opt_montgomery_rec_equiv.
   f_equal; f_equal.

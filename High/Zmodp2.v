@@ -1,9 +1,8 @@
 Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
-From mathcomp Require Import fintype ssralg finalg finfield prime.
-Require Import ZArith ZArith.Znumtheory.
-From Tweetnacl.High Require Import curve25519_prime Zmodp Zmodp_Ring prime_ssrprime.
-From mathcomp Require Import galois.
+From mathcomp Require Import fintype ssralg finalg.
+Require Import ZArith.
+From Tweetnacl.High Require Import Zmodp Zmodp_Ring.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -279,9 +278,6 @@ Proof.
 apply/eqP; rewrite eqE; apply/eqP=> /=.
 apply: esym. f_equal; apply val_inj => /=.
 Qed.
-
-Fact Hp_prime : prime p.
-Proof. by unlock p; apply: primo. Qed.
 
 Inductive Zinv_spec (x : type) : Type :=
 | Zinv_spec_zero : x = zero -> Zinv_spec x

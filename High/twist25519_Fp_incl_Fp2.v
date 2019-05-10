@@ -3,16 +3,12 @@ From mathcomp Require Import ssreflect ssrbool eqtype div ssralg.
 From Tweetnacl.High Require Import mc.
 From Tweetnacl.High Require Import mcgroup.
 From Tweetnacl.High Require Import montgomery.
-From Tweetnacl.High Require Import curve25519.
-From Tweetnacl.High Require Import twist25519.
+From Tweetnacl.High Require Import twist25519_Fp.
 From Tweetnacl.High Require Import opt_ladder.
-From Tweetnacl.High Require Import curve25519_prime.
-From Tweetnacl.High Require Import prime_ssrprime.
-From Reciprocity Require Import Reciprocity.Reciprocity.
 From Tweetnacl.High Require Import Zmodp2.
 From Tweetnacl.High Require Import Zmodp2_rules.
 From Tweetnacl.High Require Import curve25519_Fp2.
-From Tweetnacl.High Require Import curve25519_twist25519_eq.
+From Tweetnacl.High Require Import curve25519_Fp_twist25519_Fp_eq.
 From Tweetnacl.High Require Import Zmodp.
 Require Import Ring.
 Require Import ZArith.
@@ -31,29 +27,29 @@ match p with
   | EC_In x y => EC_In (Zmodp2.Zmodp2 x 0) (Zmodp2.Zmodp2 0 y)
 end.
 
-Lemma ontwist25519_impl : forall (x y: Zmodp.type),
-oncurve twist25519_mcuType (EC_In x y) ->
+Lemma ontwist25519_Fp_impl : forall (x y: Zmodp.type),
+oncurve twist25519_Fp_mcuType (EC_In x y) ->
 (oncurve curve25519_Fp2_mcuType (EC_In (Zmodp2.pi (x, Zmodp.pi 0)) (Zmodp2.pi (Zmodp.pi 0, y)))).
 Proof.
 move => x y /=.
 rewrite /a /b.
 rewrite ?expr2 ?expr3 ?expr3'.
 rewrite ?Zmodp2_mulE /= ?Zmodp2_addE /=.
-rewrite /twist25519.a /twist25519.b.
+rewrite /twist25519_Fp.a /twist25519_Fp.b.
 ring_simplify_this.
 move/eqP => -> /=.
 apply/eqP.
 f_equal.
 Qed.
 
-Lemma on_twist_Fp_to_Fp2 : forall (p: point Zmodp.type),
-  oncurve twist25519_mcuType p -> oncurve curve25519_Fp2_mcuType (twist_Fp_to_Fp2 p).
+Local Lemma on_twist_Fp_to_Fp2 : forall (p: point Zmodp.type),
+  oncurve twist25519_Fp_mcuType p -> oncurve curve25519_Fp2_mcuType (twist_Fp_to_Fp2 p).
 Proof.
   move=> [|x y] => //.
-  apply ontwist25519_impl.
+  apply ontwist25519_Fp_impl.
 Qed.
 
-Definition twist25519_Fp_to_Fp2 (p: mc twist25519_mcuType) : (mc curve25519_Fp2_mcuType) :=
+Definition twist25519_Fp_to_Fp2 (p: mc twist25519_Fp_mcuType) : (mc curve25519_Fp2_mcuType) :=
 match p with
   | MC u P => MC (on_twist_Fp_to_Fp2 u P)
 end.
@@ -61,10 +57,10 @@ end.
 Local Lemma twist_add_Fp_to_Fp2 : forall (p q: point Zmodp_ringType) (p' q': point Zmodp2_ringType),
   p' = twist_Fp_to_Fp2 p ->
   q' = twist_Fp_to_Fp2 q ->
-  MCGroup.add curve25519_Fp2_mcuType p' q' = twist_Fp_to_Fp2 (MCGroup.add twist25519_mcuType p q).
+  MCGroup.add curve25519_Fp2_mcuType p' q' = twist_Fp_to_Fp2 (MCGroup.add twist25519_Fp_mcuType p q).
 Proof.
   move => [|xp yp] [|xq yq] [|xp' yp'] [|xq' yq'] //= [] -> -> [] -> ->.
-  rewrite /twist25519.a /twist25519.b.
+  rewrite /twist25519_Fp.a /twist25519_Fp.b.
   match goal with
     | [ |- _ = ?A ] => remember A as Freezer
   end.
@@ -82,10 +78,10 @@ Proof.
   case_eq ((yp == yq) && (yp != 0)) => -> //=.
 Qed.
 
-Local Lemma twist25519_add_Fp_to_Fp2_ : forall (p q: mc twist25519_mcuType) (p' q': mc curve25519_Fp2_mcuType),
+Local Lemma twist25519_add_Fp_to_Fp2_ : forall (p q: mc twist25519_Fp_mcuType) (p' q': mc curve25519_Fp2_mcuType),
   p' = twist25519_Fp_to_Fp2 p ->
   q' = twist25519_Fp_to_Fp2 q ->
-  MCGroup.add curve25519_Fp2_mcuType p' q' = twist_Fp_to_Fp2 (MCGroup.add twist25519_mcuType p q).
+  MCGroup.add curve25519_Fp2_mcuType p' q' = twist_Fp_to_Fp2 (MCGroup.add twist25519_Fp_mcuType p q).
 Proof.
   move => [p Hp] [q Hq] [p' Hp'] [q' Hq'] Hpp' Hqq'.
   apply twist_add_Fp_to_Fp2.
@@ -93,7 +89,7 @@ Proof.
   by simpl in Hqq'; inversion Hqq'.
 Qed.
 
-Lemma twist25519_add_Fp_to_Fp2: forall (p q: mc twist25519_mcuType),
+Local Lemma twist25519_add_Fp_to_Fp2: forall (p q: mc twist25519_Fp_mcuType),
   twist25519_Fp_to_Fp2 p + twist25519_Fp_to_Fp2 q = twist25519_Fp_to_Fp2 (p + q).
 Proof.
   move => p q.
@@ -105,7 +101,7 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma nP_is_nP2 : forall (n:nat) (p: mc twist25519_mcuType),
+Lemma nP_is_nP2 : forall (n:nat) (p: mc twist25519_Fp_mcuType),
   twist25519_Fp_to_Fp2 (p *+ n) = (twist25519_Fp_to_Fp2 p) *+n.
 Proof.
   elim => [|n IHn] p.
@@ -118,7 +114,7 @@ Definition tFp_to_Fp2 p := match p with
   | Zmodp2.Zmodp2 x y => x
   end.
 
-Lemma tFp_to_Fp2_cancel : forall (p: mc twist25519_mcuType),
+Lemma tFp_to_Fp2_cancel : forall (p: mc twist25519_Fp_mcuType),
   p#x0 = tFp_to_Fp2 ((twist25519_Fp_to_Fp2 p)#x0).
 Proof. by case; case. Qed.
 
@@ -126,17 +122,17 @@ Local Notation "p '/p'" := (tFp_to_Fp2 p) (at level 40).
 
 From mathcomp Require Import ssrnat.
 
-Theorem twist25519_ladder_really_ok (n : nat) x :
+Theorem twist25519_ladder_Fp_Fp2 (n : nat) x :
     (n < 2^255)%nat ->
-    forall (p  : mc twist25519_mcuType),
+    forall (p  : mc twist25519_Fp_mcuType),
     twist25519_Fp_to_Fp2 p #x0 = Zmodp2.Zmodp2 x 0 ->
-    twist25519_ladder n x = ((twist25519_Fp_to_Fp2 p) *+ n)#x0 /p.
+    twist25519_Fp_ladder n x = ((twist25519_Fp_to_Fp2 p) *+ n)#x0 /p.
 Proof.
   move => Hn p Hp.
   have Hp' := tFp_to_Fp2_cancel p.
   have Hp'' : p #x0 = x.
     rewrite Hp' Hp //.
-  rewrite (twist25519_ladder_ok n x Hn p Hp'').
+  rewrite (twist25519_Fp_ladder_ok n x Hn p Hp'').
   rewrite -nP_is_nP2.
   rewrite tFp_to_Fp2_cancel //.
 Qed.
