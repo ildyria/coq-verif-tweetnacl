@@ -17,7 +17,6 @@ Proof. exact: oner_neq0. Qed.
 Lemma asq_neq4 : (a ^+ 2 != 4%:R).
 Proof.
 rewrite expr2 /a.
-change (Zmodp2.piZ (486662, 0%Z)) with (Zmodp2.pi (Zmodp.pi 486662, Zmodp.pi 0)).
 rewrite Zmodp2_mulE /=.
 apply/eqP => H.
 inversion H ; clear H.

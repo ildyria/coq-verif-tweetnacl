@@ -2,7 +2,7 @@ Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
 From mathcomp Require Import fintype ssralg finalg.
 Require Import ZArith ZArith.Znumtheory.
-From Tweetnacl.High Require Import prime_and_legendre Zmodp.
+From Tweetnacl.High Require Import prime_and_legendre Zmodp GRing_tools.
 From Reciprocity Require Import Reciprocity.Reciprocity.
 Import BinInt.
 
@@ -94,8 +94,6 @@ Qed.
 
 Open Scope Z.
 
-Local Notation "Z.R A" := (Zmodp.repr A) (at level 30).
-
 Lemma x_square_minus_x: forall (x:Zmodp.type),
   exists (y:Zmodp.type), (y^+2 = x \/ (Zmodp.pi 2)* y^+2 = x)%R.
 Proof.
@@ -129,7 +127,7 @@ Proof.
     * exfalso.
       clear Eulers_Criterion Eulers_Criterion2 n0 Prime2.
       rewrite modZp in n.
-      have HP : 0 <= (Z.R x) < p by rewrite -modZp ; apply Z.mod_pos_bound ; rewrite /p -lock.
+      have HP : 0 <= (Zmodp.repr x) < p by rewrite -modZp ; apply Z.mod_pos_bound ; rewrite /p -lock.
       move: n.
       have Hp : p <> 0 by rewrite /p -lock.
       have : Znumtheory.rel_prime p 28948022309329048855892746252171976963317496166410141009864396001978282409975.
@@ -137,13 +135,13 @@ Proof.
         apply Znumtheory.rel_prime_le_prime => //=.
         by rewrite /p -lock.
       move: e.
-      move/(Znumtheory.Zmod_divide (28948022309329048855892746252171976963317496166410141009864396001978282409975 * Z.R x) p Hp).
+      move/(Znumtheory.Zmod_divide (28948022309329048855892746252171976963317496166410141009864396001978282409975 * Zmodp.repr x) p Hp).
       move/Znumtheory.Gauss.
       move=> H/H.
       move/Znumtheory.Zdivide_bounds.
       move=> H'/H'.
       have ->: Z.abs p = p by rewrite /p -lock.
-      have ->: Z.abs (Z.R x) = (Z.R x).
+      have ->: Z.abs (Zmodp.repr x) = (Zmodp.repr x).
         rewrite Z.abs_eq_iff; omega.
       move => H''.
       omega.
@@ -184,19 +182,6 @@ Proof.
 Qed.
 
 Close Scope Z.
-
-Local Ltac ring_simplify_this :=
-  repeat match goal with
-  | _ => rewrite expr2
-  | _ => rewrite GRing.mul1r
-  | _ => rewrite GRing.mulr1
-  | _ => rewrite GRing.mul0r
-  | _ => rewrite GRing.mulr0
-  | _ => rewrite GRing.add0r
-  | _ => rewrite GRing.oppr0
-  | _ => rewrite GRing.addr0
-  | _ => done
-end.
 
 Lemma forall_x_2_0_sqrt (x:Zmodp.type) : x ^+ 2 = 0 -> x = 0.
 Proof.

@@ -436,6 +436,13 @@ apply modZp.
 Qed.
 
 Open Scope ring_scope.
+
+Lemma pi_2 : Zmodp.pi 2 = 2%:R.
+Proof. by apply/eqP ; zmodp_compute. Qed.
+
+Lemma pi_3 : Zmodp.pi 3 = 3%:R.
+Proof. by apply/eqP ; zmodp_compute. Qed.
+
 Lemma add_eq_mul2: forall (x:Zmodp.type),
   2%:R * x = x + x.
 Proof.
@@ -455,5 +462,17 @@ Qed.
 Lemma mult_xy_eq_0: forall (x y: Zmodp.type),
   x * y = 0 -> x = 0 \/ y = 0.
 Proof. by move => x y/eqP; rewrite mulf_eq0 ; move/orP => []/eqP -> ; [left|right]. Qed.
+
+Ltac Zmodp_ringify := repeat match goal with
+  | [ |- context[Zmodp.pi 2]] => rewrite pi_2
+  | [ |- context[Zmodp.pi 3]] => rewrite pi_3
+  | [ |- context[Zmodp.mul ?a ?b]] => have ->: (Zmodp.mul a b) = a * b => //
+  | [ |- context[Zmodp.add ?a (Zmodp.opp ?b)]] => have ->: (Zmodp.add a (Zmodp.opp b)) = a - b => //
+  | [ |- context[Zmodp.opp ?a]] => have ->: Zmodp.opp a = -a => //
+  | [ |- context[Zmodp.add ?a ?b]] => have ->: (Zmodp.add a b) = a + b => //
+  | [ |- context[Zmodp.one] ] => have ->: Zmodp.one = 1 => //
+  | [ |- context[Zmodp.zero] ] => have ->: Zmodp.zero = 0 => //
+  end.
+
 
 Close Scope ring_scope.

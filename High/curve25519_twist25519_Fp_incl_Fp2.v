@@ -16,6 +16,7 @@ From Tweetnacl.High Require Import curve25519_Fp_twist25519_Fp_eq.
 From Tweetnacl.High Require Import curve25519_Fp_incl_Fp2.
 From Tweetnacl.High Require Import twist25519_Fp_incl_Fp2.
 From Tweetnacl.High Require Import Zmodp.
+From Tweetnacl.High Require Import GRing_tools.
 Require Import Ring.
 Require Import ZArith.
 
@@ -85,21 +86,21 @@ Local Notation "p '/p'" := (Fp_to_Fp2 p) (at level 40).
 Local Lemma temp: forall x xp yp1 yp2,
 xp = Zmodp2.Zmodp2 x 0 ->
 oncurve curve25519_Fp2_mcuType (|xp, Zmodp2.Zmodp2 yp1 yp2|) ->
-yp1 ^+ 2 + 2%:R * yp2 ^+ 2 = x * x * x + Zmodp.pi 486662 * (x * x) + x /\
+yp1 ^+ 2 + 2%:R * yp2 ^+ 2 = x * (x * x) + Zmodp.pi 486662 * (x * x) + x /\
 2%:R * (yp1 * yp2) = 0.
 Proof.
 move => x xp yp1 yp2 Hx.
 rewrite /oncurve /= /a /b => Hp'.
 have : (Zmodp2.Zmodp2 yp1 yp2) ^+ 2 == (Zmodp2.Zmodp2 x 0) ^+ 3 + Zmodp2.pi (Zmodp.pi 486662, 0) * (Zmodp2.Zmodp2 x 0) ^+ 2 + (Zmodp2.Zmodp2 x 0).
   rewrite -Hx -(GRing.mul1r (Zmodp2.Zmodp2 yp1 yp2 ^+ 2)) //.
-  rewrite expr3 ?expr2.
+  ring_simplify_this.
   Zmodpify => /=.
 have ->: Zmodp2.Zmodp2 yp1 yp2 * Zmodp2.Zmodp2 yp1 yp2 = Zmodp2.Zmodp2 (yp1^+2 + 2%:R * yp2^+2) (2%:R * yp1 * yp2).
   rewrite /GRing.mul /= /Zmodp2.mul /Zmodp2.pi expr2 /=.
   ringify; f_equal; rewrite /GRing.mul /= (Zmodp_ring.mul_comm yp2) ; symmetry ; rewrite -Zmodp_ring.mul_assoc; ringify; apply add_eq_mul2.
 move/eqP.
 move/Zmodp2.Zmodp2_inv => [].
-ringify.
+ring_simplify_this.
 move => Hxy.
 rewrite -GRing.mulrA.
 move: Hxy.

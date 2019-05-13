@@ -10,6 +10,7 @@ From Tweetnacl.High Require Import Zmodp2_rules.
 From Tweetnacl.High Require Import curve25519_Fp2.
 From Tweetnacl.High Require Import curve25519_Fp_twist25519_Fp_eq.
 From Tweetnacl.High Require Import Zmodp.
+From Tweetnacl.High Require Import GRing_tools.
 Require Import Ring.
 Require Import ZArith.
 
@@ -33,13 +34,12 @@ oncurve twist25519_Fp_mcuType (EC_In x y) ->
 Proof.
 move => x y /=.
 rewrite /a /b.
-rewrite ?expr2 ?expr3 ?expr3'.
+ring_simplify_this.
 rewrite ?Zmodp2_mulE /= ?Zmodp2_addE /=.
 rewrite /twist25519_Fp.a /twist25519_Fp.b.
 ring_simplify_this.
 move/eqP => -> /=.
-apply/eqP.
-f_equal.
+apply eq_refl.
 Qed.
 
 Local Lemma on_twist_Fp_to_Fp2 : forall (p: point Zmodp.type),
@@ -95,7 +95,7 @@ Proof.
   move => p q.
   have [p' Hp']: exists (p': mc curve25519_Fp2_mcuType), p' = twist25519_Fp_to_Fp2 p by exists (twist25519_Fp_to_Fp2 p).
   have [q' Hq']: exists (q': mc curve25519_Fp2_mcuType), q' = twist25519_Fp_to_Fp2 q by exists (twist25519_Fp_to_Fp2 q).
-  rewrite /GRing.add /=.
+  ring_unfold.
   apply mc_eq.
   rewrite -(twist25519_add_Fp_to_Fp2_ _ _ _ _ Hp' Hq') Hp' Hq'.
   reflexivity.
@@ -105,7 +105,7 @@ Lemma nP_is_nP2 : forall (n:nat) (p: mc twist25519_Fp_mcuType),
   twist25519_Fp_to_Fp2 (p *+ n) = (twist25519_Fp_to_Fp2 p) *+n.
 Proof.
   elim => [|n IHn] p.
-  rewrite ?GRing.mulr0n => /=.
+  ring_simplify_this.
   exact: mc_eq.
   by rewrite ?GRing.mulrS -IHn twist25519_add_Fp_to_Fp2.
 Qed.

@@ -2,7 +2,7 @@ Set Warnings "-notation-overridden,-parsing".
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
 From mathcomp Require Import fintype ssralg finalg.
 Require Import ZArith.
-From Tweetnacl.High Require Import Zmodp Zmodp_Ring.
+From Tweetnacl.High Require Import Zmodp Zmodp_Ring GRing_tools.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -17,16 +17,14 @@ Module Zmodp2.
 Inductive type := Zmodp2 (x: Zmodp.type) (y:Zmodp.type).
 
 Definition pi (x : Zmodp.type * Zmodp.type) : type := Zmodp2 x.1 x.2.
-Definition piZ (x : Z * Z) : type := Zmodp2 (Zmodp (Z_mod_betweenb x.1 Hp_gt0)) (Zmodp (Z_mod_betweenb x.2 Hp_gt0)).
 Coercion repr (x : type) : Zmodp.type*Zmodp.type := let: Zmodp2 u v := x in (u, v).
-Coercion reprZ (x : type) : Z*Z := let: Zmodp2 (@Zmodp u _) (@Zmodp v _) := x in (u, v).
 
-Definition zero : type := pi (Zmodp.zero, Zmodp.zero).
-Definition one : type := pi (Zmodp.one, Zmodp.zero).
-Definition opp (x : type) : type := pi (Zmodp.opp x.1 , Zmodp.opp x.2).
-Definition add (x y : type) : type := pi (Zmodp.add x.1 y.1, Zmodp.add x.2 y.2).
-Definition sub (x y : type) : type := pi (Zmodp.sub x.1 y.1, Zmodp.sub x.2 y.2).
-Definition mul (x y : type) : type := pi (Zmodp.add (Zmodp.mul x.1 y.1) (Zmodp.mul (Zmodp.pi 2) (Zmodp.mul x.2 y.2)), Zmodp.add (Zmodp.mul x.1 y.2) (Zmodp.mul x.2 y.1)).
+Definition zero : type := pi (0%:R, 0%:R).
+Definition one : type := pi (1, 0%:R).
+Definition opp (x : type) : type := pi (- x.1 , - x.2).
+Definition add (x y : type) : type := pi (x.1 + y.1, x.2 + y.2).
+Definition sub (x y : type) : type := pi (x.1 - y.1, x.2 - y.2).
+Definition mul (x y : type) : type := pi ((x.1 * y.1) + (2%:R * (x.2 * y.2)), (x.1 * y.2) + (x.2 * y.1)).
 
 Lemma pi_of_reprK : cancel repr pi.
 Proof. by case. Qed.
@@ -52,6 +50,8 @@ Qed.
 Lemma Zmodp2_inv : forall a b c d, Zmodp2 a c = Zmodp2 b d -> a = b /\ c = d.
 Proof. by move => a b c d H; inversion H. Qed.
 
+Ltac Zmodp2_unfold := rewrite /mul /sub /add /opp /zero /one.
+
 End Zmodp2.
 
 Import Zmodp2.
@@ -76,51 +76,47 @@ Proof. by case x. Qed.
 Lemma piK (x : Zmodp.type*Zmodp.type) : repr (pi x) = x.
 Proof. by case x. Qed.
 
-Lemma piZK (x : Z*Z) : betweenb 0 p x.1 -> betweenb 0 p x.2 -> reprZ (piZ x) = x.
-Proof. by case x => u v /= ; move/betweenbP => Hu /betweenbP => Hv /= ; f_equal; apply: Zmod_small. Qed.
-
 Lemma Zmodp2_const x1 x2 y1 y2: x1 = y1 -> x2 = y2 -> Zmodp2 x1 x2 = Zmodp2 y1 y2.
 Proof. move=> -> -> //. Qed.
 
-(* Lemma type_dec x : x = zero \/ x <> zero.
-Proof.
-case x => [x1 x2].
-case_eq (Zmodp.eqb x1 Zmodp.zero); move/Refl.eqb_spec.
-case_eq (Zmodp.eqb x2 Zmodp.zero); move/Refl.eqb_spec.
-by move=> -> -> ; left => //.
-by move=> Hx2 Hx1 ; right => H ; apply Hx2 ; inversion H.
-by move=> Hx1 ; right => H ; apply Hx1 ; inversion H.
-Qed. *)
+Local Ltac solve_this :=
+  repeat match goal with
+    | _ => progress Zmodp2_unfold; ring_unfold
+    | [ |- context[Zmodp2 ?A ?B]] => have ->: Zmodp2 A B = Zmodp2.pi (A,B) => //
+    | _ => solve[f_equal ; f_equal ; ring]
+    | _ => solve[f_equal ; f_equal ; Zmodp_ringify ; ring_simplify_this]
+  end.
 
 Module Zmodp2_zmod.
 
 Lemma add_comm : commutative add.
 Proof.
-move=> [x1 x2] [y1 y2] ; rewrite /add /= ; f_equal; f_equal ; ring.
+move=> [x1 x2] [y1 y2].
+solve_this.
 Qed.
 
 Lemma add_left_id : left_id zero add.
-Proof. move => [x1 x2]. rewrite /add /=.
-rewrite Zmodp_zmod.add_left_id.
-rewrite Zmodp_zmod.add_left_id.
-reflexivity.
+Proof. move => [x1 x2].
+solve_this.
 Qed.
 
 Lemma add_left_inv : left_inverse zero opp add.
-Proof. move => [x1 x2]. rewrite /add /=.
+Proof. move => [x1 x2].
+solve_this.
 rewrite Zmodp_zmod.add_left_inv.
 rewrite Zmodp_zmod.add_left_inv.
 reflexivity.
 Qed.
 
 Lemma add_assoc : associative add.
-Proof. move=> [x1 x2] [y1 y2] [z1 z2] ; rewrite /add /= ; f_equal; f_equal; apply Zmodp_zmod.add_assoc. Qed.
+Proof. move=> [x1 x2] [y1 y2] [z1 z2].
+solve_this.
+Qed.
 
 Lemma add_sub : forall (x y:type), sub x y = add x (opp y).
 Proof.
 move=> x y.
-rewrite /sub /add /opp.
-f_equal; f_equal => /= ; ring.
+solve_this.
 Qed.
 
 Module Exports.
@@ -145,16 +141,19 @@ Proof. by unlock p; rewrite Z.gt_lt_iff; apply/Z.ltb_spec0. Qed.
 Module Zmodp2_ring.
 
 Lemma mul_comm : commutative mul.
-Proof. move=> [x1 x2] [y1 y2] ; rewrite /mul /=.
-f_equal; f_equal; ring.
+Proof. move=> [x1 x2] [y1 y2].
+solve_this.
 Qed.
 
 Lemma mul_assoc : associative mul.
 Proof.
-move=> [x1 x2] [y1 y2] [z1 z2] ; rewrite /mul /= . f_equal.
+move=> [x1 x2] [y1 y2] [z1 z2].
+solve_this.
+(* Zmodp2_unfold; ring_unfold.
+f_equal.
 f_equal.
 + ring.
-+ ring.
++ ring. *)
 (*  ; apply val_inj => /=.
 + rewrite Zminus_mod_idemp_r.
   rewrite -(Zplus_mod (y1 * z1)).
@@ -196,22 +195,24 @@ Qed.
 
 Lemma mul_left_id : left_id one mul.
 Proof.
-move=> [x1 x2]. rewrite /mul /=.
+move=> [x1 x2].
+solve_this.
+(* Zmodp2_unfold; ring_unfold.
 rewrite Zmodp_ring.mul_left_id.
 rewrite Zmodp_ring.mul_left_id.
-have ->: Zmodp.mul Zmodp.zero x2 = Zmodp.zero => //.
-have ->: Zmodp.mul Zmodp.zero x1 = Zmodp.zero => //.
-have ->: Zmodp.add x1 (Zmodp.mul (Zmodp.pi 2) Zmodp.zero) = x1 by ring.
-have ->: Zmodp.add x2 Zmodp.zero = x2 by ring.
-reflexivity.
+have ->: Zmodp2 x1 x2 = pi (x1,x2) => //.
+f_equal ; f_equal ; Zmodp_ringify ; ring_simplify_this. *)
 Qed.
 
 Lemma mul_left_distr : left_distributive mul add.
 Proof.
-move=> [x1 x2] [y1 y2] [z1 z2]. rewrite /mul /add /=. f_equal.
+move=> [x1 x2] [y1 y2] [z1 z2].
+solve_this.
+(*  rewrite /mul /add /GRing.add /=. f_equal.
 f_equal.
 ring.
 ring.
+ *)
 (* + apply val_inj => /=.
   rewrite Zmult_mod_idemp_l.
   rewrite Zmult_mod_idemp_l.
@@ -275,20 +276,14 @@ Import Zmodp2_ring.Exports.
 
 Lemma Zmodp2_mulE x y : (pi x * pi y)%R = pi (x.1 * y.1 + (Zmodp.pi 2) * (x.2 * y.2), x.1 * y.2 + x.2 * y.1).
 Proof.
-apply/eqP; rewrite eqE; apply/eqP=> /=.
-apply: esym. f_equal; apply val_inj => /=.
+apply/eqP; rewrite pi_2 eqE; apply/eqP=> //=.
 Qed.
 
 Inductive Zinv_spec (x : type) : Type :=
 | Zinv_spec_zero : x = zero -> Zinv_spec x
 | Zinv_spec_unit : x <> zero -> forall y, (y * x)%R = one -> Zinv_spec x.
 
-Local Lemma pi_2 : Zmodp.pi 2 = 2%:R.
-Proof. by apply/eqP ; zmodp_compute. Qed.
-Local Lemma pi_3 : Zmodp.pi 3 = 3%:R.
-Proof. by apply/eqP ; zmodp_compute. Qed.
-
-Local Ltac ringify := repeat match goal with
+(* Local Ltac ringify := repeat match goal with
   | [ |- context[Zmodp.pi 2]] => rewrite pi_2
   | [ |- context[Zmodp.mul ?a ?b]] => have ->: (Zmodp.mul a b) = a * b => //
   | [ |- context[Zmodp.add ?a (Zmodp.opp ?b)]] => have ->: (Zmodp.add a (Zmodp.opp b)) = a - b => //
@@ -297,7 +292,7 @@ Local Ltac ringify := repeat match goal with
   | [ |- context[Zmodp.one] ] => have ->: Zmodp.one = 1 => //
   | [ |- context[Zmodp.zero] ] => have ->: Zmodp.zero = 0 => //
   end.
-
+ *)
 Lemma Zinv x : Zinv_spec x.
 Proof.
 case_eq (eqb x zero) ; move/eqb_spec.
@@ -305,7 +300,7 @@ case_eq (eqb x zero) ; move/eqb_spec.
 + destruct x as [x y] => Hxy.
 apply (@Zinv_spec_unit (Zmodp2 x y) Hxy (Zmodp2 (x/(x^+2-2%:R*y^+2)) (-y/(x^+2-2%:R*y^+2)))).
 rewrite /GRing.mul /= /mul /=.
-ringify.
+Zmodp_ringify.
 have ->: x / (x ^+ 2 - 2%:R * y ^+ 2) * x + 2%:R * (- y / (x ^+ 2 - 2%:R * y ^+ 2) * y) = (x ^+2 - 2%:R * y^+2) / (x ^+ 2 - 2%:R * y ^+ 2).
 remember (x ^+ 2 - 2%:R * y ^+ 2) as M.
 by rewrite (mulrC x) (mulrC (-y)) ?mulrA (mulrC (2%:R)) -?mulrA -mulrDr mulrC mulNr mulrN HeqM ?expr2.
@@ -412,3 +407,16 @@ Defined.
 
 Add Ring Zmodp2_ring : Zmodp2_ring.
 Add Ring Zmodp2_ring2 : Zmodp2_ring2.
+
+Open Scope ring_scope.
+
+Ltac Zmodp2_ringify := repeat match goal with
+  | [ |- context[Zmodp2.mul ?a ?b]] => have ->: (Zmodp2.mul a b) = a * b => //
+  | [ |- context[Zmodp2.add ?a (Zmodp2.opp ?b)]] => have ->: (Zmodp2.add a (Zmodp2.opp b)) = a - b => //
+  | [ |- context[Zmodp2.opp ?a]] => have ->: Zmodp2.opp a = -a => //
+  | [ |- context[Zmodp2.add ?a ?b]] => have ->: (Zmodp2.add a b) = a + b => //
+  | [ |- context[Zmodp2.one] ] => have ->: Zmodp2.one = 1 => //
+  | [ |- context[Zmodp2.zero] ] => have ->: Zmodp2.zero = 0 => //
+  end.
+
+Close Scope ring_scope.
