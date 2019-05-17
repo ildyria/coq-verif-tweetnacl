@@ -4,21 +4,21 @@ In this section we first present the work of Bartzia and Strub \cite{DBLP:conf/i
 We extend it to support Montgomery curves (\ref{montgomery}) with homogeneous coordinates (\ref{projective}) and prove the correctness of the ladder (\ref{ladder}).
 
 We then prove the montgomery ladder computes
-the x-coordinate of scalar multiplication over \F{p^2}
-(Theorem 2.1 by Bernstein \cite{Ber06}) where $p$ is the prime \p.
+the x-coordinate of scalar multiplication over $\F{p^2}$
+(Theorem 2.1 by Bernstein \cite{Ber06}) where $p$ is the prime $\p$.
 
 \subsection{Formalization of Elliptic Curves}
 
-We consider elliptic curves over a field \K. We assume that the
-characteristic of \K\ is neither 2 or 3.
+We consider elliptic curves over a field $\K$. We assume that the
+characteristic of $\K$ is neither 2 or 3.
 
 \begin{definition}
-Let a field \K, using an appropriate choice of coordinates, an elliptic curve $E$
+Let a field $\K$, using an appropriate choice of coordinates, an elliptic curve $E$
 is a plane cubic albreaic curve $E(x,y)$ defined by an equation of the form:
 $$E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
 where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
 or self-intersections). The set of points, written $E(\K)$, is formed by the
-solutions $(x,y)$ of $E$ augmented by a distinguished point \Oinf\ (called point at infinity):
+solutions $(x,y)$ of $E$ augmented by a distinguished point $\Oinf$ (called point at infinity):
 $$E(\K) = \{(x,y) \in \K \times \K | E(x,y)\} \cup \{\Oinf\}$$
 \end{definition}
 
@@ -29,7 +29,7 @@ This equation $E(x,y)$ can be reduced into its Weierstra{\ss} form.
 \begin{definition}
 Let $a \in \K$, and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$ The \textit{elliptic curve} $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
 $$y^2 = x^3 + ax + b,$$
-along with an additional formal point \Oinf, ``at infinity''. Such curve does not present any singularity.
+along with an additional formal point $\Oinf$, ``at infinity''. Such curve does not present any singularity.
 \end{definition}
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
@@ -56,7 +56,7 @@ Points of an elliptic curve can be equiped with a structure of an abelian group.
   \item The negation of a point $P = (x,y)$ by taking the symetric with respect to the x axis $-P = (x, -y)$.
   \item The addition of two points $P$ and $Q$ is defined by the negation of third intersection
   of the line passing by $P$ and $Q$ or tangent to $P$ if $P = Q$.
-  \item \Oinf\ is the neutral element under this law: if 3 points are colinear, their sum is equal to \Oinf.
+  \item $\Oinf$ is the neutral element under this law: if 3 points are colinear, their sum is equal to $\Oinf$.
 \end{itemize}
 
 This operaction can be defined in Coq as follow:
@@ -93,7 +93,7 @@ the Montgomery form \cite{MontgomerySpeeding}.
 \begin{definition}
   Let $a \in \K \backslash \{-2, 2\}$, and $b \in \K \backslash \{ 0\}$. The \textit{Montgomery curve} $M_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
   $$by^2 = x^3 + ax^2 + x,$$
-  along with an additional formal point \Oinf, ``at infinity''.
+  along with an additional formal point $\Oinf$, ``at infinity''.
 \end{definition}
 
 Using a similar representation, we defined the parametric type \texttt{mc} which
@@ -267,7 +267,7 @@ With these two lemmas (\ref{lemma-add} and \ref{lemma-double}), we have the basi
 \label{ladder}
 
 Suppose we have a scalar $n$ and a point $P$ on some curve. The most straightforward way to compute $nP$ is to repetitively add $P$ \ie computing $P + \ldots + P$.
-However there is an more efficient algorithm which makes use of the binary representation of $n$ and by combining doubling and adding and starting from  \Oinf.
+However there is an more efficient algorithm which makes use of the binary representation of $n$ and by combining doubling and adding and starting from $\Oinf$.
 \eg for $n=11$, we compute $2(2(2(2\Oinf + P)) + P)+ P$.
 
 \begin{algorithm}
@@ -420,7 +420,7 @@ We first study Curve25519 and one of the quadratic twist Twist25519, first defin
 
 \subsubsection{Curves and Twists}
 
-We define \F{p} as the numbers between $0$ and $p = \p$.
+We define $\F{p}$ as the numbers between $0$ and $p = \p$.
 We create a \coqe{Zmodp} module to encapsulate those definitions.
 \begin{lstlisting}[language=Coq]
 Module Zmodp.
@@ -441,7 +441,7 @@ End Zmodp.
 
 We define the basic operations ($+, -, \times$) with their respective neutral elements ($0, 1$).
 \begin{lemma}
-\F{p} is a commutative ring.
+$\F{p}$ is a commutative ring.
 \end{lemma}
 % \begin{lstlisting}[language=Coq]
 % Definition zero : type := pi 0.
@@ -454,7 +454,7 @@ We define the basic operations ($+, -, \times$) with their respective neutral el
 % Lemma Zmodp_ring :
 %   ring_theory zero one add mul sub opp eq.
 % \end{lstlisting}
-And finally for $a = 486662$, by using the Legendre symbol we prove that $a^2 - 4$ and $2$ are not squares in \F{p}.
+And finally for $a = 486662$, by using the Legendre symbol we prove that $a^2 - 4$ and $2$ are not squares in $\F{p}$.
 \begin{lstlisting}[language=Coq]
 Lemma a_not_square : forall x: Zmodp.type,
   x^+2 != (Zmodp.pi 486662)^+2 - 4%:R.
@@ -482,10 +482,10 @@ Theorem curve_twist_eq: forall n x,
   curve25519_Fp_ladder n x = twist25519_Fp_ladder n x.
 \end{lstlisting}
 
-Because $2$ is not a square in \F{p}, it allows us split \F{p} into two sets.
+Because $2$ is not a square in $\F{p}$, it allows us split $\F{p}$ into two sets.
 \begin{lemma}
 \label{square-or-2square}
-For all $x$ in \F{p}, there exists $y$ in \F{p} such that
+For all $x$ in $\F{p}$, there exists $y$ in $\F{p}$ such that
 $$y^2 = x\ \ \ \lor\ \ 2y^2 = x$$
 \end{lemma}
 For all $x \in \F{p}$, we can compute $x^3 + ax^2 + x$. Using Lemma \ref{square-or-2square} we can find a $y$ such that $(x,y)$ is either on the curve or on the quadratic twist:
@@ -493,16 +493,16 @@ For all $x \in \F{p}$, we can compute $x^3 + ax^2 + x$. Using Lemma \ref{square-
 \label{curve-or-twist}
 For all $x \in \F{p}$, there exists a point $P$ over $M_{486662,1}(\F{p})$ or over $M_{486662,2}(\F{p})$ such that the $x$-coordinate of $P$ is $x$.
 \end{lemma}
-\begin{coq}
+\begin{lstlisting}[language=Coq]
 Theorem x_is_on_curve_or_twist: forall x : Zmodp.type,
   (exists (p : mc curve25519_mcuType), p#x0 = x) \/
   (exists (p' : mc twist25519_mcuType), p'#x0 = x).
-\end{coq}
+\end{lstlisting}
 
 \subsubsection{Curve25519 over \F{p^2}}
 
-We use the same definitions as in \cite{Ber06}. We consider the extension field \F{p^2} as the set $\F{p} \times \F{p}$ with $\delta = 2$, in other words,
-the polynomial with coefficients in \F{p} modulo $X^2 - 2$. In a similar way as for \F{p} we use Module in Coq.
+We use the same definitions as in \cite{Ber06}. We consider the extension field $\F{p^2}$ as the set $\F{p} \times \F{p}$ with $\delta = 2$, in other words,
+the polynomial with coefficients in $\F{p}$ modulo $X^2 - 2$. In a similar way as for $\F{p}$ we use Module in Coq.
 \begin{lstlisting}[language=Coq]
 Module Zmodp.
 Inductive type :=
@@ -537,9 +537,9 @@ Additionally we verify that for each element of in $\F{p^2}\backslash\{0\}$, the
 \begin{lemma} For all $x \in \F{p^2}\backslash\{0\}$ and $a,b \in \F{p}$ such that $x = (a,b)$,
 $$x^{-1} = \Big(\frac{a}{a^2-2b^2}\ , \frac{-b}{a^2-2b^2}\Big)$$
 \end{lemma}
-Similarily as in \F{p}, we define $0^{-1} = 0$.
+Similarily as in $\F{p}$, we define $0^{-1} = 0$.
 \begin{lemma}
-\F{p^2} is a commutative ring.
+$\F{p^2}$ is a commutative ring.
 \end{lemma}
 We can then specialize the basic operations in order to speed up the verifications of formulas by using rewrite rules:
 \begin{align*}
@@ -589,8 +589,8 @@ Notice that:
 \end{align*}
 
 In summary for all $n \in \N,\ n < 2^{255}$, for any given point $P\in\F{p}\times\F{p}$ on $M_{486662,1}(\F{p})$ or $M_{486662,2}(\F{p})$ \texttt{curve25519\_Fp\_ladder} computes the $\chi_0(nP)$.
-We have proved that for all $P \in \F{p^2}\times\F{p^2}$ such that $\chi_0(P) \in \F{p}$ there exists a corresponding point on the curve or the twist over \F{p}.
-We have proved that for any point, on the curve or the twist we can compute the scalar multiplication by $n$ and yield to the same result as if we did the computation in \F{p^2}. As a result we have proved theorem 2.1 of \cite{Ber06}:
+We have proved that for all $P \in \F{p^2}\times\F{p^2}$ such that $\chi_0(P) \in \F{p}$ there exists a corresponding point on the curve or the twist over $\F{p}$.
+We have proved that for any point, on the curve or the twist we can compute the scalar multiplication by $n$ and yield to the same result as if we did the computation in $\F{p^2}$. As a result we have proved theorem 2.1 of \cite{Ber06}:
 \begin{theorem}
 For all $n \in \N$, $x \in \F{P}$, $P \in M_{486662,1}(\F{p^2})$, such that $n < 2^{255}$ and $\chi_0(P) = \varphi(x)$, \texttt{curve25519\_Fp\_ladder}$(n, x)$ computes $\psi(\chi_0(nP))$.
 \end{theorem}

@@ -93,12 +93,12 @@ sv inv25519(gf o,const gf a)
 }
 \end{lstlisting}
 
-The last step of crypto\_scalarmult is the packing of the limbs, it returns
+The last step of \texttt{crypto\_scalarmult} is the packing of the limbs, it returns
 an array of bytes. It first performs 3 carry propagations in order to guarantee
 that each 16-bit limbs values are between $0$ and $2^{16}$.
-Then it computes a modulo reduction by \p by iterative substraction and
+Then it computes a modulo reduction by $\p$ by iterative substraction and
 conditional swap until it reaches a negative number.
-This guarantees a unique representation in $\mathbb{Z}_{2^{255}-19}$.
+This guarantees a unique representation in $\Zfield$.
 After which each 16-bit limbs are splitted into 8-bit limbs.
 \begin{lstlisting}[language=Ctweetnacl]
 
