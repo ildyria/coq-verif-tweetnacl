@@ -1,31 +1,31 @@
 \section{Introduction}
 
 Implementing cryptographic primitives without any bugs is hard.
-While tests provides a some code coverage and are used in the limits,
+While tests provides a code coverage and are used in the limits,
 they still don't cover 100\% of the possible input values.
-Using Coq, we prove the correctness of the scalar multiplication in Tweetnacl.
+Our method is can be seen as a static analysis over the input values coupled
+with the formal proof that the code of the algorithm matches its specification.
 
 TweetNaCl\cite{BGJ+15} is a compact reimplementation of the
 NaCl\cite{BLS12} library. It does not aim for high speed
 application and has been optimized for source code compactness.
-It maintains some degree of readability in order to be
-easily auditable.
+It maintains some degree of readability in order to be easily auditable.
 
 This library makes use of Curve25519\cite{Ber06}, a function over a \F{p}-restricted
-x-coordinate scalar multiplication on $E(\F{p^2})$, where $p$ is the prime number \p
-and E is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
-% It defines the function \texttt{crypto\_scalarmult} which
-% takes as input a scalar $n$ and the $x$ coordinate of a
-% point $P$ and returns the $x$ coordinate of the
-% point $[n]P$.
+$x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is the prime number \p
+and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 
-Coq is a formal system that allows us to machine-check our proofs. The Compcert\cite{Leroy-backend}
-compiler and the Verifiable Software Toolchain (VST)\cite{2012-Appel} are build
+Coq is a formal system that allows to machine-check our proofs.
+A famous example of its use is the proof of the Four Color Theorem.
+The Compcert\cite{Leroy-backend} compiler and the Verifiable Software Toolchain (VST)\cite{2012-Appel} are build
 on top of it.
 
 Our approach is as follow, we use the \textit{clightgen} tool from Compcert to
 generate the \textit{semantic version} (Clight\cite{Blazy-Leroy-Clight-09}) of
-the TweetNaCl C code. Using the Separation logic\cite{1969-Hoare,Reynolds02separationlogic}
-with (VST) we show that the semantics of the program satisfies a functionnal
-specification in Coq. We then prove that this specification represent the scalar
-multiplication on Curve25519.
+the TweetNaCl C code.
+Using the Separation logic\cite{1969-Hoare,Reynolds02separationlogic}
+with with the Verifiable Software Toolchain we show that the semantics of the
+program satisfies a functionnal specification in Coq.
+We extend the work of Bartzia and Strub \cite{DBLP:conf/itp/BartziaS14} to support Montgomery curves.
+With this formalization, we prove the correctness of a generic Montgomery ladder
+and show that our specification can be seen as an instance of it.
