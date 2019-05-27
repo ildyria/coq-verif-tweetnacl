@@ -508,11 +508,6 @@ Module Zmodp.
 Inductive type :=
   Zmodp2 (x: Zmodp.type) (y:Zmodp.type).
 
-Definition pi (x : Zmodp.type * Zmodp.type) :
-  type := Zmodp2 x.1 x.2.
-Coercion repr (x : type) : Zmodp.type*Zmodp.type :=
-  let: Zmodp2 u v := x in (u, v).
-
 Definition pi (x : Zmodp.type * Zmodp.type) : type :=
   Zmodp2 x.1 x.2.
 Coercion repr (x : type) : Zmodp.type*Zmodp.type :=

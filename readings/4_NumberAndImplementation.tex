@@ -46,6 +46,20 @@ In a similar fashion we can define a Coq version of the inversion mimicking
 the behavior of \TNaCle{inv25519} over \Coqe{list Z}. \Coqe{step_pow} contains
 the body of the for loop.
 
+\begin{lstlisting}[language=Ctweetnacl]
+sv inv25519(gf o,const gf a)
+{
+  gf c;
+  int i;
+  set25519(c,a);
+  for(i=253;i>=0;i--) {
+    S(c,c);
+    if(i!=2 && i!=4) M(c,c,a);
+  }
+  FOR(i,16) o[i]=c[i];
+}
+\end{lstlisting}
+
 \begin{Coq}
 Definition step_pow (a:Z) (c g:list Z) : list Z :=
   let c := Sq c in

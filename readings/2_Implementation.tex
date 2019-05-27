@@ -8,7 +8,7 @@ We then discuss which proofs are required.
 Given a natural number $n$ and a value $x \in \F{p}$, Curve25519 is a function over a $\F{p}$-restricted
 $x$-coordinate computing a scalar multiplication on $E(\F{p^2})$.
 As a result of this restriction, all computations are done over $\F{p}$.
-Numbers in that field can be represented by with 256 bits.
+Numbers in that field can be represented with 256 bits.
 We represent them in 8-bit limbs (respectively 16-bit limbs),
 making use of a base $2^8$ (respectively $2^{16}$).
 Consequently, inputs of the Curve25519 function are seen as arrays of bytes.
@@ -75,23 +75,10 @@ sv car25519(gf o)
 % }
 % \end{lstlisting}
 
-At the end of the Montgomery ladder, we have to compute an inverse.
-This is done using the Fermat's little theorem by the exponentiation to
+At the end of the Montgomery ladder, \texttt{inv25519} computes the inverse over \Zfield.
+It uses Fermat's little theorem by the exponentiation to
 $2^{255}-21$ with the Square-and-multiply algorithm. It takes
 advantage of the shape of the number by not doing the multiplications only twice.
-\begin{lstlisting}[language=Ctweetnacl]
-sv inv25519(gf o,const gf a)
-{
-  gf c;
-  int i;
-  set25519(c,a);
-  for(i=253;i>=0;i--) {
-    S(c,c);
-    if(i!=2 && i!=4) M(c,c,a);
-  }
-  FOR(i,16) o[i]=c[i];
-}
-\end{lstlisting}
 
 The last step of \texttt{crypto\_scalarmult} is the packing of the limbs: an array of 32 bytes.
 It first performs 3 carry propagations in order to guarantee
@@ -202,15 +189,20 @@ are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
 \end{itemize}
 
 In order to prove the soundness and correctness of \texttt{crypto\_scalarmult},
-we define multiples levels of specifications.
-
-A high level specification (over a generic field $\K$) looking only at
-the structure of the Montgomery ladder provide us with the correctness of the algorithm.
-A low level specification close to the \texttt{C} code (over lists of $\mathbb{Z}$)
-gives us the soundness assurance.
-We define a third specification over \Zfield (mid level) and
-prove it to be an instance of the high level one.
-We also prove its equivalence with the low level one.
+we first create a skeleton of the Montgomery ladder with abstract operations which
+can be instanciated over lists, integers, field elements...
+A high level specification (over a generic field $\K$) allows use to prove the
+correctness of the ladder with respect to the curves theory.
+This high specification does not rely on the parameters of Curve25519.
+By instanciating $\K$ with $\Zfield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
+we define a middle level specification.
+Additionally we also provide a low level specification close to the \texttt{C} code
+(over lists of $\Z$). We show this specification to be equivalent to the
+\textit{semantic version} of C (\texttt{CLight}) with VST.
+This low level specification gives us the soundness assurance.
+By showing that operations over instances ($\K = \Zfield$, $\Z$, list of $\Z$) are
+equivalent we bridge the gap between the low level and the high level specification
+with Curve25519 parameters.
 As such we prove all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
 This garantees us the correctness of the implementation.
 
@@ -286,12 +278,28 @@ As Post-condition we have:
   The returned integer has value $0$.
   \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (CSM n p)}\\
   In the memory share \texttt{sh}, the address \VSTe{v_q} points
-  to a list of integer values \VSTe{mVI (CSM n p)}.
+  to a list of integer values \VSTe{mVI (CSM n p)} where \VSTe{CSM n p} is the
+  result of the \VSTe{crypto_scalarmult} over \VSTe{n} and \VSTe{p}.
   \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (CSM n p)}\\
   \VSTe{PROP}: \VSTe{Zlength (CSM n p) = 32}\\
   We show that the computation for \VSTe{CSM} fits in  \TNaCle{u8[32]}.
 \end{itemize}
 
+This specification shows that \VSTe{crypto_scalarmult} in C computes the same
+result as \VSTe{CSM} in Coq provided that inputs are within their respective
+bounds.
+By converting those array of 32 bytes into their respective little-endian value
+we prove the correctness of \VSTe{crypto_scalarmult} (Theorem \ref{CSM-correct})
+in Coq (for the sake of simplicity we do not display the conversion in the theorem).
+\begin{theorem}
+\label{CSM-correct}
+For all $n \in \N, n < 2^{255}$ and where the bits 1, 2, 5 248, 249, 250
+are cleared and bit 6 is set, for all $P \in E(\F{p^2})$,
+for all $p \in \F{p}$ such that $P.x = p$,
+there exists $Q \in E(\F{p^2})$ such that $Q = nP$, $Q.x = q$ and $q$ = \VSTe{CSM} $n$ $p$.
+\end{theorem}
+A more complete description in Coq of Theorem \ref{CSM-correct} with the associated conversions
+is as follow:
 \begin{lstlisting}[language=Coq]
 Theorem Crypto_Scalarmult_Correct:
   forall (n p:list Z) (P:mc curve25519_Fp2_mcuType),
@@ -303,15 +311,4 @@ Theorem Crypto_Scalarmult_Correct:
   ZofList 8 (Crypto_Scalarmult n p) =
     (P *+ (Z.to_nat (Zclamp (ZofList 8 n)))) _x0.
 \end{lstlisting}
-
-We proved that \VSTe{crypto_scalarmult} (\VSTe{CSM} in Coq)
-computes: $$Q.x \leftarrow N \times P.x$$
-
-where \VSTe{p} represent the x-coordinate of $P$, \VSTe{n} represent the
-scalar by which it is be multiplied $N$ (where the bits 1, 2, 5 248, 249, 250
-are cleared and bit 6 is set).
-
-% As a result of the excution of \VSTe{crypto_scalarmult}, the value \VSTe{0}
-% is returned, \VSTe{p} and \VSTe{n} points to the same locations containing
-% the same values \VSTe{pp} and \VSTe{nn}.
-% The pointer \VSTe{q} points to the same location, but contain the x coordinate of $Q$.
+Its proof is explained in the next section.

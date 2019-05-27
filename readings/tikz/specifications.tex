@@ -17,19 +17,19 @@
 
     \begin{scope}[yshift=1 cm,xshift=0 cm]
 
-      \draw (0.5,2) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (ll) {\texttt{list} $\mathbb{Z}$};
+      \draw (0.5,2) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (ll) {\texttt{list} $\Z$};
       \draw (0,2) node [anchor=east] (shn) {Low Level};
 
       \draw [thick,double, <->, >=implies] (clight.north) -- (ll.south);
       \draw (2.25,1) node[anchor=west, inner sep=0pt] (chain) {\includegraphics[width=.07\textwidth]{img/chain.png}};
 
 
-      \draw (0.5,3) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (ml) {$\mathbb{Z}_{2^{255}-19}$};
+      \draw (0.5,3) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (ml) {$\Zfield$};
       \draw (0,3) node [anchor=east] (shn) {Mid Level};
 
       \draw[thick,double, <->, >=implies] (ll.north) -- (ml.south);
 
-      \draw (0.5,4) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (hl) {$\mathbb{F}$};
+      \draw (0.5,4) node [textstyle, anchor=west, draw=black, thick, minimum width=3cm,minimum height=0.5cm] (hl) {$\K$};
       \draw (0,4) node [anchor=east] (shn) {High Level};
 
       \draw[thick,double, <-, >=implies] (ml.north) -- (hl.south);
