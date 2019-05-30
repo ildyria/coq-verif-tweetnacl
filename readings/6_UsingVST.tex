@@ -1,114 +1,94 @@
 \section{Using VST}
 
+Any formal system relies on a trusted base. In this section we describe our
+chain of trust bringing up to light some tripping points a user may encounter
+when using VST.
+
 \subsection{The Trusted Base}
 
-\todo[inline]{blablabla needs to be rewritten}
+Our proof relies on a trusted base , i.e. a foundation of specifications
+and implementations that must stay correct with respect to their specifications.
+One should not be able to prove a false statement in that system e.g. by proving
+an inconsistency.
 
-The soundness of our proof relies on a trusted base
-, i.e. a foundation of specifications and implementations
-that must stay correct with respect to the specifications.
-
+In our case we rely on:
 \begin{itemize}
-  \item \textbf{Calculus of Inductive Construction} : The intuitionistic logic
-  used by Coq must be consistent in order to trust the proofs. We assumed that
-  the functional extensionality was also consistent with that logic.
+  \item \textbf{Calculus of Inductive Construction}. The intuitionistic logic
+  used by Coq must be consistent in order to trust the proofs. As an axiom,
+  we assumed that the functional extensionality, which is also consistent with that logic.
+  $$\forall x, f(x) = g(x) ) \implies f = g$$
+\begin{lstlisting}[language=Coq]
+Lemma f_ext: forall (A B:Types),
+  forall (f g: A -> B),
+  (forall x, f(x) = g(x)) -> f = g.
+\end{lstlisting}
 
-$
-\begin{array}{c}
-  \forall A\ B (f\ g : A \to B ),\\
-  ( \forall x : A , f(x) = g(x) ) \implies f = g
-\end{array}
-$
-  \item \textbf{CompCert} Clight model
+  \item \textbf{Verifiable Software Toolchain}. This framework developped at
+  Princeton allows a user to prove that a \texttt{CLight} code matches pure Coq
+  specification. However one must trust that the framework properly captures and
+  map the CLight behavior to the basic pure Coq functions. At the begining of
+  the project we found inconsistency and reported them to the authors.
 
-  \item \textbf{\texttt{clightgen}} translation from \textbf{C} to
-  \textbf{Clight}.
-  VST does not support the verification of
-  \texttt{o[i] = a[i] + b[i]}, the \texttt{forward} tactic will simply not work.
-  This required us to rewrite the lines into:\\
-  \texttt{aux1 = a[i];\\
-  aux2 = b[i];\\
-  o[i] = aux1 + aux2;}. This rewriting is done
+  \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
+  model captures correctly the C standard. (VERIFY THIS, WHICH STANDARD ?).
+  Our proof also assumes that the TweetNaCl code will behave as expected if
+  compiled under CompCert. We do not provide garantees for other C compilers
+  such as Clang or GCC.
+
+  \item \textbf{\texttt{clightgen}}. The tool making the translation from \textbf{C} to
+  \textbf{Clight}. It is the first step of the compilation.
+  VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
+  This required us to rewrite the lines into:
+\begin{lstlisting}[language=C]
+aux1 = a[i];
+aux2 = b[i];
+o[i] = aux1 + aux2;
+\end{lstlisting}
   The trust of the proof relied on the trust of a correct translation from the
   initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
 
   While this problem is still present, the Compcert developpers provided us with
   the \texttt{-normalize} option for \texttt{clightgen} which takes care of
   generating auxiliary variables in order to automatically derive these steps.
-  The changes required for a C-code to make it Verifiable are now minimals.
+  The changes required for a C-code to make it Verifiable are now minimal.
 
-
-  \item The \textbf{Coq kernel}, the \textbf{Ocaml compiler},
-  the \textbf{Ocaml Runtime} and the \textbf{CPU}. These are common to all proofs
+  \item Last but not the least, we must trust: the \textbf{Coq kernel} and its
+  associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
+  the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
   done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
-\subsection{Aliasing and Memory collision}
+\subsection{Using the Verifiable Software Toolchain}
 
-Necessity to go back into your specification multiple times to refine your model.
-e.g. prove \texttt{M(o,a,b)} later notice that you can have aliasing, need to redefine
-your theorem to prove \texttt{M(o,a,a)} (\textit{squaring}) and other variants such as:
-\texttt{M(a,a,b)} and \texttt{M(b,a,b)}.
+Proving a few lines of code with VST requires to have a good knowledge of what
+each line of code will do when executed. A user will want to specify a pure Coq
+implementations which will be close to a 1:1 mapping with the C implementation.
+This will simplify the proof and help with stepping throught the program.
+We call this step a Low level specification. A user will then have an easier
+time to prove that his low level specification matches a simpler higher level one.
 
+In order to further speed-up the verification process, it should be know that
+in order to prove \VSTe{crypto_scalarmult}, a user only need the specification
+of e.g. \VSTe{M}. This provide with multiple advantages: the verification by the
+kernel can be done in parallel and multiple users can work on proving different
+functions at the same time. For the sake of completeness we proved all intermediate
+functions.
+
+Memory aliasing is the next point a user should pay attention to. The way VST
+deals with the separation logic is similar to a consumer producer problem.
+A naive specification of \texttt{M(o,a,b)} will assume three distinct memory share.
+When called with three memory share (\texttt{o, a, b}), the three of them will be consumed.
+However when \texttt{M(o,a,a)} is called (squaring), the first two memory shares (\texttt{o, a})
+are consumed and VST will expect a third memory share where the last \texttt{a} is pointing at.
+This forces the user to define multiple specifications for a single function.
+Example of such cases are summarized in Fig \ref{tk:MemSame}.
 \begin{figure}[h]
   \include{tikz/memory_same_sh}
   \caption{Aliasing and Separation Logic}
   \label{tk:MemSame}
 \end{figure}
 
-Prove \texttt{M(o,a,b)} where o is a \texttt{list $\Z$} and then realize that
-\texttt{o} can be a list of \textit{undefined} (\texttt{list val}). Thus needs
-to reprove the above theorem again.
-
-% \begin{figure}[h]
-%   \include{tikz/memory_diff_sh}
-%   \caption{Memory Share and Separation Logic}
-%   \label{tk:MemSame}
-% \end{figure}
-
-\subsection{How to be efficient with VST?}
-
-This approach is \textbf{slow}, \textbf{tedious} and \textbf{frustrating}.
-The time cost way to big for such a proof and definitively not applicable for a
-cryptographic engineer.
-
-Necessity to prove everything at least 3 to 4 times (high level, low level, C-link).
-
-The \texttt{forward} and \texttt{entailer} tactics are slow.
-
-Specification and proofs does not need to be in the same file (as initially \textit{implied}
-by the examples provided by the VST repository). Putting the specification of each
-functions in separate file reduce the amount of dependencies. One does not need
-to wait for the proof of correctness of \texttt{M(o,a,b)} to compile the proof of \texttt{crypto\_scalarmult(q,n,p)}.
-This separation allows a high degree of parallelism during compilation \texttt{make -j},
-greatly reducing the amount of time required.
-
-Three years ago:
-\url{https://www.imperialviolet.org/2014/09/11/moveprovers.html}
-\url{https://www.imperialviolet.org/2014/09/07/provers.html}
-
-\subsection{Pointers arithmetic, arrays and types}
-
-
-It is to be noted that the \texttt{clightgen} tool has not been formally verified.
-
-\texttt{clightgen -normalize}
-
-% Not true since VST 2.0
-%
-% Assuming that \texttt{b} is of type \texttt{long long}, the following expression
-% will not be type-checked by VST.
-%
-% \texttt{b = 1 - b;}
-%
-% \texttt{1} is interpreted by cligthgen as \texttt{Vint} (\textit{Value of int})
-% while \texttt{b} is interpreted as \texttt{Vlong} (\textit{Value of long}),
-% resulting in an error. To solve this, we need to prefix \texttt{1} by an
-% explicit cast in C into the correct type. As a result, any constants used in this
-% implementation had to be casted to the correct type
-% (in \textit{TweetNaclVerificable}) to pass typecheck.
-
-\subsection{Verifiying for loops: head and tail recursion}
+\subsection{Verifiying \texttt{for} loops: head and tail recursion}
 
 While the final state of a For loops can be computed by a simple recursive function,
 we must define invariants that are true for each step of the iteration.
@@ -137,9 +117,10 @@ Lemma Tail_Head_equiv :
   rec_fn n s = rec_fn_rev n s.
 \end{Coq}
 
-
 In order to prove the for loops, we must define invariants.
 Those have to be
+
+
 
 \todo[inline]{How many lines of specification ?}
 \todo[inline]{How many lines of proofs ?}

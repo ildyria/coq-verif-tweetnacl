@@ -1,4 +1,4 @@
-\section{Linking C and Reflections}
+\section{Representation and Reflections}
 
 In this section we describe techniques used to prove the equivalence between the
 Clight description of TweetNaCl and Coq functions producing similar behaviors.
@@ -184,6 +184,9 @@ Definition f_inv_denote (t : formula_inv) : Prop :=
   | Eq_inv x y => e_inv_denote x = e_inv_denote y
   end.
 \end{lstlisting}
+All denote functions also take as an argument the environment containing the variables.
+We do not show it here for the sake of readability.
+Given that an environment, \Coqe{term_denote} returns the appropriate variable.
 With such Domain Specific Language we have the equality between:
 \begin{lstlisting}[backgroundcolor=\color{white}]
 f_inv_denote
@@ -191,6 +194,9 @@ f_inv_denote
          (P_inv R_inv 3))
   = (x * x^2 = x^3)
 \end{lstlisting}
+On the right side, \Coqe{(x * x^2 = x^3)} depends on $x$. On the left side,
+\texttt{(Eq\_inv (M\_inv R\_inv (S\_inv R\_inv)) (P\_inv R\_inv 3))} does not depend on $x$.
+This allows us to use computations in our decision precedure.
 
 We define \Coqe{step_inv} and \Coqe{pow_inv} to mirror the behavior of
 \Coqe{step_pow_Z} and respectively \Coqe{pow_fn_rev_Z} over our DSL and
