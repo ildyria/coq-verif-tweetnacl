@@ -90,8 +90,26 @@ Example of such cases are summarized in Fig \ref{tk:MemSame}.
 
 \subsection{Verifiying \texttt{for} loops: head and tail recursion}
 
-While the final state of a For loops can be computed by a simple recursive function,
-we must define invariants that are true for each step of the iteration.
+Final state of \texttt{for} loops can be computed by simple recursive functions.
+However we must define invariants which are true for each step of the iterations.
+For a lower value of the iterator \texttt{i}, a normal recursive function in Coq
+would only compute the last \texttt{i} steps instead of the first \texttt{i} ones
+as we would like for our invariant.
+e.g. for a function $g : \N \rightarrow T  \rightarrow T $ iterated a maximum of
+5 times, for $i = 2$, $g(4, g(3, x))$ instead of $g(1, g(0 , x))$.
+
+This requires us to define each function with
+an accumulator.
+
+We define two recursive functions \Coqe{rec_fn} and \Coqe{rec_fn_rev_acc}.
+They emulate the behavior of \texttt{for} loops and take as implicit argument a
+function \Coqe{g} which emulate the body of the loop.
+\begin{lemma}
+With their appropriate \texttt{for} loops, Head recursion and Tail recursion
+compute the same result.
+\end{lemma}
+
+The intuition behind the proof
 
 \begin{Coq}
 Variable T : Type.
@@ -116,9 +134,6 @@ Lemma Tail_Head_equiv :
   forall (n:nat) (s:T),
   rec_fn n s = rec_fn_rev n s.
 \end{Coq}
-
-In order to prove the for loops, we must define invariants.
-Those have to be
 
 
 

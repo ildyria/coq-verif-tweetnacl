@@ -95,7 +95,6 @@ the Montgomery form \cite{MontgomerySpeeding}.
   $$by^2 = x^3 + ax^2 + x,$$
   along with an additional formal point $\Oinf$, ``at infinity''.
 \end{definition}
-
 Using a similar representation, we defined the parametric type \texttt{mc} which
 represent the points on a specific montgomery curve. It is parametrized by
 a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
@@ -112,7 +111,6 @@ Inductive mc : Type := MC p of oncurve p.
 
 Lemma oncurve_mc: forall p : mc, oncurve p.
 \end{lstlisting}
-
 We define the addition on Montgomery curves the same way as it it is in the Weierstra{\ss} form,
 however the actual computations will be slightly different.
 \begin{lstlisting}[language=Coq]
@@ -130,7 +128,6 @@ Definition add (p1 p2 : point K) :=
           (| xs, - s * (xs - x1) - y1 |)
     end.
 \end{lstlisting}
-
 But we prove it is internal to the curve (again with coercion):
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : mc) : oncurve (add p q).
@@ -139,17 +136,15 @@ Definition addmc (p1 p2 : mc) : mc :=
 \end{lstlisting}
 
 We then prove a bijection between a Montgomery curve and its Weierstra{\ss} equation.
-
 \begin{lemma}
-  Let $M_{a,b}(\K)$ be a Montgomery curve, Define $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
-  Then $E_{a',b'}(\K)$ is an elliptic curve, and the mapping $\varphi : M_{a,b}(\K) \mapsto E_{a',b'}(\K)$ defined as:
+  Let $M_{a,b}(\K)$ be a Montgomery curve, define $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
+  then $E_{a',b'}(\K)$ is an elliptic curve, and the mapping $\varphi : M_{a,b}(\K) \mapsto E_{a',b'}(\K)$ defined as:
   \begin{align*}
     \varphi(\Oinf_M) &= \Oinf_E\\
     \varphi( (x , y) ) &= ( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} )
   \end{align*}
   is an isomorphism between groups.
 \end{lemma}
-
 \begin{lstlisting}[language=Coq]
 Definition ec_of_mc_point p :=
   match p with
@@ -165,7 +160,6 @@ Definition ec_of_mc p :=
 
 Lemma ec_of_mc_bij : bijective ec_of_mc.
 \end{lstlisting}
-
 
 \subsubsection{Projective coordinates}
 \label{projective}
@@ -188,7 +182,7 @@ Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 \end{lstlisting}
 
 With those coordinates we prove the following lemmas for the addition of two points.
-\begin{definition}We define the functions $\chi$ and $\chi_0$:\\
+\begin{definition}Define the functions $\chi$ and $\chi_0$:\\
 -- $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$\\
   such that $\chi(\Oinf) = \infty$ and $\chi((x,y)) = x$.\\
 -- $\chi_0 : M_{a,b}(\K) \to \K$\\
@@ -514,7 +508,7 @@ Coercion repr (x : type) : Zmodp.type*Zmodp.type :=
   let: Zmodp2 u v := x in (u, v).
 
 Definition zero : type :=
-  pi ( 0%:R, 0%:R).
+  pi ( 0%:R, 0%:R ).
 Definition one : type :=
   pi ( 1, 0%:R ).
 Definition opp (x : type) : type :=

@@ -1,13 +1,26 @@
 \section{Introduction}
 
-Implementing cryptographic primitives without any bugs is hard.
-While tests provides a code coverage and are used in the limits,
-they still don't cover 100\% of the possible input values.
+TweetNaCl\cite{BGJ+15} is a compact reimplementation of the
+NaCl\cite{BLS12} library. It does not aim for high speed
+application and has been optimized for source code compactness.
+It maintains some degree of readability in order to be easily auditable.
 
+This library makes use of Curve25519\cite{Ber06}, a function over a \F{p}-restricted
+$x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
+the prime number $\p$ and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
+This function is used by a wide variety of applications \cite{this-that-use-curve25519}
+to establish a shared secret over an insecure channel.
+
+Implementing cryptographic primitives without any bugs is difficult.
+While tests provides with code coverage,
+they still don't cover 100\% of the possible input values.
 In order to get formal guaranties a software meets its specifications,
-two methodologies exist. The first one is by synthesizing a formal specification and
+two methodologies exist.
+
+The first one is by synthesizing a formal specification and
 generating machine code by refinment. This approach is being used in the
-B-method\cite{Abrial:1996:BAP:236705}, F* \cite{DBLP:journals/corr/BhargavanDFHPRR17} with Kremlin, or in Coq \cite{CpdtJFR}.
+B-method\cite{Abrial:1996:BAP:236705}, HACL*\cite{zinzindohoue2017hacl} and F* \cite{DBLP:journals/corr/BhargavanDFHPRR17}
+with Kremlin, or with Coq \cite{CpdtJFR}.
 This gives you a software correct by construction. However it cannot be applied
 to an existing piece of software. In such case we need to write the specifications
 and then verify the correctness of the implementation.
@@ -16,19 +29,10 @@ Verifying an existing cryptographic library, we use the second approach.
 Our method can be seen as a static analysis over the input values coupled
 with the formal proof that the code of the algorithm matches its specification.
 Similar approaches have been used to prove the correctness of OpenSSL HMAC
-\cite{Beringer2015VerifiedCA} and SHA-256 \cite{Appel2015VerificationOA}.
-
-TweetNaCl\cite{BGJ+15} is a compact reimplementation of the
-NaCl\cite{BLS12} library. It does not aim for high speed
-application and has been optimized for source code compactness.
-It maintains some degree of readability in order to be easily auditable.
-
-This library makes use of Curve25519\cite{Ber06}, a function over a \F{p}-restricted
-$x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
-the prime number \p and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
+\cite{Beringer2015VerifiedCA} and SHA-256 \cite{2015-Appel}.
 
 Coq is a formal system that allows to machine-check our proofs.
-A famous example of its use is the proof of the Four Color Theorem.
+A famous example of its use is the proof of the Four Color Theorem \cite{gonthier2008formal}.
 The Compcert\cite{Leroy-backend} compiler and the Verifiable Software Toolchain
 (VST)\cite{2012-Appel} are build on top of it.
 
@@ -42,6 +46,8 @@ We extend the work of Bartzia and Strub \cite{DBLP:conf/itp/BartziaS14} to
 support Montgomery curves.
 With this formalization, we prove the correctness of a generic Montgomery ladder
 and show that our specification can be seen as an instance of it.
+
+\todo[inline]{Add where the software is available}
 
 % Five years ago:
 % \url{https://www.imperialviolet.org/2014/09/11/moveprovers.html}
