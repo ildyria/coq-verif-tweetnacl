@@ -6,7 +6,7 @@ Clight description of TweetNaCl and Coq functions producing similar behaviors.
 \subsection{Number representation and C implementation}
 
 As described in Section \ref{sec:impl}, numbers in \TNaCle{gf} are represented
-in base $2^{16}$ and we can use a direct mapping to represent that array as a list
+in base $2^{16}$ and we use a direct mapping to represent that array as a list
 integers in Coq. However in order to show the correctness of the basic operations,
 we need to convert this number as a full integer.
 \begin{definition}
@@ -51,7 +51,7 @@ Lemma mult_GF_Zlength :
 
 \subsection{Inversions in \Zfield}
 
-In a similar fashion we can define a Coq version of the inversion mimicking
+In a similar fashion we define a Coq version of the inversion mimicking
 the behavior of \TNaCle{inv25519} over \Coqe{list Z}.
 \begin{lstlisting}[language=Ctweetnacl]
 sv inv25519(gf o,const gf a)
@@ -126,7 +126,7 @@ To prove the correctness of the result we can use multiple strategies such as:
   \item Proving it is special case of square-and-multiply algorithm applied to
   a specific number and then show that this number is indeed $2^{255}-21$.
   \item Unrolling the for loop step-by-step and applying the equalities
-  $x^a \times x^b = x^{(a+b)}$ and $(x^a)^2 = x^{(2 \times a)}$. We can prove that
+  $x^a \times x^b = x^{(a+b)}$ and $(x^a)^2 = x^{(2 \times a)}$. We prove that
   the resulting exponent is $2^{255}-21$.
 \end{itemize}
 We use the second method for the benefits of simplicity. However it requires to
@@ -145,13 +145,13 @@ We show that for a property $P$, we can define a decidable boolean property
 $P_{bool}$ such that if $P_{bool}$ is \Coqe{true} then $P$ holds.
 $$reify\_P : P_{bool} = true \implies P$$
 By applying $reify\_P$ on $P$ our goal become $P_{bool} = true$.
-We can then compute the result of $P_{bool}$. If the decision goes well we are
+We then compute the result of $P_{bool}$. If the decision goes well we are
 left with the tautology $true = true$.
 
 To prove that the \Coqe{Inv25519_Z} is computing $x^{2^{255}-21}$,
 we define a Domain Specific Language.
 \begin{definition}
-Let \Coqe{expr_inv} denote an expression which can be either a term;
+Let \Coqe{expr_inv} denote an expression which is either a term;
 a multiplication of expressions; a squaring of an expression or a power of an expression.
 And Let \Coqe{formula_inv} denote an equality between two expressions.
 \end{definition}
@@ -212,7 +212,7 @@ Lemma pow_inv_pow_fn_rev_eq :
   e_inv_denote (pow_inv a b c g) =
   pow_fn_rev_Z a b (e_inv_denote c) (e_inv_denote g).
 \end{lstlisting}
-We can then derive the following lemma.
+We then derive the following lemma.
 \begin{lemma}
 \label{reify}
 With an appropriate choice of variables,
@@ -222,7 +222,7 @@ With an appropriate choice of variables,
 In order to prove formulas in \Coqe{formula_inv},
 we have the following a decidable procedure.
 We define \Coqe{pow_expr_inv}, a function which returns the power of an expression.
-We can then compare the two values and decide over their equality.
+We then compare the two values and decide over their equality.
 \begin{Coq}
 Fixpoint pow_expr_inv (t:expr_inv) : Z :=
   match t with
@@ -256,7 +256,7 @@ We prove our decision procedure correct.
 For all formulas $f$, if the decision over $f$ returns \Coqe{true},
 then the denoted equality by $f$ is true.
 \end{lemma}
-Which can be formalized as:
+Which is formalized as:
 \begin{Coq}
 Lemma decide_formula_inv_impl :
   forall (f:formula_inv),

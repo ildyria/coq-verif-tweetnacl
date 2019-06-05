@@ -1,4 +1,4 @@
-\section{Using VST}
+\section{VST and the Trust of the proof}
 
 Any formal system relies on a trusted base. In this section we describe our
 chain of trust bringing up to light some tripping points a user may encounter
@@ -90,27 +90,33 @@ Example of such cases are summarized in Fig \ref{tk:MemSame}.
 
 \subsection{Verifiying \texttt{for} loops: head and tail recursion}
 
-Final state of \texttt{for} loops can be computed by simple recursive functions.
-However we must define invariants which are true for each step of the iterations.
-For a lower value of the iterator \texttt{i}, a normal recursive function in Coq
-would only compute the last \texttt{i} steps instead of the first \texttt{i} ones
-as we would like for our invariant.
-e.g. for a function $g : \N \rightarrow T  \rightarrow T $ iterated a maximum of
-5 times, for $i = 2$, $g(4, g(3, x))$ instead of $g(1, g(0 , x))$.
+Final state of \texttt{for} loops are usually computed by simple recursive functions.
+However we must define invariants which are true for each iterations.
 
-This requires us to define each function with
-an accumulator.
+Assume we want to prove a decreasing loop where indexes go from 3 to 0.
+Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as input an integer for the index and a state and return a state.
+It simulate the body of the \texttt{for} loop.
+Assume it's recursive call: $f : \N \rightarrow State \rightarrow State $ which iteratively apply $g$ with decreasing index:
+\begin{equation*}
+  f ( i , s ) =
+  \begin{cases}
+  s & \text{if } s = 0 \\
+  f( i - 1 , g ( i - 1  , s )) & \text{otherwise}
+  \end{cases}
+\end{equation*}
+Then we have :
+\begin{align*}
+  f(4,s) &= g(0,g(1,g(2,g(3,s))))
+  % \\
+  % f(3,s) &= g(0,g(1,g(2,s)))
+\end{align*}
+To prove the correctness of $f(4,s)$, we need to prove that intermediate steps
+$g(3,s)$; $g(2,g(3,s))$; $g(1,g(2,g(3,s)))$; $g(0,g(1,g(2,g(3,s))))$ are correct.
+Due to the computation order of recursive function, our loop invariant for $i\in\{0;1;2;3;4\}$ cannot use $f(i)$.
+To solve this, we define an auxiliary function with an accumulator such that given $i\in\{0;1;2;3;4\}$, it will compute the first $i$ steps of the loop.
+We then prove for the complete number of steps, the function with the accumulator and without returns the same result.
 
-We define two recursive functions \Coqe{rec_fn} and \Coqe{rec_fn_rev_acc}.
-They emulate the behavior of \texttt{for} loops and take as implicit argument a
-function \Coqe{g} which emulate the body of the loop.
-\begin{lemma}
-With their appropriate \texttt{for} loops, Head recursion and Tail recursion
-compute the same result.
-\end{lemma}
-
-The intuition behind the proof
-
+We formalized this result in a generic way as follows:
 \begin{Coq}
 Variable T : Type.
 Variable g : nat -> T -> T.
@@ -118,7 +124,7 @@ Variable g : nat -> T -> T.
 Fixpoint rec_fn (n:nat) (s:T) :=
   match n with
   | 0 => s
-  | S n => (rec_fn n (g n s))
+  | S n => rec_fn n (g n s)
   end.
 
 Fixpoint rec_fn_rev_acc (n:nat) (m:nat) (s:T) :=
@@ -134,9 +140,7 @@ Lemma Tail_Head_equiv :
   forall (n:nat) (s:T),
   rec_fn n s = rec_fn_rev n s.
 \end{Coq}
-
-
-
+Using this formalization, we prove that the 255 steps of the montgomery ladder in C provide the same computations are the one defined in Algorithm \ref{montgomery-double-add}.
 \todo[inline]{How many lines of specification ?}
 \todo[inline]{How many lines of proofs ?}
 \todo[inline]{How long did it take ?}

@@ -59,7 +59,7 @@ Points of an elliptic curve can be equiped with a structure of an abelian group.
   \item $\Oinf$ is the neutral element under this law: if 3 points are colinear, their sum is equal to $\Oinf$.
 \end{itemize}
 
-This operaction can be defined in Coq as follow:
+This operaction are defined in Coq as follow:
 \begin{lstlisting}[language=Coq]
 Definition neg (p : point) :=
   if p is (| x, y |) then (| x, -y |) else EC_Inf.
@@ -166,7 +166,7 @@ Lemma ec_of_mc_bij : bijective ec_of_mc.
 Points on a projective plane are represented with a triple $(X:Y:Z)$. Any points except $(0:0:0)$ defines a point on a projective plane. A scalar multiple of a point defines the same point, \ie
 for all $\alpha \neq 0$, $(X:Y:Z)$ and $(\alpha X:\alpha Y:\alpha Z)$ defines the same point. For $Z\neq 0$, the projective point $(X:Y:Z)$ corresponds to the point $(X/Z,Y/Z)$ on the Euclidian plane, likewise the point $(X,Y)$ on the Euclidian plane corresponds to $(X:Y:1)$ on the projective plane.
 
-We can write the equation for a Montgomery curve $M_{a,b}(\K)$ as such:
+We write the equation for a Montgomery curve $M_{a,b}(\K)$ as such:
 \begin{equation}
 b \bigg(\frac{Y}{Z}\bigg)^2 = \bigg(\frac{X}{Z}\bigg)^3 + a \bigg(\frac{X}{Z}\bigg)^2 + \bigg(\frac{X}{Z}\bigg)
 \end{equation}
