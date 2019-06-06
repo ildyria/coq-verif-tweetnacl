@@ -1,4 +1,5 @@
-\section{Curve25519 implementation}
+\section{Curve25519 Implementation}
+\label{sec2-implem}
 
 In this section we present in detail the algorithm computing the crypto scalar multiplication.
 We then discuss which proofs are required.
@@ -77,8 +78,8 @@ sv car25519(gf o)
 
 At the end of the Montgomery ladder, \texttt{inv25519} computes the inverse over \Zfield.
 It uses Fermat's little theorem by the exponentiation to
-$2^{255}-21$ with the Square-and-multiply algorithm. It takes
-advantage of the shape of the number by not doing the multiplications only twice.
+$2^{255}-21$ with the Square-and-multiply algorithm.
+% It takes advantage of the shape of the number by not doing the multiplications only twice.
 
 The last step of \texttt{crypto\_scalarmult} is the packing of the limbs: an array of 32 bytes.
 It first performs 3 carry propagations in order to guarantee
@@ -212,7 +213,7 @@ This garantees us the correctness of the implementation.
   \label{tk:ProofStructure}
 \end{figure}
 
-\subsection{Correctness specification}
+\subsection{Correctness Specification}
 
 We show the soundness of TweetNaCl by proving the following specification matches a pure Coq function.
 This defines the equivalence between the Clight representation and a Coq definition of the ladder.

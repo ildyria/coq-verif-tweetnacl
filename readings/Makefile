@@ -10,6 +10,7 @@ depend:
 
 clean:
 	@echo cleaning...
+	@rm -fr latex.out 2> /dev/null || true
 	@rm *.pdf 2> /dev/null || true
 	@rm *.aux 2> /dev/null || true
 	@rm *.bbl 2> /dev/null || true

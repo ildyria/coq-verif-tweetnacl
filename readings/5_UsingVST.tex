@@ -1,4 +1,5 @@
-\section{VST and the Trust of the proof}
+\section{Trust in the proof and VST}
+\label{sec5-vst}
 
 Any formal system relies on a trusted base. In this section we describe our
 chain of trust bringing up to light some tripping points a user may encounter
@@ -60,35 +61,50 @@ o[i] = aux1 + aux2;
 
 \subsection{Using the Verifiable Software Toolchain}
 
-Proving a few lines of code with VST requires to have a good knowledge of what
-each line of code will do when executed. A user will want to specify a pure Coq
-implementations which will be close to a 1:1 mapping with the C implementation.
-This will simplify the proof and help with stepping throught the program.
-We call this step a Low level specification. A user will then have an easier
+The Verifiable Software Toolchain uses a strongest postcondition strategy.
+The user must first write a formal specification of the function he wants to verify in Coq.
+This should be as close as possible to the C implementation behavior.
+This will simplify the proof and help with stepping throught the CLight version of the software.
+With the range of inputes defined, VST steps mechanically through each instruction
+and ask the user to verify auxiliary goals such as array bound access, or absence of overflows/underflows.
+We call this specification a low level specification. A user will then have an easier
 time to prove that his low level specification matches a simpler higher level one.
 
-In order to further speed-up the verification process, it should be know that
-in order to prove \VSTe{crypto_scalarmult}, a user only need the specification
-of e.g. \VSTe{M}. This provide with multiple advantages: the verification by the
-kernel can be done in parallel and multiple users can work on proving different
-functions at the same time. For the sake of completeness we proved all intermediate
-functions.
+In order to further speed-up the verification process, it has to be know that to
+prove \VSTe{crypto_scalarmult}, a user only need the specification of e.g. \VSTe{M}.
+This provide with multiple advantages: the verification by the Coq kernel can be done
+in parallel and multiple users can work on proving different functions at the same time.
+For the sake of completeness we proved all intermediate functions.
 
 Memory aliasing is the next point a user should pay attention to. The way VST
 deals with the separation logic is similar to a consumer producer problem.
-A naive specification of \texttt{M(o,a,b)} will assume three distinct memory share.
+A simple specification of \texttt{M(o,a,b)} will assume three distinct memory share.
 When called with three memory share (\texttt{o, a, b}), the three of them will be consumed.
-However when \texttt{M(o,a,a)} is called (squaring), the first two memory shares (\texttt{o, a})
-are consumed and VST will expect a third memory share where the last \texttt{a} is pointing at.
-This forces the user to define multiple specifications for a single function.
-Example of such cases are summarized in Fig \ref{tk:MemSame}.
+However assuming this naive specification when \texttt{M(o,a,a)} is called (squaring),
+the first two memory shares (\texttt{o, a}) are consumed and VST will expect a third
+memory share where the last \texttt{a} is pointing at which does not \textit{exist} anymore.
+
+Examples of such cases are summarized in Fig \ref{tk:MemSame}.
 \begin{figure}[h]
   \include{tikz/memory_same_sh}
   \caption{Aliasing and Separation Logic}
   \label{tk:MemSame}
 \end{figure}
 
-\subsection{Verifiying \texttt{for} loops: head and tail recursion}
+This forces the user to either define multiple specifications for a single function
+or specify in his specification which aliasing version is being used.
+For our specifications of functions with 3 arguments, named here after \texttt{o, a, b},
+we define an additional parameter $k$ with values in
+$\{0,1,2,3\}$:
+\begin{itemize}
+  \item if $k=0$ then \texttt{o} and \texttt{a} are aliased.
+  \item if $k=1$ then \texttt{o} and \texttt{b} are aliased.
+  \item if $k=2$ then \texttt{a} and \texttt{b} are aliased.
+  \item else there is no aliasing.
+\end{itemize}
+This solution allows us to make cases analysis over possible aliasing.
+
+\subsection{Verifiying \texttt{for} loops}
 
 Final state of \texttt{for} loops are usually computed by simple recursive functions.
 However we must define invariants which are true for each iterations.
@@ -141,6 +157,22 @@ Lemma Tail_Head_equiv :
   rec_fn n s = rec_fn_rev n s.
 \end{Coq}
 Using this formalization, we prove that the 255 steps of the montgomery ladder in C provide the same computations are the one defined in Algorithm \ref{montgomery-double-add}.
-\todo[inline]{How many lines of specification ?}
-\todo[inline]{How many lines of proofs ?}
-\todo[inline]{How long did it take ?}
+
+\subsection{Time and Space Complexity}
+
+Our work can be split into multiple parts. Bellow we provide a approximation of
+the lines of codes and thus an idea of the size of the proofs required to
+complete this work.
+\begin{itemize}
+  \item The proof that the Montgomery ladder over a generic field $\K$ respects
+  the elliptic curve theory and then it's specialization for $\F{p^2}$.
+  This represent 4218 lines of code for 0.75 man-year.
+  \item The multiple level definitions of the ladder and operations over lists,
+  their proof of correctness and soundness and additionally that the match with
+  the generic Montgomery ladder. This count for 22967 lines of code for about 1.5 man-year.
+  \item The proof that our specification matches the Clight translation with VST.
+  This count for 6934 lines of code for about 0.75 man-year.
+\end{itemize}
+While the proof with VST took slightly less time, having to provide proof that every
+intermediate computations slows down the process significantly. However it is
+necessary in order to garantee our the absences of overflows and underflows.

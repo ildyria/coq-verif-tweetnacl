@@ -1,53 +1,88 @@
 \section{Introduction}
 
 TweetNaCl\cite{BGJ+15} is a compact reimplementation of the
-NaCl\cite{BLS12} library. It does not aim for high speed
-application and has been optimized for source code compactness.
-It maintains some degree of readability in order to be easily auditable.
+NaCl\cite{BLS12} high security cryptographic library.
+It does not aim for high speed application and has been optimized for source
+code compactness (100 tweets). It maintains some degree of readability in order
+to be easily auditable.
 
 This library makes use of Curve25519\cite{Ber06}, a function over a \F{p}-restricted
 $x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
 the prime number $\p$ and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
-This function is used by a wide variety of applications \cite{this-that-use-curve25519}
+This function is used by a wide variety of applications\cite{this-that-use-curve25519}
 to establish a shared secret over an insecure channel.
 
 Implementing cryptographic primitives without any bugs is difficult.
-While tests provides with code coverage,
-they still don't cover 100\% of the possible input values.
-In order to get formal guaranties a software meets its specifications,
-two methodologies exist.
+While tests provides with code coverage, they still don't cover 100\% of the
+possible input values. In order to get formal guaranties a software meets its
+specifications, two methodologies exist.
 
-The first one is by synthesizing a formal specification and
-generating machine code by refinment. This approach is being used in the
-B-method\cite{Abrial:1996:BAP:236705}, HACL*\cite{zinzindohoue2017hacl} and F* \cite{DBLP:journals/corr/BhargavanDFHPRR17}
-with Kremlin, or with Coq \cite{CpdtJFR}.
-This gives you a software correct by construction. However it cannot be applied
-to an existing piece of software. In such case we need to write the specifications
-and then verify the correctness of the implementation.
+The first one is by synthesizing a formal specification and generating machine
+code by refinment in order to get a software correct by construction.
+This approach is being used in e.g. the B-method\cite{Abrial:1996:BAP:236705},
+F* \cite{DBLP:journals/corr/BhargavanDFHPRR17}, or with Coq \cite{CpdtJFR}.
+
+However this first method cannot be applied to an existing piece of software.
+In such case we need to write the specifications and then verify the correctness
+of the implementation.
+
+\subsection{Our Formal Approach}
 
 Verifying an existing cryptographic library, we use the second approach.
 Our method can be seen as a static analysis over the input values coupled
 with the formal proof that the code of the algorithm matches its specification.
-Similar approaches have been used to prove the correctness of OpenSSL HMAC
-\cite{Beringer2015VerifiedCA} and SHA-256 \cite{2015-Appel}.
 
-Coq is a formal system that allows to machine-check our proofs.
+We use Coq\cite{coq-faq}, a formal system that allows us to machine-check our proofs.
 A famous example of its use is the proof of the Four Color Theorem \cite{gonthier2008formal}.
-The Compcert\cite{Leroy-backend} compiler and the Verifiable Software Toolchain
-(VST)\cite{2012-Appel} are build on top of it.
+The CompCert, a C compiler\cite{Leroy-backend} proven correct and sound is being build on top of it.
+To prove its correctness, CompCert uses multiple intermediate languages. The first step of CompCert is done by the parser \textit{clightgen}.
+It takes as input C code and generates its Clight\cite{Blazy-Leroy-Clight-09} translation.
 
-Our approach is as follow, we use the \textit{clightgen} tool from Compcert to
-generate the \textit{semantic version} (Clight\cite{Blazy-Leroy-Clight-09}) of
-the TweetNaCl C code.
-Using the Separation logic\cite{1969-Hoare,Reynolds02separationlogic}
-with with the Verifiable Software Toolchain we show that the semantics of the
-program satisfies a functionnal specification in Coq.
-We extend the work of Bartzia and Strub \cite{DBLP:conf/itp/BartziaS14} to
-support Montgomery curves.
-With this formalization, we prove the correctness of a generic Montgomery ladder
-and show that our specification is an instance of it.
+Using this intermediate representation Clight, we use the Verifiable Software Toolchain
+(VST)\cite{2012-Appel}, a framework which uses Separation logic\cite{1969-Hoare,Reynolds02separationlogic}
+and shows that the semantics of the program satisfies a functionnal specification in Coq.
+VST steps through each line of Clight using a strongest post-condition strategy.
+We write a specification of the crypto scalar multiplication of TweetNaCl and using
+VST we prove that the code matches our definitions.
 
-\todo[inline]{Add where the software is available}
+Bartzia and Strub wrote a formal library for elliptic curves\cite{DBLP:conf/itp/BartziaS14}.
+We extend it to support Montgomery curves. With this formalization, we prove the
+correctness of a generic Montgomery ladder and show that our specification is an instance of it.
+
+\subsection{Related Works}
+
+Similar approaches have been used to prove the correctness of OpenSSL HMAC
+\cite{Beringer2015VerifiedCA} and SHA-256 \cite{2015-Appel}. Compared to their work
+our approaches makes a complete link between the C implementation and the formal
+mathematical definition of the group theory behind elliptic curves.
+
+Using the synthesis approach, Zinzindohou{\'{e}} et al. wrote an verified extensible
+library of elliptic curves\cite{Zinzindohoue2016AVE}. This served as ground work for the
+cryptographic library HACL*\cite{zinzindohoue2017hacl} used in the NSS suite from Mozilla.
+
+Coq does not only allows verification but also synthesis.
+Using correct-by-construction finite field arithmetic\cite{Philipoom2018CorrectbyconstructionFF}
+one can synthesize\cite{Erbsen2016SystematicSO} certified elliptic curve
+implementations\cite{Erbsen2017CraftingCE}. These implementation are now being used in BoringSSL\cite{fiat-crypto}.
+
+Curve25519 implementations has already been under the scrutiny \cite{Chen2014VerifyingCS}.
+However in this paper we provide a proofs of correctness and soundness of a C program up to
+the theory of elliptic curves.
+
+\subsection{Organization of this paper and reproducibility}
+
+To maximize reusability of our results we placed the code of our formal proofs
+presented in this paper into the public domain. They are available at XXXXXXX
+with instructions of how to compile and verify our proofs.
+
+Section \ref{sec2-implem} gives the necessary background on Curve25519
+implementation in TweetNaCl and provides the specifications we later prove correct.
+Section \ref{sec3-maths} describes our extension of the formal library by Bartzia and Strub.
+Section \ref{sec4-refl} makes the link between the mathematical model and the C implementation.
+In this section we also describe some of the techniques we used to speed up some of the proofs.
+Section \ref{sec5-vst} provides with attention points a VST user should be careful
+of in order to avoid unnecessary work.
+
 
 % Five years ago:
 % \url{https://www.imperialviolet.org/2014/09/11/moveprovers.html}

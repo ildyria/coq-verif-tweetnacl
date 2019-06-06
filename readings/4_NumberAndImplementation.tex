@@ -1,9 +1,10 @@
 \section{Representation and Reflections}
+\label{sec4-refl}
 
 In this section we describe techniques used to prove the equivalence between the
 Clight description of TweetNaCl and Coq functions producing similar behaviors.
 
-\subsection{Number representation and C implementation}
+\subsection{Number Representation and C Implementation}
 
 As described in Section \ref{sec:impl}, numbers in \TNaCle{gf} are represented
 in base $2^{16}$ and we use a direct mapping to represent that array as a list
@@ -287,7 +288,7 @@ Corollary Inv25519_Zpow_GF :
   (pow (Z16.lst g) (2^255-21)) :GF.
 \end{Coq}
 
-\subsection{Packing and other applications of reflection}
+\subsection{Packing and other Applications of Reflection}
 
 We prove the functional correctness of \Coqe{Inv25519} with reflections.
 This technique can also be used where proofs requires some computing or a small and
