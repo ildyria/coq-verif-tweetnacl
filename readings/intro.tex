@@ -1,4 +1,15 @@
-\section{Introduction}
+XXX: NaCl
+XXX: TweetNaCl (find real-world use of TweetNaCl?)
+
+XXX: 
+``TweetNaCl is the
+first cryptographic library that allows correct functionality to be verified
+by auditors with reasonable effort''
+
+XXX: One core component of TweetNaCl (and NaCl) is X25519, mention use
+of X25519 in the wild.
+
+
 
 TweetNaCl\cite{BGJ+15} is a compact reimplementation of the
 NaCl\cite{BLS12} high security cryptographic library.
@@ -26,8 +37,13 @@ However this first method cannot be applied to an existing piece of software.
 In such case we need to write the specifications and then verify the correctness
 of the implementation.
 
-\subsection{Our Formal Approach}
+\subheading{Contribution of this paper}
 
+\todo{Proof that TweetNaCl's X25519 code correctly implements math definition from 25519 paper}
+
+\todo{State additional contributions, e.g., extension of EC framework by Bartiza and Strub.}
+
+\subheading{Our Formal Approach.}
 Verifying an existing cryptographic library, we use the second approach.
 Our method can be seen as a static analysis over the input values coupled
 with the formal proof that the code of the algorithm matches its specification.
@@ -49,10 +65,12 @@ Bartzia and Strub wrote a formal library for elliptic curves\cite{DBLP:conf/itp/
 We extend it to support Montgomery curves. With this formalization, we prove the
 correctness of a generic Montgomery ladder and show that our specification is an instance of it.
 
-\subsection{Related Works}
+\subheading{Related work.}
 
-Similar approaches have been used to prove the correctness of OpenSSL HMAC
-\cite{Beringer2015VerifiedCA} and SHA-256 \cite{2015-Appel}. Compared to their work
+\todo{Separate verification of existing code from generating proof-carrying code.}
+
+Similar approaches have been used to prove the correctness of OpenSSL HMAC~\cite{Beringer2015VerifiedCA} 
+and SHA-256~\cite{2015-Appel}. Compared to their work
 our approaches makes a complete link between the C implementation and the formal
 mathematical definition of the group theory behind elliptic curves.
 
@@ -69,18 +87,20 @@ Curve25519 implementations has already been under the scrutiny \cite{Chen2014Ver
 However in this paper we provide a proofs of correctness and soundness of a C program up to
 the theory of elliptic curves.
 
-\subsection{Organization of this paper and reproducibility}
+\todo{Add 1-2 sentences about how this compares? Different limitations etc.}
 
+\subheading{Reproducing the proofs.}
 To maximize reusability of our results we placed the code of our formal proofs
 presented in this paper into the public domain. They are available at XXXXXXX
 with instructions of how to compile and verify our proofs.
 
-Section \ref{sec2-implem} gives the necessary background on Curve25519
+\subheading{Organization of this paper.}
+Section~\ref{sec2-implem} gives the necessary background on Curve25519
 implementation in TweetNaCl and provides the specifications we later prove correct.
-Section \ref{sec3-maths} describes our extension of the formal library by Bartzia and Strub.
-Section \ref{sec4-refl} makes the link between the mathematical model and the C implementation.
+Section~\ref{sec3-maths} describes our extension of the formal library by Bartzia and Strub.
+Section~\ref{sec4-refl} makes the link between the mathematical model and the C implementation.
 In this section we also describe some of the techniques we used to speed up some of the proofs.
-Section \ref{sec5-vst} provides with attention points a VST user should be careful
+Section~\ref{sec5-vst} provides with attention points a VST user should be careful
 of in order to avoid unnecessary work.
 
 
@@ -101,3 +121,4 @@ of in order to avoid unnecessary work.
 % \end{itemize}
 %
 % Add comparison with Fiat-crypto
+

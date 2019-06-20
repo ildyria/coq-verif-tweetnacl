@@ -47,8 +47,11 @@
 \usepackage{xspace}
 \usepackage{subfig}
 \usepackage{float}
-\usepackage{todonotes}
 \usepackage[capitalise,nameinlink]{cleveref}
+
+\newcommand{\todo}[1]{
+{\color{red} \bf TODO: #1}
+}
 
 \floatstyle{ruled}
 \newfloat{Listing}{htb}{lst}

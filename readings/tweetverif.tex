@@ -1,0 +1,66 @@
+% \documentclass[letterpaper,twocolumn,9pt]{article}
+\documentclass[conference]{IEEEtran}
+% \usepackage{usenix}
+\usepackage{epsfig}
+\usepackage{setup}
+
+\newif\ifpublic
+\publictrue
+
+\newif\iffull
+\fulltrue
+
+\input{macros}
+
+\begin{document}
+
+%don't want date printed
+\date{}
+
+%make title bold and 14 pt font (Latex default is non-bold, 16 pt)
+\title{\Large \bf A Coq proof of Tweetnacl's X25519 correctness.}
+
+%for single author (just remove % characters)
+\ifpublic
+\author{
+\IEEEauthorblockN{Peter Schwabe}
+\IEEEauthorblockA{Radboud University,\\
+The Netherlands}
+\and
+\IEEEauthorblockN{Beno\^it Viguier}
+\IEEEauthorblockA{Radboud University,\\
+The Netherlands}
+\and
+\IEEEauthorblockN{Timmy Weerwag}
+\IEEEauthorblockA{XXX: Affiliation,\\
+The Netherlands}
+\and
+\IEEEauthorblockN{Freek Wiedijk}
+\IEEEauthorblockA{Radboud University,\\
+The Netherlands}
+}
+\fi
+
+
+\maketitle
+
+\todo{Put in date and thanks, figure out how in IEEEtran with conference mode.}
+
+%\thispagestyle{empty}
+
+\input{abstract.tex}
+\input{intro.tex}
+\input{preliminaries.tex}
+\input{lowlevel.tex}
+\input{highlevel.tex}
+\input{conclusion.tex}
+
+\vspace*{1cm}
+{\footnotesize \bibliographystyle{acm}
+\bibliography{collection}}
+
+\begin{appendix}
+  \input{tweetnacl.tex}
+\end{appendix}
+
+\end{document}

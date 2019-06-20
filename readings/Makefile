@@ -1,7 +1,7 @@
 FILES := $(wildcard *.tex) $(wildcard tikz/*.tex) $(wildcard *.sty)
 
-curve25519.pdf: FORCE $(FILES) collection.bib
-	./latexrun.py curve25519.tex
+tweetverif.pdf: FORCE $(FILES) collection.bib
+	./latexrun.py tweetverif.tex
 
 depend:
 		@echo $(FILES)
