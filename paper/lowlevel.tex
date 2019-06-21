@@ -1,1 +1,323 @@
 \section{Proving equivalence of X25519 in C and Coq}
+\label{sec4-refl}
+
+In this section we describe techniques used to prove the equivalence between the
+Clight description of TweetNaCl and Coq functions producing similar behaviors.
+
+\subsection{Number Representation and C Implementation}
+
+As described in Section \ref{sec:impl}, numbers in \TNaCle{gf} are represented
+in base $2^{16}$ and we use a direct mapping to represent that array as a list
+integers in Coq. However in order to show the correctness of the basic operations,
+we need to convert this number as a full integer.
+\begin{definition}
+Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list} \Z \rightarrow \Z$, a parametrized map by $n$ betwen a list $l$ and its
+it's little endian representation with a base $2^n$.
+\end{definition}
+We define it in Coq as:
+\begin{lstlisting}[language=Coq]
+Fixpoint ZofList {n:Z} (a:list Z) : Z :=
+  match a with
+  | [] => 0
+  | h :: q => h + (pow 2 n) * ZofList q
+  end.
+\end{lstlisting}
+We define a notation where $n$ is $16$.
+\begin{lstlisting}[language=Coq]
+Notation "Z16.lst A" := (ZofList 16 A).
+\end{lstlisting}
+We also define a notation to do the modulo, projecting any numbers in $\Zfield$.
+\begin{lstlisting}[language=Coq]
+Notation "A :GF" := (A mod (2^255-19)).
+\end{lstlisting}
+Remark that this representation is different from \Coqe{Zmodp}.
+However the equivalence between operations over $\Zfield$ and $\F{p}$ is easily proven.
+
+Using these two definitions, we proved intermediates lemmas such as the correctness of the
+multiplication \Coqe{M} where \Coqe{M} replicate the computations and steps done in C.
+\begin{lemma}
+For all list of integers \texttt{a} and \texttt{b} of length 16 representing
+$A$ and $B$ in $\Zfield$, the number represented in $\Zfield$ by the list \Coqe{(M a b)}
+is equal to $A \times B \bmod \p$.
+\end{lemma}
+And seen in Coq as follows:
+\begin{Coq}
+Lemma mult_GF_Zlength :
+  forall (a:list Z) (b:list Z),
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+   (Z16.lst (M a b)) :GF =
+   (Z16.lst a * Z16.lst b) :GF.
+\end{Coq}
+
+\subsection{Inversions in \Zfield}
+
+In a similar fashion we define a Coq version of the inversion mimicking
+the behavior of \TNaCle{inv25519} over \Coqe{list Z}.
+\begin{lstlisting}[language=Ctweetnacl]
+sv inv25519(gf o,const gf a)
+{
+  gf c;
+  int i;
+  set25519(c,a);
+  for(i=253;i>=0;i--) {
+    S(c,c);
+    if(i!=2 && i!=4) M(c,c,a);
+  }
+  FOR(i,16) o[i]=c[i];
+}
+\end{lstlisting}
+We specify this with 2 functions: a recursive \Coqe{pow_fn_rev} to to simulate the for loop and a simple
+\Coqe{step_pow} containing the body. Note the off by one for the loop.
+\begin{lstlisting}[language=Coq]
+Definition step_pow (a:Z) (c g:list Z) : list Z :=
+  let c := Sq c in
+    if a <>? 1 && a <>? 3
+    then M c g
+    else c.
+
+Function pow_fn_rev (a:Z) (b:Z) (c g: list Z)
+  {measure Z.to_nat a} : (list Z) :=
+  if a <=? 0
+    then c
+    else
+      let prev := pow_fn_rev (a - 1) b c g in
+        step_pow (b - 1 - a) prev g.
+\end{lstlisting}
+
+This \Coqe{Function} requires a proof of termination. It is done by proving the
+Well-foundness of the decreasing argument: \Coqe{measure Z.to_nat a}. Calling
+\Coqe{pow_fn_rev} 254 times allows us to reproduce the same behavior as the \texttt{Clight} definition.
+\begin{lstlisting}[language=Coq]
+Definition Inv25519 (x:list Z) : list Z :=
+  pow_fn_rev 254 254 x x.
+\end{lstlisting}
+Similarily we define the same function over $\Z$.
+\begin{lstlisting}[language=Coq]
+Definition step_pow_Z (a:Z) (c:Z) (g:Z) : Z :=
+  let c := c * c in
+  if a <>? 1 && a <>? 3
+    then c * g
+    else c.
+
+Function pow_fn_rev_Z (a:Z) (b:Z) (c:Z) (g: Z)
+  {measure Z.to_nat a} : Z :=
+  if (a <=? 0)
+    then c
+    else
+      let prev := pow_fn_rev_Z (a - 1) b c g in
+        step_pow_Z (b - 1 - a) prev g.
+
+Definition Inv25519_Z (x:Z) : Z :=
+  pow_fn_rev_Z 254 254 x x.
+\end{lstlisting}
+And prove their equivalence in $\Zfield$.
+\begin{lstlisting}[language=Coq]
+Lemma Inv25519_Z_GF : forall (g:list Z),
+  length g = 16 ->
+  (Z16.lst (Inv25519 g)) :GF =
+  (Inv25519_Z (Z16.lst g)) :GF.
+\end{lstlisting}
+In TweetNaCl, \TNaCle{inv25519} computes an inverse in $\Zfield$. It uses the
+Fermat's little theorem by doing an exponentiation to $2^{255}-21$.
+This is done by applying a square-and-multiply algorithm. The binary representation
+of $p-2$ implies to always do a multiplications aside for bit 2 and 4, thus the if case.
+To prove the correctness of the result we can use multiple strategies such as:
+\begin{itemize}
+  \item Proving it is special case of square-and-multiply algorithm applied to
+  a specific number and then show that this number is indeed $2^{255}-21$.
+  \item Unrolling the for loop step-by-step and applying the equalities
+  $x^a \times x^b = x^{(a+b)}$ and $(x^a)^2 = x^{(2 \times a)}$. We prove that
+  the resulting exponent is $2^{255}-21$.
+\end{itemize}
+We use the second method for the benefits of simplicity. However it requires to
+apply the unrolling and exponentiation formulas 255 times. This can be automated
+in Coq with tacticals such as \Coqe{repeat}, but it generates a proof object which
+will take a long time to verify.
+
+\subsection{Speeding up with Reflections}
+
+In order to speed up the verification, we use a technique called reflection.
+It provides us with flexibility such as we don't need to know the number of
+times nor the order in which the lemmas needs to be applied (chapter 15 in \cite{CpdtJFR}).
+
+The idea is to \textit{reflect} the goal into a decidable environment.
+We show that for a property $P$, we can define a decidable boolean property
+$P_{bool}$ such that if $P_{bool}$ is \Coqe{true} then $P$ holds.
+$$reify\_P : P_{bool} = true \implies P$$
+By applying $reify\_P$ on $P$ our goal become $P_{bool} = true$.
+We then compute the result of $P_{bool}$. If the decision goes well we are
+left with the tautology $true = true$.
+
+To prove that the \Coqe{Inv25519_Z} is computing $x^{2^{255}-21}$,
+we define a Domain Specific Language.
+\begin{definition}
+Let \Coqe{expr_inv} denote an expression which is either a term;
+a multiplication of expressions; a squaring of an expression or a power of an expression.
+And Let \Coqe{formula_inv} denote an equality between two expressions.
+\end{definition}
+\begin{lstlisting}[language=Coq]
+Inductive expr_inv :=
+  | R_inv : expr_inv
+  | M_inv : expr_inv -> expr_inv -> expr_inv
+  | S_inv : expr_inv -> expr_inv
+  | P_inv : expr_inv -> positive -> expr_inv.
+
+Inductive formula_inv :=
+  | Eq_inv : expr_inv -> expr_inv -> formula_inv.
+\end{lstlisting}
+The denote functions are defined as follows:
+\begin{lstlisting}[language=Coq]
+Fixpoint e_inv_denote (m:expr_inv) : Z :=
+  match m with
+  | R_inv     =>
+    term_denote
+  | M_inv x y =>
+    (e_inv_denote x) * (e_inv_denote y)
+  | S_inv x =>
+    (e_inv_denote x) * (e_inv_denote x)
+  | P_inv x p =>
+    pow (e_inv_denote x) (Z.pos p)
+  end.
+
+Definition f_inv_denote (t : formula_inv) : Prop :=
+  match t with
+  | Eq_inv x y => e_inv_denote x = e_inv_denote y
+  end.
+\end{lstlisting}
+All denote functions also take as an argument the environment containing the variables.
+We do not show it here for the sake of readability.
+Given that an environment, \Coqe{term_denote} returns the appropriate variable.
+With such Domain Specific Language we have the equality between:
+\begin{lstlisting}[backgroundcolor=\color{white}]
+f_inv_denote
+ (Eq_inv (M_inv R_inv (S_inv R_inv))
+         (P_inv R_inv 3))
+  = (x * x^2 = x^3)
+\end{lstlisting}
+On the right side, \Coqe{(x * x^2 = x^3)} depends on $x$. On the left side,
+\texttt{(Eq\_inv (M\_inv R\_inv (S\_inv R\_inv)) (P\_inv R\_inv 3))} does not depend on $x$.
+This allows us to use computations in our decision precedure.
+
+We define \Coqe{step_inv} and \Coqe{pow_inv} to mirror the behavior of
+\Coqe{step_pow_Z} and respectively \Coqe{pow_fn_rev_Z} over our DSL and
+we prove their equality.
+\begin{lstlisting}[language=Coq]
+Lemma step_inv_step_pow_eq :
+  forall (a:Z) (c:expr_inv) (g:expr_inv),
+  e_inv_denote (step_inv a c g) =
+  step_pow_Z a (e_inv_denote c) (e_inv_denote g).
+
+Lemma pow_inv_pow_fn_rev_eq :
+  forall (a:Z) (b:Z) (c:expr_inv) (g:expr_inv),
+  e_inv_denote (pow_inv a b c g) =
+  pow_fn_rev_Z a b (e_inv_denote c) (e_inv_denote g).
+\end{lstlisting}
+We then derive the following lemma.
+\begin{lemma}
+\label{reify}
+With an appropriate choice of variables,
+\Coqe{pow_inv} denotes \Coqe{Inv25519_Z}.
+\end{lemma}
+
+In order to prove formulas in \Coqe{formula_inv},
+we have the following a decidable procedure.
+We define \Coqe{pow_expr_inv}, a function which returns the power of an expression.
+We then compare the two values and decide over their equality.
+\begin{Coq}
+Fixpoint pow_expr_inv (t:expr_inv) : Z :=
+  match t with
+  | R_inv   => 1
+  (* power of a term is 1. *)
+  | M_inv x y =>
+    (pow_expr_inv x) + (pow_expr_inv y)
+  (* power of a multiplication is
+     the sum of the exponents. *)
+  | S_inv x =>
+    2 * (pow_expr_inv x)
+  (* power of a squaring is the double
+     of the exponent. *)
+  | P_inv x p =>
+    (Z.pos p) * (pow_expr_inv x)
+  (* power of a power is the multiplication
+     of the exponents. *)
+  end.
+
+Definition decide_e_inv (l1 l2:expr_inv) : bool :=
+  (pow_expr_inv l1) ==? (pow_expr_inv l2).
+
+Definition decide_f_inv (f:formula_inv) : bool :=
+  match f with
+  | Eq_inv x y => decide_e_inv x y
+  end.
+\end{Coq}
+We prove our decision procedure correct.
+\begin{lemma}
+\label{decide}
+For all formulas $f$, if the decision over $f$ returns \Coqe{true},
+then the denoted equality by $f$ is true.
+\end{lemma}
+Which is formalized as:
+\begin{Coq}
+Lemma decide_formula_inv_impl :
+  forall (f:formula_inv),
+  decide_f_inv f = true ->
+  f_inv_denote f.
+\end{Coq}
+By reification to over DSL (lemma \ref{reify}) and by applying our decision (lemma \ref{decide}).
+we proved the following theorem.
+\begin{theorem}
+\Coqe{Inv25519_Z} computes an inverse in \Zfield.
+\end{theorem}
+\begin{Coq}
+Theorem Inv25519_Z_correct :
+  forall (x:Z),
+  Inv25519_Z x = pow x (2^255-21).
+\end{Coq}
+
+From \Coqe{Inv25519_Z_correct} and \Coqe{Inv25519_Z_GF}, we conclude the
+functionnal correctness of the inversion over \Zfield.
+\begin{corollary}
+\Coqe{Inv25519} computes an inverse in \Zfield.
+\end{corollary}
+\begin{Coq}
+Corollary Inv25519_Zpow_GF :
+  forall (g:list Z),
+  length g = 16 ->
+  Z16.lst (Inv25519 g) :GF  =
+  (pow (Z16.lst g) (2^255-21)) :GF.
+\end{Coq}
+
+\subsection{Packing and other Applications of Reflection}
+
+We prove the functional correctness of \Coqe{Inv25519} with reflections.
+This technique can also be used where proofs requires some computing or a small and
+finite domain of variable to test e.g. for all $i$ such that $0 \le i < 16$.
+Using reflection we prove that we can split the for loop in \TNaCle{pack25519} into two parts.
+\begin{lstlisting}[language=Ctweetnacl]
+for(i=1;i<15;i++) {
+  m[i]=t[i]-0xffff-((m[i-1]>>16)&1);
+  m[i-1]&=0xffff;
+}
+\end{lstlisting}
+The first loop is computing the substraction while the second is applying the carrying.
+\begin{lstlisting}[language=Ctweetnacl]
+for(i=1;i<15;i++) {
+  m[i]=t[i]-0xffff
+}
+for(i=1;i<15;i++) {
+  m[i]=m[i]-((m[i-1]>>16)&1);
+  m[i-1]&=0xffff;
+}
+\end{lstlisting}
+This loop separation allows simpler proofs. The first loop is seen as the substraction of a number in \Zfield.
+We then prove that with the iteration of the second loop, the number represented in \Zfield stays the same.
+This leads to the proof that \TNaCle{pack25519} is effectively reducing mod $\p$ and returning a number in base $2^8$.
+
+\begin{Coq}
+Lemma Pack25519_mod_25519 :
+forall (l:list Z),
+Zlength l = 16 ->
+Forall (fun x => -2^62 < x < 2^62) l ->
+ZofList 8 (Pack25519 l) = (Z16.lst l) mod (2^255-19).
+\end{Coq}

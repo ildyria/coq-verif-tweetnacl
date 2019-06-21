@@ -1,7 +1,11 @@
 XXX: NaCl
 XXX: TweetNaCl (find real-world use of TweetNaCl?)
+Mega.nz uses tweetnacl-js (as JS port of tweetnacl) for their webclient https://mega.nz/
+Keybase client: https://github.com/keybase/node-nacl/blob/master/lib/tweetnacl.js
+Zeromq a messaging queue system uses tweetnacl to provide portability to it's users. http://zeromq.org/
 
-XXX: 
+
+XXX:
 ``TweetNaCl is the
 first cryptographic library that allows correct functionality to be verified
 by auditors with reasonable effort''
@@ -9,19 +13,29 @@ by auditors with reasonable effort''
 XXX: One core component of TweetNaCl (and NaCl) is X25519, mention use
 of X25519 in the wild.
 
+Originally, the name ``Curve25519'' referred to this keyexchange protocol,
+but Bernstein suggested to rename the scheme to X25519 and to use the name
+Curve25519 for the underlying elliptic curve~\cite{Ber14}.
+We make use of this notation in this paper.
 
-
-TweetNaCl\cite{BGJ+15} is a compact reimplementation of the
-NaCl\cite{BLS12} high security cryptographic library.
+TweetNaCl~\cite{BGJ+15} is a compact reimplementation of the
+NaCl~\cite{BLS12} high security cryptographic library.
 It does not aim for high speed application and has been optimized for source
 code compactness (100 tweets). It maintains some degree of readability in order
 to be easily auditable.
 
-This library makes use of Curve25519\cite{Ber06}, a function over a \F{p}-restricted
+This library makes use of Curve25519~\cite{Ber06}, a function over a \F{p}-restricted
 $x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
 the prime number $\p$ and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
-This function is used by a wide variety of applications\cite{this-that-use-curve25519}
+This function is used by a wide variety of applications~\cite{this-that-use-curve25519}
 to establish a shared secret over an insecure channel.
+
+
+\subheading{Contribution of this paper}
+
+\todo{Proof that TweetNaCl's X25519 code correctly implements math definition from 25519 paper}
+
+\todo{State additional contributions, e.g., extension of EC framework by Bartiza and Strub.}
 
 Implementing cryptographic primitives without any bugs is difficult.
 While tests provides with code coverage, they still don't cover 100\% of the
@@ -30,38 +44,32 @@ specifications, two methodologies exist.
 
 The first one is by synthesizing a formal specification and generating machine
 code by refinment in order to get a software correct by construction.
-This approach is being used in e.g. the B-method\cite{Abrial:1996:BAP:236705},
-F* \cite{DBLP:journals/corr/BhargavanDFHPRR17}, or with Coq \cite{CpdtJFR}.
+This approach is being used in e.g. the B-method~\cite{Abrial:1996:BAP:236705},
+F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}, or with Coq~\cite{CpdtJFR}.
 
 However this first method cannot be applied to an existing piece of software.
 In such case we need to write the specifications and then verify the correctness
 of the implementation.
-
-\subheading{Contribution of this paper}
-
-\todo{Proof that TweetNaCl's X25519 code correctly implements math definition from 25519 paper}
-
-\todo{State additional contributions, e.g., extension of EC framework by Bartiza and Strub.}
 
 \subheading{Our Formal Approach.}
 Verifying an existing cryptographic library, we use the second approach.
 Our method can be seen as a static analysis over the input values coupled
 with the formal proof that the code of the algorithm matches its specification.
 
-We use Coq\cite{coq-faq}, a formal system that allows us to machine-check our proofs.
-A famous example of its use is the proof of the Four Color Theorem \cite{gonthier2008formal}.
-The CompCert, a C compiler\cite{Leroy-backend} proven correct and sound is being build on top of it.
+We use Coq~\cite{coq-faq}, a formal system that allows us to machine-check our proofs.
+A famous example of its use is the proof of the Four Color Theorem~\cite{gonthier2008formal}.
+The CompCert, a C~compiler~\cite{Leroy-backend} proven correct and sound is being build on top of it.
 To prove its correctness, CompCert uses multiple intermediate languages. The first step of CompCert is done by the parser \textit{clightgen}.
-It takes as input C code and generates its Clight\cite{Blazy-Leroy-Clight-09} translation.
+It takes as input C code and generates its Clight~\cite{Blazy-Leroy-Clight-09} translation.
 
 Using this intermediate representation Clight, we use the Verifiable Software Toolchain
-(VST)\cite{2012-Appel}, a framework which uses Separation logic\cite{1969-Hoare,Reynolds02separationlogic}
+(VST)~\cite{2012-Appel}, a framework which uses Separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
 and shows that the semantics of the program satisfies a functionnal specification in Coq.
 VST steps through each line of Clight using a strongest post-condition strategy.
 We write a specification of the crypto scalar multiplication of TweetNaCl and using
 VST we prove that the code matches our definitions.
 
-Bartzia and Strub wrote a formal library for elliptic curves\cite{DBLP:conf/itp/BartziaS14}.
+Bartzia and Strub wrote a formal library for elliptic curves~\cite{DBLP:conf/itp/BartziaS14}.
 We extend it to support Montgomery curves. With this formalization, we prove the
 correctness of a generic Montgomery ladder and show that our specification is an instance of it.
 
@@ -69,21 +77,21 @@ correctness of a generic Montgomery ladder and show that our specification is an
 
 \todo{Separate verification of existing code from generating proof-carrying code.}
 
-Similar approaches have been used to prove the correctness of OpenSSL HMAC~\cite{Beringer2015VerifiedCA} 
+Similar approaches have been used to prove the correctness of OpenSSL HMAC~\cite{Beringer2015VerifiedCA}
 and SHA-256~\cite{2015-Appel}. Compared to their work
 our approaches makes a complete link between the C implementation and the formal
 mathematical definition of the group theory behind elliptic curves.
 
 Using the synthesis approach, Zinzindohou{\'{e}} et al. wrote an verified extensible
-library of elliptic curves\cite{Zinzindohoue2016AVE}. This served as ground work for the
-cryptographic library HACL*\cite{zinzindohoue2017hacl} used in the NSS suite from Mozilla.
+library of elliptic curves~\cite{Zinzindohoue2016AVE}. This served as ground work for the
+cryptographic library HACL*~\cite{zinzindohoue2017hacl} used in the NSS suite from Mozilla.
 
 Coq does not only allows verification but also synthesis.
-Using correct-by-construction finite field arithmetic\cite{Philipoom2018CorrectbyconstructionFF}
-one can synthesize\cite{Erbsen2016SystematicSO} certified elliptic curve
-implementations\cite{Erbsen2017CraftingCE}. These implementation are now being used in BoringSSL\cite{fiat-crypto}.
+Using correct-by-construction finite field arithmetic~\cite{Philipoom2018CorrectbyconstructionFF}
+one can synthesize~\cite{Erbsen2016SystematicSO} certified elliptic curve
+implementations~\cite{Erbsen2017CraftingCE}. These implementation are now being used in BoringSSL~\cite{fiat-crypto}.
 
-Curve25519 implementations has already been under the scrutiny \cite{Chen2014VerifyingCS}.
+Curve25519 implementations has already been under the scrutiny~\cite{Chen2014VerifyingCS}.
 However in this paper we provide a proofs of correctness and soundness of a C program up to
 the theory of elliptic curves.
 
@@ -121,4 +129,3 @@ of in order to avoid unnecessary work.
 % \end{itemize}
 %
 % Add comparison with Fiat-crypto
-

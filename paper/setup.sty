@@ -373,6 +373,20 @@ literate=
 % pour inliner dans les tableaux / displaymath...
 \def\TNaCles{\lstinline[language=Ctweetnacl, basicstyle=\scriptsize]}
 
+
+
+% \newcommand{\lstbg}[3][0pt]{{\fboxsep#1\colorbox{#2}{\strut #3}}}
+\lstdefinelanguage{diff}{
+  basicstyle=\ttfamily\small,
+  % morecomment=[f][\lstbg{red!20}]<,
+  % morecomment=[f][\lstbg{green!20}]>,
+  morecomment=[f][\color{doc@lstidentifiers2}]<,
+  morecomment=[f][\color{doc@lstfunctions}]>,
+  morecomment=[f][\textit]{@@},
+  %morecomment=[f][\textit]{---},
+  %morecomment=[f][\textit]{+++},
+}
+
 \lstset{%
   lineskip=-0.1em,
   %
