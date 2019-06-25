@@ -178,3 +178,148 @@ $\exists x,y \in$ \TNaCle{gf} such that
   \end{lstlisting}
 
 \subsection{Coq and VST}
+
+
+
+Verifying \texttt{crypto\_scalarmult} also implies to verify all the functions
+subsequently called: \texttt{unpack25519}; \texttt{A}; \texttt{Z}; \texttt{M};
+\texttt{S}; \texttt{car25519}; \texttt{inv25519}; \texttt{set25519}; \texttt{sel25519};
+\texttt{pack25519}.
+
+We prove that the implementation of Curve25519 is \textbf{sound} \ie
+\begin{itemize}
+\item absence of access out-of-bounds of arrays (memory safety).
+\item absence of overflows/underflow on the arithmetic.
+\end{itemize}
+We also prove that TweetNaCl's code is \textbf{correct}:
+\begin{itemize}
+\item Curve25519 is correctly implemented (we get what we expect).
+\item Operations on \texttt{gf} (\texttt{A}, \texttt{Z}, \texttt{M}, \texttt{S})
+are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
+\item The Montgomery ladder does compute a scalar multiplication between a natural number and a point.
+\end{itemize}
+
+In order to prove the soundness and correctness of \texttt{crypto\_scalarmult},
+we first create a skeleton of the Montgomery ladder with abstract operations which
+can be instanciated over lists, integers, field elements...
+A high level specification (over a generic field $\K$) allows use to prove the
+correctness of the ladder with respect to the curves theory.
+This high specification does not rely on the parameters of Curve25519.
+By instanciating $\K$ with $\Zfield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
+we define a middle level specification.
+Additionally we also provide a low level specification close to the \texttt{C} code
+(over lists of $\Z$). We show this specification to be equivalent to the
+\textit{semantic version} of C (\texttt{CLight}) with VST.
+This low level specification gives us the soundness assurance.
+By showing that operations over instances ($\K = \Zfield$, $\Z$, list of $\Z$) are
+equivalent we bridge the gap between the low level and the high level specification
+with Curve25519 parameters.
+As such we prove all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
+This garantees us the correctness of the implementation.
+
+\begin{figure}[h]
+  \include{tikz/specifications}
+  \caption{Structural construction of the proof}
+  \label{tk:ProofStructure}
+\end{figure}
+
+\subsection{Correctness Specification}
+
+We show the soundness of TweetNaCl by proving the following specification matches a pure Coq function.
+This defines the equivalence between the Clight representation and a Coq definition of the ladder.
+
+\begin{CoqVST}
+Definition crypto_scalarmult_spec :=
+DECLARE _crypto_scalarmult_curve25519_tweet
+WITH
+  v_q: val, v_n: val, v_p: val, c121665:val,
+  sh : share,
+  q : list val, n : list Z, p : list Z
+(*------------------------------------------*)
+PRE [ _q OF (tptr tuchar),
+     _n OF (tptr tuchar),
+     _p OF (tptr tuchar) ]
+PROP (writable_share sh;
+      Forall (fun x => 0 <= x < 2^8) p;
+      Forall (fun x => 0 <= x < 2^8) n;
+      Zlength q = 32; Zlength n = 32;
+      Zlength p = 32)
+LOCAL(temp _q v_q; temp _n v_n; temp _p v_p;
+      gvar __121665 c121665)
+SEP  (sh [{ v_q }] <<(uch32)-- q;
+      sh [{ v_n }] <<(uch32)-- mVI n;
+      sh [{ v_p }] <<(uch32)-- mVI p;
+      Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665)
+(*------------------------------------------*)
+POST [ tint ]
+PROP (Forall (fun x => 0 <= x < 2^8) (CSM n p);
+      Zlength (CSM n p) = 32)
+LOCAL(temp ret_temp (Vint Int.zero))
+SEP  (sh [{ v_q }] <<(uch32)-- mVI (CSM n p);
+      sh [{ v_n }] <<(uch32)-- mVI n;
+      sh [{ v_p }] <<(uch32)-- mVI p;
+      Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665
+\end{CoqVST}
+
+In this specification we state as preconditions:
+\begin{itemize}
+  \item[] \VSTe{PRE}: \VSTe{_p OF (tptr tuchar)}\\
+  The function \texttt{crypto\_scalarmult} takes as input three pointers to
+  arrays of unsigned bytes (\VSTe{tptr tuchar}) \VSTe{_p}, \VSTe{_q} and \VSTe{_n}.
+  \item[] \VSTe{LOCAL}: \VSTe{temp _p v_p}\\
+  Each pointer represent an address \VSTe{v_p},
+  \VSTe{v_q} and \VSTe{v_n}.
+  \item[] \VSTe{SEP}: \VSTe{sh [{ v_p $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI p}\\
+  In the memory share \texttt{sh}, the address \VSTe{v_p} points
+  to a list of integer values \VSTe{mVI p}.
+  \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) p}\\
+  In order to consider all the possible inputs, we assumed each
+  elements of the list \texttt{p} to be bounded by $0$ included and $2^8$
+  excluded.
+  \item[] \VSTe{PROP}: \VSTe{Zlength p = 32}\\
+  We also assumed that the length of the list \texttt{p} is 32. This defines the
+  complete representation of \TNaCle{u8[32]}.
+\end{itemize}
+
+As Post-condition we have:
+\begin{itemize}
+  \item[] \VSTe{POST}: \VSTe{tint}\\
+  The function \texttt{crypto\_scalarmult} returns an integer.
+  \item[] \VSTe{LOCAL}: \VSTe{temp ret_temp (Vint Int.zero)}\\
+  The returned integer has value $0$.
+  \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (CSM n p)}\\
+  In the memory share \texttt{sh}, the address \VSTe{v_q} points
+  to a list of integer values \VSTe{mVI (CSM n p)} where \VSTe{CSM n p} is the
+  result of the \VSTe{crypto_scalarmult} over \VSTe{n} and \VSTe{p}.
+  \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (CSM n p)}\\
+  \VSTe{PROP}: \VSTe{Zlength (CSM n p) = 32}\\
+  We show that the computation for \VSTe{CSM} fits in  \TNaCle{u8[32]}.
+\end{itemize}
+
+This specification shows that \VSTe{crypto_scalarmult} in C computes the same
+result as \VSTe{CSM} in Coq provided that inputs are within their respective
+bounds.
+By converting those array of 32 bytes into their respective little-endian value
+we prove the correctness of \VSTe{crypto_scalarmult} (Theorem \ref{CSM-correct})
+in Coq (for the sake of simplicity we do not display the conversion in the theorem).
+\begin{theorem}
+\label{CSM-correct}
+For all $n \in \N, n < 2^{255}$ and where the bits 1, 2, 5 248, 249, 250
+are cleared and bit 6 is set, for all $P \in E(\F{p^2})$,
+for all $p \in \F{p}$ such that $P.x = p$,
+there exists $Q \in E(\F{p^2})$ such that $Q = nP$ where $Q.x = q$ and $q$ = \VSTe{CSM} $n$ $p$.
+\end{theorem}
+A more complete description in Coq of Theorem \ref{CSM-correct} with the associated conversions
+is as follow:
+\begin{lstlisting}[language=Coq]
+Theorem Crypto_Scalarmult_Correct:
+  forall (n p:list Z) (P:mc curve25519_Fp2_mcuType),
+  Zlength n = 32 ->
+  Zlength p = 32 ->
+  Forall (fun x => 0 <= x /\ x < 2^8) n ->
+  Forall (fun x => 0 <= x /\ x < 2^8) p ->
+  Fp2_x (ZUnpack25519 (ZofList 8 p)) = P#x0 ->
+  ZofList 8 (Crypto_Scalarmult n p) =
+    (P *+ (Z.to_nat (Zclamp (ZofList 8 n)))) _x0.
+\end{lstlisting}
+% Its proof is explained in the next section.

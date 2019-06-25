@@ -20,17 +20,6 @@
   publisher     = {ACM}
 }
 
-@article{Reynolds02separationlogic,
-  author        = {John C. Reynolds},
-  title         = {Separation Logic: A Logic for Shared Mutable Data Structures},
-  journal       = {LICS},
-  volume        = {17},
-  year          = {2002},
-  pages         = {55-74},
-  note          = {\url{http://www.cs.cmu.edu/~jcr/seplogic.pdf}},
-  url           = {http://www.cs.cmu.edu/~jcr/seplogic.pdf}
-}
-
 @article{2007-Blazy-C-chronique,
   author        = {Sandrine Blazy},
   title         = {Comment gagner confiance en {C} ?},
@@ -42,60 +31,6 @@
   note          = {\url{http://hal.inria.fr/inria-00292049/}},
   hal           = {http://hal.inria.fr/inria-00292049/},
   pubkind       = {journal-fr-mono}
-}
-
-@article{Leroy-backend,
-  author        = {Xavier Leroy},
-  title         = {A formally verified compiler back-end},
-  journal       = {Journal of Automated Reasoning},
-  volume        = {43},
-  number        = {4},
-  pages         = {363--446},
-  year          = {2009},
-  note          = {\url{http://gallium.inria.fr/~xleroy/publi/compcert-backend.pdf}},
-  urlpublisher  = {http://dx.doi.org/10.1007/s10817-009-9155-4},
-  hal           = {http://hal.inria.fr/inria-00360768/},
-  pubkind       = {journal-int-mono}
-}
-
-@article{Blazy-Leroy-Clight-09,
-  author        = {Sandrine Blazy and Xavier Leroy},
-  title         = {Mechanized semantics for the {Clight}
-                         subset of the {C} language},
-  year          = {2009},
-  journal       = {Journal of Automated Reasoning},
-  volume        = {43},
-  number        = {3},
-  pages         = {263-288},
-  note          = {\url{http://gallium.inria.fr/~xleroy/publi/Clight.pdf}},
-  hal           = {http://hal.inria.fr/inria-00352524/},
-  urlpublisher  = {http://dx.doi.org/10.1007/s10817-009-9148-3}
-}
-
-@inproceedings{BGJ+15,
-  author        = {Daniel J. Bernstein and Bernard van Gastel and Wesley Janssen and Tanja Lange and Peter Schwabe and Sjaak Smetsers},
-  title         = {{TweetNaCl}: A crypto library in 100 tweets},
-  booktitle     = {Progress in Cryptology -- {LATINCRYPT 2014}},
-  editor        = {Diego Aranha and Alfred Menezes},
-  publisher     = SV,
-  series        = LNCS,
-  volume        = {8895},
-  year          = {2015},
-  pages         = {64--83},
-  note          = {Document ID: c74b5bbf605ba02ad8d9e49f04aca9a2, \url{http://cryptojedi.org/papers/\#tweetnacl}},
-}
-
-@inproceedings{BLS12,
-  author        = {Daniel J. Bernstein and Tanja Lange and Peter Schwabe},
-  title         = {The security impact of a new cryptographic library},
-  booktitle     = {Progress in Cryptology -- {LATINCRYPT 2012}},
-  editor        = {Alejandro Hevia and Gregory Neven},
-  publisher     = SV,
-  series        = LNCS,
-  volume        = {7533},
-  year          = {2012},
-  pages         = {159--176},
-  note          = {Document ID: 5f6fc69cc5a319aecba43760c56fab04, \url{http://cryptojedi.org/papers/\#coolnacl}},
 }
 
 @inproceedings{2012-Appel,
@@ -134,12 +69,15 @@
   publisher     = {ACM},
 }
 
-@misc{coq-faq,
-  title         = {{The Coq Proof Assistant} -- {Frequently Asked Questions}},
-  author        = {},
-  note          = {\url{https://coq.inria.fr/faq}},
+@book{Abrial:1996:BAP:236705,
+  author    = {Jean-Raymond Abrial},
+  title     = {The B-book: Assigning Programs to Meanings},
+  year      = {1996},
+  isbn      = {0-521-49619-5},
+  publisher = {Cambridge University Press},
+  address   = {New York, NY, USA},
 }
-
+note    = {\url{https://books.google.nl/books?id=T_ShHENlqBAC&lpg=PR4&pg=PP1#v=onepage&q&f=false}}
 
 @inproceedings{Ber06,
   author        = {Daniel J. Bernstein},
@@ -154,16 +92,92 @@
   note          = {\url{http://cr.yp.to/papers.html\#curve25519}},
 }
 
-@article{Mon85,
-  author        = {Peter L. Montgomery},
-  title         = {Modular Multiplication Without Trial Division},
-  journal       = {Mathematics of Computation},
-  publisher     = {American Mathematical Society},
-  year          = {1985},
-  volume        = {44},
-  number        = {170},
-  pages         = {519--521},
-  note          = {\url{http://www.ams.org/journals/mcom/1985-44-170/S0025-5718-1985-0777282-X/S0025-5718-1985-0777282-X.pdf}},
+@misc{Ber14,
+  title       = {25519 naming, Posting to the CFRG mailing list},
+  author      = {Daniel J. Bernstein},
+  year        = {2008},
+  note        = {\url{https://www.ietf.org/mail-archive/web/cfrg/current/msg04996.html}}
+}
+
+@inproceedings{Beringer2015VerifiedCA,
+  title      = {Verified Correctness and Security of OpenSSL HMAC},
+  author     = {Lennart Beringer and Adam Petcher and Katherine Q. Ye and Andrew W. Appel},
+  booktitle  = {USENIX Security Symposium},
+  year       = {2015},
+  note       = {\url{https://www.cs.cmu.edu/~kqy/resources/verified-hmac.pdf}}
+}
+
+@inproceedings{BGJ+15,
+  author        = {Daniel J. Bernstein and Bernard van Gastel and Wesley Janssen and Tanja Lange and Peter Schwabe and Sjaak Smetsers},
+  title         = {{TweetNaCl}: A crypto library in 100 tweets},
+  booktitle     = {Progress in Cryptology -- {LATINCRYPT 2014}},
+  editor        = {Diego Aranha and Alfred Menezes},
+  publisher     = SV,
+  series        = LNCS,
+  volume        = {8895},
+  year          = {2015},
+  pages         = {64--83},
+  note          = {Document ID: c74b5bbf605ba02ad8d9e49f04aca9a2, \url{http://cryptojedi.org/papers/\#tweetnacl}},
+}
+
+@article{Blazy-Leroy-Clight-09,
+  author        = {Sandrine Blazy and Xavier Leroy},
+  title         = {Mechanized semantics for the {Clight}
+                         subset of the {C} language},
+  year          = {2009},
+  journal       = {Journal of Automated Reasoning},
+  volume        = {43},
+  number        = {3},
+  pages         = {263-288},
+  note          = {\url{http://gallium.inria.fr/~xleroy/publi/Clight.pdf}},
+  hal           = {http://hal.inria.fr/inria-00352524/},
+  urlpublisher  = {http://dx.doi.org/10.1007/s10817-009-9148-3}
+}
+
+@inproceedings{BLS12,
+  author        = {Daniel J. Bernstein and Tanja Lange and Peter Schwabe},
+  title         = {The security impact of a new cryptographic library},
+  booktitle     = {Progress in Cryptology -- {LATINCRYPT 2012}},
+  editor        = {Alejandro Hevia and Gregory Neven},
+  publisher     = SV,
+  series        = LNCS,
+  volume        = {7533},
+  year          = {2012},
+  pages         = {159--176},
+  note          = {Document ID: 5f6fc69cc5a319aecba43760c56fab04, \url{http://cryptojedi.org/papers/\#coolnacl}},
+}
+
+@inproceedings{Chen2014VerifyingCS,
+  title     = {Verifying Curve25519 Software},
+  author    = {Yu-Fang Chen and Chang-Hong Hsu and Hsin-Hung Lin and Peter Schwabe and Ming-Hsien Tsai and Bow-Yaw Wang and Bo-Yin Yang and Shang-Yi Yang},
+  booktitle = {ACM Conference on Computer and Communications Security},
+  year      = {2014},
+  note      = {\url{https://cryptojedi.org/papers/verify25519-20140428.pdf}}
+}
+
+@misc{coq-faq,
+  title         = {{The Coq Proof Assistant} -- {Frequently Asked Questions}},
+  author        = {},
+  note          = {\url{https://coq.inria.fr/faq}},
+}
+
+@Article{CpdtJFR,
+  author      = {Adam Chlipala},
+  title       = {An Introduction to Programming and Proving with Dependent Types in Coq},
+  volume      = {3(2)},
+  pages       = {1-93},
+  year        = {2010},
+  journal     = {Journal of Formalized Reasoning},
+  url         = {http://adam.chlipala.net/papers/CpdtJFR/},
+  note        = {\url{http://adam.chlipala.net/papers/CpdtJFR/}}
+}
+
+@misc{cryptoeprint:2011:646,
+    author = {Daniel J. Bernstein and Tanja Lange and Peter Schwabe},
+    title = {The security impact of a new cryptographic library},
+    howpublished = {Cryptology ePrint Archive, Report 2011/646},
+    year = {2011},
+    note = {\url{https://eprint.iacr.org/2011/646}},
 }
 
 @inproceedings{DBLP:conf/itp/BartziaS14,
@@ -178,28 +192,6 @@
   pages     = {77-92},
   note      = {\url{https://hal.inria.fr/hal-01102288}}
 }
-
-@article{MontgomerySpeeding,
-  author  = {Peter L. Montgomery},
-  title   = {Speeding the Pollard and Elliptic Curve Methods of Factorization. Math. Comp. 48, 243-264},
-  month   = {01},
-  volume  = {48},
-  year    = {1987},
-  pages   = {243-243},
-  journal = {Mathematics of Computation - Math. Comput.},
-  doi     = {10.1090/S0025-5718-1987-0866113-7},
-  note    = {\url{http://links.jstor.org/sici?sici=0025-5718(198701)48:177<243:STPAEC>2.0.CO;2-3}}
-}
-
-@book{Abrial:1996:BAP:236705,
-  author    = {Jean-Raymond Abrial},
-  title     = {The B-book: Assigning Programs to Meanings},
-  year      = {1996},
-  isbn      = {0-521-49619-5},
-  publisher = {Cambridge University Press},
-  address   = {New York, NY, USA},
-}
-note    = {\url{https://books.google.nl/books?id=T_ShHENlqBAC&lpg=PR4&pg=PP1#v=onepage&q&f=false}}
 
 @article{DBLP:journals/corr/BhargavanDFHPRR17,
   author    = {Karthikeyan Bhargavan and
@@ -226,29 +218,11 @@ note    = {\url{https://books.google.nl/books?id=T_ShHENlqBAC&lpg=PR4&pg=PP1#v=o
   timestamp = {Mon, 13 Aug 2018 16:46:57 +0200},
 }
 
-@article{Zinzindohoue2016AVE,
-  title   = {A Verified Extensible Library of Elliptic Curves},
-  author  = {Jean Karim Zinzindohoue and Evmorfia-Iro Bartzia and Karthikeyan Bhargavan},
-  journal = {2016 IEEE 29th Computer Security Foundations Symposium (CSF)},
-  year    = {2016},
-  pages   = {296-309},
-  note      = {\url{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7536383}}
-}
-
-@inproceedings{Chen2014VerifyingCS,
-  title     = {Verifying Curve25519 Software},
-  author    = {Yu-Fang Chen and Chang-Hong Hsu and Hsin-Hung Lin and Peter Schwabe and Ming-Hsien Tsai and Bow-Yaw Wang and Bo-Yin Yang and Shang-Yi Yang},
-  booktitle = {ACM Conference on Computer and Communications Security},
-  year      = {2014},
-  note      = {\url{https://cryptojedi.org/papers/verify25519-20140428.pdf}}
-}
-
-@inproceedings{Beringer2015VerifiedCA,
-  title      = {Verified Correctness and Security of OpenSSL HMAC},
-  author     = {Lennart Beringer and Adam Petcher and Katherine Q. Ye and Andrew W. Appel},
-  booktitle  = {USENIX Security Symposium},
-  year       = {2015},
-  note       = {\url{https://www.cs.cmu.edu/~kqy/resources/verified-hmac.pdf}}
+@inproceedings{Erbsen2016SystematicSO,
+  title     = {Systematic Synthesis of Elliptic Curve Cryptography Implementations},
+  author    = {Andres Erbsen and Jason Gross and Adam Chlipala},
+  year      = {2016},
+  note      = {\url{https://people.csail.mit.edu/jgross/personal-website/papers/2017-fiat-crypto-pldi-draft.pdf}}
 }
 
 @inproceedings{Erbsen2017CraftingCE,
@@ -256,20 +230,6 @@ note    = {\url{https://books.google.nl/books?id=T_ShHENlqBAC&lpg=PR4&pg=PP1#v=o
   author     = {Andres Erbsen},
   year       = {2017},
   note       = {\url{http://adam.chlipala.net/theses/andreser_meng.pdf}}
-}
-
-@inproceedings{Philipoom2018CorrectbyconstructionFF,
-  title     = {Correct-by-construction finite field arithmetic in Coq},
-  author    = {Jade Philipoom},
-  year      = {2018},
-  note      = {\url{http://adam.chlipala.net/theses/jadep_meng.pdf}}
-}
-
-@inproceedings{Erbsen2016SystematicSO,
-  title     = {Systematic Synthesis of Elliptic Curve Cryptography Implementations},
-  author    = {Andres Erbsen and Jason Gross and Adam Chlipala},
-  year      = {2016},
-  note      = {\url{https://people.csail.mit.edu/jgross/personal-website/papers/2017-fiat-crypto-pldi-draft.pdf}}
 }
 
 @inproceedings{fiat-crypto,
@@ -285,17 +245,6 @@ note    = {\url{https://books.google.nl/books?id=T_ShHENlqBAC&lpg=PR4&pg=PP1#v=o
   note        = {\url{https://people.csail.mit.edu/jgross/personal-website/papers/2019-fiat-crypto-ieee-sp.pdf}}
 }
 
-@Article{CpdtJFR,
-  author      = {Adam Chlipala},
-  title       = {An Introduction to Programming and Proving with Dependent Types in Coq},
-  volume      = {3(2)},
-  pages       = {1-93},
-  year        = {2010},
-  journal     = {Journal of Formalized Reasoning},
-  url         = {http://adam.chlipala.net/papers/CpdtJFR/},
-  note        = {\url{http://adam.chlipala.net/papers/CpdtJFR/}}
-}
-
 @article{gonthier2008formal,
   title     = {Formal proof--the four-color theorem},
   author    = {Georges Gonthier},
@@ -307,12 +256,89 @@ note    = {\url{https://books.google.nl/books?id=T_ShHENlqBAC&lpg=PR4&pg=PP1#v=o
   note      = {\url{https://www.ams.org/notices/200811/tx081101382p.pdf}}
 }
 
+@article{Leroy-backend,
+  author        = {Xavier Leroy},
+  title         = {A formally verified compiler back-end},
+  journal       = {Journal of Automated Reasoning},
+  volume        = {43},
+  number        = {4},
+  pages         = {363--446},
+  year          = {2009},
+  note          = {\url{http://gallium.inria.fr/~xleroy/publi/compcert-backend.pdf}},
+  urlpublisher  = {http://dx.doi.org/10.1007/s10817-009-9155-4},
+  hal           = {http://hal.inria.fr/inria-00360768/},
+  pubkind       = {journal-int-mono}
+}
+
+@article{Mon85,
+  author        = {Peter L. Montgomery},
+  title         = {Modular Multiplication Without Trial Division},
+  journal       = {Mathematics of Computation},
+  publisher     = {American Mathematical Society},
+  year          = {1985},
+  volume        = {44},
+  number        = {170},
+  pages         = {519--521},
+  note          = {\url{http://www.ams.org/journals/mcom/1985-44-170/S0025-5718-1985-0777282-X/S0025-5718-1985-0777282-X.pdf}},
+}
+
+@article{MontgomerySpeeding,
+  author  = {Peter L. Montgomery},
+  title   = {Speeding the Pollard and Elliptic Curve Methods of Factorization. Math. Comp. 48, 243-264},
+  month   = {01},
+  volume  = {48},
+  year    = {1987},
+  pages   = {243-243},
+  journal = {Mathematics of Computation - Math. Comput.},
+  doi     = {10.1090/S0025-5718-1987-0866113-7},
+  note    = {\url{http://links.jstor.org/sici?sici=0025-5718(198701)48:177<243:STPAEC>2.0.CO;2-3}}
+}
+
+@inproceedings{Philipoom2018CorrectbyconstructionFF,
+  title     = {Correct-by-construction finite field arithmetic in Coq},
+  author    = {Jade Philipoom},
+  year      = {2018},
+  note      = {\url{http://adam.chlipala.net/theses/jadep_meng.pdf}}
+}
+
+@article{Reynolds02separationlogic,
+  author        = {John C. Reynolds},
+  title         = {Separation Logic: A Logic for Shared Mutable Data Structures},
+  journal       = {LICS},
+  volume        = {17},
+  year          = {2002},
+  pages         = {55-74},
+  note          = {\url{http://www.cs.cmu.edu/~jcr/seplogic.pdf}},
+  url           = {http://www.cs.cmu.edu/~jcr/seplogic.pdf}
+}
+
+@misc{rfc4253,
+  author      = {Tatu Yl\"{o}nen and Chris Lonvick},
+  title       = {{RFC 4253} - The Secure Shell {(SSH)} Transport Layer Protocol},
+  note        = {\url{https://tools.ietf.org/html/rfc4253}},
+}
+
+
+@misc{rfc7748,
+  author      = {Adam Langley and Mike Hamburg and Sean Turner},
+  title       = {{RFC 7748} - Elliptic Curves for Security},
+  note        = {\url{https://tools.ietf.org/html/rfc7748}},
+}
 
 @misc{this-that-use-curve25519,
   title   = {Things that use Curve25519},
   author  = {},
   url     = {https://ianix.com/pub/curve25519-deployment.html},
   note    = {\url{https://ianix.com/pub/curve25519-deployment.html}}
+}
+
+@article{Zinzindohoue2016AVE,
+  title   = {A Verified Extensible Library of Elliptic Curves},
+  author  = {Jean Karim Zinzindohoue and Evmorfia-Iro Bartzia and Karthikeyan Bhargavan},
+  journal = {2016 IEEE 29th Computer Security Foundations Symposium (CSF)},
+  year    = {2016},
+  pages   = {296-309},
+  note      = {\url{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7536383}}
 }
 
 @inproceedings{zinzindohoue2017hacl,
@@ -323,13 +349,9 @@ note    = {\url{https://books.google.nl/books?id=T_ShHENlqBAC&lpg=PR4&pg=PP1#v=o
   year          = {2017},
   organization  = {ACM},
   note          = {\url{https://eprint.iacr.org/2017/536.pdf}}
-
 }
 
-@misc{Ber14,
-  title       = {25519 naming, Posting to the CFRG mailing list},
-  author      = {Daniel J. Bernstein},
-  year        = {2008},
-  note        = {\url{https://www.ietf.org/mail-archive/web/cfrg/current/msg04996.html}}
+@misc{zmq,
+  title         = {ZeroMQ},
+  note          = {\url{http://zeromq.org/}}
 }
-Daniel J. Bernstein. 25519 naming. , 2014. . 2

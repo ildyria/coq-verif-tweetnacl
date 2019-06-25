@@ -1,37 +1,35 @@
-XXX: NaCl
-XXX: TweetNaCl (find real-world use of TweetNaCl?)
-Mega.nz uses tweetnacl-js (as JS port of tweetnacl) for their webclient https://mega.nz/
-Keybase client: https://github.com/keybase/node-nacl/blob/master/lib/tweetnacl.js
-Zeromq a messaging queue system uses tweetnacl to provide portability to it's users. http://zeromq.org/
-
-
-XXX:
+NaCl~\cite{BLS12} is an easy-to-use high-security high-speed software library
+for network communication, encryption, decryption, signatures, etc.
+TweetNaCl~\cite{BGJ+15} is its compact reimplementation.
+It does not aim for high speed application and has been optimized for source
+code compactness (100 tweets). It maintains some degree of readability in order
+to be easily auditable.
+TweetNaCl is being used by ZeroMQ~\cite{zmq} messaging queue system to provide
+portability to its users.
 ``TweetNaCl is the
 first cryptographic library that allows correct functionality to be verified
-by auditors with reasonable effort''
+by auditors with reasonable effort''~\cite{BGJ+15}
 
-XXX: One core component of TweetNaCl (and NaCl) is X25519, mention use
-of X25519 in the wild.
+% XXX: TweetNaCl (find real-world use of TweetNaCl?)
+% Mega.nz uses tweetnacl-js (as JS port of tweetnacl) for their webclient https://mega.nz/
+% Keybase client: https://github.com/keybase/node-nacl/blob/master/lib/tweetnacl.js
+
+One core component of TweetNaCl (and NaCl) is the key exchange protocol X25519~\cite{rfc7748}.
+This protocol is being used by a wide variety of applications~\cite{this-that-use-curve25519}
+such as SSH~\cite{rfc4253}, Signal Protocol, Tor, Zcash, TLS to establish a shared secret over
+an insecure channel.
+
+This library makes use of Curve25519~\cite{Ber06}, a function over a \F{p}-restricted
+$x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
+the prime number $\p$ and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 
 Originally, the name ``Curve25519'' referred to this keyexchange protocol,
 but Bernstein suggested to rename the scheme to X25519 and to use the name
 Curve25519 for the underlying elliptic curve~\cite{Ber14}.
 We make use of this notation in this paper.
 
-TweetNaCl~\cite{BGJ+15} is a compact reimplementation of the
-NaCl~\cite{BLS12} high security cryptographic library.
-It does not aim for high speed application and has been optimized for source
-code compactness (100 tweets). It maintains some degree of readability in order
-to be easily auditable.
-
-This library makes use of Curve25519~\cite{Ber06}, a function over a \F{p}-restricted
-$x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
-the prime number $\p$ and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
-This function is used by a wide variety of applications~\cite{this-that-use-curve25519}
-to establish a shared secret over an insecure channel.
-
-
 \subheading{Contribution of this paper}
+
 
 \todo{Proof that TweetNaCl's X25519 code correctly implements math definition from 25519 paper}
 
