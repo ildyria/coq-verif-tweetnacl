@@ -6,9 +6,8 @@ code compactness (100 tweets). It maintains some degree of readability in order
 to be easily auditable.
 TweetNaCl is being used by ZeroMQ~\cite{zmq} messaging queue system to provide
 portability to its users.
-``TweetNaCl is the
-first cryptographic library that allows correct functionality to be verified
-by auditors with reasonable effort''~\cite{BGJ+15}
+% ``TweetNaCl is the first cryptographic library that allows correct functionality
+% to be verified by auditors with reasonable effort''~\cite{BGJ+15}
 
 % XXX: TweetNaCl (find real-world use of TweetNaCl?)
 % Mega.nz uses tweetnacl-js (as JS port of tweetnacl) for their webclient https://mega.nz/
@@ -29,15 +28,16 @@ Curve25519 for the underlying elliptic curve~\cite{Ber14}.
 We make use of this notation in this paper.
 
 \subheading{Contribution of this paper}
+We provide a mechanized formal proof of the correctness of X25519
+implementation in TweetNaCl. This is done by first extending the formal library for
+elliptic curves~\cite{DBLP:conf/itp/BartziaS14} of Bartzia and Strub wrote to
+support Curve25519. Then proving that the code correctly implements the definitions
+from the original paper by Bernstein~\cite{Ber14}.
 
-
-\todo{Proof that TweetNaCl's X25519 code correctly implements math definition from 25519 paper}
-
-\todo{State additional contributions, e.g., extension of EC framework by Bartiza and Strub.}
-
-Implementing cryptographic primitives without any bugs is difficult.
-While tests provides with code coverage, they still don't cover 100\% of the
-possible input values. In order to get formal guaranties a software meets its
+% Implementing cryptographic primitives without any bugs is difficult.
+% While tests provides with code coverage, they still don't cover 100\% of the
+% possible input values.
+In order to get formal guaranties a software meets its
 specifications, two methodologies exist.
 
 The first one is by synthesizing a formal specification and generating machine
@@ -93,7 +93,12 @@ Curve25519 implementations has already been under the scrutiny~\cite{Chen2014Ver
 However in this paper we provide a proofs of correctness and soundness of a C program up to
 the theory of elliptic curves.
 
-\todo{Add 1-2 sentences about how this compares? Different limitations etc.}
+Synthesis approaches forces the user to depend on generated code which may not
+be optimal (speed, compactness...), they require to tweak the compiler in order
+to achieve the desired properties. On the other hand a carefully handcrafted
+optimized code will force the verifier to consider all the possible special cases
+and write a complex low level specification in order to prove the correctness of
+the algorithm.
 
 \subheading{Reproducing the proofs.}
 To maximize reusability of our results we placed the code of our formal proofs
@@ -101,13 +106,14 @@ presented in this paper into the public domain. They are available at XXXXXXX
 with instructions of how to compile and verify our proofs.
 
 \subheading{Organization of this paper.}
-Section~\ref{sec2-implem} gives the necessary background on Curve25519
-implementation in TweetNaCl and provides the specifications we later prove correct.
-Section~\ref{sec3-maths} describes our extension of the formal library by Bartzia and Strub.
-Section~\ref{sec4-refl} makes the link between the mathematical model and the C implementation.
-In this section we also describe some of the techniques we used to speed up some of the proofs.
-Section~\ref{sec5-vst} provides with attention points a VST user should be careful
-of in order to avoid unnecessary work.
+Section~\ref{preliminaries} give the necessary background on Curve25519
+implementation and a rough understand of how formal verification works.
+Section~\ref{C-Coq} provides the specification of X25519 in addition to proofs
+techniques used to show the correctness.
+Section~\ref{sec3-maths} describes our extension of the formal library by Bartzia
+and Strub and the correctness of X25519 implementation with respect to Bernstein
+specifications~\cite{Ber14}.
+And lastly in Section~\ref{Conclusion} we discuss the trust in this proof.
 
 
 % Five years ago:
