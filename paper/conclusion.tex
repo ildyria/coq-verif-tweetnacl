@@ -1,8 +1,61 @@
 \section{Conclusion}
 \label{Conclusion}
 
-\subsection{TCB of the proof}
+Any formal system relies on a trusted base. In this section we describe our
+chain of trust.
 
-\todo{Explain and compare to, e.g., F*}
+\subsection{Trusted Core Base of the proof}
+
+Our proof relies on a trusted base , i.e. a foundation of specifications
+and implementations that must stay correct with respect to their specifications.
+One should not be able to prove a false statement in that system e.g. by proving
+an inconsistency.
+
+In our case we rely on:
+\begin{itemize}
+  \item \textbf{Calculus of Inductive Construction}. The intuitionistic logic
+  used by Coq must be consistent in order to trust the proofs. As an axiom,
+  we assumed that the functional extensionality, which is also consistent with that logic.
+  $$\forall x, f(x) = g(x) ) \implies f = g$$
+\begin{lstlisting}[language=Coq]
+Lemma f_ext: forall (A B:Type),
+  forall (f g: A -> B),
+  (forall x, f(x) = g(x)) -> f = g.
+\end{lstlisting}
+
+  \item \textbf{Verifiable Software Toolchain}. This framework developped at
+  Princeton allows a user to prove that a \texttt{CLight} code matches pure Coq
+  specification. However one must trust that the framework properly captures and
+  map the CLight behavior to the basic pure Coq functions. At the begining of
+  the project we found inconsistency and reported them to the authors.
+
+  \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
+  model captures correctly the C standard. (VERIFY THIS, WHICH STANDARD ?).
+  Our proof also assumes that the TweetNaCl code will behave as expected if
+  compiled under CompCert. We do not provide garantees for other C compilers
+  such as Clang or GCC.
+
+  \item \textbf{\texttt{clightgen}}. The tool making the translation from \textbf{C} to
+  \textbf{Clight}. It is the first step of the compilation.
+  VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
+  This required us to rewrite the lines into:
+\begin{lstlisting}[language=C]
+aux1 = a[i];
+aux2 = b[i];
+o[i] = aux1 + aux2;
+\end{lstlisting}
+  The trust of the proof relied on the trust of a correct translation from the
+  initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
+
+  While this problem is still present, the Compcert developpers provided us with
+  the \texttt{-normalize} option for \texttt{clightgen} which takes care of
+  generating auxiliary variables in order to automatically derive these steps.
+  The changes required for a C-code to make it Verifiable are now minimal.
+
+  \item Last but not the least, we must trust: the \textbf{Coq kernel} and its
+  associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
+  the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
+  done with this architecture \cite{2015-Appel,coq-faq}.
+\end{itemize}
 
 \subsection{Proof toolchain}

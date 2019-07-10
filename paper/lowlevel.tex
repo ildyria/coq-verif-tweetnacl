@@ -4,6 +4,55 @@
 In this section we describe techniques used to prove the equivalence between the
 Clight description of TweetNaCl and Coq functions producing similar behaviors.
 
+
+\todo{SUBSECTION?}
+
+
+
+Verifying \texttt{crypto\_scalarmult} also implies to verify all the functions
+subsequently called: \texttt{unpack25519}; \texttt{A}; \texttt{Z}; \texttt{M};
+\texttt{S}; \texttt{car25519}; \texttt{inv25519}; \texttt{set25519}; \texttt{sel25519};
+\texttt{pack25519}.
+
+We prove that the implementation of Curve25519 is \textbf{sound} \ie
+\begin{itemize}
+\item absence of access out-of-bounds of arrays (memory safety).
+\item absence of overflows/underflow on the arithmetic.
+\end{itemize}
+We also prove that TweetNaCl's code is \textbf{correct}:
+\begin{itemize}
+\item Curve25519 is correctly implemented (we get what we expect).
+\item Operations on \texttt{gf} (\texttt{A}, \texttt{Z}, \texttt{M}, \texttt{S})
+are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
+\item The Montgomery ladder does compute a scalar multiplication between a natural number and a point.
+\end{itemize}
+
+In order to prove the soundness and correctness of \texttt{crypto\_scalarmult},
+we first create a skeleton of the Montgomery ladder with abstract operations which
+can be instanciated over lists, integers, field elements...
+A high level specification (over a generic field $\K$) allows use to prove the
+correctness of the ladder with respect to the curves theory.
+This high specification does not rely on the parameters of Curve25519.
+By instanciating $\K$ with $\Zfield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
+we define a middle level specification.
+Additionally we also provide a low level specification close to the \texttt{C} code
+(over lists of $\Z$). We show this specification to be equivalent to the
+\textit{semantic version} of C (\texttt{CLight}) with VST.
+This low level specification gives us the soundness assurance.
+By showing that operations over instances ($\K = \Zfield$, $\Z$, list of $\Z$) are
+equivalent we bridge the gap between the low level and the high level specification
+with Curve25519 parameters.
+As such we prove all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
+This garantees us the correctness of the implementation.
+
+\begin{figure}[h]
+  \include{tikz/specifications}
+  \caption{Structural construction of the proof}
+  \label{tk:ProofStructure}
+\end{figure}
+
+
+
 \subsection{Correctness Specification}
 
 We show the soundness of TweetNaCl by proving the following specification matches a pure Coq function.
@@ -106,7 +155,7 @@ Theorem Crypto_Scalarmult_Correct:
 
 \subsection{Number Representation and C Implementation}
 
-As described in Section \ref{sec:impl}, numbers in \TNaCle{gf} are represented
+As described in Section \ref{preliminaries:B}, numbers in \TNaCle{gf} are represented
 in base $2^{16}$ and we use a direct mapping to represent that array as a list
 integers in Coq. However in order to show the correctness of the basic operations,
 we need to convert this number as a full integer.
@@ -152,7 +201,7 @@ Lemma mult_GF_Zlength :
 
 \subsection{Inversions in \Zfield}
 
-In a similar fashion we define a Coq version of the inversion mimicking
+We define a Coq version of the inversion mimicking
 the behavior of \TNaCle{inv25519} over \Coqe{list Z}.
 \begin{lstlisting}[language=Ctweetnacl]
 sv inv25519(gf o,const gf a)
@@ -186,7 +235,7 @@ Function pow_fn_rev (a:Z) (b:Z) (c g: list Z)
 \end{lstlisting}
 
 This \Coqe{Function} requires a proof of termination. It is done by proving the
-Well-foundness of the decreasing argument: \Coqe{measure Z.to_nat a}. Calling
+well-foundness of the decreasing argument: \Coqe{measure Z.to_nat a}. Calling
 \Coqe{pow_fn_rev} 254 times allows us to reproduce the same behavior as the \texttt{Clight} definition.
 \begin{lstlisting}[language=Coq]
 Definition Inv25519 (x:list Z) : list Z :=
@@ -375,7 +424,7 @@ Theorem Inv25519_Z_correct :
   Inv25519_Z x = pow x (2^255-21).
 \end{Coq}
 
-From \Coqe{Inv25519_Z_correct} and \Coqe{Inv25519_Z_GF}, we conclude the
+From \Coqe{Inv25519_Z_GF} and \Coqe{Inv25519_Z_correct}, we conclude the
 functionnal correctness of the inversion over \Zfield.
 \begin{corollary}
 \Coqe{Inv25519} computes an inverse in \Zfield.
@@ -411,7 +460,7 @@ for(i=1;i<15;i++) {
 }
 \end{lstlisting}
 This loop separation allows simpler proofs. The first loop is seen as the substraction of a number in \Zfield.
-We then prove that with the iteration of the second loop, the number represented in \Zfield stays the same.
+We then prove that with the iteration of the second loop, the number represented in $\Zfield$ stays the same.
 This leads to the proof that \TNaCle{pack25519} is effectively reducing mod $\p$ and returning a number in base $2^8$.
 
 \begin{Coq}
@@ -421,3 +470,102 @@ Zlength l = 16 ->
 Forall (fun x => -2^62 < x < 2^62) l ->
 ZofList 8 (Pack25519 l) = (Z16.lst l) mod (2^255-19).
 \end{Coq}
+
+\subsection{Using the Verifiable Software Toolchain}
+
+The Verifiable Software Toolchain uses a strongest postcondition strategy.
+The user must first write a formal specification of the function he wants to verify in Coq.
+This should be as close as possible to the C implementation behavior.
+This will simplify the proof and help with stepping throught the CLight version of the software.
+With the range of inputes defined, VST steps mechanically through each instruction
+and ask the user to verify auxiliary goals such as array bound access, or absence of overflows/underflows.
+We call this specification a low level specification. A user will then have an easier
+time to prove that his low level specification matches a simpler higher level one.
+
+In order to further speed-up the verification process, it has to be know that to
+prove \VSTe{crypto_scalarmult}, a user only need the specification of e.g. \VSTe{M}.
+This provide with multiple advantages: the verification by the Coq kernel can be done
+in parallel and multiple users can work on proving different functions at the same time.
+For the sake of completeness we proved all intermediate functions.
+
+Memory aliasing is the next point a user should pay attention to. The way VST
+deals with the separation logic is similar to a consumer producer problem.
+A simple specification of \texttt{M(o,a,b)} will assume three distinct memory share.
+When called with three memory share (\texttt{o, a, b}), the three of them will be consumed.
+However assuming this naive specification when \texttt{M(o,a,a)} is called (squaring),
+the first two memory shares (\texttt{o, a}) are consumed and VST will expect a third
+memory share where the last \texttt{a} is pointing at which does not \textit{exist} anymore.
+
+Examples of such cases are summarized in Fig \ref{tk:MemSame}.
+\begin{figure}[h]
+  \include{tikz/memory_same_sh}
+  \caption{Aliasing and Separation Logic}
+  \label{tk:MemSame}
+\end{figure}
+
+This forces the user to either define multiple specifications for a single function
+or specify in his specification which aliasing version is being used.
+For our specifications of functions with 3 arguments, named here after \texttt{o, a, b},
+we define an additional parameter $k$ with values in
+$\{0,1,2,3\}$:
+\begin{itemize}
+  \item if $k=0$ then \texttt{o} and \texttt{a} are aliased.
+  \item if $k=1$ then \texttt{o} and \texttt{b} are aliased.
+  \item if $k=2$ then \texttt{a} and \texttt{b} are aliased.
+  \item else there is no aliasing.
+\end{itemize}
+This solution allows us to make cases analysis over possible aliasing.
+
+\subsection{Verifiying \texttt{for} loops}
+
+Final state of \texttt{for} loops are usually computed by simple recursive functions.
+However we must define invariants which are true for each iterations.
+
+Assume we want to prove a decreasing loop where indexes go from 3 to 0.
+Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as input an integer for the index and a state and return a state.
+It simulate the body of the \texttt{for} loop.
+Assume it's recursive call: $f : \N \rightarrow State \rightarrow State $ which iteratively apply $g$ with decreasing index:
+\begin{equation*}
+  f ( i , s ) =
+  \begin{cases}
+  s & \text{if } s = 0 \\
+  f( i - 1 , g ( i - 1  , s )) & \text{otherwise}
+  \end{cases}
+\end{equation*}
+Then we have :
+\begin{align*}
+  f(4,s) &= g(0,g(1,g(2,g(3,s))))
+  % \\
+  % f(3,s) &= g(0,g(1,g(2,s)))
+\end{align*}
+To prove the correctness of $f(4,s)$, we need to prove that intermediate steps
+$g(3,s)$; $g(2,g(3,s))$; $g(1,g(2,g(3,s)))$; $g(0,g(1,g(2,g(3,s))))$ are correct.
+Due to the computation order of recursive function, our loop invariant for $i\in\{0;1;2;3;4\}$ cannot use $f(i)$.
+To solve this, we define an auxiliary function with an accumulator such that given $i\in\{0;1;2;3;4\}$, it will compute the first $i$ steps of the loop.
+We then prove for the complete number of steps, the function with the accumulator and without returns the same result.
+
+We formalized this result in a generic way as follows:
+\begin{Coq}
+Variable T : Type.
+Variable g : nat -> T -> T.
+
+Fixpoint rec_fn (n:nat) (s:T) :=
+  match n with
+  | 0 => s
+  | S n => rec_fn n (g n s)
+  end.
+
+Fixpoint rec_fn_rev_acc (n:nat) (m:nat) (s:T) :=
+  match n with
+  | 0 => s
+  | S n => g (m - n - 1) (rec_fn_rev_acc n m s)
+  end.
+
+Definition rec_fn_rev (n:nat) (s:T) :=
+  rec_fn_rev_acc n n s.
+
+Lemma Tail_Head_equiv :
+  forall (n:nat) (s:T),
+  rec_fn n s = rec_fn_rev n s.
+\end{Coq}
+Using this formalization, we prove that the 255 steps of the montgomery ladder in C provide the same computations are the one defined in Algorithm \ref{montgomery-double-add}.

@@ -1,21 +1,42 @@
 \section{Preliminaries}
 \label{preliminaries}
+
+In this section, we describe X25519 and TweetNaCl implementation.
+We then provide a brief description of the formal tools we use in our proofs.
+
 \subsection{The X25519 key exchange}
+\label{preliminaries:A}
 
-\F{p}, \F{p^2}, Coordinates, X-coordinates in \F{p}.
+% \begin{definition}
+%   Let $E$ be the elliptic curve defined by $y^2 = x^3 + 486662 x^2 + x$.
+% \end{definition}
+% \begin{lemma}
+%   For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
+%   defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
+% \end{lemma}
 
-XXX: math definition from Curve25519 paper.
+For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
+defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
+such that $x$ is the $x$-coordinate of $P$. Remark that $x$ is also the $x$-coordinate of $-P$.
+
+Given a natural number $n$ and $x$, X25519 returns the $x$-coordinate of the
+scalar multiplication of $P$ by $n$. Note that the result would is the same with $-P$.
+
+Using X25519, RFC~7748~\cite{rfc7748} formalized a Diffie–Hellman key-exchange algorithm.
+Each party generate a secret random number $S_a$ (respectively $S_b$), and computes $P_a$ (respectively $P_b$),
+the $x$-coordinate of the scalar multiplication of the base point where $x = 9$ and $S_a$ (respectively $S_b$).
+The party exchanges $P_a$ and $P_b$ and computes their shared secret with X25519
+over $S_a$ and $P_b$ (respectively $S_b$ and $P_a$).
 
 \subsection{X25519 in TweetNaCl}
+\label{preliminaries:B}
 
-\subheading{Arithmetic in \Ffield}
-Given a natural number $n$ and a value $x \in \F{p}$, X25519 is a function over a $\F{p}$-restricted
-$x$-coordinate computing a scalar multiplication on $E(\F{p^2})$.
-As a result of this restriction, all computations are done over $\F{p}$.
+\subheading{Arithmetic in \Ffield} In X25519, all computations are done over $\F{p}$.
 Numbers in that field can be represented with 256 bits.
 We represent them in 8-bit limbs (respectively 16-bit limbs),
 making use of a base $2^8$ (respectively $2^{16}$).
-Consequently, inputs of the X25519 function are seen as arrays of bytes.
+Consequently, inputs of the X25519 function are seen as arrays of bytes
+in a little-endian format.
 Computations inside this function makes use of the 16-bit limbs representation.
 Those are placed into 64-bits signed container in order to mitigate overflows or underflows.
 \begin{lstlisting}[language=Ctweetnacl]
@@ -79,7 +100,7 @@ substraction (\texttt{Z}), and school-book multiplication (\texttt{M}).
   % }
   % \end{lstlisting}
 
-  Inverse in \Zfield are computed with \texttt{inv25519}.
+  Inverse in $\Zfield$ are computed with \texttt{inv25519}.
   It takes the exponentiation by $2^{255}-21$ with the Square-and-multiply algorithm.
   Fermat's little theorem brings the correctness.
   Notice that in this case the inverse of $0$ is defined as $0$.
@@ -123,8 +144,14 @@ substraction (\texttt{Z}), and school-book multiplication (\texttt{M}).
   }
   \end{lstlisting}
 
-  \subheading{The Montgomery ladder} The full ladder is defined as follow.
+  \subheading{The Montgomery ladder}
+
+\todo{How do we describe the ladder here ? Do we use the description by Timmy ?
+Do we use the simpler description in the RFC ?}
+
+  The \strikethrough{full ladder} is defined as follow.
   First extract and clamp the value of $n$. Then unpack the value of $p$.
+  As per RFC~7748~\cite{rfc7748}, set its most significant bit to 0.
   Compute the Montgomery ladder over the clamped $n$ and $p$, pack the result into $q$.
   \begin{lstlisting}[language=Ctweetnacl]
   int crypto_scalarmult(u8 *q,
@@ -177,47 +204,12 @@ substraction (\texttt{Z}), and school-book multiplication (\texttt{M}).
   \end{lstlisting}
 
 \subsection{Coq and VST}
+\label{preliminaries:C}
 
+\todo{Describe Coq}
 
+\todo{Describe VST}
 
-Verifying \texttt{crypto\_scalarmult} also implies to verify all the functions
-subsequently called: \texttt{unpack25519}; \texttt{A}; \texttt{Z}; \texttt{M};
-\texttt{S}; \texttt{car25519}; \texttt{inv25519}; \texttt{set25519}; \texttt{sel25519};
-\texttt{pack25519}.
+\todo{Describe Hoare Logic}
 
-We prove that the implementation of Curve25519 is \textbf{sound} \ie
-\begin{itemize}
-\item absence of access out-of-bounds of arrays (memory safety).
-\item absence of overflows/underflow on the arithmetic.
-\end{itemize}
-We also prove that TweetNaCl's code is \textbf{correct}:
-\begin{itemize}
-\item Curve25519 is correctly implemented (we get what we expect).
-\item Operations on \texttt{gf} (\texttt{A}, \texttt{Z}, \texttt{M}, \texttt{S})
-are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
-\item The Montgomery ladder does compute a scalar multiplication between a natural number and a point.
-\end{itemize}
-
-In order to prove the soundness and correctness of \texttt{crypto\_scalarmult},
-we first create a skeleton of the Montgomery ladder with abstract operations which
-can be instanciated over lists, integers, field elements...
-A high level specification (over a generic field $\K$) allows use to prove the
-correctness of the ladder with respect to the curves theory.
-This high specification does not rely on the parameters of Curve25519.
-By instanciating $\K$ with $\Zfield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
-we define a middle level specification.
-Additionally we also provide a low level specification close to the \texttt{C} code
-(over lists of $\Z$). We show this specification to be equivalent to the
-\textit{semantic version} of C (\texttt{CLight}) with VST.
-This low level specification gives us the soundness assurance.
-By showing that operations over instances ($\K = \Zfield$, $\Z$, list of $\Z$) are
-equivalent we bridge the gap between the low level and the high level specification
-with Curve25519 parameters.
-As such we prove all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
-This garantees us the correctness of the implementation.
-
-\begin{figure}[h]
-  \include{tikz/specifications}
-  \caption{Structural construction of the proof}
-  \label{tk:ProofStructure}
-\end{figure}
+\todo{Describe Separation Logic}

@@ -3,9 +3,8 @@ for network communication, encryption, decryption, signatures, etc.
 TweetNaCl~\cite{BGJ+15} is its compact reimplementation.
 It does not aim for high speed application and has been optimized for source
 code compactness (100 tweets). It maintains some degree of readability in order
-to be easily auditable.
-TweetNaCl is being used by ZeroMQ~\cite{zmq} messaging queue system to provide
-portability to its users.
+to be easily auditable. For example TweetNaCl is being used by ZeroMQ~\cite{zmq}
+messaging queue system to provide portability to its users.
 % ``TweetNaCl is the first cryptographic library that allows correct functionality
 % to be verified by auditors with reasonable effort''~\cite{BGJ+15}
 
@@ -15,14 +14,14 @@ portability to its users.
 
 One core component of TweetNaCl (and NaCl) is the key exchange protocol X25519~\cite{rfc7748}.
 This protocol is being used by a wide variety of applications~\cite{this-that-use-curve25519}
-such as SSH~\cite{rfc4253}, Signal Protocol, Tor, Zcash, TLS to establish a shared secret over
+such as SSH, Signal Protocol, Tor, Zcash, TLS to establish a shared secret over
 an insecure channel.
 
 This library makes use of Curve25519~\cite{Ber06}, a function over a \F{p}-restricted
 $x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
 the prime number $\p$ and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 
-Originally, the name ``Curve25519'' referred to this keyexchange protocol,
+Originally, the name ``Curve25519'' referred to this key exchange protocol,
 but Bernstein suggested to rename the scheme to X25519 and to use the name
 Curve25519 for the underlying elliptic curve~\cite{Ber14}.
 We make use of this notation in this paper.
@@ -31,7 +30,7 @@ We make use of this notation in this paper.
 We provide a mechanized formal proof of the correctness of X25519
 implementation in TweetNaCl. This is done by first extending the formal library for
 elliptic curves~\cite{DBLP:conf/itp/BartziaS14} of Bartzia and Strub wrote to
-support Curve25519. Then proving that the code correctly implements the definitions
+support Curve25519. Then we prove that the code correctly implements the definitions
 from the original paper by Bernstein~\cite{Ber14}.
 
 % Implementing cryptographic primitives without any bugs is difficult.
@@ -55,9 +54,10 @@ Our method can be seen as a static analysis over the input values coupled
 with the formal proof that the code of the algorithm matches its specification.
 
 We use Coq~\cite{coq-faq}, a formal system that allows us to machine-check our proofs.
-A famous example of its use is the proof of the Four Color Theorem~\cite{gonthier2008formal}.
-The CompCert, a C~compiler~\cite{Leroy-backend} proven correct and sound is being build on top of it.
-To prove its correctness, CompCert uses multiple intermediate languages. The first step of CompCert is done by the parser \textit{clightgen}.
+Some famous examples of its use are the proof of the Four Color Theorem~\cite{gonthier2008formal}; or
+CompCert, a C~compiler~\cite{Leroy-backend} which proven correct and sound by being build on top of it.
+In its proof CompCert uses multiple intermediate languages and show equivalence between them.
+The first step of the compilation by CompCert is done by the parser \textit{clightgen}.
 It takes as input C code and generates its Clight~\cite{Blazy-Leroy-Clight-09} translation.
 
 Using this intermediate representation Clight, we use the Verifiable Software Toolchain
