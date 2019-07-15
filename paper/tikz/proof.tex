@@ -9,6 +9,7 @@
     \draw (1.25,-1.25) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{.C}};
   \end{scope}
 
+
   % V code
   \begin{scope}[yshift=0 cm,xshift=2.5 cm]
     \draw (0,0) -- (0.4, 0.4) -- (1.25,0.4) -- (1.25,0) -- cycle;
@@ -16,60 +17,60 @@
     \draw (0.3,-0.05) node[textstyle] {code};
     \draw (0.675,-0.5) node[textstyle, anchor=center] {\texttt{Prog}};
     \draw (1.25,-1.25) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{.V}};
+    % \draw (1.25,0)  node[anchor=south east, inner sep=0pt] {\includegraphics[width=.0125\textwidth]{img/coq_logo.png}};
   \end{scope}
 
   % VST Theorem
   \begin{scope}[yshift=0 cm,xshift=6 cm]
     \draw (0,0) -- (0.4, 0.4) -- (2.5,0.4) -- (2.5,0) -- cycle;
-    \draw (0,0) -- (2.5,0) -- (2.5,-2) -- (0, -2) -- cycle;
+    \draw (0,0) -- (2.5,0) -- (2.5,-1.25) -- (0, -1.25) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Proof};
-    \draw (1.25,-1) node[textstyle, anchor=center] {\{Pre\} \texttt{Prog} \{Post\}};
-    \draw (2.5,-2) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
+    \draw (1.25,-0.5) node[textstyle, anchor=center] {\{{\color{doc@lstnumbers}\textbf{Pre}}\} \texttt{Prog} \{{\color{doc@lstdirective}\textbf{Post}}\}};
+    \draw (2.5,-1.25) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
   \end{scope}
 
   % VST Spec
-  \begin{scope}[yshift=-3 cm,xshift=3 cm]
+  \begin{scope}[yshift=-2.5 cm,xshift=3 cm]
     \draw (0,0) -- (0.4, 0.4) -- (2,0.4) -- (2,0) -- cycle;
     \draw (0,0) -- (2,0) -- (2,-2) -- (0, -2) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Specification};
     \draw (1,-1) node[textstyle, anchor=center, align=left] {
-      Pre:\\
+      {\color{doc@lstnumbers}\textbf{Pre}}:\\
       ~~$n$, $P$\\
-      Post:\\
+      {\color{doc@lstdirective}\textbf{Post}}:\\
       ~~\texttt{CSM}$(n,P)$};
   \end{scope}
 
   % Definition of CSM
-  \begin{scope}[yshift=-6 cm,xshift=0 cm]
+  \begin{scope}[yshift=-4.5 cm,xshift=0 cm]
     \draw (0,0) -- (0.4, 0.4) -- (2,0.4) -- (2,0) -- cycle;
-    \draw (0,0) -- (2,0) -- (2,-2) -- (0, -2) -- cycle;
+    \draw (0,0) -- (2,0) -- (2,-1) -- (0, -1) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Definition};
-    \draw (1,-1) node[textstyle, anchor=center] {\texttt{CSM}};
+    \draw (1,-0.5) node[textstyle, anchor=center] {\texttt{CSM}};
   \end{scope}
 
   % Spec of Curve nP
-  \begin{scope}[yshift=-9 cm,xshift=0 cm]
+  \begin{scope}[yshift=-7 cm,xshift=0 cm]
     \draw (0,0) -- (0.4, 0.4) -- (2,0.4) -- (2,0) -- cycle;
-    \draw (0,0) -- (2,0) -- (2,-2) -- (0, -2) -- cycle;
+    \draw (0,0) -- (2,0) -- (2,-1) -- (0, -1) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Definition};
-    \draw (1,-1) node[textstyle, anchor=center] {$[n]P$};
+    \draw (1,-0.5) node[textstyle, anchor=center] {$[n]P$};
   \end{scope}
 
   % Correctness Theorem
-  \begin{scope}[yshift=-7 cm,xshift=6 cm]
+  \begin{scope}[yshift=-6.5 cm,xshift=6 cm]
     \draw (0,0) -- (0.4, 0.4) -- (2.5,0.4) -- (2.5,0) -- cycle;
-    \draw (0,0) -- (2.5,0) -- (2.5,-2) -- (0, -2) -- cycle;
+    \draw (0,0) -- (2.5,0) -- (2.5,-1.5) -- (0, -1.5) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Proof};
-    \draw (2.5,-2) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
-    \draw (1.25,-1) node[textstyle, anchor=center] {Pre $\implies$\\$\text{\texttt{CSM}}(n,P) = [n]P$};
+    \draw (2.5,-1.5) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
+    \draw (1.25,-0.75) node[textstyle, anchor=center] {{\color{doc@lstnumbers}\textbf{Pre}} $\implies$\\$\text{\texttt{CSM}}(n,P) = [n]P$};
   \end{scope}
 
   \draw [very thick, ->] (1.25,-0.5) -- (2.5, -0.5);
-  \draw [very thick, ->] (3.75,-0.5) -- (6, -1);
-  \draw [very thick, ->] (5,-4) -- (6.5, -2);
-  \draw [very thick, ->] (2,-6.5) -- (3.5, -5);
-  \draw [very thick, ->] (2,-7.5) -- (6, -7.75);
-  \draw [very thick, ->] (2,-10) -- (6, -8.25);
-
+  \draw [very thick, ->] (3.75,-0.5) -- (6, -0.5);
+  \draw [very thick, ->] (5,-3.5) -- (6.5, -1.25);
+  \draw [very thick, ->] (2,-5) -- (3, -3.5);
+  \draw [very thick, ->] (2,-5) -- (6, -7);
+  \draw [very thick, ->] (2,-7.5) -- (6, -7.5);
 
 \end{tikzpicture}
