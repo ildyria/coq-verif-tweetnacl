@@ -30,7 +30,8 @@ Lemma f_ext: forall (A B:Type),
   the project we found inconsistency and reported them to the authors.
 
   \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
-  model captures correctly the C standard. (VERIFY THIS, WHICH STANDARD ?).
+  model captures correctly the C standard.
+  \todo{VERIFY THIS, WHICH STANDARD ?}.
   Our proof also assumes that the TweetNaCl code will behave as expected if
   compiled under CompCert. We do not provide garantees for other C compilers
   such as Clang or GCC.

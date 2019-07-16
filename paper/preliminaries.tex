@@ -24,7 +24,8 @@ scalar multiplication of $P$ by $n$. Note that the result would is the same with
 
 Using X25519, RFC~7748~\cite{rfc7748} formalized a Diffie–Hellman key-exchange algorithm.
 Each party generate a secret random number $S_a$ (respectively $S_b$), and computes $P_a$ (respectively $P_b$),
-the $x$-coordinate of the scalar multiplication of the base point where $x = 9$ and $S_a$ (respectively $S_b$).
+the resulting $x$-coordinate of the scalar multiplication of the base point
+where $x = 9$ and $S_a$ (respectively $S_b$).
 The party exchanges $P_a$ and $P_b$ and computes their shared secret with X25519
 over $S_a$ and $P_b$ (respectively $S_b$ and $P_a$).
 
@@ -207,14 +208,27 @@ int crypto_scalarmult(u8 *q,
 Coq~\cite{coq-faq} is an interactive theorem prover. It provides an expressive
 formal language to write mathematical definitions, algorithms and theorems coupled
 with their proofs. As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
-Coq does not use a SMT solver to discharge its proof obligations but requires
-the user to specify exactly which lemmas, hypothesis to apply and uses its type
-system to verify their application~\cite{Howard1995-HOWTFN}.
-It also provides some automations tools so that the user can apply and try multiple
-proofs techniques in an efficient manner.
+Coq does not rely on the trust ofa SMT solver. It uses its type
+system to verify the applications of hypothesis, lemmas , theorems~\cite{Howard1995-HOWTFN}.
 
-The Verified Software Toolchain is \cite{cao2018vst-floyd}.
-
-\todo{Describe Hoare Logic}
-
-\todo{Describe Separation Logic}
+The Hoare logic is a formal system which allows to reason about programs.
+It uses tripples such as
+$$\{{\color{doc@lstnumbers}\textbf{Pre}}\}\texttt{~Prog~}\{{\color{doc@lstdirective}\textbf{Post}}\}$$
+where ${\color{doc@lstnumbers}\textbf{Pre}}$ and ${\color{doc@lstdirective}\textbf{Post}}$
+are assertions and \texttt{Prog} is a piece of Code.
+It is read as ``when the precondition $Pre$ is met, executing \texttt{Prog} while yield to postcondition $Post$''.
+We use compositional rules to prove the truth value of a Hoare tripple.
+For example, here is the rule for sequential composition:
+\begin{prooftree}
+  \AxiomC{$\{P\}C_1\{Q\}$}
+  \AxiomC{$\{Q\}C_2\{R\}$}
+  \LeftLabel{Hoare-Seq}
+  \BinaryInfC{$\{P\}C_1;C_2\{R\}$}
+\end{prooftree}
+Separation Logic is an extension of the Hoare logic which allows to reason about
+pointers and memory manipulation. This provides the strict condition that considered
+memory shares are disjoint, forcing non-aliasing. We discuss further about this limitation in Section~\ref{using-VST}.
+The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework which uses
+the Separation logic to prove the functional correctness of C programs.
+Its can be seen as a forward symbolic execution of the program.
+Its uses a strongest postcondition approach to prove that a code matches its specification.

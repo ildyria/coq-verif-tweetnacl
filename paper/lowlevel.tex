@@ -1,15 +1,23 @@
 \section{Proving equivalence of X25519 in C and Coq}
 \label{C-Coq}
 
-In this section we describe techniques used to prove the equivalence between the
+In this section we first describe the global structure of our proof.
+Then we discuss techniques used to prove the equivalence between the
 Clight description of TweetNaCl and Coq functions producing similar behaviors.
 
+\subsection{One proof? No, two!}
 
-\todo{SUBSECTION?}
+In order to prove the correctness of X25519, we use VST to prove that TweetNaCl's code
+matches our functional specification of \texttt{crypto\_scalarmult} (abreviated as CSM) in Coq.
+Then we prove that our specification of the scalar multiplication matches the
+mathematical definition of elliptic curves and Theorem 2.1 by Bernstein~\cite{Ber06}.
+Figure~\ref{tk:ProofOverview} shows a graph of dependencies of the proofs considered.
+The mathematical proof of our specification is presented in Section~\ref{sec3-maths}.
 
 \begin{figure}[h]
+  \centering
   \include{tikz/proof}
-  \caption{Overview construction of the proof}
+  \caption{Overview of the proof}
   \label{tk:ProofOverview}
 \end{figure}
 
@@ -184,7 +192,7 @@ We also define a notation to do the modulo, projecting any numbers in $\Zfield$.
 \begin{lstlisting}[language=Coq]
 Notation "A :GF" := (A mod (2^255-19)).
 \end{lstlisting}
-Remark that this representation is different from \Coqe{Zmodp}.
+% Remark that this representation is different from \Coqe{Zmodp}.
 However the equivalence between operations over $\Zfield$ and $\F{p}$ is easily proven.
 
 Using these two definitions, we proved intermediates lemmas such as the correctness of the
@@ -477,7 +485,7 @@ ZofList 8 (Pack25519 l) = (Z16.lst l) mod (2^255-19).
 \end{Coq}
 
 \subsection{Using the Verifiable Software Toolchain}
-
+\label{using-VST}
 The Verifiable Software Toolchain uses a strongest postcondition strategy.
 The user must first write a formal specification of the function he wants to verify in Coq.
 This should be as close as possible to the C implementation behavior.
