@@ -9,14 +9,16 @@ We then provide a brief description of the formal tools we use in our proofs.
 
 For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
 defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
-such that $x$ is the $x$-coordinate of $P$. Remark that $x$ is also the $x$-coordinate of $-P$.
+such that $x$ is the $x$-coordinate of $P$.
+ % (abreviated as $P.x$).
+Remark that $x$ is also the $x$-coordinate of $-P$.
 
 Given a natural number $n$ and $x$, X25519 returns the $x$-coordinate of the
-scalar multiplication of $P$ by $n$, thus $[n]P$. Note that the result is the
-same with $[n](-P) = -[n]P$.
+scalar multiplication of $P$ by $n$, thus $n \cdot P$. Note that the result is the
+same with $n \cdot (-P) = -(n \cdot P)$.
 
 RFC~7748~\cite{rfc7748} formalized the X25519 Diffie–Hellman key-exchange algorithm.
-Given the base point $B$ where $x=9$, each party generate a secret random number
+Given the base point $B$ where $B.x=9$, each party generate a secret random number
 $s_a$ (respectively $s_b$), and computes $P_a$ (respectively $P_b$), the result
 of the scalar multiplication between $B$ and $s_a$ (respectively $s_b$).
 The party exchanges $P_a$ and $P_b$ and computes their shared secret with X25519

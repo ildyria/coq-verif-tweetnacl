@@ -15,7 +15,7 @@ characteristic of $\K$ is neither 2 or 3.
 
 \begin{definition}
 Let a field $\K$, using an appropriate choice of coordinates, an elliptic curve $E$
-is a plane cubic albreaic curve $E(x,y)$ defined by an equation of the form:
+is a plane cubic algebraic curve $E(x,y)$ defined by an equation of the form:
 $$E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
 where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
 or self-intersections). The set of points, written $E(\K)$, is formed by the
@@ -25,10 +25,11 @@ $$E(\K) = \{(x,y) \in \K \times \K | E(x,y)\} \cup \{\Oinf\}$$
 
 \subsubsection{Weierstra{\ss} Curves}
 \label{Weierstrass}
-This equation $E(x,y)$ can be reduced into its Weierstra{\ss} form.
+This equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
 
 \begin{definition}
-Let $a \in \K$, and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$ The \textit{elliptic curve} $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
+Let $a \in \K$, and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$
+The \textit{elliptic curve} $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
 $$y^2 = x^3 + ax + b,$$
 along with an additional formal point $\Oinf$, ``at infinity''. Such curve does not present any singularity.
 \end{definition}
@@ -92,7 +93,8 @@ homogeneous coordinates and other forms than the Weierstra{\ss} form. We conside
 the Montgomery form \cite{MontgomerySpeeding}.
 
 \begin{definition}
-  Let $a \in \K \backslash \{-2, 2\}$, and $b \in \K \backslash \{ 0\}$. The \textit{Montgomery curve} $M_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
+  Let $a \in \K \backslash \{-2, 2\}$, and $b \in \K \backslash \{ 0\}$.
+  The \textit{Montgomery curve} $M_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
   $$by^2 = x^3 + ax^2 + x,$$
   along with an additional formal point $\Oinf$, ``at infinity''.
 \end{definition}
@@ -100,7 +102,7 @@ Using a similar representation, we defined the parametric type \texttt{mc} which
 represent the points on a specific montgomery curve. It is parametrized by
 a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
 and \texttt{M : mcuType} -- a record that packs the curve paramaters $a$ and $b$
-along with the proofs that $b \neq 0$ and $a^2 != 4$.
+along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
 \begin{lstlisting}[language=Coq]
 Record mcuType :=
   { cA : K; cB : K; _ : cB != 0; _ : cA^2 != 4}.
@@ -112,7 +114,7 @@ Inductive mc : Type := MC p of oncurve p.
 
 Lemma oncurve_mc: forall p : mc, oncurve p.
 \end{lstlisting}
-We define the addition on Montgomery curves the same way as it it is in the Weierstra{\ss} form,
+We define the addition on Montgomery curves the same way as it is in the Weierstra{\ss} form,
 however the actual computations will be slightly different.
 \begin{lstlisting}[language=Coq]
 Definition add (p1 p2 : point K) :=
@@ -164,8 +166,11 @@ Lemma ec_of_mc_bij : bijective ec_of_mc.
 
 \subsubsection{Projective Coordinates}
 \label{projective}
-Points on a projective plane are represented with a triple $(X:Y:Z)$. Any points except $(0:0:0)$ defines a point on a projective plane. A scalar multiple of a point defines the same point, \ie
-for all $\alpha \neq 0$, $(X:Y:Z)$ and $(\alpha X:\alpha Y:\alpha Z)$ defines the same point. For $Z\neq 0$, the projective point $(X:Y:Z)$ corresponds to the point $(X/Z,Y/Z)$ on the Euclidian plane, likewise the point $(X,Y)$ on the Euclidian plane corresponds to $(X:Y:1)$ on the projective plane.
+Points on a projective plane are represented with a triple $(X:Y:Z)$. Any points
+except $(0:0:0)$ defines a point on a projective plane. A scalar multiple of a point defines the same point, \ie
+for all $\alpha \neq 0$, $(X:Y:Z)$ and $(\alpha X:\alpha Y:\alpha Z)$ defines
+the same point. For $Z\neq 0$, the projective point $(X:Y:Z)$ corresponds to the
+point $(X/Z,Y/Z)$ on the Euclidian plane, likewise the point $(X,Y)$ on the Euclidian plane corresponds to $(X:Y:1)$ on the projective plane.
 
 We write the equation for a Montgomery curve $M_{a,b}(\K)$ as such:
 \begin{equation}
@@ -175,9 +180,11 @@ Multiplying both sides by $Z^3$ yields:
 \begin{equation}
 b Y^2Z = X^3 + a X^2Z + XZ^2
 \end{equation}
-With this equation we can additionally represent the ``point at infinity''. By setting $Z=0$, we derive $X=0$, giving us the ``infinite points'' $(0:Y:0)$ with $Y\neq 0$.
+With this equation we can additionally represent the ``point at infinity''. By
+setting $Z=0$, we derive $X=0$, giving us the ``infinite points'' $(0:Y:0)$ with $Y\neq 0$.
 
-By restristing the parameter $a$ of $M_{a,b}(\K)$ such that $a^2-4$ is not a square in \K, we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
+By restristing the parameter $a$ of $M_{a,b}(\K)$ such that $a^2-4$ is not a
+square in \K, we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
 \begin{lstlisting}[language=Coq]
 Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 \end{lstlisting}
@@ -191,7 +198,8 @@ With those coordinates we prove the following lemmas for the addition of two poi
 \end{definition}
 \begin{lemma}
 \label{lemma-add}
-Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$, $(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
+Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and
+let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$, $(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
 Define
 \begin{align*}
 X_3 &= Z_4((X_1 - Z_1)(X_2+Z_2) + (X_1+Z_1)(X_2-Z_2))^2\\
@@ -235,13 +243,15 @@ then for any point $P_1$ and $P_2$ on $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_
 With those coordinates we also prove a similar lemma for point doubling.
 \begin{lemma}
 \label{lemma-double}
-Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$. Define
+Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and
+let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$. Define
 \begin{align*}
   c &= (X_1 + Z_1)^2 - (X_1 - Z_1)^2\\
 X_3 &= (X_1 + Z_1)^2(X_1-Z_1)^2\\
 Z_3 &= c\Big((X_1 + Z_1)^2+\frac{a-2}{4}\times c\Big),
 \end{align*}
-then for any point $P_1$ on $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_1)$, we have $X_3/Z_3 = \chi(2P_1)$.
+then for any point $P_1$ on $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_1)$,
+we have $X_3/Z_3 = \chi(2P_1)$.
 \end{lemma}
 % Which is formalized as follow:
 % \begin{lstlisting}[language=Coq]
@@ -256,38 +266,43 @@ then for any point $P_1$ on $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_1)$, we ha
 %   (p \+ p)#x = inf_div x3 z3.
 % \end{lstlisting}
 
-With these two lemmas (\ref{lemma-add} and \ref{lemma-double}), we have the basic tools to compute efficiently additions and point doubling on projective coordinates.
+With these two lemmas (\ref{lemma-add} and \ref{lemma-double}), we have the basic
+tools to compute efficiently additions and point doubling on projective coordinates.
 
 \subsubsection{Scalar Multiplication Algorithms}
 \label{ladder}
 
-Suppose we have a scalar $n$ and a point $P$ on some curve. The most straightforward way to compute $nP$ is to repetitively add $P$ \ie computing $P + \ldots + P$.
-However there is an more efficient algorithm which makes use of the binary representation of $n$ and by combining doubling and adding and starting from $\Oinf$.
+Suppose we have a scalar $n$ and a point $P$ on some curve. The most straightforward
+way to compute $n \cdot P$ is to repetitively add $P$ \ie computing $P + \ldots + P$.
+However there is an more efficient algorithm which makes use of the binary
+representation of $n$ and by combining doubling and adding and starting from $\Oinf$.
 \eg for $n=11$, we compute $2(2(2(2\Oinf + P)) + P)+ P$.
 
-\begin{algorithm}
-\caption{Double-and-add for scalar mult.}
-\label{double-add}
-\begin{algorithmic}
-\REQUIRE{Point $P$, scalars $n$ and $m$, $n < 2^m$}
-\ENSURE{$Q = nP$}
-\STATE $Q \leftarrow \Oinf$
-\FOR{$k$ := $m$ downto $1$}
-  \STATE $Q \leftarrow 2Q$
-  \IF{$k^{\text{th}}$ bit of $n$ is $1$}
-    \STATE $Q \leftarrow Q + P$
-  \ENDIF
-\ENDFOR
-\end{algorithmic}
-\end{algorithm}
+% \begin{algorithm}
+% \caption{Double-and-add for scalar mult.}
+% \label{double-add}
+% \begin{algorithmic}
+% \REQUIRE{Point $P$, scalars $n$ and $m$, $n < 2^m$}
+% \ENSURE{$Q = n \cdot P$}
+% \STATE $Q \leftarrow \Oinf$
+% \FOR{$k$ := $m$ downto $1$}
+%   \STATE $Q \leftarrow 2Q$
+%   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
+%     \STATE $Q \leftarrow Q + P$
+%   \ENDIF
+% \ENDFOR
+% \end{algorithmic}
+% \end{algorithm}
 
-\begin{lemma}
-\label{lemma-double-add}
-Algorithm \ref{double-add} is correct, \ie it respects its output conditions given the input conditions.
-\end{lemma}
+% \begin{lemma}
+% \label{lemma-double-add}
+% Algorithm \ref{double-add} is correct, \ie it respects its output conditions given the input conditions.
+% \end{lemma}
 
-We prove Lemma \ref{lemma-double-add}. However with careful timing, an attacker could reconstruct $n$.
-In the case of Curve25519, $n$ is the private key. With the Montgomery's ladder, while it provides slightly more computations and an extra variable, we can prevent the previous weakness.
+% We prove Lemma \ref{lemma-double-add}. However
+With a simple double-and-add algorithm, with careful timing, an attacker could reconstruct $n$.
+In the case of X25519, $n$ is the private key. With the Montgomery's ladder, while
+it provides slightly more computations and an extra variable, we can prevent such weakness.
 See Algorithm \ref{montgomery-ladder}.
 
 \begin{algorithm}
@@ -295,7 +310,7 @@ See Algorithm \ref{montgomery-ladder}.
 \label{montgomery-ladder}
 \begin{algorithmic}
 \REQUIRE{Point $P$, scalars $n$ and $m$, $n < 2^m$}
-\ENSURE{$Q = nP$}
+\ENSURE{$Q = n \cdot P$}
 \STATE $Q \leftarrow \Oinf$
 \STATE $R \leftarrow P$
 \FOR{$k$ := $m$ downto $1$}
@@ -315,14 +330,17 @@ See Algorithm \ref{montgomery-ladder}.
 Algorithm \ref{montgomery-ladder} is correct, \ie it respects its output conditions given the input conditions.
 \end{lemma}
 
-In Curve25519 we are only interested in the $x$ coordinate of points, using Lemmas \ref{lemma-add} and \ref{lemma-double}, and replacing the if statements with conditional swapping we can define a ladder similar to the one used in TweetNaCl. See Algorithm \ref{montgomery-double-add}
+In Curve25519 we are only interested in the $x$ coordinate of points, using
+Lemmas \ref{lemma-add} and \ref{lemma-double}, and replacing the if statements
+with conditional swapping we can define a ladder similar to the one used in TweetNaCl.
+See Algorithm \ref{montgomery-double-add}
 
 \begin{algorithm}
 \caption{Montgomery ladder for scalar multiplication on $M_{a,b}(\K)$ with optimizations}
 \label{montgomery-double-add}
 \begin{algorithmic}
 \REQUIRE{$x \in \K\backslash \{0\}$, scalars $n$ and $m$, $n < 2^m$}
-\ENSURE{$a/c = \chi_0(nP)$ for any $P$ such that $\chi_0(P) = x$}
+\ENSURE{$a/c = \chi_0(n \cdot P)$ for any $P$ such that $\chi_0(P) = x$}
 \STATE $(a,b,c,d) \leftarrow (1,x,0,1)$
 \FOR{$k$ := $m$ downto $1$}
   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
@@ -357,7 +375,8 @@ In Curve25519 we are only interested in the $x$ coordinate of points, using Lemm
 
 \begin{lemma}
 \label{lemma-montgomery-double-add}
-Algorithm \ref{montgomery-double-add} is correct, \ie it respects its output conditions given the input conditions.
+Algorithm \ref{montgomery-double-add} is correct, \ie it respects its output
+conditions given the input conditions.
 \end{lemma}
 
 %% here we have \chi and \chi_0 ...
@@ -391,7 +410,7 @@ And thus the theorem of the correctness of the Montgomery ladder.
 \begin{theorem}
 \label{montgomery-ladder-correct}
 For all $n, m \in \N$, $x \in \K$, $P \in M_{a,b}(\K)$,
-if $\chi_0(P) = x$ then Algorithm \ref{montgomery-double-add} returns $\chi_0(nP)$
+if $\chi_0(P) = x$ then Algorithm \ref{montgomery-double-add} returns $\chi_0(n \cdot P)$
 \end{theorem}
 \begin{lstlisting}[language=Coq]
 Theorem opt_montgomery_ok (n m: nat) (x : K) :
@@ -459,11 +478,11 @@ We consider $M_{486662,1}(\F{p})$ and $M_{486662,2}(\F{p})$, one of its quadrati
 By instanciating theorem \ref{montgomery-ladder-correct} we derive the following two lemmas:
 \begin{lemma} For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$,\\
 such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.
-Given $n$ and $x$, $Curve25519\_Fp(n,x) = \chi_0(nP)$.
+Given $n$ and $x$, $Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$.
 \end{lemma}
 \begin{lemma} For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$\\
 such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.
-Given $n$ and $x$, $Twist25519\_Fp(n,x) = \chi_0(nP)$.
+Given $n$ and $x$, $Twist25519\_Fp(n,x) = \chi_0(n \cdot P)$.
 \end{lemma}
 As the Montgomery ladder defined above does not depends on $b$, it is trivial to see that the computations done for points of $M_{486662,1}(\F{p})$ and of $M_{486662,2}(\F{p})$ are the same.
 \begin{lstlisting}[language=Coq]
@@ -572,11 +591,11 @@ Notice that:
 \forall P \in M_{486662,2}(\F{p}),\ \ \psi(\chi_0(\varphi_t(P))) = \chi_0(P)
 \end{align*}
 
-In summary for all $n \in \N,\ n < 2^{255}$, for any given point $P\in\F{p}\times\F{p}$ on $M_{486662,1}(\F{p})$ or $M_{486662,2}(\F{p})$ \texttt{curve25519\_Fp\_ladder} computes the $\chi_0(nP)$.
+In summary for all $n \in \N,\ n < 2^{255}$, for any given point $P\in\F{p}\times\F{p}$ on $M_{486662,1}(\F{p})$ or $M_{486662,2}(\F{p})$ \texttt{curve25519\_Fp\_ladder} computes the $\chi_0(n \cdot P)$.
 We have proved that for all $P \in \F{p^2}\times\F{p^2}$ such that $\chi_0(P) \in \F{p}$ there exists a corresponding point on the curve or the twist over $\F{p}$.
 We have proved that for any point, on the curve or the twist we can compute the scalar multiplication by $n$ and yield to the same result as if we did the computation in $\F{p^2}$. As a result we have proved theorem 2.1 of \cite{Ber06}:
 \begin{theorem}
-For all $n \in \N$, $x \in \F{P}$, $P \in M_{486662,1}(\F{p^2})$, such that $n < 2^{255}$ and $\chi_0(P) = \varphi(x)$, \texttt{curve25519\_Fp\_ladder}$(n, x)$ computes $\psi(\chi_0(nP))$.
+For all $n \in \N$, $x \in \F{P}$, $P \in M_{486662,1}(\F{p^2})$, such that $n < 2^{255}$ and $\chi_0(P) = \varphi(x)$, \texttt{curve25519\_Fp\_ladder}$(n, x)$ computes $\psi(\chi_0(n \cdot P))$.
 \end{theorem}
 which can be formalized in Coq as:
 \begin{lstlisting}[language=Coq]
