@@ -7,38 +7,39 @@ We then provide a brief description of the formal tools we use in our proofs.
 \subsection{The X25519 key exchange}
 \label{preliminaries:A}
 
-% \begin{definition}
-%   Let $E$ be the elliptic curve defined by $y^2 = x^3 + 486662 x^2 + x$.
-% \end{definition}
-% \begin{lemma}
-%   For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
-%   defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
-% \end{lemma}
-
 For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
 defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
 such that $x$ is the $x$-coordinate of $P$. Remark that $x$ is also the $x$-coordinate of $-P$.
 
 Given a natural number $n$ and $x$, X25519 returns the $x$-coordinate of the
-scalar multiplication of $P$ by $n$. Note that the result would is the same with $-P$.
+scalar multiplication of $P$ by $n$, thus $[n]P$. Note that the result is the
+same with $[n](-P) = -[n]P$.
 
-Using X25519, RFC~7748~\cite{rfc7748} formalized a Diffie–Hellman key-exchange algorithm.
-Each party generate a secret random number $S_a$ (respectively $S_b$), and computes $P_a$ (respectively $P_b$),
-the resulting $x$-coordinate of the scalar multiplication of the base point
-where $x = 9$ and $S_a$ (respectively $S_b$).
+RFC~7748~\cite{rfc7748} formalized the X25519 Diffie–Hellman key-exchange algorithm.
+Given the base point $B$ where $x=9$, each party generate a secret random number
+$s_a$ (respectively $s_b$), and computes $P_a$ (respectively $P_b$), the result
+of the scalar multiplication between $B$ and $s_a$ (respectively $s_b$).
 The party exchanges $P_a$ and $P_b$ and computes their shared secret with X25519
-over $S_a$ and $P_b$ (respectively $S_b$ and $P_a$).
+over $s_a$ and $P_b$ (respectively $s_b$ and $P_a$).
 
 \subsection{X25519 in TweetNaCl}
 \label{preliminaries:B}
 
-\subheading{Arithmetic in \Ffield} In X25519, all computations are done over $\F{p}$.
-Numbers in that field can be represented with 256 bits.
-We represent them in 8-bit limbs (respectively 16-bit limbs),
-making use of a base $2^8$ (respectively $2^{16}$).
-Consequently, inputs of the X25519 function are seen as arrays of bytes
-in a little-endian format.
-Computations inside this function makes use of the 16-bit limbs representation.
+In order to gain space, TweetNaCl uses a few shortcuts.
+\begin{lstlisting}[language=Ctweetnacl]
+#define FOR(i,n) for (i = 0;i < n;++i)
+#define sv static void
+typedef unsigned char u8;
+\end{lstlisting}
+The subsequent blocks of code are valid C.
+
+\subheading{Arithmetic in \Ffield.}
+In X25519, all computations are done over $\F{p}$.
+Numbers in that field can be represented with 256 bits packed in 8-bit limbs
+(respectively 16-bit limbs), making use of a base $2^8$ (respectively $2^{16}$).
+Consequently, inputs of the X25519 function are seen as bytes arrays in little-endian format.
+Computations inside the crypto scalar multiplication and intermediates function
+makes use of the 16-bit limbs representation.
 Those are placed into 64-bits signed container in order to mitigate overflows or underflows.
 \begin{lstlisting}[language=Ctweetnacl]
 typedef long long i64;
@@ -115,7 +116,7 @@ It first performs 3 carry propagations in order to guarantee
 that each 16-bit limbs values are between $0$ and $2^{16}$.
 Then computes a modulo reduction by $\p$ using iterative substraction and
 conditional swapping. This guarantees a unique representation in $\Zfield$.
-After which each 16-bit limbs are splitted into 8-bit limbs.
+Then, each 16-bit limbs are splitted into 8-bit limbs.
 \begin{lstlisting}[language=Ctweetnacl]
 sv pack25519(u8 *o,const gf n)
 {
@@ -144,13 +145,13 @@ sv pack25519(u8 *o,const gf n)
 }
 \end{lstlisting}
 
-\subheading{The Montgomery ladder}
-In order to compute scalar multiplications, X25519 uses the Montgomery
+\subheading{The Montgomery ladder.}
+In order to compute scalar multiplication, X25519 uses the Montgomery
 $x$-coordinate double-and-add formulas.
 First extract and clamp the value of $n$. Then unpack the value of $p$.
 As per RFC~7748~\cite{rfc7748}, set its most significant bit to 0.
 Finally compute the Montgomery ladder over the clamped $n$ and $p$,
-pack the result into $q$.
+and pack the result into $q$.
 \begin{lstlisting}[language=Ctweetnacl]
 int crypto_scalarmult(u8 *q,
                       const u8 *n,
@@ -208,15 +209,16 @@ int crypto_scalarmult(u8 *q,
 Coq~\cite{coq-faq} is an interactive theorem prover. It provides an expressive
 formal language to write mathematical definitions, algorithms and theorems coupled
 with their proofs. As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
-Coq does not rely on the trust ofa SMT solver. It uses its type
-system to verify the applications of hypothesis, lemmas , theorems~\cite{Howard1995-HOWTFN}.
+Coq does not rely on the trust of an SMT solver. It uses its type
+system to verify the applications of hypothesis, lemmas and theorems~\cite{Howard1995-HOWTFN}.
 
-The Hoare logic is a formal system which allows to reason about programs.
-It uses tripples such as
+Hoare logic is a formal system which allows reasoning about programs.
+It uses triples such as
 $$\{{\color{doc@lstnumbers}\textbf{Pre}}\}\texttt{~Prog~}\{{\color{doc@lstdirective}\textbf{Post}}\}$$
 where ${\color{doc@lstnumbers}\textbf{Pre}}$ and ${\color{doc@lstdirective}\textbf{Post}}$
-are assertions and \texttt{Prog} is a piece of Code.
-It is read as ``when the precondition $Pre$ is met, executing \texttt{Prog} while yield to postcondition $Post$''.
+are assertions and \texttt{Prog} is a piece of code.
+It is read as ``when the precondition $Pre$ is met, executing \texttt{Prog} will
+yield postcondition $Post$''.
 We use compositional rules to prove the truth value of a Hoare tripple.
 For example, here is the rule for sequential composition:
 \begin{prooftree}
@@ -225,10 +227,10 @@ For example, here is the rule for sequential composition:
   \LeftLabel{Hoare-Seq}
   \BinaryInfC{$\{P\}C_1;C_2\{R\}$}
 \end{prooftree}
-Separation Logic is an extension of the Hoare logic which allows to reason about
-pointers and memory manipulation. This provides the strict condition that considered
-memory shares are disjoint, forcing non-aliasing. We discuss further about this limitation in Section~\ref{using-VST}.
+Separation logic is an extension of Hoare logic which allows reasoning about
+pointers and memory manipulation. This logic enforces strict conditions on the
+memory shared such as being disjoint. We discuss this limitation further in Section~\ref{using-VST}.
 The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework which uses
-the Separation logic to prove the functional correctness of C programs.
-Its can be seen as a forward symbolic execution of the program.
-Its uses a strongest postcondition approach to prove that a code matches its specification.
+Separation logic to prove the functional correctness of C programs.
+It can be seen as a forward symbolic execution of the program.
+Its uses a strongest postcondition approach to prove that a program matches its specification.
