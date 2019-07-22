@@ -1,6 +1,7 @@
 NaCl~\cite{BLS12} is an easy-to-use high-security high-speed software library
 for network communication, encryption, decryption, signatures, etc.
-TweetNaCl~\cite{BGJ+15} is its compact reimplementation.
+% It uses specialized code for different platform, making it complex and hard to audit.
+% TweetNaCl~\cite{BGJ+15} is its compact reimplementation.
 It does not aim for high speed application and has been optimized for source
 code compactness (100 tweets). It maintains some degree of readability in order
 to be easily auditable. For example TweetNaCl is being used by ZeroMQ~\cite{zmq}
@@ -21,42 +22,43 @@ This library makes use of Curve25519~\cite{Ber06}, a function over a \F{p}-restr
 $x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
 the prime number $\p$ and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 
-Originally, the name ``Curve25519'' referred to this key exchange protocol,
+Originally, the name ``Curve25519'' referred to the key exchange protocol,
 but Bernstein suggested to rename the scheme to X25519 and to use the name
 Curve25519 for the underlying elliptic curve~\cite{Ber14}.
 We make use of this notation in this paper.
+% do we need to specify which "this" refers to ?
 
 \subheading{Contribution of this paper}
 We provide a mechanized formal proof of the correctness of X25519
 implementation in TweetNaCl. This is done by first extending the formal library for
-elliptic curves~\cite{DBLP:conf/itp/BartziaS14} of Bartzia and Strub wrote to
-support Curve25519. Then we prove that the code correctly implements the definitions
+elliptic curves~\cite{DBLP:conf/itp/BartziaS14} of Bartzia and Strub to
+support Curve25519. Then we prove the code correctly implements the definitions
 from the original paper by Bernstein~\cite{Ber14}.
 
-% Implementing cryptographic primitives without any bugs is difficult.
-% While tests provides with code coverage, they still don't cover 100\% of the
-% possible input values.
-In order to get formal guaranties a software meets its
-specifications, two methodologies exist.
-
-The first one is by synthesizing a formal specification and generating machine
-code by refinment in order to get a software correct by construction.
+% In order to get formal guaranties a software meets its
+% specifications, two methodologies exist.
+There are two methodologies to get formal guarantees a software meets its
+specifications.
+The first one is by synthesizing a formal specification and then generating machine
+code by refinement.
+ % in order to get a software correct by construction.
 This approach is being used in e.g. the B-method~\cite{Abrial:1996:BAP:236705},
 F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}, or with Coq~\cite{CpdtJFR}.
-
 However this first method cannot be applied to an existing piece of software.
-In such case we need to write the specifications and then verify the correctness
-of the implementation.
+
+The second approach consists of writing the specifications and then verifying
+the correctness of the implementation.
+Because we verify the TweetNaCl cryptographic library, we use this second method.
+
 
 \subheading{Our Formal Approach.}
-Verifying an existing cryptographic library, we use the second approach.
-Our method can be seen as a static analysis over the input values coupled
-with the formal proof that the code of the algorithm matches its specification.
+Our verification process can be seen as a static analysis over the input values
+coupled with the formal proof that the code of the algorithm matches its specification.
 
 We use Coq~\cite{coq-faq}, a formal system that allows us to machine-check our proofs.
 Some famous examples of its use are the proof of the Four Color Theorem~\cite{gonthier2008formal}; or
 CompCert, a C~compiler~\cite{Leroy-backend} which proven correct and sound by being build on top of it.
-In its proof CompCert uses multiple intermediate languages and show equivalence between them.
+In its proof, CompCert uses multiple intermediate languages and show equivalence between them.
 The first step of the compilation by CompCert is done by the parser \textit{clightgen}.
 It takes as input C code and generates its Clight~\cite{Blazy-Leroy-Clight-09} translation.
 
@@ -64,21 +66,21 @@ Using this intermediate representation Clight, we use the Verifiable Software To
 (VST)~\cite{2012-Appel}, a framework which uses Separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
 and shows that the semantics of the program satisfies a functionnal specification in Coq.
 VST steps through each line of Clight using a strongest post-condition strategy.
-We write a specification of the crypto scalar multiplication of TweetNaCl and using
+We write a specification of TweetNaCl's crypto scalar multiplication and using
 VST we prove that the code matches our definitions.
 
-Bartzia and Strub wrote a formal library for elliptic curves~\cite{DBLP:conf/itp/BartziaS14}.
-We extend it to support Montgomery curves. With this formalization, we prove the
-correctness of a generic Montgomery ladder and show that our specification is an instance of it.
+We extend Bartzia and Strub's elliptic curves library~\cite{DBLP:conf/itp/BartziaS14}
+to support Montgomery curves. With this formalization, we prove the correctness
+of a generic Montgomery ladder and show that our specification is an instance of it.
 
 \subheading{Related work.}
 
 \todo{Separate verification of existing code from generating proof-carrying code.}
 
-Similar approaches have been used to prove the correctness of OpenSSL HMAC~\cite{Beringer2015VerifiedCA}
-and SHA-256~\cite{2015-Appel}. Compared to their work
-our approaches makes a complete link between the C implementation and the formal
-mathematical definition of the group theory behind elliptic curves.
+Similar approaches have been used to prove the correctness of OpenSSL
+HMAC~\cite{Beringer2015VerifiedCA} and SHA-256~\cite{2015-Appel}. Compared to
+their work our approaches makes a complete link between the C implementation and
+the formal mathematical definition of the group theory behind elliptic curves.
 
 Using the synthesis approach, Zinzindohou{\'{e}} et al. wrote an verified extensible
 library of elliptic curves~\cite{Zinzindohoue2016AVE}. This served as ground work for the
@@ -101,9 +103,9 @@ and write a complex low level specification in order to prove the correctness of
 the algorithm.
 
 \subheading{Reproducing the proofs.}
-To maximize reusability of our results we placed the code of our formal proofs
+To maximize reusability of our results we placed the code of our formal proof
 presented in this paper into the public domain. They are available at XXXXXXX
-with instructions of how to compile and verify our proofs.
+with instructions of how to compile and verify our proof.
 
 \subheading{Organization of this paper.}
 Section~\ref{preliminaries} give the necessary background on Curve25519
