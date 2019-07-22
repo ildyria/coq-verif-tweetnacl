@@ -7,12 +7,13 @@ Clight description of TweetNaCl and Coq functions producing similar behaviors.
 
 \subsection{One proof? No, two!}
 
-In order to prove the correctness of X25519, we use VST to prove that TweetNaCl's code
-matches our functional specification of \texttt{crypto\_scalarmult} (abreviated as CSM) in Coq.
-Then we prove that our specification of the scalar multiplication matches the
-mathematical definition of elliptic curves and Theorem 2.1 by Bernstein~\cite{Ber06}.
-Figure~\ref{tk:ProofOverview} shows a graph of dependencies of the proofs considered.
-The mathematical proof of our specification is presented in Section~\ref{sec3-maths}.
+In order to prove the correctness of X25519 in TweetNaCl code, we use VST to prove
+the code matches our functional specification of \texttt{crypto\_scalarmult}
+(abreviated as CSM) in Coq. Then, we prove that our specification of the scalar
+multiplication matches the mathematical definition of elliptic curves and Theorem 2.1 by
+Bernstein~\cite{Ber06}. Figure~\ref{tk:ProofOverview} shows a graph of dependencies
+of the proofs considered. The mathematical proof of our specification is presented
+in Section~\ref{sec3-maths}.
 
 \begin{figure}[h]
   \centering
@@ -27,7 +28,7 @@ subsequently called: \texttt{unpack25519}; \texttt{A}; \texttt{Z}; \texttt{M};
 \texttt{S}; \texttt{car25519}; \texttt{inv25519}; \texttt{set25519}; \texttt{sel25519};
 \texttt{pack25519}.
 
-We prove that the implementation of Curve25519 is \textbf{sound} \ie
+We prove the implementation of Curve25519 is \textbf{sound}, \ie:
 \begin{itemize}
 \item absence of access out-of-bounds of arrays (memory safety).
 \item absence of overflows/underflow on the arithmetic.
@@ -37,25 +38,26 @@ We also prove that TweetNaCl's code is \textbf{correct}:
 \item Curve25519 is correctly implemented (we get what we expect).
 \item Operations on \texttt{gf} (\texttt{A}, \texttt{Z}, \texttt{M}, \texttt{S})
 are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
-\item The Montgomery ladder does compute a scalar multiplication between a natural number and a point.
+\item The Montgomery ladder computes a scalar multiplication between a natural
+number and a point.
 \end{itemize}
 
 In order to prove the soundness and correctness of \texttt{crypto\_scalarmult},
 we first create a skeleton of the Montgomery ladder with abstract operations which
-can be instanciated over lists, integers, field elements...
-A high level specification (over a generic field $\K$) allows use to prove the
+can be instantiated over lists, integers, field elements...
+A high level specification (over a generic field $\K$) allows us to prove the
 correctness of the ladder with respect to the curves theory.
-This high specification does not rely on the parameters of Curve25519.
-By instanciating $\K$ with $\Zfield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
-we define a middle level specification.
-Additionally we also provide a low level specification close to the \texttt{C} code
+This high-level specification does not rely on the parameters of Curve25519.
+By instantiating $\K$ with $\Zfield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
+we define a mid-level specification.
+Additionally we also provide a low-level specification close to the \texttt{C} code
 (over lists of $\Z$). We show this specification to be equivalent to the
 \textit{semantic version} of C (\texttt{CLight}) with VST.
 This low level specification gives us the soundness assurance.
 By showing that operations over instances ($\K = \Zfield$, $\Z$, list of $\Z$) are
-equivalent we bridge the gap between the low level and the high level specification
+equivalent, we bridge the gap between the low level and the high level specification
 with Curve25519 parameters.
-As such we prove all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
+As such, we prove all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
 This garantees us the correctness of the implementation.
 
 \begin{figure}[h]
@@ -150,7 +152,7 @@ in Coq (for the sake of simplicity we do not display the conversion in the theor
 For all $n \in \N, n < 2^{255}$ and where the bits 1, 2, 5 248, 249, 250
 are cleared and bit 6 is set, for all $P \in E(\F{p^2})$,
 for all $p \in \F{p}$ such that $P.x = p$,
-there exists $Q \in E(\F{p^2})$ such that $Q = nP$ where $Q.x = q$ and $q$ = \VSTe{CSM} $n$ $p$.
+there exists $Q \in E(\F{p^2})$ such that $Q = [n]P$ where $Q.x = q$ and $q$ = \VSTe{CSM} $n$ $p$.
 \end{theorem}
 A more complete description in Coq of Theorem \ref{CSM-correct} with the associated conversions
 is as follow:
@@ -280,14 +282,13 @@ Lemma Inv25519_Z_GF : forall (g:list Z),
   (Z16.lst (Inv25519 g)) :GF =
   (Inv25519_Z (Z16.lst g)) :GF.
 \end{lstlisting}
-In TweetNaCl, \TNaCle{inv25519} computes an inverse in $\Zfield$. It uses the
-Fermat's little theorem by doing an exponentiation to $2^{255}-21$.
+In TweetNaCl, \TNaCle{inv25519} computes an inverse in $\Zfield$.
+It uses the Fermat's little theorem by doing an exponentiation to $2^{255}-21$.
 This is done by applying a square-and-multiply algorithm. The binary representation
-of $p-2$ implies to always do a multiplications aside for bit 2 and 4, thus the if case.
+of $p-2$ implies to always do multiplications aside for bits 2 and 4.
 To prove the correctness of the result we can use multiple strategies such as:
 \begin{itemize}
-  \item Proving it is special case of square-and-multiply algorithm applied to
-  a specific number and then show that this number is indeed $2^{255}-21$.
+  \item Proving it is a special case of square-and-multiply algorithm applied to $2^{255}-21$.
   \item Unrolling the for loop step-by-step and applying the equalities
   $x^a \times x^b = x^{(a+b)}$ and $(x^a)^2 = x^{(2 \times a)}$. We prove that
   the resulting exponent is $2^{255}-21$.
@@ -300,7 +301,7 @@ will take a long time to verify.
 \subsection{Speeding up with Reflections}
 
 In order to speed up the verification, we use a technique called reflection.
-It provides us with flexibility such as we don't need to know the number of
+It provides us with flexibility, for example, we don't need to know the number of
 times nor the order in which the lemmas needs to be applied (chapter 15 in \cite{CpdtJFR}).
 
 The idea is to \textit{reflect} the goal into a decidable environment.
@@ -501,7 +502,7 @@ This provide with multiple advantages: the verification by the Coq kernel can be
 in parallel and multiple users can work on proving different functions at the same time.
 For the sake of completeness we proved all intermediate functions.
 
-Memory aliasing is the next point a user should pay attention to. The way VST
+Memory aliasing is the next point a user should pay attention. The way VST
 deals with the separation logic is similar to a consumer producer problem.
 A simple specification of \texttt{M(o,a,b)} will assume three distinct memory share.
 When called with three memory share (\texttt{o, a, b}), the three of them will be consumed.
@@ -532,11 +533,11 @@ This solution allows us to make cases analysis over possible aliasing.
 \subsection{Verifiying \texttt{for} loops}
 
 Final state of \texttt{for} loops are usually computed by simple recursive functions.
-However we must define invariants which are true for each iterations.
+However we must define invariants which are true for each iteration.
 
 Assume we want to prove a decreasing loop where indexes go from 3 to 0.
-Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as input an integer for the index and a state and return a state.
-It simulate the body of the \texttt{for} loop.
+Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as input an integer for the index and a state,
+then return a state. It simulate the body of the \texttt{for} loop.
 Assume it's recursive call: $f : \N \rightarrow State \rightarrow State $ which iteratively apply $g$ with decreasing index:
 \begin{equation*}
   f ( i , s ) =
