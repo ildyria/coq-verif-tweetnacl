@@ -14,27 +14,24 @@
   opam update
 ```
 
+**Verify that you are using OPAM 2.x.**
+
 ##### 2. Set OPAM for Tweetnacl so it does not pollute other projects.
 
-**With OPAM 1.2**
+Because we use Coq 8.8.2, we are forced to use Ocaml 4.06.1.
 
 ```bash
-opam switch -A 4.06.1 Tweetnacl
-eval `opam config env`
+  opam switch create Tweetnacl 4.06.1
+  eval $(opam env)
 ```
 
-**With OPAM 2.0**
+##### 3. Dependencies (coq 8.8.2, coqide, ssreflect, stdpp, coqprime, VST 2.0)
 
-```bash
-opam switch create Tweetnacl 4.06.1
-eval $(opam env)
-```
-
-##### 3. Dependencies (coq 8.8.1, coqide, ssreflect, stdpp, coqprime, VST 2.0)
 
 ```bash
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
+  # check if this line is necessary and how to provide anonymity
   opam repo add tweetnacl git://gitlab.science.ru.nl/benoit/tweetnacl/
   opam update
   # if you want coqide
@@ -73,18 +70,16 @@ To compile manually:
 
 ```bash
   cd proofs/vst/
-  # create a pin of coq-tweetnacl-spec
-  opam pin add -n coq-tweetnacl-spec .
+  # create a pin of coq-tweetnacl-vst
+  opam pin add -n coq-tweetnacl-vst .
   ./configure.sh
   make -j
-  # if you want to compile the verification with VST
-  make install
 ```
 
 If you want to let opam do the job:
 
 ```bash
-  cd proofs/spec/
+  cd proofs/vst/
   # create a pin of coq-tweetnacl-vst
   opam pin add -n coq-tweetnacl-vst .
   opam install coq-tweetnacl-vst
