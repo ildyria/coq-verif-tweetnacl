@@ -10,10 +10,14 @@ readme:
 .configure1 .configure2:
 	cd $P && $(SHELL) configure.sh
 
+.building1: .configure1
+.building2: .configure2
 .building1 .building2:
-	cd $P && $(MAKE) -j
+	cd $P && $(MAKE) -j all
 	cd $P && $(MAKE) install
 
+.dusting1: .configure1
+.dusting2: .configure2
 .dusting1 .dusting2:
 	cd $P && $(MAKE) clean
 	cd $P && rm _CoqProject
@@ -22,16 +26,16 @@ readme:
 
 # DEFINE REAL TARGETS
 coq-tweetnacl-spec: P=proofs/spec
-coq-tweetnacl-spec: .configure1 .building1
+coq-tweetnacl-spec: .building1
 
 clean-spec: P=proofs/spec
-clean-spec: .configure1 .dusting1
+clean-spec: .dusting1
 
 coq-tweetnacl-vst: P=proofs/vst
-coq-tweetnacl-vst: coq-tweetnacl-spec .configure2 .building2
+coq-tweetnacl-vst: coq-tweetnacl-spec .building2
 
 clean-vst: P=proofs/vst
-clean-vst: .configure2 .dusting2
+clean-vst: .dusting2
 
 clean: clean-spec clean-vst clean-dist
 

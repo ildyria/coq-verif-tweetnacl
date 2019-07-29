@@ -5,7 +5,7 @@ homepage: "https://gitlab.science.ru.nl/benoit/tweetnacl/"
 license: "MIT"
 build: []
 install: [
-  [make "-j%{jobs}%" "all"]
+  [make "-j%{jobs}%"]
 ]
 remove: []
 depends: [
