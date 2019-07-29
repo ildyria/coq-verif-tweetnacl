@@ -1,0 +1,43 @@
+opam-version: "2.0"
+maintainer: "Karmaki"
+homepage: "https://github.com/Karmaki/coq-dpdgraph"
+bug-reports: "https://github.com/Karmaki/coq-dpdgraph/issues"
+dev-repo: "git+https://github.com/Karmaki/coq-dpdgraph.git"
+license: "LGPL-2.1"
+authors: [
+  "Karmaki"
+]
+build: [
+  ["autoconf"]
+  ["./configure"]
+  [make "-j%{jobs}%"]
+]
+install: [
+  [make "install"]
+]
+remove: ["rm" "-R" "%{lib}%/coq/user-contrib/dpdgraph"]
+depends: [
+  "ocaml"
+  "coq" {>= "8.7" & < "8.9"}
+  "conf-autoconf"
+  "ocamlgraph"
+]
+description:"""
+Build dependency graphs between Coq objects, where Coq is the famous formal proof management system.
+
+The graph can be interpreted like this :
+edge n1 --> n2 : n1 uses n2
+node :
+green : proved lemma
+orange : axiom/admitted lemma
+dark pink : Definition, etc
+light pink : Parameter, etc
+violet : inductive,
+blue : constructor,
+multi-circled : not used (no predecessor in the graph)
+yellow box : module
+objects that are not in a yellow box are Coq objects.
+"""
+url {
+  src: "https://github.com/Karmaki/coq-dpdgraph/archive/v0.6.3.zip"
+}

@@ -1,0 +1,31 @@
+opam-version: "2.0"
+name: "coq-tweetnacl-vst"
+maintainer: "benoit@cs.ru.nl"
+homepage: "https://gitlab.science.ru.nl/benoit/Tweetnacl_verif/"
+license: "MIT"
+build: [
+  ["./configure.sh"]
+  [make "-j%{jobs}%"]
+]
+install: [
+  [make "install"]
+]
+remove: ["rm" "-R" "%{lib}%/coq/user-contrib/Tweetnacl_verif"]
+depends: [
+  "coq" {>= "8.7.0"}
+  "coq-coqprime"
+  "coq-stdpp"
+  "coq-ssr-elliptic-curves"
+  "coq-mathcomp-ssreflect"
+  "coq-vst" {= "2.0"}
+  "coq-tweetnacl-spec"
+]
+author: [
+  "benoit@cs.ru.nl"
+  ]
+description: """
+Verifying the Tweetnacl implementation with VST
+"""
+url {
+  src: "git+https://github.com/ildyria/coq-tweetnacl-verif/master/tree/proofs/vst"
+}

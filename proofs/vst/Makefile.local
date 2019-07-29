@@ -1,0 +1,26 @@
+pre-all::
+ifeq (,$(wildcard ./c/tweetnaclVerifiableC.v))
+	./configure.sh
+endif
+
+clean::
+	$(HIDE)echo "rm c/tweetnaclVerifiableC.v"
+	$(HIDE)rm c/tweetnaclVerifiableC.v 2> /dev/null || true
+	$(HIDE)rm *.dpd 2> /dev/null || true
+
+DPD = $(wildcard *.dpd)
+DOT = $(DPD:%.dpd=%.dot)
+PNG = $(DPD:%.dpd=%.png)
+PDF = $(DPD:%.dpd=%.pdf)
+
+%.dot: %.dpd
+	dpd2dot $<
+
+%.png: %.dot
+	dot -Tpng $< -o $@
+
+%.pdf: %.dot
+	dot -Tpdf $< -o $@
+
+graph: $(PNG)
+pdf: $(PDF)

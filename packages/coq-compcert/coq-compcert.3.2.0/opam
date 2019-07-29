@@ -1,0 +1,34 @@
+opam-version: "2.0"
+maintainer: "Matej Kosik <matej.kosik@inria.fr>"
+homepage: "http://compcert.inria.fr/"
+license: "INRIA Non-Commercial License Agreement"
+build: [
+   ["./configure" "ia32-linux" {os = "linux"}
+    "ia32-macosx" {os = "darwin"}
+    "ia32-cygwin" {os = "cygwin"}
+    "-bindir" "%{bin}%"
+    "-libdir" "%{lib}%/coq/user-contrib/compcert"
+    "-clightgen"
+    "-ignore-coq-version"]
+   [make "-j%{jobs}%"]
+]
+install: [
+   [make "install"]
+]
+remove: [
+   ["rm" "%{bin}%/ccomp"]
+   ["rm" "%{bin}%/clightgen"]
+   ["rm" "%{share}%/compcert.ini"]
+   ["rm" "-R" "%{lib}%/coq/user-contrib/compcert"]
+]
+depends: [
+   "coq" {>= "8.7.0" & < "8.9"}
+   "menhir" {>= "20160303" & < "20180530"}
+]
+author: ["Xavier Leroy <xavier.leroy@inria.fr>"]
+description: """
+The CompCert C compiler.
+"""
+url {
+  src: "git+https://github.com/ildyria/CompCert.git#v3.2WithVO"
+}

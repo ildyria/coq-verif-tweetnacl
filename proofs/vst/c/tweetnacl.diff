@@ -1,0 +1,126 @@
+8c8
+< typedef long long i64;
+---
+> typedef long long i64 __attribute__((aligned(8)));
+37c37,38
+<   u64 i,u=0;
+---
+>   //u64 i,u=0; Original code
+>   int i; u64 u=0; //VerifiableC (for now)
+277,281c278,280
+<   FOR(i,16) {
+<     o[i]+=(1LL<<16);
+<     c=o[i]>>16;
+<     o[(i+1)*(i<15)]+=c-1+37*(c-1)*(i==15);
+<     o[i]-=c<<16;
+---
+>   FOR(i,15) {
+>     o[(i+1)]+=o[i]>>16;
+>     o[i]&=0xffff;
+282a282,283
+>   o[0]+=38*(o[15]>>16);
+>   o[15]&=0xffff;
+285c286
+< sv sel25519(gf p,gf q,int b)
+---
+> sv sel25519(gf p,gf q,i64 b)
+287c288,289
+<   i64 t,i,c=~(b-1);
+---
+>   int i;
+>   i64 t,c=~(b-1);
+297,299c299,302
+<   int i,j,b;
+<   gf m,t;
+<   FOR(i,16) t[i]=n[i];
+---
+>   int i,j;
+>   i64 b;
+>   gf t,m={0};
+>   set25519(t,n);
+310d312
+<     b=(m[15]>>16)&1;
+312c314,315
+<     sel25519(t,m,1-b);
+---
+>     b=1-((m[15]>>16)&1);
+>     sel25519(t,m,b);
+332c335
+<   return d[0]&1;
+---
+>   return d[0]&(unsigned char)1;
+356,359c359,366
+<   i64 i,j,t[31];
+<   FOR(i,31) t[i]=0;
+<   FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
+<   FOR(i,15) t[i]+=38*t[i+16];
+---
+>   int i,j;
+>   i64 t[31], aux;
+>   FOR(i,31) t[i]= 0;
+>   FOR(i,16) {
+>     aux = a[i];
+>     FOR(j,16) t[i+j]+=aux*b[j];
+>   }
+>   FOR(i,15) t[i]+=(i64)38*t[i+16];
+370c377
+< sv inv25519(gf o,const gf i)
+---
+> sv inv25519(gf o,const gf a)
+373,375c380,382
+<   int a;
+<   FOR(a,16) c[a]=i[a];
+<   for(a=253;a>=0;a--) {
+---
+>   int i;
+>   set25519(c,a);
+>   for(i=253;i>=0;i--) {
+377c384
+<     if(a!=2&&a!=4) M(c,c,i);
+---
+>     if(i!=2&&i!=4) M(c,c,a);
+379c386
+<   FOR(a,16) o[a]=c[a];
+---
+>   FOR(i,16) o[i]=c[i];
+382c389
+< sv pow2523(gf o,const gf i)
+---
+> sv pow2523(gf o,const gf a)
+385,387c392,394
+<   int a;
+<   FOR(a,16) c[a]=i[a];
+<   for(a=250;a>=0;a--) {
+---
+>   int i;
+>   set25519(c,a);
+>   for(i=250;i>=0;i--) {
+389c396
+<     if(a!=1) M(c,c,i);
+---
+>     if(i!=1) M(c,c,a);
+391c398
+<   FOR(a,16) o[a]=c[a];
+---
+>   FOR(i,16) o[i]=c[i];
+397,398c404,406
+<   i64 x[80],r,i;
+<   gf a,b,c,d,e,f;
+---
+>   i64 r;
+>   int i;
+>   gf x,a,b,c,d,e,f;
+433,441c441,443
+<   FOR(i,16) {
+<     x[i+16]=a[i];
+<     x[i+32]=c[i];
+<     x[i+48]=b[i];
+<     x[i+64]=d[i];
+<   }
+<   inv25519(x+32,x+32);
+<   M(x+16,x+16,x+32);
+<   pack25519(q,x+16);
+---
+>   inv25519(c,c);
+>   M(a,a,c);
+>   pack25519(q,a);
