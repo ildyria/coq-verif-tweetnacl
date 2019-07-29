@@ -1,7 +1,9 @@
 opam-version: "2.0"
 name: "coq-tweetnacl-vst"
-maintainer: "benoit@cs.ru.nl"
-homepage: "https://gitlab.science.ru.nl/benoit/tweetnacl/"
+maintainer: "anonym"
+homepage: "https://github.com/"
+bug-reports: "https://github.com/"
+dev-repo: "git+https://github.com/"
 license: "MIT"
 build: [
   ["./configure.sh"]
@@ -21,11 +23,9 @@ depends: [
   "coq-tweetnacl-spec"
 ]
 author: [
-  "benoit@cs.ru.nl"
+  "anonym"
   ]
+synopsis: "Verifying the TweetNaCl implementation: VST"
 description: """
 Verifying the Tweetnacl implementation: VST
 """
-url {
-  src: "git+https://github.com/ildyria/coq-tweetnacl-verif/master/tree/proofs/vst"
-}

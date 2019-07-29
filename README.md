@@ -54,7 +54,7 @@ opam install coqide.8.8.2
 
 Pin the current repository as an opam to be able to fetch the dependencies
 ```bash
-opam pin add -n coq-verif-tweetnacl .
+opam pin add -yn coq-verif-tweetnacl .
 # install dependencies
 opam install --deps-only coq-verif-tweetnacl
 ```
@@ -76,7 +76,7 @@ To compile manually:
 ```bash
 cd proofs/spec/
 # create a pin of coq-tweetnacl-spec
-opam pin add -n coq-tweetnacl-spec .
+opam pin add -yn coq-tweetnacl-spec .
 ./configure.sh
 make -j
 # if you want to compile the verification with VST
@@ -88,8 +88,7 @@ Or you can let opam do the job:
 ```bash
 cd proofs/spec/
 # create a pin of coq-tweetnacl-spec
-opam pin add -n coq-tweetnacl-spec .
-opam install coq-tweetnacl-spec
+opam pin add -y coq-tweetnacl-spec .
 ```
 
 ##### 6.2 Install TweetNacl Verification
@@ -98,7 +97,7 @@ To compile manually:
 ```bash
 cd proofs/vst/
 # create a pin of coq-tweetnacl-vst
-opam pin add -n coq-tweetnacl-vst .
+opam pin add -yn coq-tweetnacl-vst .
 ./configure.sh
 make -j
 # optional
@@ -109,8 +108,7 @@ If you want to let opam do the job:
 ```bash
 cd proofs/vst/
 # create a pin of coq-tweetnacl-vst
-opam pin add -n coq-tweetnacl-vst .
-opam install coq-tweetnacl-vst
+opam pin add -y coq-tweetnacl-vst .
 ```
 
 ### Benchmarks

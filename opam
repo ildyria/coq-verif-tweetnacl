@@ -1,7 +1,9 @@
 opam-version: "2.0"
 name: "coq-verif-tweetnacl"
-maintainer: "benoit@cs.ru.nl"
-homepage: "https://gitlab.science.ru.nl/benoit/tweetnacl/"
+maintainer: "anonym"
+homepage: "https://github.com/"
+bug-reports: "https://github.com/"
+dev-repo: "git+https://github.com/"
 license: "MIT"
 build: []
 install: [
@@ -18,12 +20,10 @@ depends: [
   "coq-reciprocity"
   "coq-vst" {= "2.0"}
 ]
-author: [
-  "benoit@cs.ru.nl"
-  ]
+authors: [
+  "anonym"
+]
+synopsis: "Verifying the TweetNaCl implementation"
 description: """
-Verifying the TweetNaCl implementation
+Verifying the TweetNaCl implementation.
 """
-url {
-  src: "git+https://gitlab.science.ru.nl/benoit/tweetnacl/"
-}
