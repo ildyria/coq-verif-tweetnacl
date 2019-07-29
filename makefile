@@ -1,6 +1,5 @@
 all: coq-tweetnacl-spec coq-tweetnacl-vst
 
-
 coq-tweetnacl-spec:
 	cd proofs/spec ;\
 	./configure.sh ;\

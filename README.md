@@ -35,51 +35,64 @@ eval $(opam env)
 ```bash
   opam repo add coq-released https://coq.inria.fr/opam/released
   opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
-  opam repo add tweetnacl git://github.com/ildyria/opam-repository.git
+  opam repo add tweetnacl git://gitlab.science.ru.nl/benoit/tweetnacl/
   opam update
   # if you want coqide
-  opam install coqide
+  opam install coqide.8.8.2
   # install the two main repository
   opam install coq-vst.2.0
-  opam install --deps-only coq-tweetnacl
+  opam install --deps-only coq-verif-tweetnacl
 ```
 
 ##### 4. Install TweetNacl Mathematical model
 
-```bash
-  git clone https://gitlab.science.ru.nl/benoit/Tweetnacl.git Tweetnacl
-  cd Tweetnacl
-  # create a pin of Tweetnacl
-  opam pin add -n coq-tweetnacl .
-  make -j
-  cd ..
-  opam install coq-tweetnacl
-```
-
-Another possibility is to use `opam source`. This will create a
-`coq-tweetnacl.dev` repo in your current directory
-(equivalent of `git clone`).
-
+To compile manually:
 
 ```bash
-  opam source coq-tweetnacl --pin
-  cd coq-tweetnacl.dev
+  cd proofs/spec/
+  # create a pin of coq-tweetnacl-spec
+  opam pin add -n coq-tweetnacl-spec .
   ./configure.sh
   make -j
-  cd ..
-  opam install coq-tweetnacl
+  # if you want to compile the verification with VST
+  make install
 ```
 
-##### 5. Install TweetNacl_verif (optional)
+If you want to let opam do the job:
 
 ```bash
-  git clone https://gitlab.science.ru.nl/benoit/Tweetnacl_verif.git Tweetnacl_verif
-  cd Tweetnacl_verif
+  cd proofs/spec/
+  # create a pin of coq-tweetnacl-spec
+  opam pin add -n coq-tweetnacl-spec .
+  opam install coq-tweetnacl-spec
+```
+
+##### 5. Install TweetNacl Verification
+
+To compile manually:
+
+```bash
+  cd proofs/vst/
+  # create a pin of coq-tweetnacl-spec
+  opam pin add -n coq-tweetnacl-spec .
   ./configure.sh
   make -j
+  # if you want to compile the verification with VST
+  make install
+```
+
+If you want to let opam do the job:
+
+```bash
+  cd proofs/spec/
+  # create a pin of coq-tweetnacl-vst
+  opam pin add -n coq-tweetnacl-vst .
+  opam install coq-tweetnacl-vst
 ```
 
 ##### Benchmarks
+
+**NEED TO BE REDONE**
 
 ```
 Tweetnacl: make all -j  396.46s user 13.92s system 266% cpu 2:33.77 total

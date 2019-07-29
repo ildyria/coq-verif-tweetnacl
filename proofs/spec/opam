@@ -25,7 +25,7 @@ author: [
   "timmy@timmyweerwag.nl"
   ]
 description: """
-Model to verify Tweetnacl
+Verifying the Tweetnacl implementation: Specification
 """
 url {
   src: "git+https://github.com/ildyria/coq-tweetnacl-verif/tree/master/proofs/spec"
