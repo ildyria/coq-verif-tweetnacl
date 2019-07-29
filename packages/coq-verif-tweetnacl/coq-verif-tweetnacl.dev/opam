@@ -1,5 +1,5 @@
 opam-version: "2.0"
-name: "coq-tweetnacl-verif"
+name: "coq-verif-tweetnacl"
 maintainer: "benoit@cs.ru.nl"
 homepage: "https://gitlab.science.ru.nl/benoit/tweetnacl/"
 license: "MIT"
@@ -22,7 +22,7 @@ author: [
   "benoit@cs.ru.nl"
   ]
 description: """
-Verifying the Tweetnacl implementation
+Verifying the TweetNaCl implementation
 """
 url {
   src: "git+https://gitlab.science.ru.nl/benoit/tweetnacl/"

@@ -39,14 +39,7 @@ opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
 
 ### 4. Set up project related dependencies (dependencies at specific commit number.)
 
-Add the repository by using the address:
 ```bash
-opam repo add tweetnacl git://gitlab.science.ru.nl/benoit/tweetnacl/
-```
-
-Or by cloning it:
-```bash
-git clone https://gitlab.science.ru.nl/benoit/tweetnacl/ coq-verif-tweetnacl
 cd coq-verif-tweetnacl
 opam repo add tweetnacl .
 ```
@@ -55,11 +48,17 @@ opam repo add tweetnacl .
 
 ```bash
 opam update
-# if you want coqide
+# if you want coqide (may require additional dependencies)
 opam install coqide.8.8.2
+```
+
+Pin the current repository as an opam to be able to fetch the dependencies
+```bash
+opam pin add -n coq-verif-tweetnacl .
 # install dependencies
 opam install --deps-only coq-verif-tweetnacl
 ```
+
 
 ### 6. Install the full Verification
 
@@ -70,12 +69,6 @@ opam install coq-verif-tweetnacl
 ```
 
 However if you want to compile each part you can follow these steps:
-
-Clone the repository:
-```bash
-git clone https://gitlab.science.ru.nl/benoit/tweetnacl/ coq-verif-tweetnacl
-cd coq-verif-tweetnacl
-```
 
 ##### 6.1 Install TweetNacl Mathematical Model and Specification
 
@@ -122,7 +115,7 @@ opam install coq-tweetnacl-vst
 
 ### Benchmarks
 
-```
+```bash
 ▶ time opam install coq-verif-tweetnacl
 The following actions will be performed:
   ∗ install camlp5                    7.06.10-g84ce6cc4 [required by coq]

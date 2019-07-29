@@ -38,7 +38,8 @@ Doc
 usenix*
 .coqdeps.d
 Makefile.conf
-Makefile
+proofs/*/Makefile
+.dist
 
 # Created by https://www.gitignore.io/api/latex,c++,coq,c,ocaml,sublimetext,vim,emacs
 
@@ -79,6 +80,7 @@ Makefile
 *.vrb
 *.xdy
 *.tdo
+coq-verif-tweetnacl*
 
 ### C++ ###
 # Compiled Object files
