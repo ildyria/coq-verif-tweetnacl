@@ -142,8 +142,7 @@ The following actions will be performed:
   ∗ install coq-mathcomp-bigenough    1.0.0             [required by coq-mathcomp-multinomials]
   ∗ install coq-vst                   2.0               [required by coq-verif-tweetnacl]
   ∗ install coq-coqprime              1.0.3             [required by coq-verif-tweetnacl]
-  ∗ install coq-mathcomp-algebra      1.7.0             [required by coq-mathcomp-multinomials,
-                                                        coq-ssr-elliptic-curves]
+  ∗ install coq-mathcomp-algebra      1.7.0             [required by coq-mathcomp-multinomials, coq-ssr-elliptic-curves]
   ∗ install coq-mathcomp-solvable     1.7.0             [required by coq-mathcomp-field]
   ∗ install coq-mathcomp-multinomials 1.1               [required by coq-verif-tweetnacl]
   ∗ install coq-mathcomp-field        1.7.0             [required by coq-ssr-elliptic-curves]
