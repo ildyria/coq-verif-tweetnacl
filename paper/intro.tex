@@ -1,22 +1,28 @@
-NaCl~\cite{BLS12} is an easy-to-use high-security high-speed software library
-for network communication, encryption, decryption, signatures, etc.
-% It uses specialized code for different platform, making it complex and hard to audit.
-% TweetNaCl~\cite{BGJ+15} is its compact reimplementation.
-It does not aim for high speed application and has been optimized for source
-code compactness (100 tweets). It maintains some degree of readability in order
-to be easily auditable. For example TweetNaCl is being used by ZeroMQ~\cite{zmq}
-messaging queue system to provide portability to its users.
-% ``TweetNaCl is the first cryptographic library that allows correct functionality
-% to be verified by auditors with reasonable effort''~\cite{BGJ+15}
+\section{Introduction}
+\label{sec:intro}
 
+The Networking and Cryptography library (NaCl)~\cite{BLS12} 
+is an easy-to-use high-security high-speed crypto library.
+It uses specialized code for different platform, making it complex and hard to audit.
+TweetNaCl~\cite{BGJ+15} is a compact reimplementation in C
+of the core functionalities of NaCl and is claimed to be 
+\emph{``the first cryptographic library that allows correct functionality
+to be verified by auditors with reasonable effort''}~\cite{BGJ+15}.
+The original paper presenting TweetNaCl describes some effort to support
+this claim, like formal verification of memory safety, but does not actually
+prove correctness of any of the primitives offered by the library.
+
+A core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519~\cite{rfc7748}.
+This protocol is being used by a wide variety of applications~\cite{things-that-use-curve25519}
+such as SSH, Signal Protocol, Tor, Zcash, TLS to establish a shared secret over
+an insecure channel.
+
+% For example TweetNaCl is being used by ZeroMQ~\cite{zmq}
+%messaging queue system to provide portability to its users.
 % XXX: TweetNaCl (find real-world use of TweetNaCl?)
 % Mega.nz uses tweetnacl-js (as JS port of tweetnacl) for their webclient https://mega.nz/
 % Keybase client: https://github.com/keybase/node-nacl/blob/master/lib/tweetnacl.js
 
-One core component of TweetNaCl (and NaCl) is the key exchange protocol X25519~\cite{rfc7748}.
-This protocol is being used by a wide variety of applications~\cite{this-that-use-curve25519}
-such as SSH, Signal Protocol, Tor, Zcash, TLS to establish a shared secret over
-an insecure channel.
 
 This library makes use of Curve25519~\cite{Ber06}, a function over a \F{p}-restricted
 $x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
