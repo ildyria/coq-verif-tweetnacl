@@ -3,7 +3,7 @@
 
 ## Setting up your environment
 
-##### 1. download & install GCC and OPAM.
+### 1. download & install GCC and OPAM.
 
 [Install OPAM][1], e.g. for Debian:
 
@@ -20,7 +20,7 @@ opam --version
 # 2.0.3
 ```
 
-##### 2. Set OPAM for Tweetnacl so it does not pollute other projects.
+### 2. Set OPAM for Tweetnacl so it does not pollute other projects.
 
 Because we use Coq 8.8.2, we are forced to use Ocaml 4.06.1.
 
@@ -29,7 +29,7 @@ opam switch create Tweetnacl 4.06.1
 eval $(opam env)
 ```
 
-##### 3. Set up general dependencies (coq 8.8.2, coqide, ssreflect, stdpp, coqprime, VST 2.0)
+### 3. Set up general dependencies (coq 8.8.2, coqide, ssreflect, stdpp, coqprime, VST 2.0)
 
 Add the repository general dependencies:
 ```bash
@@ -37,7 +37,7 @@ opam repo add coq-released https://coq.inria.fr/opam/released
 opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
 ```
 
-#### 4. Set up project related dependencies (dependencies at specific commit number.)
+### 4. Set up project related dependencies (dependencies at specific commit number.)
 
 Add the repository by using the address:
 ```bash
@@ -51,7 +51,7 @@ cd coq-verif-tweetnacl
 opam repo add tweetnacl .
 ```
 
-#### 5. update and install dependencies.
+### 5. update and install dependencies.
 
 ```bash
 opam update
@@ -61,7 +61,7 @@ opam install coqide.8.8.2
 opam install --deps-only coq-verif-tweetnacl
 ```
 
-#### 6. Install the full Verification
+### 6. Install the full Verification
 
 Everything is compiled the following command:
 
@@ -120,7 +120,7 @@ opam pin add -n coq-tweetnacl-vst .
 opam install coq-tweetnacl-vst
 ```
 
-##### Benchmarks
+### Benchmarks
 
 ```
 ▶ time opam install coq-verif-tweetnacl
