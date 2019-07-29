@@ -57,6 +57,7 @@ dist: $(DIST)
 	cp version $(DIST)/
 	cp README.md $(DIST)/
 	cp Makefile $(DIST)/
+	cp opam $(DIST)/
 	tar -czvf $(DIST).tar.gz $(DIST)
 
 clean-dist: $(DIST)
