@@ -5,10 +5,8 @@ In this section we first describe the global structure of our proof.
 Then we discuss techniques used to prove the equivalence between the
 Clight description of TweetNaCl and Coq functions producing similar behaviors.
 
-\subsection{One proof? No, two!}
-
 In order to prove the correctness of X25519 in TweetNaCl code, we use VST to prove
-the code matches our functional specification of \texttt{crypto\_scalarmult}
+that the code matches our functional specification of \texttt{crypto\_scalarmult}
 (abreviated as CSM) in Coq. Then, we prove that our specification of the scalar
 multiplication matches the mathematical definition of elliptic curves and Theorem 2.1 by
 Bernstein~\cite{Ber06}. Figure~\ref{tk:ProofOverview} shows a graph of dependencies

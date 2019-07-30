@@ -1,11 +1,20 @@
 \section{Preliminaries}
 \label{preliminaries}
 
-In this section, we describe X25519 and TweetNaCl implementation.
-We then provide a brief description of the formal tools we use in our proofs.
+In this section, we first give a brief summary of the mathematical background
+on elliptic curves. We then describe X25519 and its implementation in TweetNaCl.
+Finally, we provide a brief description of the formal tools we use in our proofs.
+
+\subsection{Arithmetic on Montgomery curves}
+\label{subsec:montgomery}
+\todo{Write; move some text from later parts of the paper to here}
+
+\todo{High-level view of Montgomery ladder, similar to Alg. 1, but with differential addition}
 
 \subsection{The X25519 key exchange}
 \label{preliminaries:A}
+
+\todo{Rephrase, use byte arrays, define clamping, state where things live.}
 
 For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
 defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
@@ -24,36 +33,49 @@ of the scalar multiplication between $B$ and $s_a$ (respectively $s_b$).
 The party exchanges $P_a$ and $P_b$ and computes their shared secret with X25519
 over $s_a$ and $P_b$ (respectively $s_b$ and $P_a$).
 
-\subsection{X25519 in TweetNaCl}
+\subsection{TweetNaCl specifics}
 \label{preliminaries:B}
-
+\todo{Some more text}
 In order to gain space, TweetNaCl uses a few shortcuts.
 \begin{lstlisting}[language=Ctweetnacl]
 #define FOR(i,n) for (i = 0;i < n;++i)
 #define sv static void
 typedef unsigned char u8;
+typedef long long i64;
 \end{lstlisting}
-The subsequent blocks of code are valid C.
+
+\todo{Comment on argument order}
+
+\subsection{X25519 in TweetNaCl}
+\label{preliminaries:B}
+
+\todo{Add a sentence or two here to prepare the reader.}
 
 \subheading{Arithmetic in \Ffield.}
-In X25519, all computations are done over $\F{p}$.
-Numbers in that field can be represented with 256 bits packed in 8-bit limbs
-(respectively 16-bit limbs), making use of a base $2^8$ (respectively $2^{16}$).
-Consequently, inputs of the X25519 function are seen as bytes arrays in little-endian format.
-Computations inside the crypto scalar multiplication and intermediates function
-makes use of the 16-bit limbs representation.
-Those are placed into 64-bits signed container in order to mitigate overflows or underflows.
+In X25519, all computations are performed in $\F{p}$.
+Throughout the computation, elements of that field 
+are represented in radix $2^{16}$, 
+i.e., an element $A$ is represented as $(a_0,\dots,a_{15}$,
+with $A = \sum_{i=0}^{15}a_i2^{16i}$.
+The individual ``limbs'' $a_i$ are represented as
+64-bit \TNaCle{long long} variables:
+
 \begin{lstlisting}[language=Ctweetnacl]
-typedef long long i64;
 typedef i64 gf[16];
 \end{lstlisting}
-Notice this does not guaranty a unique representation of each number. i.e.\\
-$\exists x,y \in$ \TNaCle{gf} such that
-\vspace{-0.25cm}
-$$x \neq y\ \ \land\ \ x \equiv y \pmod{2^{255}-19}$$
 
-On the other hand it allows simple definitions of addition (\texttt{A}),
-substraction (\texttt{Z}), and school-book multiplication (\texttt{M}).
+Conversion from the input byte array to this representation is done
+as follows:
+\todo{unpack}
+
+
+The radix-$2^{16}$ representation in limbs of $64$ bits is
+highly redundant; for any element $A \in \F{\p}$ there are
+multiple ways to represent $A$ as $(a_0,\dots,a_{15})$.
+For example, it is used to avoid carry handling in 
+the implementations of addition (\TNaCle{A}) 
+and subtraction (\TNaCle{Z}) in $\F{\p}$:
+
  % and squaring (\texttt{S}).
 \begin{lstlisting}[language=Ctweetnacl]
 sv A(gf o,const gf a,const gf b) {
@@ -65,7 +87,12 @@ sv Z(gf o,const gf a,const gf b) {
   int i;
   FOR(i,16) o[i]=a[i]-b[i];
 }
+\end{lstlisting}
 
+Also multiplication (\TNaCle{M}) is heavily exploiting the redundancy
+of the representation to delay carry handling.
+
+\begin{lstlisting}[language=Ctweetnacl]
 sv M(gf o,const gf a,const gf b) {
   i64 i,j,t[31];
   FOR(i,31) t[i]=0;
@@ -77,7 +104,10 @@ sv M(gf o,const gf a,const gf b) {
 }
 \end{lstlisting}
 
-To avoid overflows, carries are propagated by the \texttt{car25519} function.
+After the actual multiplication, the limbs of the result \texttt{o} are
+too large to be used again as input, which is why the two calls to
+\TNaCle{car25519} at the end of \TNaCle{M} propagate the carries through the limbs:
+
 \begin{lstlisting}[language=Ctweetnacl]
 sv car25519(gf o)
 {
@@ -109,16 +139,17 @@ It takes the exponentiation by $2^{255}-21$ with the Square-and-multiply algorit
 Fermat's little theorem brings the correctness.
 Notice that in this case the inverse of $0$ is defined as $0$.
 
+\todo{sel25519}
+
 % It takes advantage of the shape of the number by not doing the multiplications only twice.
 
 % \todo{Ladder algorithm C code}
 % \todo{Ladderstep algorithm C code}
-The last step of \texttt{crypto\_scalarmult} is the packing of the limbs: an array of 32 bytes.
-It first performs 3 carry propagations in order to guarantee
-that each 16-bit limbs values are between $0$ and $2^{16}$.
-Then computes a modulo reduction by $\p$ using iterative substraction and
-conditional swapping. This guarantees a unique representation in $\Zfield$.
-Then, each 16-bit limbs are splitted into 8-bit limbs.
+
+Finally, we require the \TNaCle{pack25519} function,
+which converts from the internal redundant radix-$2^{16}$
+representation to a unique byte array:
+
 \begin{lstlisting}[language=Ctweetnacl]
 sv pack25519(u8 *o,const gf n)
 {
@@ -147,9 +178,19 @@ sv pack25519(u8 *o,const gf n)
 }
 \end{lstlisting}
 
+As we can see, this function is considerably more complex than the
+unpacking function. The reason is that it needs to convert 
+to a \emph{unique} representation before packing into the output
+byte array.
+
 \subheading{The Montgomery ladder.}
-In order to compute scalar multiplication, X25519 uses the Montgomery
-$x$-coordinate double-and-add formulas.
+With these low-level arithmetic and helper function at hand, we can now
+turn our attention to the core of the X25519 computation: 
+the \TNaCle{crypto\_scalarmult} API function of TweetNaCl.
+In order to compute the scalar multiplication, 
+X25519 uses the Montgomery ladder~\cite{Mon85}.
+\todo{explain, projective coordinates, etc}
+of .
 First extract and clamp the value of $n$. Then unpack the value of $p$.
 As per RFC~7748~\cite{rfc7748}, set its most significant bit to 0.
 Finally compute the Montgomery ladder over the clamped $n$ and $p$,
@@ -211,17 +252,19 @@ int crypto_scalarmult(u8 *q,
 Coq~\cite{coq-faq} is an interactive theorem prover. It provides an expressive
 formal language to write mathematical definitions, algorithms and theorems coupled
 with their proofs. As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
-Coq does not rely on the trust of an SMT solver. It uses its type
-system to verify the applications of hypothesis, lemmas and theorems~\cite{Howard1995-HOWTFN}.
+Coq does not rely on an SMT solver in its trusted code base. 
+It uses its type system to verify the applications of hypotheses, 
+lemmas, and theorems~\cite{Howard1995-HOWTFN}.
 
 Hoare logic is a formal system which allows reasoning about programs.
 It uses triples such as
 $$\{{\color{doc@lstnumbers}\textbf{Pre}}\}\texttt{~Prog~}\{{\color{doc@lstdirective}\textbf{Post}}\}$$
 where ${\color{doc@lstnumbers}\textbf{Pre}}$ and ${\color{doc@lstdirective}\textbf{Post}}$
 are assertions and \texttt{Prog} is a piece of code.
-It is read as ``when the precondition $Pre$ is met, executing \texttt{Prog} will
-yield postcondition $Post$''.
-We use compositional rules to prove the truth value of a Hoare tripple.
+It is read as 
+``when the precondition  ${\color{doc@lstnumbers}\textbf{Pre}}$ is met, 
+executing \texttt{Prog} will yield postcondition ${\color{doc@lstdirective}\textbf{Post}}$''.
+We use compositional rules to prove the truth value of a Hoare triple.
 For example, here is the rule for sequential composition:
 \begin{prooftree}
   \AxiomC{$\{P\}C_1\{Q\}$}
@@ -235,4 +278,5 @@ memory shared such as being disjoint. We discuss this limitation further in Sect
 The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework which uses
 Separation logic to prove the functional correctness of C programs.
 It can be seen as a forward symbolic execution of the program.
+\todo{Mention CLight somewhere here.}
 Its uses a strongest postcondition approach to prove that a program matches its specification.

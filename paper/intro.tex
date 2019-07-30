@@ -2,47 +2,51 @@
 \label{sec:intro}
 
 The Networking and Cryptography library (NaCl)~\cite{BLS12} 
-is an easy-to-use high-security high-speed crypto library.
-It uses specialized code for different platform, making it complex and hard to audit.
+is an easy-to-use, high-security, high-speed cryptographic library.
+It uses specialized code for different platform, which makes it rather complex and hard to audit.
 TweetNaCl~\cite{BGJ+15} is a compact reimplementation in C
 of the core functionalities of NaCl and is claimed to be 
 \emph{``the first cryptographic library that allows correct functionality
 to be verified by auditors with reasonable effort''}~\cite{BGJ+15}.
 The original paper presenting TweetNaCl describes some effort to support
-this claim, like formal verification of memory safety, but does not actually
-prove correctness of any of the primitives offered by the library.
+this claim, for example, formal verification of memory safety, but does not actually
+prove correctness of any of the primitives implemented by the library.
 
-A core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519~\cite{rfc7748}.
+One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519~\cite{rfc7748}.
 This protocol is being used by a wide variety of applications~\cite{things-that-use-curve25519}
-such as SSH, Signal Protocol, Tor, Zcash, TLS to establish a shared secret over
+such as SSH, Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
 an insecure channel.
-
-% For example TweetNaCl is being used by ZeroMQ~\cite{zmq}
-%messaging queue system to provide portability to its users.
-% XXX: TweetNaCl (find real-world use of TweetNaCl?)
-% Mega.nz uses tweetnacl-js (as JS port of tweetnacl) for their webclient https://mega.nz/
-% Keybase client: https://github.com/keybase/node-nacl/blob/master/lib/tweetnacl.js
-
-
-This library makes use of Curve25519~\cite{Ber06}, a function over a \F{p}-restricted
-$x$-coordinate computing a scalar multiplication on $E(\F{p^2})$, where $p$ is
-the prime number $\p$ and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
-
-Originally, the name ``Curve25519'' referred to the key exchange protocol,
+The X25519 key exchange protocol is a an $x$-coordinate only 
+elliptic-curve Diffie-Hellman key-exchange using the Montgomery
+curve $E: y^2 = x^3 + 486662 x^2 + x$ over the field $\F{2^{255}-19}$.
+Note that originally, the name ``Curve25519'' referred to the key exchange protocol,
 but Bernstein suggested to rename the scheme to X25519 and to use the name
-Curve25519 for the underlying elliptic curve~\cite{Ber14}.
-We make use of this notation in this paper.
-% do we need to specify which "this" refers to ?
+X25519 for the protocol and Curve25519 for the underlying elliptic curve~\cite{Ber14}.
+We make use of this updated notation in this paper.
 
 \subheading{Contribution of this paper}
-We provide a mechanized formal proof of the correctness of X25519
-implementation in TweetNaCl. This is done by first extending the formal library for
-elliptic curves~\cite{DBLP:conf/itp/BartziaS14} of Bartzia and Strub to
-support Curve25519. Then we prove the code correctly implements the definitions
-from the original paper by Bernstein~\cite{Ber14}.
+We provide a mechanized formal proof of the correctness of the X25519
+implementation in TweetNaCl. 
+This proof is done in two steps: 
+We first prove equivalence of the C implementation of X25519 
+to an implementation in Coq~\cite{coq-faq}.
+This part of the proof uses the Verifiable Software Toolchain (VST)~\cite{2012-Appel}
+to establish a link between C and Coq. 
+VST uses Separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
+to show that the semantics of the program satisfy a functional specification in Coq.
+To the best of our knowledge, this is the first time that
+VST is used in the formal proof of correctness of an implementation
+of an asymmetric cryptographic primitive.
 
-% In order to get formal guaranties a software meets its
-% specifications, two methodologies exist.
+In a second step we prove that the Coq implementation matches
+the mathematical definition of X25519 as given in~\cite[Sec.~2]{Ber06}.
+We accomplish this step of the proof by extending the Coq library
+for elliptic curves~\cite{DBLP:conf/itp/BartziaS14} by Bartzia and Strub to
+support Mongomery curves (and in particular Curve25519). 
+This extension may be of independent interest.
+
+\subheading{Related work.}
+\todo{Fix this subsection}
 There are two methodologies to get formal guarantees a software meets its
 specifications.
 The first one is by synthesizing a formal specification and then generating machine
@@ -57,34 +61,10 @@ the correctness of the implementation.
 Because we verify the TweetNaCl cryptographic library, we use this second method.
 
 
-\subheading{Our Formal Approach.}
-Our verification process can be seen as a static analysis over the input values
-coupled with the formal proof that the code of the algorithm matches its specification.
-
-We use Coq~\cite{coq-faq}, a formal system that allows us to machine-check our proofs.
-Some famous examples of its use are the proof of the Four Color Theorem~\cite{gonthier2008formal}; or
-CompCert, a C~compiler~\cite{Leroy-backend} which proven correct and sound by being build on top of it.
-In its proof, CompCert uses multiple intermediate languages and show equivalence between them.
-The first step of the compilation by CompCert is done by the parser \textit{clightgen}.
-It takes as input C code and generates its Clight~\cite{Blazy-Leroy-Clight-09} translation.
-
-Using this intermediate representation Clight, we use the Verifiable Software Toolchain
-(VST)~\cite{2012-Appel}, a framework which uses Separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
-and shows that the semantics of the program satisfies a functionnal specification in Coq.
-VST steps through each line of Clight using a strongest post-condition strategy.
-We write a specification of TweetNaCl's crypto scalar multiplication and using
-VST we prove that the code matches our definitions.
-
-We extend Bartzia and Strub's elliptic curves library~\cite{DBLP:conf/itp/BartziaS14}
-to support Montgomery curves. With this formalization, we prove the correctness
-of a generic Montgomery ladder and show that our specification is an instance of it.
-
-\subheading{Related work.}
-
 \todo{Separate verification of existing code from generating proof-carrying code.}
 
 Similar approaches have been used to prove the correctness of OpenSSL
-HMAC~\cite{Beringer2015VerifiedCA} and SHA-256~\cite{2015-Appel}. Compared to
+HMAC~\cite{Beringer2015VerifiedCA} and . Compared to
 their work our approaches makes a complete link between the C implementation and
 the formal mathematical definition of the group theory behind elliptic curves.
 
