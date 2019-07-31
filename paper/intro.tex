@@ -1,11 +1,11 @@
 \section{Introduction}
 \label{sec:intro}
 
-The Networking and Cryptography library (NaCl)~\cite{BLS12} 
-is an easy-to-use, high-security, high-speed cryptographic library.
+The Networking and Cryptography library (NaCl)~\cite{BLS12}
+is an easy-to-use, high-security, high-speed cryptography library.
 It uses specialized code for different platform, which makes it rather complex and hard to audit.
-TweetNaCl~\cite{BGJ+15} is a compact reimplementation in C
-of the core functionalities of NaCl and is claimed to be 
+TweetNaCl~\cite{BGJ+15} is a compact re-implementation in C
+of the core functionalities of NaCl and is claimed to be
 \emph{``the first cryptographic library that allows correct functionality
 to be verified by auditors with reasonable effort''}~\cite{BGJ+15}.
 The original paper presenting TweetNaCl describes some effort to support
@@ -16,9 +16,9 @@ One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519~\
 This protocol is being used by a wide variety of applications~\cite{things-that-use-curve25519}
 such as SSH, Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
 an insecure channel.
-The X25519 key exchange protocol is a an $x$-coordinate only 
+The X25519 key exchange protocol is a an $x$-coordinate only
 elliptic-curve Diffie-Hellman key-exchange using the Montgomery
-curve $E: y^2 = x^3 + 486662 x^2 + x$ over the field $\F{2^{255}-19}$.
+curve $E: y^2 = x^3 + 486662 x^2 + x$ over the field $\F{\p}$.
 Note that originally, the name ``Curve25519'' referred to the key exchange protocol,
 but Bernstein suggested to rename the scheme to X25519 and to use the name
 X25519 for the protocol and Curve25519 for the underlying elliptic curve~\cite{Ber14}.
@@ -26,12 +26,12 @@ We make use of this updated notation in this paper.
 
 \subheading{Contribution of this paper}
 We provide a mechanized formal proof of the correctness of the X25519
-implementation in TweetNaCl. 
-This proof is done in two steps: 
-We first prove equivalence of the C implementation of X25519 
+implementation in TweetNaCl.
+This proof is done in two steps:
+We first prove equivalence of the C implementation of X25519
 to an implementation in Coq~\cite{coq-faq}.
 This part of the proof uses the Verifiable Software Toolchain (VST)~\cite{2012-Appel}
-to establish a link between C and Coq. 
+to establish a link between C and Coq.
 VST uses Separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
 to show that the semantics of the program satisfy a functional specification in Coq.
 To the best of our knowledge, this is the first time that
@@ -42,7 +42,7 @@ In a second step we prove that the Coq implementation matches
 the mathematical definition of X25519 as given in~\cite[Sec.~2]{Ber06}.
 We accomplish this step of the proof by extending the Coq library
 for elliptic curves~\cite{DBLP:conf/itp/BartziaS14} by Bartzia and Strub to
-support Mongomery curves (and in particular Curve25519). 
+support Montgomery curves (and in particular Curve25519).
 This extension may be of independent interest.
 
 \subheading{Related work.}

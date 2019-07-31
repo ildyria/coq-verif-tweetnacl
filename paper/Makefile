@@ -22,3 +22,13 @@ clean:
 	@rm *.log 2> /dev/null || true
 	@rm *.out 2> /dev/null || true
 	@rm */*.aux 2> /dev/null || true
+
+spell:
+	aspell -t -c tweetverif.tex
+	aspell -t -c intro.tex
+	aspell -t -c preliminaries.tex
+	aspell -t -c lowlevel.tex
+	aspell -t -c highlevel.tex
+	aspell -t -c conclusion.tex
+	aspell -t -c tweetnacl.tex
+

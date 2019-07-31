@@ -23,17 +23,17 @@ Lemma f_ext: forall (A B:Type),
   (forall x, f(x) = g(x)) -> f = g.
 \end{lstlisting}
 
-  \item \textbf{Verifiable Software Toolchain}. This framework developped at
+  \item \textbf{Verifiable Software Toolchain}. This framework developed at
   Princeton allows a user to prove that a \texttt{CLight} code matches pure Coq
   specification. However one must trust the framework properly captures and
-  map the CLight behavior to the basic pure Coq functions. At the begining of
+  map the CLight behavior to the basic pure Coq functions. At the beginning of
   the project we found inconsistency and reported them to the authors.
 
   \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
   model captures correctly the C standard.
   \todo{VERIFY THIS, WHICH STANDARD ?}.
   Our proof also assumes that the TweetNaCl code will behave as expected if
-  compiled under CompCert. We do not provide garantees for other C compilers
+  compiled under CompCert. We do not provide guarantees for other C compilers
   such as Clang or GCC.
 
   \item \textbf{\texttt{clightgen}}. The tool making the translation from \textbf{C} to
@@ -48,7 +48,7 @@ o[i] = aux1 + aux2;
   The trust of the proof relied on the trust of a correct translation from the
   initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
 
-  While this problem is still present, the Compcert developpers provided us with
+  While this problem is still present, the CompCert developers provided us with
   the \texttt{-normalize} option for \texttt{clightgen} which takes care of
   generating auxiliary variables in order to automatically derive these steps.
   The changes required for a C-code to make it Verifiable are now minimal.
