@@ -34,8 +34,7 @@ static u32 ld32(const u8 *x)
 
 static u64 dl64(const u8 *x)
 {
-  //u64 i,u=0; Original code
-  int i; u64 u=0; //VerifiableC (for now)
+  u64 i,u=0;
   FOR(i,8) u=(u<<8)|x[i];
   return u;
 }
@@ -304,14 +303,14 @@ sv pack25519(u8 *o,const gf n)
   car25519(t);
   car25519(t);
   FOR(j,2) {
-    m[0]=t[0]- 0xffed;
+    m[0]=t[0]-0xffed;
     for(i=1;i<15;i++) {
       m[i]=t[i]-0xffff-((m[i-1]>>16)&1);
       m[i-1]&=0xffff;
     }
     m[15]=t[15]-0x7fff-((m[14]>>16)&1);
     m[14]&=0xffff;
-    b=1-((m[15]>>16)&1);
+    b=1-(m[15]>>16)&1;
     sel25519(t,m,b);
   }
   FOR(i,16) {
@@ -332,7 +331,7 @@ static u8 par25519(const gf a)
 {
   u8 d[32];
   pack25519(d,a);
-  return d[0]&(unsigned char)1;
+  return d[0]&(u8)1;
 }
 
 sv unpack25519(gf o, const u8 *n)
@@ -374,28 +373,28 @@ sv S(gf o,const gf a)
   M(o,a,a);
 }
 
-sv inv25519(gf o,const gf a)
+sv inv25519(gf o,const gf i)
 {
   gf c;
-  int i;
-  set25519(c,a);
-  for(i=253;i>=0;i--) {
+  int a;
+  set25519(c,i);
+  for(a=253;a>=0;a--) {
     S(c,c);
-    if(i!=2&&i!=4) M(c,c,a);
+    if(a!=2&&a!=4) M(c,c,i);
   }
-  FOR(i,16) o[i]=c[i];
+  FOR(a,16) o[a]=c[a];
 }
 
-sv pow2523(gf o,const gf a)
+sv pow2523(gf o,const gf i)
 {
   gf c;
-  int i;
-  set25519(c,a);
-  for(i=250;i>=0;i--) {
+  int a;
+  FOR(a,16) c[a]=i[a];
+  for(a=250;a>=0;a--) {
     S(c,c);
-    if(i!=1) M(c,c,a);
+    if(a!=1) M(c,c,i);
   }
-  FOR(i,16) o[i]=c[i];
+  FOR(a,16) o[a]=c[a];
 }
 
 int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)

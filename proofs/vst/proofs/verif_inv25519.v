@@ -10,16 +10,16 @@ Require Import Tweetnacl.Low.S.
 
 Open Scope Z.
 (*
-sv inv25519(gf o,const gf a)
+sv inv25519(gf o,const gf i)
 {
   gf c;
-  int i;
-  FOR(a,16) c[a]=a[i];
-  for(i=253;i>=0;i--) {
+  int a;
+  FOR(a,16) c[a]=i[a];
+  for(a=253;a>=0;a--) {
     S(c,c);
-    if(i!=2&&i!=4) M(c,c,a);
+    if(a!=2&&a!=4) M(c,c,i);
   }
-  FOR(i,16) o[i]=c[i];
+  FOR(a,16) o[a]=c[a];
 }
 *)
 
@@ -34,25 +34,25 @@ start_function.
 rewrite /data_at_ /field_at_ /default_val ; simpl.
 unfold nm_overlap_array_sep_2.
 flatten ; Intros.
-subst o v_a.
-1: forward_call (v_c,v_o,Tsh,sho,undef16,a).
-2: forward_call (v_c,v_a,Tsh,sha,undef16,a).
+subst o v_i.
+1: forward_call (v_c,v_o,Tsh,sho,undef16,i).
+2: forward_call (v_c,v_i,Tsh,shi,undef16,i).
 
 1: forward_for 
 (* Loop Invariant *)
-(inv25519_Inv sho sho Tsh v_o v_o v_c (mVI64 a) a 0)
+(inv25519_Inv sho sho Tsh v_o v_o v_c (mVI64 i) i 0)
 (* PreInc invariant *)
-(inv25519_PreIncInv sho sho Tsh v_o v_o v_c (mVI64 a) a 0)
+(inv25519_PreIncInv sho sho Tsh v_o v_o v_c (mVI64 i) i 0)
 (* Loop postcondition *)
-(inv25519_PostInv sho sho Tsh v_o v_o v_c (mVI64 a) a 0).
+(inv25519_PostInv sho sho Tsh v_o v_o v_c (mVI64 i) i 0).
 7: forward_for 
 (* Loop Invariant *)
-(inv25519_Inv sho sha Tsh v_o v_a v_c o a 1)
+(inv25519_Inv sho shi Tsh v_o v_i v_c o i 1)
 (* PreInc invariant *)
-(inv25519_PreIncInv sho sha Tsh v_o v_a v_c o a 1)
+(inv25519_PreIncInv sho shi Tsh v_o v_i v_c o i 1)
 (* Loop postcondition *)
-(inv25519_PostInv sho sha Tsh v_o v_a v_c o a 1).
-all: try rename a0 into i.
+(inv25519_PostInv sho shi Tsh v_o v_i v_c o i 1).
+all: try rename a0 into a.
 
 (* 6 goals generated *)
 (* 1 *)
@@ -73,12 +73,12 @@ all: try rename a0 into i.
 1: change (0 =? 0) with true.
 2: change (1 =? 0) with false.
 1,2: flatten ; Intros.
-1,2: assert(Forall (fun x : ℤ => -38 <= x < 2 ^ 16 + 38) (pow_fn_rev (253 - i) 254 a a)) 
+1,2: assert(Forall (fun x : ℤ => -38 <= x < 2 ^ 16 + 38) (pow_fn_rev (253 - a) 254 i i)) 
   by (apply pow_fn_rev_bound_Zlength ; assumption).
-1,2: assert(Zlength (pow_fn_rev (253 - i) 254 a a) = 16) by (apply pow_fn_rev_Zlength ; assumption).
+1,2: assert(Zlength (pow_fn_rev (253 - a) 254 i i) = 16) by (apply pow_fn_rev_Zlength ; assumption).
 all: assert(HWTsh:= writable_share_top).
 all: assert(HRTsh:= writable_readable_share HWTsh).
-1,2: remember (pow_fn_rev (253 - i) 254 a a) as c0.
+1,2: remember (pow_fn_rev (253 - a) 254 i i) as c0.
 1,2: assert(Zlength (mVI64 c0) = 16) by (rewrite ?Zlength_map ; assumption).
 
 1,2: forward_call (v_c, v_c, Tsh, Tsh, mVI64 c0, c0, 0).
@@ -87,17 +87,17 @@ all: assert(HRTsh:= writable_readable_share HWTsh).
 1,2: solve_bounds_by_values_Forall_impl.
 1,2: unfold_nm_overlap_array_sep; simpl.
 
-1,2: assert(Hi: i = 2 \/ i = 4 \/ (i <> 2 /\ i <> 4)) by omega.
+1,2: assert(Ha: a = 2 \/ a = 4 \/ (a <> 2 /\ a <> 4)) by omega.
 
 (* case analysis *)
 (* i = 2 *)
-1,2: destruct Hi as [Hi|Hi] ; try subst i.
+1,2: destruct Ha as [Ha|Ha] ; try subst a.
 1: forward_if (PROP ( )
-   LOCAL (temp _i (Vint (Int.repr 2)); temp _t'1 (Vint (Int.repr 0)); temp _o v_o; temp _a v_o; lvar _c (tarray tlg 16) v_c)
-   SEP (Tsh [{v_c}]<<( lg16 )-- mVI64 (Low.S c0); sho [{v_o}]<<( lg16 )-- mVI64 a)).
+   LOCAL (temp _a (Vint (Int.repr 2)); temp _t'1 (Vint (Int.repr 0)); temp _o v_o; temp _i v_o; lvar _c (tarray tlg 16) v_c)
+   SEP (Tsh [{v_c}]<<( lg16 )-- mVI64 (Low.S c0); sho [{v_o}]<<( lg16 )-- mVI64 i)).
 5: forward_if (PROP ( )
-   LOCAL (temp _i (Vint (Int.repr 2)); temp _t'1 (Vint (Int.repr 0)); temp _o v_o; temp _a v_a; lvar _c (tarray tlg 16) v_c)
-   SEP (Tsh [{v_c}]<<( lg16 )-- mVI64 (Low.S c0); sho [{v_o}]<<( lg16 )-- o; sha [{v_a}]<<( lg16 )-- mVI64 a)).
+   LOCAL (temp _a (Vint (Int.repr 2)); temp _t'1 (Vint (Int.repr 0)); temp _o v_o; temp _i v_i; lvar _c (tarray tlg 16) v_c)
+   SEP (Tsh [{v_c}]<<( lg16 )-- mVI64 (Low.S c0); sho [{v_o}]<<( lg16 )-- o; shi [{v_i}]<<( lg16 )-- mVI64 i)).
 1,5: exfalso; match goal with [ H : ?A <> ?A |- _ ] => by apply H end.
 1,4: forward.
 1,2: entailer!.

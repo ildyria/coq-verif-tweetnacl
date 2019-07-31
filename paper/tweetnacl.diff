@@ -1,14 +1,8 @@
 8c8
 < typedef long long i64;
 ---
-> typedef long long i64
->  __attribute__((aligned(8)));
-37c37,38
-<   u64 i,u=0;
----
->   //u64 i,u=0; Original code
->   int i; u64 u=0; //VerifiableC (for now)
-277,281c278,280
+> typedef long long i64 __attribute__((aligned(8)));
+277,281c277,279
 <   FOR(i,16) {
 <     o[i]+=(1LL<<16);
 <     c=o[i]>>16;
@@ -18,19 +12,19 @@
 >   FOR(i,15) {
 >     o[(i+1)]+=o[i]>>16;
 >     o[i]&=0xffff;
-282a282,283
+282a281,282
 >   o[0]+=38*(o[15]>>16);
 >   o[15]&=0xffff;
-285c286
+285c285
 < sv sel25519(gf p,gf q,int b)
 ---
 > sv sel25519(gf p,gf q,i64 b)
-287c288,289
+287c287,288
 <   i64 t,i,c=~(b-1);
 ---
 >   int i;
 >   i64 t,c=~(b-1);
-297,299c299,302
+297,299c298,301
 <   int i,j,b;
 <   gf m,t;
 <   FOR(i,16) t[i]=n[i];
@@ -39,18 +33,18 @@
 >   i64 b;
 >   gf t,m={0};
 >   set25519(t,n);
-310d312
+310d311
 <     b=(m[15]>>16)&1;
-312c314,315
+312c313,314
 <     sel25519(t,m,1-b);
 ---
->     b=1-((m[15]>>16)&1);
+>     b=1-(m[15]>>16)&1;
 >     sel25519(t,m,b);
-332c335
+332c334
 <   return d[0]&1;
 ---
->   return d[0]&(unsigned char)1;
-356,359c359,366
+>   return d[0]&(u8)1;
+356,359c358,365
 <   i64 i,j,t[31];
 <   FOR(i,31) t[i]=0;
 <   FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
@@ -64,60 +58,18 @@
 >     FOR(j,16) t[i+j]+=aux*b[j];
 >   }
 >   FOR(i,15) t[i]+=(i64)38*t[i+16];
-370c377
-@@ we are swaping the variable
-@@ names between a and i
-< sv inv25519(gf o,const gf i)
----
-> sv inv25519(gf o,const gf a)
-373,375c380,382
-<   int a;
+374c380
 <   FOR(a,16) c[a]=i[a];
-<   for(a=253;a>=0;a--) {
 ---
->   int i;
->   set25519(c,a);
->   for(i=253;i>=0;i--) {
-377c384
-<     if(a!=2&&a!=4) M(c,c,i);
----
->     if(i!=2&&i!=4) M(c,c,a);
-379c386
-<   FOR(a,16) o[a]=c[a];
----
->   FOR(i,16) o[i]=c[i];
-382c389
-@@ we are swaping the variable
-@@ names between a and i
-< sv pow2523(gf o,const gf i)
----
-> sv pow2523(gf o,const gf a)
-385,387c392,394
-<   int a;
-<   FOR(a,16) c[a]=i[a];
-<   for(a=250;a>=0;a--) {
----
->   int i;
->   set25519(c,a);
->   for(i=250;i>=0;i--) {
-389c396
-<     if(a!=1) M(c,c,i);
----
->     if(i!=1) M(c,c,a);
-391c398
-<   FOR(a,16) o[a]=c[a];
----
->   FOR(i,16) o[i]=c[i];
-397,398c404,406
-@@ x does not need to be that big
+>   set25519(c,i);
+397,398c403,405
 <   i64 x[80],r,i;
 <   gf a,b,c,d,e,f;
 ---
 >   i64 r;
 >   int i;
 >   gf x,a,b,c,d,e,f;
-433,441c441,443
-@@ we can directly use a and c
+433,441c440,442
 <   FOR(i,16) {
 <     x[i+16]=a[i];
 <     x[i+32]=c[i];
