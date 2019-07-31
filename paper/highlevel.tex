@@ -4,7 +4,7 @@
 In this section we first present the work of Bartzia and Strub \cite{DBLP:conf/itp/BartziaS14} (\ref{Weierstrass}).
 We extend it to support Montgomery curves (\ref{montgomery}) with homogeneous coordinates (\ref{projective}) and prove the correctness of the ladder (\ref{ladder}).
 
-We then prove the montgomery ladder computes
+We then prove the Montgomery ladder computes
 the x-coordinate of scalar multiplication over $\F{p^2}$
 (Theorem 2.1 by Bernstein \cite{Ber06}) where $p$ is the prime $\p$.
 
@@ -35,7 +35,7 @@ along with an additional formal point $\Oinf$, ``at infinity''. Such curve does 
 \end{definition}
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
-represent the points on a specific curve. It is parametrized by
+represent the points on a specific curve. It is parameterized by
 a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
 and \texttt{E : ecuType} -- a record that packs the curve parameters $a$ and $b$
 along with the proof that $\Delta(a,b) \neq 0$.
@@ -53,15 +53,15 @@ Definition oncurve (p : point) :=
 Inductive ec : Type := EC p of oncurve p.
 \end{lstlisting}
 
-Points of an elliptic curve can be equiped with a structure of an abelian group.
+Points of an elliptic curve can be equipped with a structure of an abelian group.
 \begin{itemize}
-  \item The negation of a point $P = (x,y)$ by taking the symetric with respect to the x axis $-P = (x, -y)$.
+  \item The negation of a point $P = (x,y)$ by taking the symmetric with respect to the x axis $-P = (x, -y)$.
   \item The addition of two points $P$ and $Q$ is defined by the negation of third intersection
   of the line passing by $P$ and $Q$ or tangent to $P$ if $P = Q$.
-  \item $\Oinf$ is the neutral element under this law: if 3 points are colinear, their sum is equal to $\Oinf$.
+  \item $\Oinf$ is the neutral element under this law: if 3 points are collinear, their sum is equal to $\Oinf$.
 \end{itemize}
 
-This operaction are defined in Coq as follow:
+This operation are defined in Coq as follow:
 \begin{lstlisting}[language=Coq]
 Definition neg (p : point) :=
   if p is (| x, y |) then (| x, -y |) else EC_Inf.
@@ -99,9 +99,9 @@ the Montgomery form \cite{MontgomerySpeeding}.
   along with an additional formal point $\Oinf$, ``at infinity''.
 \end{definition}
 Using a similar representation, we defined the parametric type \texttt{mc} which
-represent the points on a specific montgomery curve. It is parametrized by
+represent the points on a specific Montgomery curve. It is parameterized by
 a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
-and \texttt{M : mcuType} -- a record that packs the curve paramaters $a$ and $b$
+and \texttt{M : mcuType} -- a record that packs the curve parameters $a$ and $b$
 along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
 \begin{lstlisting}[language=Coq]
 Record mcuType :=
@@ -170,7 +170,7 @@ Points on a projective plane are represented with a triple $(X:Y:Z)$. Any points
 except $(0:0:0)$ defines a point on a projective plane. A scalar multiple of a point defines the same point, \ie
 for all $\alpha \neq 0$, $(X:Y:Z)$ and $(\alpha X:\alpha Y:\alpha Z)$ defines
 the same point. For $Z\neq 0$, the projective point $(X:Y:Z)$ corresponds to the
-point $(X/Z,Y/Z)$ on the Euclidian plane, likewise the point $(X,Y)$ on the Euclidian plane corresponds to $(X:Y:1)$ on the projective plane.
+point $(X/Z,Y/Z)$ on the Euclidean plane, likewise the point $(X,Y)$ on the Euclidean plane corresponds to $(X:Y:1)$ on the projective plane.
 
 We write the equation for a Montgomery curve $M_{a,b}(\K)$ as such:
 \begin{equation}
@@ -183,7 +183,7 @@ b Y^2Z = X^3 + a X^2Z + XZ^2
 With this equation we can additionally represent the ``point at infinity''. By
 setting $Z=0$, we derive $X=0$, giving us the ``infinite points'' $(0:Y:0)$ with $Y\neq 0$.
 
-By restristing the parameter $a$ of $M_{a,b}(\K)$ such that $a^2-4$ is not a
+By restricting the parameter $a$ of $M_{a,b}(\K)$ such that $a^2-4$ is not a
 square in \K, we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
 \begin{lstlisting}[language=Coq]
 Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
@@ -475,7 +475,7 @@ We consider $M_{486662,1}(\F{p})$ and $M_{486662,2}(\F{p})$, one of its quadrati
 % $M_{486662,1}(\F{p})$ has the same equation as $M_{486662,1}(\F{p^2})$ while $M_{486662,2}(\F{p})$ is one of its quadratic twist.
 
 
-By instanciating theorem \ref{montgomery-ladder-correct} we derive the following two lemmas:
+By instantiating theorem \ref{montgomery-ladder-correct} we derive the following two lemmas:
 \begin{lemma} For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$,\\
 such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.
 Given $n$ and $x$, $Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$.
@@ -540,11 +540,11 @@ Additionally we verify that for each element of in $\F{p^2}\backslash\{0\}$, the
 \begin{lemma} For all $x \in \F{p^2}\backslash\{0\}$ and $a,b \in \F{p}$ such that $x = (a,b)$,
 $$x^{-1} = \Big(\frac{a}{a^2-2b^2}\ , \frac{-b}{a^2-2b^2}\Big)$$
 \end{lemma}
-Similarily as in $\F{p}$, we define $0^{-1} = 0$.
+Similarly as in $\F{p}$, we define $0^{-1} = 0$.
 \begin{lemma}
 $\F{p^2}$ is a commutative ring.
 \end{lemma}
-We can then specialize the basic operations in order to speed up the verifications of formulas by using rewrite rules:
+We can then specialize the basic operations in order to speed up the verification of formulas by using rewrite rules:
 \begin{align*}
 (a,0) + (b,0) &= (a+b, 0)\\
 (a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
@@ -556,7 +556,7 @@ We can then specialize the basic operations in order to speed up the verificatio
 \end{align*}
 The injection $a \mapsto (a,0)$ from $\F{p}$ to $\F{p^2}$ preserves $0, 1, +, -, \times$. Thus $(a,0)$ can be abbreviated as $a$ without confusions.
 
-We define $M_{486662,1}(\F{p^2})$. With the rewrite rule above, it is straightforward to prove that any point on the curve $M_{486662,1}(\F{p})$ is also on the curve $M_{486662,1}(\F{p^2})$. Similarily, any point on the quadratic twist $M_{486662,2}(\F{p})$ is also on the curve $M_{486662,1}(\F{p^2})$.
+We define $M_{486662,1}(\F{p^2})$. With the rewrite rule above, it is straightforward to prove that any point on the curve $M_{486662,1}(\F{p})$ is also on the curve $M_{486662,1}(\F{p^2})$. Similarly, any point on the quadratic twist $M_{486662,2}(\F{p})$ is also on the curve $M_{486662,1}(\F{p^2})$.
 As direct consequence, using lemma \ref{curve-or-twist}, we prove that for all $x \in \F{p}$, there exists a point $P \in \F{p^2}\times\F{p^2}$ on $M_{486662,2}(\F{p})$ such that $\chi_0(P)$ is $(x,0)$
 
 \begin{lstlisting}[language=Coq]

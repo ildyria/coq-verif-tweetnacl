@@ -7,9 +7,55 @@ Finally, we provide a brief description of the formal tools we use in our proofs
 
 \subsection{Arithmetic on Montgomery curves}
 \label{subsec:montgomery}
-\todo{Write; move some text from later parts of the paper to here}
 
-\todo{High-level view of Montgomery ladder, similar to Alg. 1, but with differential addition}
+\begin{definition}
+Let $a,b \in \K$, $M_{a,b}$ is a Montgomery curve defined over a field $\K$ with equation:
+$$M_{a,b}: by^2 = x^3 + ax^2 + x$$
+where $a^2 \neq 4$ and $b \neq 0$.
+\end{definition}
+
+\begin{definition}
+For any algebraic extension $\L$ of $\K$, $\K \subseteq	\L$,
+$M_{a,b}(\L)$ is the set of $\L$-rational points which satisfy the equation with
+addition to the point at infinity $\Oinf$.
+$$M_{a,b}(\L) = \{\Oinf\} \cup \{(x,y) \in \L \times \L~|~by^2 = x^3 + ax^2 + x\}$$
+\end{definition}
+
+For $M_{a,b}$ over $\F{p}$, the parameter $b$ is known as the ``twisting factor'',
+for $b'\in \F{p}\backslash\{0\}$ and $b' \neq b$, the curves $M_{a,b}$ and $M_{a,b'}$
+are isomorphic via $(x,y) \mapsto (x, \sqrt{b'/b} \cdot y)$.
+When $b'/b$ is not a square in \F{p}, $M_{a,b'}$ is a quadratic twist of $M_{a,b}$:
+isomorphic over $\F{p^2}$~\cite{cryptoeprint:2017:212}.
+
+Points over $M_{a,b}(\K)$ can be equipped with a structure of an abelian group
+with the addition operation $\oplus$ and with neutral element the point at infinity $\Oinf$.
+Using this law, we have the scalar multiplication over $M_{a,b}(\K)$ defined by:
+  $$n\cdot P = \underbrace{P \oplus \cdots \oplus P}_{n\text{ times}}$$
+
+\begin{align*}
+\texttt{xADD} &: (X_P, Z_P, X_Q , Z_Q, X_{P-Q}, Z_{P-Q}) \mapsto (X_{P+Q}, Z_{P+Q})\\
+\texttt{xDBL} &: (X_P, Z_P) \mapsto (X_{2P}, Z_{2P})\\
+\end{align*}
+
+\begin{algorithm}
+\caption{Montgomery ladder for scalar mult.}
+\label{montgomery-ladder}
+\begin{algorithmic}
+\REQUIRE{x-coordinate of $P$ : $P.x$, scalars $n$ and $m$, $n < 2^m$}
+\ENSURE{$Q = n \cdot P$}
+\STATE $Q \leftarrow (X_P, Z_P)$
+\STATE $R \leftarrow \Oinf$
+\FOR{$k$ := $m$ down to $1$}
+  \IF{$k^{\text{th}}$ bit of $n$ is $0$}
+    \STATE $R \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
+    \STATE $Q \leftarrow \texttt{xDBL}(X_P, Z_P)$
+  \ELSE
+  \STATE $Q \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
+  \STATE $R \leftarrow \texttt{xDBL}(X_P, Z_P)$
+  \ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{The X25519 key exchange}
 \label{preliminaries:A}
@@ -53,8 +99,8 @@ typedef long long i64;
 
 \subheading{Arithmetic in \Ffield.}
 In X25519, all computations are performed in $\F{p}$.
-Throughout the computation, elements of that field 
-are represented in radix $2^{16}$, 
+Throughout the computation, elements of that field
+are represented in radix $2^{16}$,
 i.e., an element $A$ is represented as $(a_0,\dots,a_{15}$,
 with $A = \sum_{i=0}^{15}a_i2^{16i}$.
 The individual ``limbs'' $a_i$ are represented as
@@ -66,17 +112,22 @@ typedef i64 gf[16];
 
 Conversion from the input byte array to this representation is done
 as follows:
-\todo{unpack}
-
+\begin{lstlisting}[language=Ctweetnacl]
+sv unpack25519(gf o, const u8 *n)
+{
+  int i;
+  FOR(i,16) o[i]=n[2*i]+((i64)n[2*i+1]<<8);
+  o[15]&=0x7fff;
+}
+\end{lstlisting}
 
 The radix-$2^{16}$ representation in limbs of $64$ bits is
 highly redundant; for any element $A \in \F{\p}$ there are
 multiple ways to represent $A$ as $(a_0,\dots,a_{15})$.
-For example, it is used to avoid carry handling in 
-the implementations of addition (\TNaCle{A}) 
+For example, it is used to avoid carry handling in
+the implementations of addition (\TNaCle{A})
 and subtraction (\TNaCle{Z}) in $\F{\p}$:
 
- % and squaring (\texttt{S}).
 \begin{lstlisting}[language=Ctweetnacl]
 sv A(gf o,const gf a,const gf b) {
   int i;
@@ -134,12 +185,25 @@ sv car25519(gf o)
 % }
 % \end{lstlisting}
 
-Inverse in $\Zfield$ are computed with \texttt{inv25519}.
+Inverse in $\Zfield$ are computed with \TNaCle{inv25519}.
 It takes the exponentiation by $2^{255}-21$ with the Square-and-multiply algorithm.
 Fermat's little theorem brings the correctness.
 Notice that in this case the inverse of $0$ is defined as $0$.
 
-\todo{sel25519}
+\TNaCle{sel25519} implements a constant-time conditional swap by applying a mask between
+two fields elements.
+% \begin{lstlisting}[language=Ctweetnacl]
+% sv sel25519(gf p,gf q,i64 b)
+% {
+%   int i;
+%   i64 t,c=~(b-1);
+%   FOR(i,16) {
+%     t= c&(p[i]^q[i]);
+%     p[i]^=t;
+%     q[i]^=t;
+%   }
+% }
+% \end{lstlisting}
 
 % It takes advantage of the shape of the number by not doing the multiplications only twice.
 
@@ -179,15 +243,15 @@ sv pack25519(u8 *o,const gf n)
 \end{lstlisting}
 
 As we can see, this function is considerably more complex than the
-unpacking function. The reason is that it needs to convert 
+unpacking function. The reason is that it needs to convert
 to a \emph{unique} representation before packing into the output
 byte array.
 
 \subheading{The Montgomery ladder.}
 With these low-level arithmetic and helper function at hand, we can now
-turn our attention to the core of the X25519 computation: 
+turn our attention to the core of the X25519 computation:
 the \TNaCle{crypto\_scalarmult} API function of TweetNaCl.
-In order to compute the scalar multiplication, 
+In order to compute the scalar multiplication,
 X25519 uses the Montgomery ladder~\cite{Mon85}.
 \todo{explain, projective coordinates, etc}
 of .
@@ -248,12 +312,11 @@ int crypto_scalarmult(u8 *q,
 \subsection{Coq and VST}
 \label{preliminaries:C}
 
-
 Coq~\cite{coq-faq} is an interactive theorem prover. It provides an expressive
 formal language to write mathematical definitions, algorithms and theorems coupled
 with their proofs. As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
-Coq does not rely on an SMT solver in its trusted code base. 
-It uses its type system to verify the applications of hypotheses, 
+Coq does not rely on an SMT solver in its trusted code base.
+It uses its type system to verify the applications of hypotheses,
 lemmas, and theorems~\cite{Howard1995-HOWTFN}.
 
 Hoare logic is a formal system which allows reasoning about programs.
@@ -261,8 +324,8 @@ It uses triples such as
 $$\{{\color{doc@lstnumbers}\textbf{Pre}}\}\texttt{~Prog~}\{{\color{doc@lstdirective}\textbf{Post}}\}$$
 where ${\color{doc@lstnumbers}\textbf{Pre}}$ and ${\color{doc@lstdirective}\textbf{Post}}$
 are assertions and \texttt{Prog} is a piece of code.
-It is read as 
-``when the precondition  ${\color{doc@lstnumbers}\textbf{Pre}}$ is met, 
+It is read as
+``when the precondition  ${\color{doc@lstnumbers}\textbf{Pre}}$ is met,
 executing \texttt{Prog} will yield postcondition ${\color{doc@lstdirective}\textbf{Post}}$''.
 We use compositional rules to prove the truth value of a Hoare triple.
 For example, here is the rule for sequential composition:

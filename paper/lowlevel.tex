@@ -1,13 +1,22 @@
 \section{Proving equivalence of X25519 in C and Coq}
 \label{C-Coq}
 
+In this section we prove the following theorem:
+%\begin{lstlisting}[language=Coq]
+%Lemma body_crypto_scalarmult: semax_body Vprog Gprog f_crypto_scalarmult_curve25519_tweet crypto_scalarmult_spec.
+%\end{lstlisting}
+
+\begin{theorem}
+The implementation in TweetNaCl matches the Coq definition of \TNaCle{crypto_scalarmult}
+\end{theorem}
+
 In this section we first describe the global structure of our proof.
 Then we discuss techniques used to prove the equivalence between the
 Clight description of TweetNaCl and Coq functions producing similar behaviors.
 
 In order to prove the correctness of X25519 in TweetNaCl code, we use VST to prove
-that the code matches our functional specification of \texttt{crypto\_scalarmult}
-(abreviated as CSM) in Coq. Then, we prove that our specification of the scalar
+that the code matches our functional specification of \TNaCle{crypto_scalarmult}
+(abbreviated as CSM) in Coq. Then, we prove that our specification of the scalar
 multiplication matches the mathematical definition of elliptic curves and Theorem 2.1 by
 Bernstein~\cite{Ber06}. Figure~\ref{tk:ProofOverview} shows a graph of dependencies
 of the proofs considered. The mathematical proof of our specification is presented
@@ -40,7 +49,7 @@ are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
 number and a point.
 \end{itemize}
 
-In order to prove the soundness and correctness of \texttt{crypto\_scalarmult},
+In order to prove the soundness and correctness of \TNaCle{crypto_scalarmult},
 we first create a skeleton of the Montgomery ladder with abstract operations which
 can be instantiated over lists, integers, field elements...
 A high level specification (over a generic field $\K$) allows us to prove the
@@ -56,7 +65,7 @@ By showing that operations over instances ($\K = \Zfield$, $\Z$, list of $\Z$) a
 equivalent, we bridge the gap between the low level and the high level specification
 with Curve25519 parameters.
 As such, we prove all specifications to equivalent (Fig.\ref{tk:ProofStructure}).
-This garantees us the correctness of the implementation.
+This guarantees us the correctness of the implementation.
 
 \begin{figure}[h]
   \include{tikz/specifications}
@@ -173,7 +182,7 @@ in base $2^{16}$ and we use a direct mapping to represent that array as a list
 integers in Coq. However in order to show the correctness of the basic operations,
 we need to convert this number as a full integer.
 \begin{definition}
-Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list} \Z \rightarrow \Z$, a parametrized map by $n$ betwen a list $l$ and its
+Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list} \Z \rightarrow \Z$, a parameterized map by $n$ between a list $l$ and its
 it's little endian representation with a base $2^n$.
 \end{definition}
 We define it in Coq as:
@@ -248,13 +257,13 @@ Function pow_fn_rev (a:Z) (b:Z) (c g: list Z)
 \end{lstlisting}
 
 This \Coqe{Function} requires a proof of termination. It is done by proving the
-well-foundness of the decreasing argument: \Coqe{measure Z.to_nat a}. Calling
+well-foundedness of the decreasing argument: \Coqe{measure Z.to_nat a}. Calling
 \Coqe{pow_fn_rev} 254 times allows us to reproduce the same behavior as the \texttt{Clight} definition.
 \begin{lstlisting}[language=Coq]
 Definition Inv25519 (x:list Z) : list Z :=
   pow_fn_rev 254 254 x x.
 \end{lstlisting}
-Similarily we define the same function over $\Z$.
+Similarly we define the same function over $\Z$.
 \begin{lstlisting}[language=Coq]
 Definition step_pow_Z (a:Z) (c:Z) (g:Z) : Z :=
   let c := c * c in
@@ -303,7 +312,7 @@ It provides us with flexibility, for example, we don't need to know the number o
 times nor the order in which the lemmas needs to be applied (chapter 15 in \cite{CpdtJFR}).
 
 The idea is to \textit{reflect} the goal into a decidable environment.
-We show that for a property $P$, we can define a decidable boolean property
+We show that for a property $P$, we can define a decidable Boolean property
 $P_{bool}$ such that if $P_{bool}$ is \Coqe{true} then $P$ holds.
 $$reify\_P : P_{bool} = true \implies P$$
 By applying $reify\_P$ on $P$ our goal become $P_{bool} = true$.
@@ -358,7 +367,7 @@ f_inv_denote
 \end{lstlisting}
 On the right side, \Coqe{(x * x^2 = x^3)} depends on $x$. On the left side,
 \texttt{(Eq\_inv (M\_inv R\_inv (S\_inv R\_inv)) (P\_inv R\_inv 3))} does not depend on $x$.
-This allows us to use computations in our decision precedure.
+This allows us to use computations in our decision procedure.
 
 We define \Coqe{step_inv} and \Coqe{pow_inv} to mirror the behavior of
 \Coqe{step_pow_Z} and respectively \Coqe{pow_fn_rev_Z} over our DSL and
@@ -437,7 +446,7 @@ Theorem Inv25519_Z_correct :
 \end{Coq}
 
 From \Coqe{Inv25519_Z_GF} and \Coqe{Inv25519_Z_correct}, we conclude the
-functionnal correctness of the inversion over \Zfield.
+functional correctness of the inversion over \Zfield.
 \begin{corollary}
 \Coqe{Inv25519} computes an inverse in \Zfield.
 \end{corollary}
@@ -461,7 +470,7 @@ for(i=1;i<15;i++) {
   m[i-1]&=0xffff;
 }
 \end{lstlisting}
-The first loop is computing the substraction while the second is applying the carrying.
+The first loop is computing the subtraction while the second is applying the carrying.
 \begin{lstlisting}[language=Ctweetnacl]
 for(i=1;i<15;i++) {
   m[i]=t[i]-0xffff
@@ -471,7 +480,7 @@ for(i=1;i<15;i++) {
   m[i-1]&=0xffff;
 }
 \end{lstlisting}
-This loop separation allows simpler proofs. The first loop is seen as the substraction of a number in \Zfield.
+This loop separation allows simpler proofs. The first loop is seen as the subtraction of a number in \Zfield.
 We then prove that with the iteration of the second loop, the number represented in $\Zfield$ stays the same.
 This leads to the proof that \TNaCle{pack25519} is effectively reducing mod $\p$ and returning a number in base $2^8$.
 
@@ -488,8 +497,8 @@ ZofList 8 (Pack25519 l) = (Z16.lst l) mod (2^255-19).
 The Verifiable Software Toolchain uses a strongest postcondition strategy.
 The user must first write a formal specification of the function he wants to verify in Coq.
 This should be as close as possible to the C implementation behavior.
-This will simplify the proof and help with stepping throught the CLight version of the software.
-With the range of inputes defined, VST steps mechanically through each instruction
+This will simplify the proof and help with stepping through the CLight version of the software.
+With the range of inputs defined, VST steps mechanically through each instruction
 and ask the user to verify auxiliary goals such as array bound access, or absence of overflows/underflows.
 We call this specification a low level specification. A user will then have an easier
 time to prove that his low level specification matches a simpler higher level one.
@@ -528,7 +537,7 @@ $\{0,1,2,3\}$:
 \end{itemize}
 This solution allows us to make cases analysis over possible aliasing.
 
-\subsection{Verifiying \texttt{for} loops}
+\subsection{Verifying \texttt{for} loops}
 
 Final state of \texttt{for} loops are usually computed by simple recursive functions.
 However we must define invariants which are true for each iteration.
@@ -580,4 +589,4 @@ Lemma Tail_Head_equiv :
   forall (n:nat) (s:T),
   rec_fn n s = rec_fn_rev n s.
 \end{Coq}
-Using this formalization, we prove that the 255 steps of the montgomery ladder in C provide the same computations are the one defined in Algorithm \ref{montgomery-double-add}.
+Using this formalization, we prove that the 255 steps of the Montgomery ladder in C provide the same computations are the one defined in Algorithm \ref{montgomery-double-add}.
