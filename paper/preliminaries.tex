@@ -9,53 +9,62 @@ Finally, we provide a brief description of the formal tools we use in our proofs
 \label{subsec:montgomery}
 
 \begin{definition}
-Let $a,b \in \K$, $M_{a,b}$ is a Montgomery curve defined over a field $\K$ with equation:
-$$M_{a,b}: by^2 = x^3 + ax^2 + x$$
-where $a^2 \neq 4$ and $b \neq 0$.
+  Let $a,b \in \K$ such that $a^2 \neq 4$ and $b \neq 0$, $M_{a,b}$ is a
+  Montgomery curve defined over a field $\K$ with equation:
+  $$M_{a,b}: by^2 = x^3 + ax^2 + x$$
 \end{definition}
 
 \begin{definition}
-For any algebraic extension $\L$ of $\K$, $\K \subseteq	\L$,
-$M_{a,b}(\L)$ is the set of $\L$-rational points which satisfy the equation with
-addition to the point at infinity $\Oinf$.
-$$M_{a,b}(\L) = \{\Oinf\} \cup \{(x,y) \in \L \times \L~|~by^2 = x^3 + ax^2 + x\}$$
+  For any algebraic extension $\L$ of $\K$, $\K \subseteq	\L$,
+  $M_{a,b}(\L)$ is the set of $\L$-rational points which satisfy the equation with
+  addition to the point at infinity $\Oinf$.
+  $$M_{a,b}(\L) = \{\Oinf\} \cup \{(x,y) \in \L \times \L~|~by^2 = x^3 + ax^2 + x\}$$
 \end{definition}
+Details of the formalization can be found in Section~\ref{montgomery}.
 
-For $M_{a,b}$ over $\F{p}$, the parameter $b$ is known as the ``twisting factor'',
-for $b'\in \F{p}\backslash\{0\}$ and $b' \neq b$, the curves $M_{a,b}$ and $M_{a,b'}$
-are isomorphic via $(x,y) \mapsto (x, \sqrt{b'/b} \cdot y)$.
-When $b'/b$ is not a square in \F{p}, $M_{a,b'}$ is a quadratic twist of $M_{a,b}$:
-isomorphic over $\F{p^2}$~\cite{cryptoeprint:2017:212}.
+\begin{definition}
+  For $M_{a,b}$ over $\F{p}$, the parameter $b$ is known as the ``twisting factor'',
+  for $b'\in \F{p}\backslash\{0\}$ and $b' \neq b$, the curves $M_{a,b}$ and $M_{a,b'}$
+  are isomorphic via $(x,y) \mapsto (x, \sqrt{b'/b} \cdot y)$.
+  When $b'/b$ is not a square in \F{p}, $M_{a,b'}$ is a quadratic twist of $M_{a,b}$:
+  isomorphic over $\F{p^2}$~\cite{cryptoeprint:2017:212}.
+\end{definition}
 
 Points over $M_{a,b}(\K)$ can be equipped with a structure of an abelian group
 with the addition operation $\oplus$ and with neutral element the point at infinity $\Oinf$.
 Using this law, we have the scalar multiplication over $M_{a,b}(\K)$ defined by:
   $$n\cdot P = \underbrace{P \oplus \cdots \oplus P}_{n\text{ times}}$$
 
+We now consider x-coordinate-only operations. In order to simplify computations,
+such coordinates are represented as $X/Z$ fractions. We define two operations:
 \begin{align*}
 \texttt{xADD} &: (X_P, Z_P, X_Q , Z_Q, X_{P-Q}, Z_{P-Q}) \mapsto (X_{P+Q}, Z_{P+Q})\\
 \texttt{xDBL} &: (X_P, Z_P) \mapsto (X_{2P}, Z_{2P})\\
 \end{align*}
-
+By using this differential addition and doubling operations we define the Montgomery ladder
+computing a x-coordinate-only scalar multiplication (see Algorithm~\ref{montgomery-ladder}).
 \begin{algorithm}
 \caption{Montgomery ladder for scalar mult.}
 \label{montgomery-ladder}
 \begin{algorithmic}
 \REQUIRE{x-coordinate of $P$ : $P.x$, scalars $n$ and $m$, $n < 2^m$}
 \ENSURE{$Q = n \cdot P$}
-\STATE $Q \leftarrow (X_P, Z_P)$
-\STATE $R \leftarrow \Oinf$
+\STATE $Q \leftarrow \Oinf$
+\STATE $R \leftarrow (X_P,Z_P)$
 \FOR{$k$ := $m$ down to $1$}
   \IF{$k^{\text{th}}$ bit of $n$ is $0$}
     \STATE $R \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
-    \STATE $Q \leftarrow \texttt{xDBL}(X_P, Z_P)$
+    \STATE $Q \leftarrow \texttt{xDBL}(Q)$
   \ELSE
-  \STATE $Q \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
-  \STATE $R \leftarrow \texttt{xDBL}(X_P, Z_P)$
+    \STATE $Q \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
+    \STATE $R \leftarrow \texttt{xDBL}(R)$
   \ENDIF
 \ENDFOR
 \end{algorithmic}
 \end{algorithm}
+$n$ is a secret input of algorithm~\ref{montgomery-ladder}.
+The if statements are secret-dependent and are replaced with constant-time
+conditional swap between $Q$ and $R$ in the TweetNaCl implementation.
 
 \subsection{The X25519 key exchange}
 \label{preliminaries:A}
