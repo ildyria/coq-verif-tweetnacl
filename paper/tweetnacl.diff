@@ -70,7 +70,7 @@
 >   FOR(i,31) t[i]= 0;
 >   FOR(i,16) {
 @@ introduce an auxiliary variable to
-@@ simplify verification.
+@@ simplify verification (loop invariants).
 >     aux = a[i];
 >     FOR(j,16) t[i+j]+=aux*b[j];
 >   }
