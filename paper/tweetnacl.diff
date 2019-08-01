@@ -1,7 +1,10 @@
 8c8
 < typedef long long i64;
 ---
-> typedef long long i64 __attribute__((aligned(8)));
+@@ We tell VST that long long
+@@ are aligned on 8 bytes.
+> typedef long long i64
+> __attribute__((aligned(8)));
 277,281c277,279
 <   FOR(i,16) {
 <     o[i]+=(1LL<<16);
@@ -9,6 +12,9 @@
 <     o[(i+1)*(i<15)]+=c-1+37*(c-1)*(i==15);
 <     o[i]-=c<<16;
 ---
+@@ We separate the loop iteration:
+@@ 0-14 and 15 as the last.
+@@ also simplify the carry propagation code.
 >   FOR(i,15) {
 >     o[(i+1)]+=o[i]>>16;
 >     o[i]&=0xffff;
@@ -16,12 +22,14 @@
 >   o[0]+=38*(o[15]>>16);
 >   o[15]&=0xffff;
 285c285
+@@ b is a mask of 64 bits.
 < sv sel25519(gf p,gf q,int b)
 ---
 > sv sel25519(gf p,gf q,i64 b)
 287c287,288
 <   i64 t,i,c=~(b-1);
 ---
+@@ For-loop indexes have to be int.
 >   int i;
 >   i64 t,c=~(b-1);
 297,299c298,301
@@ -29,6 +37,9 @@
 <   gf m,t;
 <   FOR(i,16) t[i]=n[i];
 ---
+@@ For-loop indexes have to be int.
+@@ b is a 64 bit mask.
+@@ Initialize m to simplify verification.
 >   int i,j;
 >   i64 b;
 >   gf t,m={0};
@@ -38,11 +49,14 @@
 312c313,314
 <     sel25519(t,m,1-b);
 ---
+@@ Computations in arguments
+@@ are not allowed in VST.
 >     b=1-(m[15]>>16)&1;
 >     sel25519(t,m,b);
 332c334
 <   return d[0]&1;
 ---
+@@ Force the casting.
 >   return d[0]&(u8)1;
 356,359c358,365
 <   i64 i,j,t[31];
@@ -50,10 +64,13 @@
 <   FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
 <   FOR(i,15) t[i]+=38*t[i+16];
 ---
+@@ For-loop indexes have to be int.
 >   int i,j;
 >   i64 t[31], aux;
 >   FOR(i,31) t[i]= 0;
 >   FOR(i,16) {
+@@ introduce an auxiliary variable to
+@@ simplify verification.
 >     aux = a[i];
 >     FOR(j,16) t[i+j]+=aux*b[j];
 >   }
@@ -61,11 +78,14 @@
 374c380
 <   FOR(a,16) c[a]=i[a];
 ---
+@@ gain 5 bytes.
 >   set25519(c,i);
 397,398c403,405
 <   i64 x[80],r,i;
 <   gf a,b,c,d,e,f;
 ---
+@@ x only needs gf.
+@@ For-loop indexes have to be int.
 >   i64 r;
 >   int i;
 >   gf x,a,b,c,d,e,f;
@@ -80,6 +100,7 @@
 <   M(x+16,x+16,x+32);
 <   pack25519(q,x+16);
 ---
+@@ simplify
 >   inv25519(c,c);
 >   M(a,a,c);
 >   pack25519(q,a);
