@@ -67,21 +67,6 @@ sv pack25519(u8 *o,const gf n)
   }
 }
 
-static int neq25519(const gf a, const gf b)
-{
-  u8 c[32],d[32];
-  pack25519(c,a);
-  pack25519(d,b);
-  return crypto_verify_32(c,d);
-}
-
-static u8 par25519(const gf a)
-{
-  u8 d[32];
-  pack25519(d,a);
-  return d[0]&(unsigned char)1;
-}
-
 sv unpack25519(gf o, const u8 *n)
 {
   int i;
@@ -129,18 +114,6 @@ sv inv25519(gf o,const gf a)
   for(i=253;i>=0;i--) {
     S(c,c);
     if(i!=2&&i!=4) M(c,c,a);
-  }
-  FOR(i,16) o[i]=c[i];
-}
-
-sv pow2523(gf o,const gf a)
-{
-  gf c;
-  int i;
-  set25519(c,a);
-  for(i=250;i>=0;i--) {
-    S(c,c);
-    if(i!=1) M(c,c,a);
   }
   FOR(i,16) o[i]=c[i];
 }
