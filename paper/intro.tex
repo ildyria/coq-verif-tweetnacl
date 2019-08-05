@@ -46,40 +46,29 @@ support Montgomery curves (and in particular Curve25519).
 This extension may be of independent interest.
 
 \subheading{Related work.}
-\todo{Fix this subsection}
-There are two methodologies to get formal guarantees a software meets its
-specifications.
-The first one is by synthesizing a formal specification and then generating machine
-code by refinement.
- % in order to get a software correct by construction.
-This approach is being used in e.g. the B-method~\cite{Abrial:1996:BAP:236705},
-F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}, or with Coq~\cite{CpdtJFR}.
-However this first method cannot be applied to an existing piece of software.
+Two methodologies exist to get formal guarantees a software meets its specifications.
+This can be done either by synthesizing a formal specification and then generating
+machine code by refinement, or by writing a specification and verifying that the
+implementation satisfies it.
 
-The second approach consists of writing the specifications and then verifying
-the correctness of the implementation.
-Because we verify the TweetNaCl cryptographic library, we use this second method.
+% One of the earliest example of this first approach is the
+% B-method~\cite{Abrial:1996:BAP:236705} in 1986.
+Using the synthesis approach, Zinzindohou{\'{e}} et al. wrote an verified extensible
+library of elliptic curves~\cite{Zinzindohoue2016AVE} in F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}.
+This served as ground work for the cryptographic library HACL*~\cite{zinzindohoue2017hacl}
+used in the NSS suite from Mozilla.
 
+Coq does not only allows verification but also synthesis~\cite{CpdtJFR}.
+Erbsenm; Philipoom; Gross; and Chlipala et al. make use of it to have
+correct-by-construction finite field arithmetic~\cite{Philipoom2018CorrectbyconstructionFF}.
+In such way, they synthesized~\cite{Erbsen2016SystematicSO} certified elliptic curve
+implementations~\cite{Erbsen2017CraftingCE}. These are now being used in
+BoringSSL~\cite{fiat-crypto}.
 
-\todo{Separate verification of existing code from generating proof-carrying code.}
-
-Similar approaches have been used to prove the correctness of OpenSSL
-HMAC~\cite{Beringer2015VerifiedCA} and . Compared to
+The verification approach, have been used to prove the correctness of OpenSSL
+HMAC~\cite{Beringer2015VerifiedCA} and SHA-256~\cite{2015-Appel}. Compared to
 their work our approaches makes a complete link between the C implementation and
 the formal mathematical definition of the group theory behind elliptic curves.
-
-Using the synthesis approach, Zinzindohou{\'{e}} et al. wrote an verified extensible
-library of elliptic curves~\cite{Zinzindohoue2016AVE}. This served as ground work for the
-cryptographic library HACL*~\cite{zinzindohoue2017hacl} used in the NSS suite from Mozilla.
-
-Coq does not only allows verification but also synthesis.
-Using correct-by-construction finite field arithmetic~\cite{Philipoom2018CorrectbyconstructionFF}
-one can synthesize~\cite{Erbsen2016SystematicSO} certified elliptic curve
-implementations~\cite{Erbsen2017CraftingCE}. These implementation are now being used in BoringSSL~\cite{fiat-crypto}.
-
-Curve25519 implementations has already been under the scrutiny~\cite{Chen2014VerifyingCS}.
-However in this paper we provide a proofs of correctness and soundness of a C program up to
-the theory of elliptic curves.
 
 Synthesis approaches forces the user to depend on generated code which may not
 be optimal (speed, compactness...), they require to tweak the compiler in order
@@ -88,14 +77,20 @@ optimized code will force the verifier to consider all the possible special case
 and write a complex low level specification in order to prove the correctness of
 the algorithm.
 
+It has to be noted that Curve25519 implementations has already been under the scrutiny~\cite{Chen2014VerifyingCS}.
+However in this paper we provide a proofs of correctness and soundness of a C program up to
+the theory of elliptic curves.
+
 \subheading{Reproducing the proofs.}
 To maximize reusability of our results we placed the code of our formal proof
 presented in this paper into the public domain. They are available at XXXXXXX
 with instructions of how to compile and verify our proof.
+A description of the content of the archive is provided in
+Appendix~\ref{appendix:proof-folders}.
 
 \subheading{Organization of this paper.}
 Section~\ref{preliminaries} give the necessary background on Curve25519
-implementation and a rough understand of how formal verification works.
+implementation and a rough understanding of how formal verification works.
 Section~\ref{C-Coq} provides the specification of X25519 in addition to proofs
 techniques used to show the correctness.
 Section~\ref{sec3-maths} describes our extension of the formal library by Bartzia
