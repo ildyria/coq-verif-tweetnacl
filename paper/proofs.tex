@@ -2,8 +2,8 @@
 
 \subheading{Requirements}
 Our proofs requires the use of \emph{Coq.8.8.2} for the proofs and
-\emph{Opam 2.0} to manage the dependencies. We are aware that more recent
-versions of Coq; VST; CompCert etc. exist, however to avoid dealing with backward
+\emph{Opam 2.0} to manage the dependencies. We are aware that there exists more
+recent versions of Coq; VST; CompCert etc. however to avoid dealing with backward
 breaking compatibilities we decided to freeze our dependencies.
 
 \subheading{Associated files}
@@ -13,7 +13,7 @@ It aims to be used at the same time as an \emph{opam} repository to manage
 the dependencies of the proof and to provide the code.
 
 The actual proofs can be found in the \textbf{\texttt{proofs}} folder in which
-the reader will find the \textbf{\texttt{spec}} and \textbf{\texttt{vst}}.
+the reader will find the directories \textbf{\texttt{spec}} and \textbf{\texttt{vst}}.
 
 \subheading{\texttt{packages/}}
 This folder makes sure that we are using the correct version of
@@ -25,14 +25,15 @@ and allows us to use the theorem of quadratic reciprocity.
 In this folder the reader will find multiple levels of implementation of X25519.
 \begin{itemize}
   \item \textbf{\texttt{Libs/}} contains basic libraries and tools to help use
-  reason with lists and decidable procedures
+  reason with lists and decidable procedures.
   \item \textbf{\texttt{ListsOp/}} defines operators on list such as
   \Coqe{ZofList} and related lemmas using \eg \VSTe{Forall}.
   \item \textbf{\texttt{High/}} contains the theory of Montgomery curves,
   twists, quadratic extensions and ladder.
   It also proves the correctness of the ladder over $\F{\p}$.
   \item \textbf{\texttt{Gen/}} defines a generic Montgomery ladder which can be
-  instanciated with different operations.
+  instanciated with different operations. This ladder is the stub for the
+  following implementations.
   \item \textbf{\texttt{Mid/}} provides a list-based implementation of the
   basic operations \TNaCle{A}, \TNaCle{Z}, \TNaCle{M} \ldots and the ladder. It
   makes the link with the theory of Montgomery curves.
@@ -50,8 +51,8 @@ Here the reader will find four folders.
   \texttt{clightgen} will generate the appropriate translation into CLight.
   \item \textbf{\texttt{init}} contains basic lemmas and memory manipulation
   shortcuts to handle the aliasing cases.
-  \item \textbf{\texttt{spec}} contains the Hoare triple definitions of each
+  \item \textbf{\texttt{spec}} defines as Hoare triple the specification of the
   functions used in \TNaCle{crypto_scalarmult}.
-  \item \textbf{\texttt{proofs}} contains the proofs of the Hoare triple and
-  thus the proof that TweetNaCl code is sound and correct.
+  \item \textbf{\texttt{proofs}} contains the proofs of the above Hoare triples
+  and thus the proof that TweetNaCl code is sound and correct.
 \end{itemize}
