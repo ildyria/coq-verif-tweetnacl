@@ -331,7 +331,12 @@ int crypto_scalarmult(u8 *q,
 
 Coq~\cite{coq-faq} is an interactive theorem prover. It provides an expressive
 formal language to write mathematical definitions, algorithms and theorems coupled
-with their proofs. As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
+with their proofs. It has been used in the proof the four-color theorem~\cite{gonthier2008formal}.
+The CompCert C compiler~\cite{Leroy-backend} was implemented with it and provides
+the guarante that the behaviour of the machine code is the same as the one
+semantically defined in C (ISO C99~\cite{ISO:C99}).
+
+As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
 Coq does not rely on an SMT solver in its trusted code base.
 It uses its type system to verify the applications of hypotheses,
 lemmas, and theorems~\cite{Howard1995-HOWTFN}.
@@ -354,9 +359,14 @@ For example, here is the rule for sequential composition:
 \end{prooftree}
 Separation logic is an extension of Hoare logic which allows reasoning about
 pointers and memory manipulation. This logic enforces strict conditions on the
-memory shared such as being disjoint. We discuss this limitation further in Section~\ref{using-VST}.
-The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework which uses
-Separation logic to prove the functional correctness of C programs.
-It can be seen as a forward symbolic execution of the program.
-\todo{Mention CLight somewhere here.}
-Its uses a strongest postcondition approach to prove that a program matches its specification.
+memory shared such as being disjoint.
+We discuss this limitation further in Section~\ref{using-VST}.
+The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework
+which uses Separation logic to prove the functional correctness of C programs.
+The first step consists of translating the source code into CLight,
+an intermediate representation used by CompCert.
+For such purpose we use the parser CompCert: \texttt{clightgen}.
+In second step we define the Hoare triple encapsulating the specification of the
+piece of software we want to prove. Then using VST, we  uses a strongest
+postcondition approach to prove the correctness of the triple.
+This approach can be seen as a forward symbolic execution of the program.
