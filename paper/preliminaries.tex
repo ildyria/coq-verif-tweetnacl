@@ -49,9 +49,9 @@ To remove secret-dependent if-statements we use a constant-time conditional swap
 \begin{algorithmic}
 \REQUIRE{$b \in \{0, 1\}$ and a pair $(X_0, X_1)$ of objects encoded as $n$-bit strings}
 \ENSURE{$(X_b, X_{1-b})$}
-\STATE $b \leftarrow (b, \ldots, b)_n$
-\STATE $mask \leftarrow b\texttt{ AND } (X_0\texttt{ XOR } X_1)$
-\RETURN $(x_0 \texttt{ XOR } mask, x_1 \texttt{ XOR } mask)$
+\STATE $B \leftarrow (b, \ldots, b)_n$
+\STATE $Mask \leftarrow B \texttt{ AND } (X_0\texttt{ XOR } X_1)$
+\RETURN $(X_0 \texttt{ XOR } Mask, X_1 \texttt{ XOR } Mask)$
 \end{algorithmic}
 \end{algorithm}
 
@@ -104,6 +104,7 @@ over $s_a$ and $P_b$ (respectively $s_b$ and $P_a$).
 
 \subsection{TweetNaCl specifics}
 \label{preliminaries:B}
+
 As it names stands for, TweetNaCl aims for code compactness (in tweets).
 As a result it uses a few defines and typedef to gain precious bytes while
 still remaining readable.
@@ -113,8 +114,21 @@ still remaining readable.
 typedef unsigned char u8;
 typedef long long i64;
 \end{lstlisting}
-Any TweetNaCl functions takes pointers as arguments.
-The first one defines the output. It is then followed by the inputs arguments.
+
+TweetNaCl functions takes pointers as arguments. By convention the first one
+defines the output. It is then followed by the inputs arguments.
+
+Due to some limitations of VST, indexes used in \TNaCle{for} loops have to be
+of type \TNaCle{int} instead of \TNaCle{i64}. We change the code to allow our
+proofs to carry through. We beleive the original code is fine as is.
+A complete diff of our modifications to TweetNaCl can be found in
+Appendix~\ref{verified-C-and-diff}.
+
+\todo{MOVE this:}
+The upper 64 indexes of the \TNaCle{i64 x[80]} intermediate variable of
+\TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code,
+we fixed it.
+\todo{Metion Peter Wu and Jason A. Donenfeld change to car25519}
 
 \subsection{X25519 in TweetNaCl}
 \label{preliminaries:B}
@@ -129,7 +143,6 @@ i.e., an element $A$ is represented as $(a_0,\dots,a_{15}$,
 with $A = \sum_{i=0}^{15}a_i2^{16i}$.
 The individual ``limbs'' $a_i$ are represented as
 64-bit \TNaCle{long long} variables:
-
 \begin{lstlisting}[language=Ctweetnacl]
 typedef i64 gf[16];
 \end{lstlisting}
@@ -151,7 +164,6 @@ multiple ways to represent $A$ as $(a_0,\dots,a_{15})$.
 For example, it is used to avoid carry handling in
 the implementations of addition (\TNaCle{A})
 and subtraction (\TNaCle{Z}) in $\F{\p}$:
-
 \begin{lstlisting}[language=Ctweetnacl]
 sv A(gf o,const gf a,const gf b) {
   int i;
@@ -166,7 +178,6 @@ sv Z(gf o,const gf a,const gf b) {
 
 Also multiplication (\TNaCle{M}) is heavily exploiting the redundancy
 of the representation to delay carry handling.
-
 \begin{lstlisting}[language=Ctweetnacl]
 sv M(gf o,const gf a,const gf b) {
   i64 i,j,t[31];
@@ -182,7 +193,6 @@ sv M(gf o,const gf a,const gf b) {
 After the actual multiplication, the limbs of the result \texttt{o} are
 too large to be used again as input, which is why the two calls to
 \TNaCle{car25519} at the end of \TNaCle{M} propagate the carries through the limbs:
-
 \begin{lstlisting}[language=Ctweetnacl]
 sv car25519(gf o)
 {
@@ -193,29 +203,17 @@ sv car25519(gf o)
   }
 }
 \end{lstlisting}
+
 In order to simplify the verification of this function,
 we extract the last step of the loop $i = 15$.
-% \begin{lstlisting}[language=Ctweetnacl]
-% sv car25519(gf o)
-% {
-%   int i;
-%   i64 c;
-%   FOR(i,15) {
-%     o[(i+1)]+=o[i]>>16;
-%     o[i]&=0xffff;
-%   }
-%   o[0]+=38*(o[15]>>16);
-%   o[15]&=0xffff;
-% }
-% \end{lstlisting}
 
-Inverse in $\Zfield$ are computed with \TNaCle{inv25519}.
+Inverses in $\Zfield$ are computed with \TNaCle{inv25519}.
 It takes the exponentiation by $2^{255}-21$ with the Square-and-multiply algorithm.
 Fermat's little theorem brings the correctness.
 Notice that in this case the inverse of $0$ is defined as $0$.
 
-\TNaCle{sel25519} implements a constant-time conditional swap by applying a mask between
-two fields elements.
+\TNaCle{sel25519} implements a constant-time conditional \texttt{SWAP} (Algorithm~\ref{c-swap})
+by applying a mask between two fields elements.
 % \begin{lstlisting}[language=Ctweetnacl]
 % sv sel25519(gf p,gf q,i64 b)
 % {
@@ -229,15 +227,9 @@ two fields elements.
 % }
 % \end{lstlisting}
 
-% It takes advantage of the shape of the number by not doing the multiplications only twice.
-
-% \todo{Ladder algorithm C code}
-% \todo{Ladderstep algorithm C code}
-
 Finally, we require the \TNaCle{pack25519} function,
 which converts from the internal redundant radix-$2^{16}$
 representation to a unique byte array:
-
 \begin{lstlisting}[language=Ctweetnacl]
 sv pack25519(u8 *o,const gf n)
 {

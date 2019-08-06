@@ -7,7 +7,8 @@ In this section we prove the following theorem:
 %\end{lstlisting}
 
 \begin{theorem}
-The implementation in TweetNaCl matches the Coq definition of \TNaCle{crypto_scalarmult}
+The implementation X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches our
+functional specification in Coq.
 \end{theorem}
 
 We first describe the global structure of our proof.
@@ -16,7 +17,7 @@ Clight description of TweetNaCl and Coq functions producing similar behaviors.
 
 In order to prove the correctness of X25519 in TweetNaCl code, we use VST to prove
 that the code matches our functional specification of \TNaCle{crypto_scalarmult}
-(abbreviated as CSM) in Coq. Then, we prove that our specification of the scalar
+(abbreviated as \texttt{CSM}) in Coq. Then, we prove that our specification of the scalar
 multiplication matches the mathematical definition of elliptic curves and Theorem 2.1 by
 Bernstein~\cite{Ber06}. Figure~\ref{tk:ProofOverview} shows a graph of dependencies
 of the proofs considered. The mathematical proof of our specification is presented
@@ -30,19 +31,19 @@ in Section~\ref{sec3-maths}.
 \end{figure}
 
 
-Verifying \texttt{crypto\_scalarmult} also implies to verify all the functions
-subsequently called: \texttt{unpack25519}; \texttt{A}; \texttt{Z}; \texttt{M};
-\texttt{S}; \texttt{car25519}; \texttt{inv25519}; \texttt{set25519}; \texttt{sel25519};
-\texttt{pack25519}.
+Verifying \TNaCle{crypto_scalarmult} also implies to verify all the functions
+subsequently called: \TNaCle{unpack25519}; \TNaCle{A}; \TNaCle{Z}; \TNaCle{M};
+\TNaCle{S}; \TNaCle{car25519}; \TNaCle{inv25519}; \TNaCle{set25519}; \TNaCle{sel25519};
+\TNaCle{pack25519}.
 
-We prove the implementation of Curve25519 is \textbf{sound}, \ie:
+We prove the implementation of X25519 is \textbf{sound}, \ie:
 \begin{itemize}
 \item absence of access out-of-bounds of arrays (memory safety).
 \item absence of overflows/underflow on the arithmetic.
 \end{itemize}
 We also prove that TweetNaCl's code is \textbf{correct}:
 \begin{itemize}
-\item Curve25519 is correctly implemented (we get what we expect).
+\item X25519 is correctly implemented (we get what we expect).
 \item Operations on \texttt{gf} (\texttt{A}, \texttt{Z}, \texttt{M}, \texttt{S})
 are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
 \item The Montgomery ladder computes a scalar multiplication between a natural
@@ -73,11 +74,10 @@ This guarantees us the correctness of the implementation.
   \label{tk:ProofStructure}
 \end{figure}
 
-
-
 \subsection{Correctness Specification}
 
-We show the soundness of TweetNaCl by proving the following specification matches a pure Coq function.
+
+We show the soundness of TweetNaCl by proving the following specification matches a pure Coq function. % why "pure" ?
 This defines the equivalence between the Clight representation and a Coq definition of the ladder.
 
 \begin{CoqVST}
@@ -116,7 +116,7 @@ SEP  (sh [{ v_q }] <<(uch32)-- mVI (CSM n p);
 In this specification we state as preconditions:
 \begin{itemize}
   \item[] \VSTe{PRE}: \VSTe{_p OF (tptr tuchar)}\\
-  The function \texttt{crypto\_scalarmult} takes as input three pointers to
+  The function \TNaCle{crypto_scalarmult} takes as input three pointers to
   arrays of unsigned bytes (\VSTe{tptr tuchar}) \VSTe{_p}, \VSTe{_q} and \VSTe{_n}.
   \item[] \VSTe{LOCAL}: \VSTe{temp _p v_p}\\
   Each pointer represent an address \VSTe{v_p},
@@ -136,7 +136,7 @@ In this specification we state as preconditions:
 As Post-condition we have:
 \begin{itemize}
   \item[] \VSTe{POST}: \VSTe{tint}\\
-  The function \texttt{crypto\_scalarmult} returns an integer.
+  The function \TNaCle{crypto_scalarmult} returns an integer.
   \item[] \VSTe{LOCAL}: \VSTe{temp ret_temp (Vint Int.zero)}\\
   The returned integer has value $0$.
   \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (CSM n p)}\\
@@ -148,11 +148,13 @@ As Post-condition we have:
   We show that the computation for \VSTe{CSM} fits in  \TNaCle{u8[32]}.
 \end{itemize}
 
-This specification shows that \VSTe{crypto_scalarmult} in C computes the same
+This specification shows that \TNaCle{crypto_scalarmult} in C computes the same
 result as \VSTe{CSM} in Coq provided that inputs are within their respective
 bounds.
+
+\todo{TO MOVE TO THE NEXT SECTION}
 By converting those array of 32 bytes into their respective little-endian value
-we prove the correctness of \VSTe{crypto_scalarmult} (Theorem \ref{CSM-correct})
+we prove the correctness of \TNaCle{crypto_scalarmult} (Theorem \ref{CSM-correct})
 in Coq (for the sake of simplicity we do not display the conversion in the theorem).
 \begin{theorem}
 \label{CSM-correct}
@@ -183,7 +185,7 @@ integers in Coq. However in order to show the correctness of the basic operation
 we need to convert this number as a full integer.
 \begin{definition}
 Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list} \Z \rightarrow \Z$, a parameterized map by $n$ between a list $l$ and its
-it's little endian representation with a base $2^n$.
+it's little endian representation with a radix $2^n$.
 \end{definition}
 We define it in Coq as:
 \begin{lstlisting}[language=Coq]
@@ -224,7 +226,7 @@ Lemma mult_GF_Zlength :
 \subsection{Inversions in \Zfield}
 
 We define a Coq version of the inversion mimicking
-the behavior of \TNaCle{inv25519} over \Coqe{list Z}.
+the behavior of \TNaCle{inv25519} (see below) over \Coqe{list Z}.
 \begin{lstlisting}[language=Ctweetnacl]
 sv inv25519(gf o,const gf a)
 {
@@ -239,11 +241,11 @@ sv inv25519(gf o,const gf a)
 }
 \end{lstlisting}
 We specify this with 2 functions: a recursive \Coqe{pow_fn_rev} to to simulate the for loop and a simple
-\Coqe{step_pow} containing the body. Note the off by one for the loop.
+\Coqe{step_pow} containing the body.
 \begin{lstlisting}[language=Coq]
 Definition step_pow (a:Z) (c g:list Z) : list Z :=
   let c := Sq c in
-    if a <>? 1 && a <>? 3
+    if a <>? 2 && a <>? 4
     then M c g
     else c.
 
@@ -253,7 +255,7 @@ Function pow_fn_rev (a:Z) (b:Z) (c g: list Z)
     then c
     else
       let prev := pow_fn_rev (a - 1) b c g in
-        step_pow (b - 1 - a) prev g.
+        step_pow (b - a) prev g.
 \end{lstlisting}
 
 This \Coqe{Function} requires a proof of termination. It is done by proving the
@@ -267,7 +269,7 @@ Similarly we define the same function over $\Z$.
 \begin{lstlisting}[language=Coq]
 Definition step_pow_Z (a:Z) (c:Z) (g:Z) : Z :=
   let c := c * c in
-  if a <>? 1 && a <>? 3
+  if a <>? 2 && a <>? 4
     then c * g
     else c.
 
@@ -277,7 +279,7 @@ Function pow_fn_rev_Z (a:Z) (b:Z) (c:Z) (g: Z)
     then c
     else
       let prev := pow_fn_rev_Z (a - 1) b c g in
-        step_pow_Z (b - 1 - a) prev g.
+        step_pow_Z (b - a) prev g.
 
 Definition Inv25519_Z (x:Z) : Z :=
   pow_fn_rev_Z 254 254 x x.
@@ -394,7 +396,7 @@ In order to prove formulas in \Coqe{formula_inv},
 we have the following a decidable procedure.
 We define \Coqe{pow_expr_inv}, a function which returns the power of an expression.
 We then compare the two values and decide over their equality.
-\begin{Coq}
+\begin{lstlisting}[language=Coq]
 Fixpoint pow_expr_inv (t:expr_inv) : Z :=
   match t with
   | R_inv   => 1
@@ -420,7 +422,7 @@ Definition decide_f_inv (f:formula_inv) : bool :=
   match f with
   | Eq_inv x y => decide_e_inv x y
   end.
-\end{Coq}
+\end{lstlisting}
 We prove our decision procedure correct.
 \begin{lemma}
 \label{decide}
@@ -428,35 +430,35 @@ For all formulas $f$, if the decision over $f$ returns \Coqe{true},
 then the denoted equality by $f$ is true.
 \end{lemma}
 Which is formalized as:
-\begin{Coq}
+\begin{lstlisting}[language=Coq]
 Lemma decide_formula_inv_impl :
   forall (f:formula_inv),
   decide_f_inv f = true ->
   f_inv_denote f.
-\end{Coq}
+\end{lstlisting}
 By reification to over DSL (lemma \ref{reify}) and by applying our decision (lemma \ref{decide}).
 we proved the following theorem.
 \begin{theorem}
 \Coqe{Inv25519_Z} computes an inverse in \Zfield.
 \end{theorem}
-\begin{Coq}
+\begin{lstlisting}[language=Coq]
 Theorem Inv25519_Z_correct :
   forall (x:Z),
   Inv25519_Z x = pow x (2^255-21).
-\end{Coq}
+\end{lstlisting}
 
 From \Coqe{Inv25519_Z_GF} and \Coqe{Inv25519_Z_correct}, we conclude the
 functional correctness of the inversion over \Zfield.
 \begin{corollary}
 \Coqe{Inv25519} computes an inverse in \Zfield.
 \end{corollary}
-\begin{Coq}
+\begin{lstlisting}[language=Coq]
 Corollary Inv25519_Zpow_GF :
   forall (g:list Z),
   length g = 16 ->
   Z16.lst (Inv25519 g) :GF  =
   (pow (Z16.lst g) (2^255-21)) :GF.
-\end{Coq}
+\end{lstlisting}
 
 \subsection{Packing and other Applications of Reflection}
 
@@ -484,13 +486,13 @@ This loop separation allows simpler proofs. The first loop is seen as the subtra
 We then prove that with the iteration of the second loop, the number represented in $\Zfield$ stays the same.
 This leads to the proof that \TNaCle{pack25519} is effectively reducing mod $\p$ and returning a number in base $2^8$.
 
-\begin{Coq}
+\begin{lstlisting}[language=Coq]
 Lemma Pack25519_mod_25519 :
 forall (l:list Z),
 Zlength l = 16 ->
 Forall (fun x => -2^62 < x < 2^62) l ->
 ZofList 8 (Pack25519 l) = (Z16.lst l) mod (2^255-19).
-\end{Coq}
+\end{lstlisting}
 
 \subsection{Using the Verifiable Software Toolchain}
 \label{using-VST}

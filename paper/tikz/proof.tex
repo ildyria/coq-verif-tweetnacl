@@ -62,7 +62,7 @@
     \draw (0,0) -- (0.4, 0.4) -- (2,0.4) -- (2,0) -- cycle;
     \draw (0,0) -- (2,0) -- (2,-1) -- (0, -1) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Definition};
-    \draw (1,-0.5) node[textstyle, anchor=center] {$[n]P$};
+    \draw (1,-0.5) node[textstyle, anchor=center] {$n \cdot P$};
   \end{scope}
 
   % Correctness Theorem
@@ -71,7 +71,7 @@
     \draw (0,0) -- (2.5,0) -- (2.5,-1.5) -- (0, -1.5) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Proof};
     \draw (2.5,-1.5) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
-    \draw (1.25,-0.75) node[textstyle, anchor=center] {{\color{doc@lstnumbers}\textbf{Pre}} $\implies$\\$\text{\texttt{CSM}}(n,P) = [n]P$};
+    \draw (1.25,-0.75) node[textstyle, anchor=center] {{\color{doc@lstnumbers}\textbf{Pre}} $\implies$\\$\text{\texttt{CSM}}(n,P) = n \cdot P$};
   \end{scope}
 
   \path [thick, double, ->] (1.25,-0.5) edge (2.5, -0.5);
