@@ -40,7 +40,7 @@ Proof. go. Qed.
 
 Lemma pow_fn_rev_n : forall a b c g,
   0 < a ->
-  pow_fn_rev a b c g = step_pow (b -1 - a) (pow_fn_rev (a - 1) b c g) g.
+  pow_fn_rev a b c g = step_pow (b - a) (pow_fn_rev (a - 1) b c g) g.
 Proof. intros. rewrite /pow_fn_rev pow_fn_rev_equation /step_pow; flatten; apply Zle_bool_imp_le in Eq; omega. Qed.
 
 Lemma step_pow_Zlength : forall a c g,

@@ -5,19 +5,19 @@ Require Import Tweetnacl.Low.S.
 Require Import ssreflect.
 Open Scope Z.
 
-Definition step_pow_Z a c g := let c0 := c*c in if Zneq_bool a 1 && Zneq_bool a 3 then c0*g else c0.
+Definition step_pow_Z a c g := let c0 := c*c in if Zneq_bool a 2 && Zneq_bool a 4 then c0*g else c0.
 
 Function pow_fn_rev_Z (a b:Z) (c g: Z) {measure Z.to_nat a} : (Z) :=
   if (a <=? 0)
     then c
     else
       let prev := pow_fn_rev_Z (a - 1) b c g in 
-        step_pow_Z (b - 1 - a) prev g.
+        step_pow_Z (b - a) prev g.
 Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
 
 Lemma pow_fn_rev_Z_n : forall a b c g,
   0 < a ->
-  pow_fn_rev_Z a b c g = step_pow_Z (b - 1 - a) (pow_fn_rev_Z (a - 1) b c g) g.
+  pow_fn_rev_Z a b c g = step_pow_Z (b - a) (pow_fn_rev_Z (a - 1) b c g) g.
 Proof. intros. rewrite pow_fn_rev_Z_equation. flatten; apply Zle_bool_imp_le in Eq; omega. Qed.
 
 Definition Inv25519_Z (x:Z) : Z := pow_fn_rev_Z 254 254 x x.
@@ -120,7 +120,7 @@ Proof. move=> v env [? ?]. by apply decide_expr_inv_eq_impl. Qed.
 
 
 Definition step_inv a c g : expr_inv := 
-  let c0 := (S_inv c) in if negb (Nat.eqb a 1) && negb (Nat.eqb a 3) then M_inv c0 g else c0.
+  let c0 := (S_inv c) in if negb (Nat.eqb a 2) && negb (Nat.eqb a 4) then M_inv c0 g else c0.
 
 Lemma step_inv_step_pow_eq : forall v env a c g,
   expr_inv_denote v env (step_inv (Z.to_nat a) c g) =  step_pow_Z a (expr_inv_denote v env c) (expr_inv_denote v env g).
@@ -168,7 +168,7 @@ Close Scope Z.
 Fixpoint pow_inv (a b : nat) (c g: expr_inv) : expr_inv := match a with
   | 0 => c
   | S n => let prev := pow_inv n b c g in 
-              step_inv (b - 1 - a) prev g
+              step_inv (b - a) prev g
   end.
 
 Open Scope Z.
@@ -192,14 +192,12 @@ Proof.
   replace ((Z.to_nat (Z.succ a))) with (S (Z.to_nat a)).
   2: rewrite Z2Nat.inj_succ //.
   simpl.
-  replace (Z.to_nat b - 1 - S (Z.to_nat a))%nat with (Z.to_nat (b - 1 - Z.succ a)).
+  replace (Z.to_nat b - S (Z.to_nat a))%nat with (Z.to_nat (b - Z.succ a)).
   rewrite step_inv_step_pow_eq IHa //.
   orewrite Z2Nat.inj_sub.
   replace ((Z.to_nat (Z.succ a))) with (S (Z.to_nat a)).
   2: rewrite Z2Nat.inj_succ //.
   f_equal.
-  orewrite Z2Nat.inj_sub.
-  reflexivity.
 Qed.
 
 Close Scope Z.

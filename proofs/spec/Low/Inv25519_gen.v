@@ -29,7 +29,7 @@ Definition recurse (a : Z) : nat := Z.to_nat (a + 1).
 
 Definition step_pow (a:Z) (c g:list Z) : list Z :=
     let c := Sq c in
-      if (andb (Zneq_bool a 1) (Zneq_bool a 3))
+      if (andb (Zneq_bool a 2) (Zneq_bool a 4))
       then M c g
       else c.
 
@@ -38,7 +38,7 @@ Function pow_fn_rev (a b:Z) (c g: list Z) {measure Z.to_nat a} : (list Z) :=
     then c
     else
       let prev := pow_fn_rev (a - 1) b c g in 
-        step_pow (b - 1 - a) prev g.
+        step_pow (b - a) prev g.
 Proof. intros. apply Z2Nat.inj_lt ; move: teq ; rewrite Z.leb_gt => teq; omega. Defined.
 
 Lemma pow_fn_rev_0 : forall b c g,
@@ -47,7 +47,7 @@ Proof. go. Qed.
 
 Lemma pow_fn_rev_n : forall a b c g,
   0 < a ->
-  pow_fn_rev a b c g = step_pow (b - 1 - a) (pow_fn_rev (a - 1) b c g) g.
+  pow_fn_rev a b c g = step_pow (b - a) (pow_fn_rev (a - 1) b c g) g.
 Proof. intros. rewrite pow_fn_rev_equation.
 flatten ; apply Zle_bool_imp_le in Eq; omega.
 Qed.
