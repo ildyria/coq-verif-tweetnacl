@@ -22,5 +22,5 @@ description:"""
 Various proofs in Coq. As of now, only contains the proof of the theorem of quadratic reciprocity.
 """
 url {
-  src: "git+https://github.com/ildyria/coq-proofs.git#fork"
+  src: "git+https://github.com/Ekdohibs/coq-proofs.git"
 }
