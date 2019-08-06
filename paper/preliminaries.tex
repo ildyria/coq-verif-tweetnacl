@@ -31,9 +31,9 @@ Details of the formalization can be found in Section~\ref{montgomery}.
 \end{definition}
 
 Points over $M_{a,b}(\K)$ can be equipped with a structure of an abelian group
-with the addition operation $\oplus$ and with neutral element the point at infinity $\Oinf$.
+with the addition operation $\boxplus$ and with neutral element the point at infinity $\Oinf$.
 Using this law, we have the scalar multiplication over $M_{a,b}(\K)$ defined by:
-  $$n\cdot P = \underbrace{P \oplus \cdots \oplus P}_{n\text{ times}}$$
+  $$n\cdot P = \underbrace{P \boxplus \cdots \boxplus P}_{n\text{ times}}$$
 
 We now consider x-coordinate-only operations. In order to simplify computations,
 such coordinates are represented as $X/Z$ fractions. We define two operations:
@@ -41,8 +41,22 @@ such coordinates are represented as $X/Z$ fractions. We define two operations:
 \texttt{xADD} &: (X_P, Z_P, X_Q , Z_Q, X_{P-Q}, Z_{P-Q}) \mapsto (X_{P+Q}, Z_{P+Q})\\
 \texttt{xDBL} &: (X_P, Z_P) \mapsto (X_{2P}, Z_{2P})\\
 \end{align*}
-By using this differential addition and doubling operations we define the Montgomery ladder
-computing a x-coordinate-only scalar multiplication (see Algorithm~\ref{montgomery-ladder}).
+To remove secret-dependent if-statements we use a constant-time conditional swap
+(see Algorithm~\ref{c-swap}).
+\begin{algorithm}
+\caption{\texttt{SWAP} : Constant-time conditional swap}
+\label{c-swap}
+\begin{algorithmic}
+\REQUIRE{$b \in \{0, 1\}$ and a pair $(X_0, X_1)$ of objects encoded as $n$-bit strings}
+\ENSURE{$(X_b, X_{1-b})$}
+\STATE $b \leftarrow (b, \ldots, b)_n$
+\STATE $mask \leftarrow b\texttt{ AND } (X_0\texttt{ XOR } X_1)$
+\RETURN $(x_0 \texttt{ XOR } mask, x_1 \texttt{ XOR } mask)$
+\end{algorithmic}
+\end{algorithm}
+
+By using the differential addition and doubling operations we define the Montgomery ladder
+computing a $x$-coordinate-only scalar multiplication (see Algorithm~\ref{montgomery-ladder}).
 \begin{algorithm}
 \caption{Montgomery ladder for scalar mult.}
 \label{montgomery-ladder}
@@ -52,19 +66,14 @@ computing a x-coordinate-only scalar multiplication (see Algorithm~\ref{montgome
 \STATE $Q \leftarrow \Oinf$
 \STATE $R \leftarrow (X_P,Z_P)$
 \FOR{$k$ := $m$ down to $1$}
-  \IF{$k^{\text{th}}$ bit of $n$ is $0$}
-    \STATE $R \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
-    \STATE $Q \leftarrow \texttt{xDBL}(Q)$
-  \ELSE
-    \STATE $Q \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
-    \STATE $R \leftarrow \texttt{xDBL}(R)$
-  \ENDIF
+  \STATE $(Q,R) \leftarrow \texttt{SWAP}(k^{\text{th}}\text{ bit of }n, (Q,R))$
+  \STATE $Q \leftarrow \texttt{xDBL}(Q)$
+  \STATE $R \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
+  \STATE $(Q,R) \leftarrow \texttt{SWAP}(k^{\text{th}}\text{ bit of }n, (Q,R))$
 \ENDFOR
+\RETURN $Q$
 \end{algorithmic}
 \end{algorithm}
-$n$ is a secret input of algorithm~\ref{montgomery-ladder}.
-The if statements are secret-dependent and are replaced with constant-time
-conditional swap between $Q$ and $R$ in the TweetNaCl implementation.
 
 \subsection{The X25519 key exchange}
 \label{preliminaries:A}
