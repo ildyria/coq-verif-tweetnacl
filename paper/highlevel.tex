@@ -305,25 +305,25 @@ In the case of X25519, $n$ is the private key. With the Montgomery's ladder, whi
 it provides slightly more computations and an extra variable, we can prevent such weakness.
 See Algorithm \ref{montgomery-ladder}.
 
-\begin{algorithm}
-\caption{Montgomery ladder for scalar mult.}
-\label{montgomery-ladder}
-\begin{algorithmic}
-\REQUIRE{Point $P$, scalars $n$ and $m$, $n < 2^m$}
-\ENSURE{$Q = n \cdot P$}
-\STATE $Q \leftarrow \Oinf$
-\STATE $R \leftarrow P$
-\FOR{$k$ := $m$ downto $1$}
-  \IF{$k^{\text{th}}$ bit of $n$ is $0$}
-    \STATE $R \leftarrow Q + R$
-    \STATE $Q \leftarrow 2Q$
-  \ELSE
-    \STATE $Q \leftarrow Q + R$
-    \STATE $R \leftarrow 2R$
-  \ENDIF
-\ENDFOR
-\end{algorithmic}
-\end{algorithm}
+% \begin{algorithm}
+% \caption{Montgomery ladder for scalar mult.}
+% \label{montgomery-ladder}
+% \begin{algorithmic}
+% \REQUIRE{Point $P$, scalars $n$ and $m$, $n < 2^m$}
+% \ENSURE{$Q = n \cdot P$}
+% \STATE $Q \leftarrow \Oinf$
+% \STATE $R \leftarrow P$
+% \FOR{$k$ := $m$ downto $1$}
+%   \IF{$k^{\text{th}}$ bit of $n$ is $0$}
+%     \STATE $R \leftarrow Q + R$
+%     \STATE $Q \leftarrow 2Q$
+%   \ELSE
+%     \STATE $Q \leftarrow Q + R$
+%     \STATE $R \leftarrow 2R$
+%   \ENDIF
+% \ENDFOR
+% \end{algorithmic}
+% \end{algorithm}
 
 \begin{lemma}
 \label{lemma-montgomery-ladder}

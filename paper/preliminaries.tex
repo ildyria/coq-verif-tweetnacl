@@ -41,19 +41,11 @@ such coordinates are represented as $X/Z$ fractions. We define two operations:
 \texttt{xADD} &: (X_P, Z_P, X_Q , Z_Q, X_{P-Q}, Z_{P-Q}) \mapsto (X_{P+Q}, Z_{P+Q})\\
 \texttt{xDBL} &: (X_P, Z_P) \mapsto (X_{2P}, Z_{2P})\\
 \end{align*}
-To remove secret-dependent if-statements we use a constant-time conditional swap
-(see Algorithm~\ref{c-swap}).
-\begin{algorithm}
-\caption{\texttt{SWAP} : Constant-time conditional swap}
-\label{c-swap}
-\begin{algorithmic}
-\REQUIRE{$b \in \{0, 1\}$ and a pair $(X_0, X_1)$ of objects encoded as $n$-bit strings}
-\ENSURE{$(X_b, X_{1-b})$}
-\STATE $B \leftarrow (b, \ldots, b)_n$
-\STATE $Mask \leftarrow B \texttt{ AND } (X_0\texttt{ XOR } X_1)$
-\RETURN $(X_0 \texttt{ XOR } Mask, X_1 \texttt{ XOR } Mask)$
-\end{algorithmic}
-\end{algorithm}
+In the Montgomery, notice that the arguments of \texttt{xADD} and \texttt{xDBL}
+are swapped depending of the value of the $k^{th}$ bit. We use a conditional
+swap \texttt{CSWAP} to change the arguments of the above function. This  while keeping the same body of the loop.
+Given a pair $(X_0, X_1)$ and a boolean $b$, \texttt{CSWAP} returns the pair
+$(X_b, X_{1-b})$.
 
 By using the differential addition and doubling operations we define the Montgomery ladder
 computing a $x$-coordinate-only scalar multiplication (see Algorithm~\ref{montgomery-ladder}).
@@ -66,10 +58,10 @@ computing a $x$-coordinate-only scalar multiplication (see Algorithm~\ref{montgo
 \STATE $Q \leftarrow \Oinf$
 \STATE $R \leftarrow (X_P,Z_P)$
 \FOR{$k$ := $m$ down to $1$}
-  \STATE $(Q,R) \leftarrow \texttt{SWAP}(k^{\text{th}}\text{ bit of }n, (Q,R))$
+  \STATE $(Q,R) \leftarrow \texttt{SWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
   \STATE $Q \leftarrow \texttt{xDBL}(Q)$
   \STATE $R \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
-  \STATE $(Q,R) \leftarrow \texttt{SWAP}(k^{\text{th}}\text{ bit of }n, (Q,R))$
+  \STATE $(Q,R) \leftarrow \texttt{SWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
 \ENDFOR
 \RETURN $Q$
 \end{algorithmic}
@@ -212,20 +204,20 @@ It takes the exponentiation by $2^{255}-21$ with the Square-and-multiply algorit
 Fermat's little theorem brings the correctness.
 Notice that in this case the inverse of $0$ is defined as $0$.
 
-\TNaCle{sel25519} implements a constant-time conditional \texttt{SWAP} (Algorithm~\ref{c-swap})
+\TNaCle{sel25519} implements a constant-time conditional \texttt{CSWAP} (Algorithm~\ref{c-swap})
 by applying a mask between two fields elements.
-% \begin{lstlisting}[language=Ctweetnacl]
-% sv sel25519(gf p,gf q,i64 b)
-% {
-%   int i;
-%   i64 t,c=~(b-1);
-%   FOR(i,16) {
-%     t= c&(p[i]^q[i]);
-%     p[i]^=t;
-%     q[i]^=t;
-%   }
-% }
-% \end{lstlisting}
+\begin{lstlisting}[language=Ctweetnacl]
+sv sel25519(gf p,gf q,i64 b)
+{
+  int i;
+  i64 t,c=~(b-1);
+  FOR(i,16) {
+    t= c&(p[i]^q[i]);
+    p[i]^=t;
+    q[i]^=t;
+  }
+}
+\end{lstlisting}
 
 Finally, we require the \TNaCle{pack25519} function,
 which converts from the internal redundant radix-$2^{16}$

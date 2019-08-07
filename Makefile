@@ -37,9 +37,11 @@ coq-tweetnacl-vst: coq-tweetnacl-spec .building2
 clean-vst: P=proofs/vst
 clean-vst: .dusting2
 
+.PHONY: clean
 clean: clean-spec clean-vst clean-dist
 
 # build paper
+.PHONY: paper
 paper:
 	cd paper && $(MAKE)
 
