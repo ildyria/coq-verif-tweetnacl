@@ -104,47 +104,24 @@ Lemma clamp_ZofList_eq : forall l,
 Proof.
 intros l Hl HBl.
 rewrite /Zclamp /clamp.
-replace 57896044618658097711785492504343953926634992332820282019728792003956564819960 with (ZofList 8 [248;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
+replace (Z.land (Z.ones 255) (-8)) with (ZofList 8 [248;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
 Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
 Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
-Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]).
-2: compute ; reflexivity.
-replace (64 ≪ (31 * 8)) with (ZofList 8 [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;64]).
-2: compute ; reflexivity.
-rewrite Zlist_and_ZofList.
-rewrite Zlist_or_ZofList.
-3: apply  Forall_Zlist_and.
-2,3,7: omega.
-all: try assumption.
+Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]) => //.
+replace (64 ≪ (31 * 8)) with (ZofList 8 [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;64]) => //.
+rewrite Zlist_and_ZofList => //.
+rewrite Zlist_or_ZofList => //.
+2: apply  Forall_Zlist_and => //.
 2,3,4: repeat apply list.Forall_cons_2 ; compute ; go.
-do 33 (destruct l ; tryfalse).
-simpl nth.
-simpl upd_nth.
-rewrite /Zlist_and.
-simpl Zipp.
+do 33 (destruct l ; tryfalse) => /=.
 assert(HX: forall x, 0 <= x < 2^8 -> Z.land x (Z.ones 8) = x).
 {
 intros ; rewrite Z.land_ones ; try apply Z.mod_small ; omega.
 }
 repeat (apply list.Forall_cons_1 in HBl ; destruct HBl as [? HBl]).
 repeat (rewrite HX ; [|assumption]).
-rewrite /Zlist_or.
-simpl Zipp.
 repeat rewrite Z.lor_0_r.
 reflexivity.
 Qed.
 
-(* Local Lemma Zclamp_ZofList_Bound: forall l,
-  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) l ->
-  0 <= Zclamp (ZofList 8 l).
-Proof.
-  move => l Hl.
-  apply Zclamp_min.
-  apply ZofList_pos => //.
-  rewrite /ZList_pos.
-  eapply Forall_impl.
-  apply Hl.
-  move => x /= ; omega.
-Qed.
- *)
 Close Scope Z.

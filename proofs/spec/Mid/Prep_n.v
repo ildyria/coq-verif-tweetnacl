@@ -31,9 +31,18 @@ Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;
 Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]). *)
 (* 57896044618658097711785492504343953926634992332820282019728792003956564819960 *)
 
-Definition Zclamp (n : Z) : Z :=
+(* Eval compute in Z.land (Z.ones 255) (-8). *)
+(* Definition Zclamp' (n : Z) : Z :=
   (Z.lor (Z.land n 57896044618658097711785492504343953926634992332820282019728792003956564819960) (Z.shiftl 64 (31 * 8))).
+*)
+Definition Zclamp (n : Z) : Z :=
+  (Z.lor (Z.land n (Z.land (Z.ones 255) (-8))) (Z.shiftl 64 (31 * 8))).
 
+(*
+Lemma Zclamp_eq : forall n,
+  Zclamp' n = Zclamp n.
+Proof. done. Qed.
+*)
 Lemma Zclamp_min n : 0 <= Zclamp n.
 Proof.
 rewrite /Zclamp.
