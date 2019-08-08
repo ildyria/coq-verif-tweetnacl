@@ -10,6 +10,8 @@ From Tweetnacl.Gen Require Import ABCDEF.
 From Tweetnacl.Gen Require Import abstract_fn_rev.
 From Tweetnacl.Gen Require Import abstract_fn_rev_eq.
 From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.
+From Tweetnacl.Gen Require Import montgomery_rec.
+From Tweetnacl.Gen Require Import montgomery_rec_eq.
 From Tweetnacl.Low Require Import M.
 From Tweetnacl.Low Require Import Pack25519.
 From Tweetnacl.Low Require Import Unpack25519.
@@ -35,10 +37,32 @@ From Tweetnacl.Mid Require Import Instances.
 
 Open Scope Z.
 
-Definition Crypto_Scalarmult n p :=
+(* Real version for proof *)
+Definition Crypto_Scalarmult_proof n p :=
   let a := get_a (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
   let c := get_c (montgomery_fn List_Z_Ops 255 254 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
   Pack25519 (Low.M a (Inv25519 c)).
+
+(* Pretty version for Paper *)
+Definition Crypto_Scalarmult n p :=
+  let a := get_a (montgomery_rec 255 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
+  let c := get_c (montgomery_rec 255 (clamp n) Low.C_1 (Unpack25519 p) Low.C_0 Low.C_1 Low.C_0 Low.C_0 (Unpack25519 p)) in
+  Pack25519 (Low.M a (Inv25519 c)).
+
+(* Proof of equivalence between the two *)
+Lemma Crypto_Scalarmult_eq : forall n p, 
+  Crypto_Scalarmult_proof n p = Crypto_Scalarmult n p.
+Proof.
+  move => n p.
+  rewrite /Crypto_Scalarmult_proof /Crypto_Scalarmult.
+  apply f_equal.
+  apply f_equal2.
+  2: apply f_equal.
+  all: apply f_equal.
+  all: rewrite /montgomery_fn.
+  all: change 255 with (254+1).
+  all: rewrite -montgomery_rec_eq_fn_rev ; f_equal; omega.
+Qed.
 
 Local Lemma impl_omega_simpl_0 : ∀ x : ℤ, (λ x0 : ℤ, 0 ≤ x0 ∧ x0 < 2 ^ 16) x → -38 ≤ x ∧ x < 2 ^ 16 + 38.
 Proof.
@@ -198,10 +222,10 @@ Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength p = 32 ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult n p) = ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
+  ZofList 8 (Crypto_Scalarmult_proof n p) = ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
 Proof.
   intros n p Hln Hlp Hbn Hbp.
-  rewrite /Crypto_Scalarmult ZCrypto_Scalarmult_eq /ZCrypto_Scalarmult_rev_gen.
+  rewrite /Crypto_Scalarmult_proof ZCrypto_Scalarmult_eq /ZCrypto_Scalarmult_rev_gen.
   have HUnpack:= Unpack25519_bounded p Hbp.
   have HCn:= clamp_bound n Hbn.
   have HUnpackEx: Forall (λ x : ℤ, -38 ≤ x ∧ x < 2 ^ 16 + 38) (Unpack25519 p)

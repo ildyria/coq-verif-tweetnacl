@@ -959,9 +959,10 @@ Tsh [{v_e}]<<( lg16 )-- undef16; Tsh [{v_f}]<<( lg16 )-- undef16; Tsh [{v_x}]<<(
   2: by apply prop_right.
   2: cancel. (* Q |-- Q *)
   2: subst aa ccc m cc a b c d x z.
-  2: reflexivity.
   subst sc.
-  split ; [|split]; rewrite /Crypto_Scalarmult.
+  all: rewrite -Crypto_Scalarmult_eq.
+  2: reflexivity.
+  split ; [|split]; rewrite /Crypto_Scalarmult_proof.
   3: split ; trivial.
   all: rewrite -?Heqm -?Heqcc -?Heqaa  -?Heqccc.
   apply Pack25519_bound.

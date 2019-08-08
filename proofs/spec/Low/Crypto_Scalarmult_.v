@@ -33,12 +33,12 @@ From Tweetnacl Require Import Mod.
 (* short name for Tweetnacl_verif *)
 Definition CSM := Crypto_Scalarmult.
 
-Theorem CSM_Eq : forall (n p:list Z),
+Lemma CSM_Eq : forall (n p:list Z),
   Zlength n = 32 ->
   Zlength p = 32 ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) n ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult n p) = val (curve25519_Fp_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
+  ZofList 8 (Crypto_Scalarmult_proof n p) = val (curve25519_Fp_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
 Proof.
 move => n p Hln Hlp HBn HBp.
 rewrite -ZCrypto_Scalarmult_curve25519_ladder.
@@ -90,6 +90,7 @@ Theorem Crypto_Scalarmult_Correct: forall (n p:list Z) (P:mc curve25519_Fp2_mcuT
   ZofList 8 (Crypto_Scalarmult n p) = (P *+ (Z.to_nat (Zclamp (ZofList 8 n)))) _x0.
 Proof.
   move=> n p P Hn Hp Hbn Hbp HP.
+  rewrite -Crypto_Scalarmult_eq. (* move translate pretty to proof *)
   rewrite CSM_Eq //.
   f_equal.
   apply curve25519_Fp2_ladder_ok => //.
