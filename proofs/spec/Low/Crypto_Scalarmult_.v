@@ -38,17 +38,13 @@ Lemma CSM_Eq : forall (n p:list Z),
   Zlength p = 32 ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) n ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult_proof n p) = val (curve25519_Fp_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
+  ZofList 8 (Crypto_Scalarmult n p) = val (curve25519_Fp_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
 Proof.
 move => n p Hln Hlp HBn HBp.
 rewrite -ZCrypto_Scalarmult_curve25519_ladder.
 apply Crypto_Scalarmult_Eq => //.
 Qed.
 
-(* Theorem curve25519_ladder_ok (n : nat) x :
-  (n < 2^255)%nat -> x != 0 ->
-  forall (p : mc curve25519_mcuType), p#x0 = x -> curve25519_ladder n x = (p *+ n)#x0.
- *)
 Open Scope ring_scope.
 Import GRing.Theory.
 
@@ -90,7 +86,6 @@ Theorem Crypto_Scalarmult_Correct: forall (n p:list Z) (P:mc curve25519_Fp2_mcuT
   ZofList 8 (Crypto_Scalarmult n p) = (P *+ (Z.to_nat (Zclamp (ZofList 8 n)))) _x0.
 Proof.
   move=> n p P Hn Hp Hbn Hbp HP.
-  rewrite -Crypto_Scalarmult_eq. (* move translate pretty to proof *)
   rewrite CSM_Eq //.
   f_equal.
   apply curve25519_Fp2_ladder_ok => //.

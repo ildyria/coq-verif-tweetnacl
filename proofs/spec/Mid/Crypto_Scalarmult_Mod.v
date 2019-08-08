@@ -14,7 +14,6 @@ From Tweetnacl Require Import Mid.Unpack25519.
 From Tweetnacl Require Import Mid.Pack25519.
 From Tweetnacl Require Import Mid.Car25519.
 From Tweetnacl Require Import Mid.Inv25519.
-From Tweetnacl Require Import Mid.ScalarMult.
 From Tweetnacl Require Import Mid.Mod.
 From Tweetnacl.Gen Require Import abstract_fn_rev_eq.
 From Tweetnacl.Gen Require Import abstract_fn_rev_abcdef.

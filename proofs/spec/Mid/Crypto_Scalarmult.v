@@ -14,7 +14,6 @@ From Tweetnacl Require Import Mid.Unpack25519.
 From Tweetnacl Require Import Mid.Pack25519.
 From Tweetnacl Require Import Mid.Car25519.
 From Tweetnacl Require Import Mid.Inv25519.
-From Tweetnacl Require Import Mid.ScalarMult.
 From Tweetnacl Require Import Mid.Crypto_Scalarmult_Fp.
 From Tweetnacl Require Import Mid.Crypto_Scalarmult_Mod.
 
@@ -34,14 +33,10 @@ Definition ZCrypto_Scalarmult_rev_gen n p :=
   let t := abstract_fn_rev 255 254 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
   ZPack25519 (Z.mul (get_a t) (ZInv25519 (get_c t))).
 
-Definition ZCrypto_Scalarmult_rec_gen n p :=
-  let t := montgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
-  ZPack25519 (Z.mul (get_a t) (ZInv25519 (get_c t))).
-
 End ZCrypto_Scalarmult_gen.
 
 Definition ZCrypto_Scalarmult n p :=
-  let t := @Zmontgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
+  let t := montgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
   ZPack25519 (Z.mul (get_a t) (ZInv25519 (get_c t))).
 
 (* This is the equivalence between ladders defined as fn with type class and ladders defined as recursive *)
@@ -50,7 +45,6 @@ Theorem ZCrypto_Scalarmult_eq : forall (n p : Z),
 Proof.
   intros.
   rewrite /ZCrypto_Scalarmult /ZCrypto_Scalarmult_rev_gen.
-  rewrite /Zmontgomery_rec.
   replace (montgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p)) with
   (montgomery_rec (S (Z.to_nat 254)) (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p)).
   2: change (S (Z.to_nat 254)) with 255%nat.
@@ -75,7 +69,6 @@ rewrite /ZInv25519.
 rewrite Zmult_mod.
 rewrite pow_mod.
 2: by compute.
-rewrite /Zmontgomery_rec.
 rewrite /Fp_Crypto_Scalarmult_rec_gen.
 rewrite /val /Zmodp_subType.
 rewrite -modZp /p -lock.

@@ -30,7 +30,6 @@ From Tweetnacl.Mid Require Import Prep_n.
 From Tweetnacl.Mid Require Import GetBit.
 From Tweetnacl.Mid Require Import Crypto_Scalarmult.
 From Tweetnacl.Mid Require Import AMZubSqSel.
-From Tweetnacl.Mid Require Import ScalarMult.
 From Tweetnacl.Low Require Import Crypto_Scalarmult_lemmas.
 From Tweetnacl.Mid Require Import Mod.
 From Tweetnacl.Mid Require Import Instances.
@@ -175,7 +174,7 @@ get_a
               (Unpack25519 p))) `mod` (2 ^ 255 - 19).
 Proof.
 move => Hln Hlp Hbn Hbp HUnpack HCn HUnpackEx HlUnpackP.
-rewrite /Zmontgomery_fn /montgomery_fn.
+rewrite /montgomery_fn.
 have H255: 0 <= 255 by omega.
 rewrite Zlength_correct in Hln.
 rewrite Zlength_correct in Hlp.
@@ -213,7 +212,7 @@ f_equal ; f_equal.
 have H255: 0 <= 255 by omega.
 rewrite Zlength_correct in Hln.
 rewrite Zlength_correct in Hlp.
-rewrite /Zmontgomery_fn /montgomery_fn clamp_ZofList_eq ?Unpack25519_eq_ZUnpack25519 => // ; try omega.
+rewrite /montgomery_fn clamp_ZofList_eq ?Unpack25519_eq_ZUnpack25519 => // ; try omega.
 apply (abstract_fn_rev_eq_List_Z_c (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct) => //.
 Qed.
 
@@ -222,9 +221,10 @@ Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength p = 32 ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
   Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult_proof n p) = ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
+  ZofList 8 (Crypto_Scalarmult n p) = ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
 Proof.
   intros n p Hln Hlp Hbn Hbp.
+  rewrite -Crypto_Scalarmult_eq.
   rewrite /Crypto_Scalarmult_proof ZCrypto_Scalarmult_eq /ZCrypto_Scalarmult_rev_gen.
   have HUnpack:= Unpack25519_bounded p Hbp.
   have HCn:= clamp_bound n Hbn.
