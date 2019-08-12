@@ -1,34 +1,34 @@
 \section{Preliminaries}
-\label{preliminaries}
+\label{sec:preliminaries}
 
 In this section, we first give a brief summary of the mathematical background
 on elliptic curves. We then describe X25519 and its implementation in TweetNaCl.
 Finally, we provide a brief description of the formal tools we use in our proofs.
 
 \subsection{Arithmetic on Montgomery curves}
-\label{subsec:montgomery}
+\label{subsec:arithmetic-montgomery}
 
-\begin{definition}
+\begin{dfn}
   Let $a,b \in \K$ such that $a^2 \neq 4$ and $b \neq 0$, $M_{a,b}$ is a
   Montgomery curve defined over a field $\K$ with equation:
   $$M_{a,b}: by^2 = x^3 + ax^2 + x$$
-\end{definition}
+\end{dfn}
 
-\begin{definition}
+\begin{dfn}
   For any algebraic extension $\L$ of $\K$, $\K \subseteq	\L$,
   $M_{a,b}(\L)$ is the set of $\L$-rational points which satisfy the equation with
   addition to the point at infinity $\Oinf$.
   $$M_{a,b}(\L) = \{\Oinf\} \cup \{(x,y) \in \L \times \L~|~by^2 = x^3 + ax^2 + x\}$$
-\end{definition}
-Details of the formalization can be found in Section~\ref{montgomery}.
+\end{dfn}
+Details of the formalization can be found in \sref{subsec:ECC-Montgomery}.
 
-\begin{definition}
+\begin{dfn}
   For $M_{a,b}$ over $\F{p}$, the parameter $b$ is known as the ``twisting factor'',
   for $b'\in \F{p}\backslash\{0\}$ and $b' \neq b$, the curves $M_{a,b}$ and $M_{a,b'}$
   are isomorphic via $(x,y) \mapsto (x, \sqrt{b'/b} \cdot y)$.
   When $b'/b$ is not a square in \F{p}, $M_{a,b'}$ is a quadratic twist of $M_{a,b}$:
   isomorphic over $\F{p^2}$~\cite{cryptoeprint:2017:212}.
-\end{definition}
+\end{dfn}
 
 Points over $M_{a,b}(\K)$ can be equipped with a structure of an abelian group
 with the addition operation $\boxplus$ and with neutral element the point at infinity $\Oinf$.
@@ -39,36 +39,37 @@ We now consider x-coordinate-only operations. In order to simplify computations,
 such coordinates are represented as $X/Z$ fractions. We define two operations:
 \begin{align*}
 \texttt{xADD} &: (X_P, Z_P, X_Q , Z_Q, X_{P-Q}, Z_{P-Q}) \mapsto (X_{P+Q}, Z_{P+Q})\\
-\texttt{xDBL} &: (X_P, Z_P) \mapsto (X_{2P}, Z_{2P})\\
+\texttt{xDBL} &: (X_P, Z_P) \mapsto (X_{2P}, Z_{2P})
 \end{align*}
-In the Montgomery, notice that the arguments of \texttt{xADD} and \texttt{xDBL}
+In the Montgomery ladder, notice that the arguments of \texttt{xADD} and \texttt{xDBL}
 are swapped depending of the value of the $k^{th}$ bit. We use a conditional
-swap \texttt{CSWAP} to change the arguments of the above function. This  while keeping the same body of the loop.
-Given a pair $(X_0, X_1)$ and a boolean $b$, \texttt{CSWAP} returns the pair
+swap \texttt{CSWAP} to change the arguments of the above function while keeping
+the same body of the loop.
+Given a pair $(X_0, X_1)$ and a Boolean $b$, \texttt{CSWAP} returns the pair
 $(X_b, X_{1-b})$.
 
 By using the differential addition and doubling operations we define the Montgomery ladder
-computing a $x$-coordinate-only scalar multiplication (see Algorithm~\ref{montgomery-ladder}).
+computing a $x$-coordinate-only scalar multiplication (see \aref{alg:montgomery-ladder}).
 \begin{algorithm}
 \caption{Montgomery ladder for scalar mult.}
-\label{montgomery-ladder}
+\label{alg:montgomery-ladder}
 \begin{algorithmic}
 \REQUIRE{x-coordinate of $P$ : $P.x$, scalars $n$ and $m$, $n < 2^m$}
 \ENSURE{$Q = n \cdot P$}
 \STATE $Q \leftarrow \Oinf$
 \STATE $R \leftarrow (X_P,Z_P)$
 \FOR{$k$ := $m$ down to $1$}
-  \STATE $(Q,R) \leftarrow \texttt{SWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
+  \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
   \STATE $Q \leftarrow \texttt{xDBL}(Q)$
   \STATE $R \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
-  \STATE $(Q,R) \leftarrow \texttt{SWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
+  \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
 \ENDFOR
 \RETURN $Q$
 \end{algorithmic}
 \end{algorithm}
 
 \subsection{The X25519 key exchange}
-\label{preliminaries:A}
+\label{subsec:X25519-key-exchange}
 
 For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
 defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
@@ -79,7 +80,7 @@ a point $P$ of $E(\F{\p})$, X25519 returns the $x$-coordinate of the
 scalar multiplication of $P$ by $n$, thus $n \cdot P$.
 % Note that the result is the same with $n \cdot (-P) = -(n \cdot P)$.
 
-X25519 makes use of the little endian bijection for its arguements of 32-bytes:
+X25519 makes use of the little endian bijection for its arguments of 32-bytes:
 \texttt{n} the secret key and \texttt{p} the public key.
 Curve25519 has a cofactor of 8. In order to avoid attacks where an attacker
 could discover some bits of the private key, values of $n$ are forced into the
@@ -95,7 +96,7 @@ The party exchanges $P_a$ and $P_b$ and computes their shared secret with X25519
 over $s_a$ and $P_b$ (respectively $s_b$ and $P_a$).
 
 \subsection{TweetNaCl specifics}
-\label{preliminaries:B}
+\label{subsec:Number-TweetNaCl}
 
 As it names stands for, TweetNaCl aims for code compactness (in tweets).
 As a result it uses a few defines and typedef to gain precious bytes while
@@ -112,18 +113,12 @@ defines the output. It is then followed by the inputs arguments.
 
 Due to some limitations of VST, indexes used in \TNaCle{for} loops have to be
 of type \TNaCle{int} instead of \TNaCle{i64}. We change the code to allow our
-proofs to carry through. We beleive the original code is fine as is.
+proofs to carry through. We believe the original code is fine as is.
 A complete diff of our modifications to TweetNaCl can be found in
 Appendix~\ref{verified-C-and-diff}.
 
-\todo{MOVE this:}
-The upper 64 indexes of the \TNaCle{i64 x[80]} intermediate variable of
-\TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code,
-we fixed it.
-\todo{Metion Peter Wu and Jason A. Donenfeld change to car25519}
-
 \subsection{X25519 in TweetNaCl}
-\label{preliminaries:B}
+\label{subsec:X25519-TweetNaCl}
 
 We now describe the implementation of X25519 in TweetNaCl.
 
@@ -204,8 +199,8 @@ It takes the exponentiation by $2^{255}-21$ with the Square-and-multiply algorit
 Fermat's little theorem brings the correctness.
 Notice that in this case the inverse of $0$ is defined as $0$.
 
-\TNaCle{sel25519} implements a constant-time conditional \texttt{CSWAP} (Algorithm~\ref{c-swap})
-by applying a mask between two fields elements.
+\TNaCle{sel25519} implements a constant-time conditional swap (\texttt{CSWAP}) by
+applying a mask between two fields elements.
 \begin{lstlisting}[language=Ctweetnacl]
 sv sel25519(gf p,gf q,i64 b)
 {
@@ -320,13 +315,13 @@ int crypto_scalarmult(u8 *q,
 \end{lstlisting}
 
 \subsection{Coq and VST}
-\label{preliminaries:C}
+\label{subsec:Coq-VST}
 
 Coq~\cite{coq-faq} is an interactive theorem prover. It provides an expressive
 formal language to write mathematical definitions, algorithms and theorems coupled
 with their proofs. It has been used in the proof the four-color theorem~\cite{gonthier2008formal}.
 The CompCert C compiler~\cite{Leroy-backend} was implemented with it and provides
-the guarante that the behaviour of the machine code is the same as the one
+the guarantee that the behavior of the machine code is the same as the one
 semantically defined in C (ISO C99~\cite{ISO:C99}).
 
 As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
@@ -353,7 +348,7 @@ For example, here is the rule for sequential composition:
 Separation logic is an extension of Hoare logic which allows reasoning about
 pointers and memory manipulation. This logic enforces strict conditions on the
 memory shared such as being disjoint.
-We discuss this limitation further in Section~\ref{using-VST}.
+We discuss this limitation further in \sref{subsec:with-VST}.
 The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework
 which uses Separation logic to prove the functional correctness of C programs.
 The first step consists of translating the source code into CLight,

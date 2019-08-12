@@ -1,19 +1,24 @@
 \section{Proving that X25519 in Coq matches the mathematical model}
-\label{sec3-maths}
+\label{sec:maths}
 
-In this section we first present the work of Bartzia and Strub \cite{DBLP:conf/itp/BartziaS14} (\ref{Weierstrass}).
-We extend it to support Montgomery curves (\ref{montgomery}) with homogeneous coordinates (\ref{projective}) and prove the correctness of the ladder (\ref{ladder}).
+\begin{theorem}\label{thm:Elliptic-CSM}
+\todo{DESCRIBE}
+\end{theorem}
+
+In this section we first present the work of Bartzia and Strub \cite{DBLP:conf/itp/BartziaS14} (\ref{subsec:ECC-Weierstrass}).
+We extend it to support Montgomery curves (\ref{subsec:ECC-Montgomery}) with homogeneous coordinates (\ref{subsec:ECC-projective}) and prove the correctness of the ladder (\ref{subsec:ECC-ladder}).
 
 We then prove the Montgomery ladder computes
 the x-coordinate of scalar multiplication over $\F{p^2}$
 (Theorem 2.1 by Bernstein \cite{Ber06}) where $p$ is the prime $\p$.
 
 \subsection{Formalization of Elliptic Curves}
+\label{subsec:ECC}
 
 We consider elliptic curves over a field $\K$. We assume that the
 characteristic of $\K$ is neither 2 or 3.
 
-\begin{definition}
+\begin{dfn}
 Let a field $\K$, using an appropriate choice of coordinates, an elliptic curve $E$
 is a plane cubic algebraic curve $E(x,y)$ defined by an equation of the form:
 $$E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
@@ -21,18 +26,19 @@ where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
 or self-intersections). The set of points, written $E(\K)$, is formed by the
 solutions $(x,y)$ of $E$ augmented by a distinguished point $\Oinf$ (called point at infinity):
 $$E(\K) = \{(x,y) \in \K \times \K | E(x,y)\} \cup \{\Oinf\}$$
-\end{definition}
+\end{dfn}
 
 \subsubsection{Weierstra{\ss} Curves}
-\label{Weierstrass}
+\label{subsec:ECC-Weierstrass}
+
 This equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
 
-\begin{definition}
+\begin{dfn}
 Let $a \in \K$, and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$
 The \textit{elliptic curve} $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
 $$y^2 = x^3 + ax + b,$$
 along with an additional formal point $\Oinf$, ``at infinity''. Such curve does not present any singularity.
-\end{definition}
+\end{dfn}
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
 represent the points on a specific curve. It is parameterized by
@@ -87,17 +93,18 @@ Definition addec (p1 p2 : ec) : ec :=
 \end{lstlisting}
 
 \subsubsection{Montgomery Curves}
-\label{montgomery}
+\label{subsec:ECC-Montgomery}
+
 Computation over elliptic curves are hard. Speedups can be obtained by using
 homogeneous coordinates and other forms than the Weierstra{\ss} form. We consider
 the Montgomery form \cite{MontgomerySpeeding}.
 
-\begin{definition}
+\begin{dfn}
   Let $a \in \K \backslash \{-2, 2\}$, and $b \in \K \backslash \{ 0\}$.
   The \textit{Montgomery curve} $M_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
   $$by^2 = x^3 + ax^2 + x,$$
   along with an additional formal point $\Oinf$, ``at infinity''.
-\end{definition}
+\end{dfn}
 Using a similar representation, we defined the parametric type \texttt{mc} which
 represent the points on a specific Montgomery curve. It is parameterized by
 a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
@@ -165,7 +172,8 @@ Lemma ec_of_mc_bij : bijective ec_of_mc.
 \end{lstlisting}
 
 \subsubsection{Projective Coordinates}
-\label{projective}
+\label{subsec:ECC-projective}
+
 Points on a projective plane are represented with a triple $(X:Y:Z)$. Any points
 except $(0:0:0)$ defines a point on a projective plane. A scalar multiple of a point defines the same point, \ie
 for all $\alpha \neq 0$, $(X:Y:Z)$ and $(\alpha X:\alpha Y:\alpha Z)$ defines
@@ -190,12 +198,12 @@ Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 \end{lstlisting}
 
 With those coordinates we prove the following lemmas for the addition of two points.
-\begin{definition}Define the functions $\chi$ and $\chi_0$:\\
+\begin{dfn}Define the functions $\chi$ and $\chi_0$:\\
 -- $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$\\
   such that $\chi(\Oinf) = \infty$ and $\chi((x,y)) = x$.\\
 -- $\chi_0 : M_{a,b}(\K) \to \K$\\
   such that $\chi_0(\Oinf) = 0$ and $\chi_0((x,y)) = x$.
-\end{definition}
+\end{dfn}
 \begin{lemma}
 \label{lemma-add}
 Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and
@@ -270,7 +278,7 @@ With these two lemmas (\ref{lemma-add} and \ref{lemma-double}), we have the basi
 tools to compute efficiently additions and point doubling on projective coordinates.
 
 \subsubsection{Scalar Multiplication Algorithms}
-\label{ladder}
+\label{subsec:ECC-ladder}
 
 Suppose we have a scalar $n$ and a point $P$ on some curve. The most straightforward
 way to compute $n \cdot P$ is to repetitively add $P$ \ie computing $P + \ldots + P$.
@@ -278,66 +286,24 @@ However there is an more efficient algorithm which makes use of the binary
 representation of $n$ and by combining doubling and adding and starting from $\Oinf$.
 \eg for $n=11$, we compute $2(2(2(2\Oinf + P)) + P)+ P$.
 
-% \begin{algorithm}
-% \caption{Double-and-add for scalar mult.}
-% \label{double-add}
-% \begin{algorithmic}
-% \REQUIRE{Point $P$, scalars $n$ and $m$, $n < 2^m$}
-% \ENSURE{$Q = n \cdot P$}
-% \STATE $Q \leftarrow \Oinf$
-% \FOR{$k$ := $m$ downto $1$}
-%   \STATE $Q \leftarrow 2Q$
-%   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
-%     \STATE $Q \leftarrow Q + P$
-%   \ENDIF
-% \ENDFOR
-% \end{algorithmic}
-% \end{algorithm}
-
-% \begin{lemma}
-% \label{lemma-double-add}
-% Algorithm \ref{double-add} is correct, \ie it respects its output conditions given the input conditions.
-% \end{lemma}
-
-% We prove Lemma \ref{lemma-double-add}. However
 With a simple double-and-add algorithm, with careful timing, an attacker could reconstruct $n$.
 In the case of X25519, $n$ is the private key. With the Montgomery's ladder, while
 it provides slightly more computations and an extra variable, we can prevent such weakness.
-See Algorithm \ref{montgomery-ladder}.
-
-% \begin{algorithm}
-% \caption{Montgomery ladder for scalar mult.}
-% \label{montgomery-ladder}
-% \begin{algorithmic}
-% \REQUIRE{Point $P$, scalars $n$ and $m$, $n < 2^m$}
-% \ENSURE{$Q = n \cdot P$}
-% \STATE $Q \leftarrow \Oinf$
-% \STATE $R \leftarrow P$
-% \FOR{$k$ := $m$ downto $1$}
-%   \IF{$k^{\text{th}}$ bit of $n$ is $0$}
-%     \STATE $R \leftarrow Q + R$
-%     \STATE $Q \leftarrow 2Q$
-%   \ELSE
-%     \STATE $Q \leftarrow Q + R$
-%     \STATE $R \leftarrow 2R$
-%   \ENDIF
-% \ENDFOR
-% \end{algorithmic}
-% \end{algorithm}
+See \aref{alg:montgomery-ladder}.
 
 \begin{lemma}
 \label{lemma-montgomery-ladder}
-Algorithm \ref{montgomery-ladder} is correct, \ie it respects its output conditions given the input conditions.
+\aref{alg:montgomery-ladder} is correct, \ie it respects its output conditions given the input conditions.
 \end{lemma}
 
 In Curve25519 we are only interested in the $x$ coordinate of points, using
 Lemmas \ref{lemma-add} and \ref{lemma-double}, and replacing the if statements
 with conditional swapping we can define a ladder similar to the one used in TweetNaCl.
-See Algorithm \ref{montgomery-double-add}
+See \aref{alg:montgomery-double-add}
 
 \begin{algorithm}
 \caption{Montgomery ladder for scalar multiplication on $M_{a,b}(\K)$ with optimizations}
-\label{montgomery-double-add}
+\label{alg:montgomery-double-add}
 \begin{algorithmic}
 \REQUIRE{$x \in \K\backslash \{0\}$, scalars $n$ and $m$, $n < 2^m$}
 \ENSURE{$a/c = \chi_0(n \cdot P)$ for any $P$ such that $\chi_0(P) = x$}
@@ -375,7 +341,7 @@ See Algorithm \ref{montgomery-double-add}
 
 \begin{lemma}
 \label{lemma-montgomery-double-add}
-Algorithm \ref{montgomery-double-add} is correct, \ie it respects its output
+\aref{alg:montgomery-double-add} is correct, \ie it respects its output
 conditions given the input conditions.
 \end{lemma}
 
@@ -410,7 +376,7 @@ And thus the theorem of the correctness of the Montgomery ladder.
 \begin{theorem}
 \label{montgomery-ladder-correct}
 For all $n, m \in \N$, $x \in \K$, $P \in M_{a,b}(\K)$,
-if $\chi_0(P) = x$ then Algorithm \ref{montgomery-double-add} returns $\chi_0(n \cdot P)$
+if $\chi_0(P) = x$ then \aref{alg:montgomery-double-add} returns $\chi_0(n \cdot P)$
 \end{theorem}
 \begin{lstlisting}[language=Coq]
 Theorem opt_montgomery_ok (n m: nat) (x : K) :
@@ -512,7 +478,7 @@ Theorem x_is_on_curve_or_twist: forall x : Zmodp.type,
 We use the same definitions as in \cite{Ber06}. We consider the extension field $\F{p^2}$ as the set $\F{p} \times \F{p}$ with $\delta = 2$, in other words,
 the polynomial with coefficients in $\F{p}$ modulo $X^2 - 2$. In a similar way as for $\F{p}$ we use Module in Coq.
 \begin{lstlisting}[language=Coq]
-Module Zmodp.
+Module Zmodp2.
 Inductive type :=
   Zmodp2 (x: Zmodp.type) (y:Zmodp.type).
 
@@ -567,7 +533,7 @@ Theorem x_is_on_curve_or_twist_implies_x_in_Fp2:
 \end{lstlisting}
 
 We now study the case of the scalar multiplication and show similar proofs.
-\begin{definition}
+\begin{dfn}
 Define the functions $\varphi_c$, $\varphi_t$ and $\psi$\\
 -- $\varphi_c: M_{486662,1}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
   such that $\varphi((x,y)) = ((x,0), (y,0))$.\\
@@ -575,7 +541,7 @@ Define the functions $\varphi_c$, $\varphi_t$ and $\psi$\\
   such that $\varphi((x,y)) = ((x,0), (0,y))$.\\
 -- $\psi: \F{p^2} \mapsto \F{p}$\\
   such that $\psi(x,y) = (x)$.
-\end{definition}
+\end{dfn}
 
 \begin{lemma}
 For all $n \in \N$, for all point $P\in\F{p}\times\F{p}$ on the curve $M_{486662,1}(\F{p})$ (respectively on the quadratic twist $M_{486662,2}(\F{p})$), we have:
@@ -604,4 +570,32 @@ Lemma curve25519_Fp2_ladder_ok (n : nat) (x:Zmodp.type) :
     forall (p  : mc curve25519_Fp2_mcuType),
     p #x0 = Zmodp2.Zmodp2 x 0 ->
     curve25519_Fp_ladder n x = (p *+ n)#x0 /p.
+\end{lstlisting}
+
+
+
+
+
+By converting those array of 32 bytes into their respective little-endian value
+we prove the correctness of \TNaCle{crypto_scalarmult} (Theorem \ref{CSM-correct})
+in Coq (for the sake of simplicity we do not display the conversion in the theorem).
+\begin{theorem}
+\label{CSM-correct}
+For all $n \in \N, n < 2^{255}$ and where the bits 1, 2, 5 248, 249, 250
+are cleared and bit 6 is set, for all $P \in E(\F{p^2})$,
+for all $p \in \F{p}$ such that $P.x = p$,
+there exists $Q \in E(\F{p^2})$ such that $Q = \cdot P$ where $Q.x = q$ and $q$ = \VSTe{CSM} $n$ $p$.
+\end{theorem}
+A more complete description in Coq of Theorem \ref{CSM-correct} with the associated conversions
+is as follow:
+\begin{lstlisting}[language=Coq]
+Theorem Crypto_Scalarmult_Correct:
+  forall (n p:list Z) (P:mc curve25519_Fp2_mcuType),
+  Zlength n = 32 ->
+  Zlength p = 32 ->
+  Forall (fun x => 0 <= x /\ x < 2^8) n ->
+  Forall (fun x => 0 <= x /\ x < 2^8) p ->
+  Fp2_x (ZUnpack25519 (ZofList 8 p)) = P#x0 ->
+  ZofList 8 (Crypto_Scalarmult n p) =
+    (P *+ (Z.to_nat (Zclamp (ZofList 8 n)))) _x0.
 \end{lstlisting}

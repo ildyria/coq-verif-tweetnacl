@@ -1,5 +1,5 @@
 \section{Conclusion}
-\label{Conclusion}
+\label{sec:Conclusion}
 
 Any formal system relies on a trusted base. In this section we describe our
 chain of trust.
@@ -59,4 +59,10 @@ o[i] = aux1 + aux2;
   done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
-\subsection{Proof toolchain}
+\subsection{Modifications in TweetNaCl}
+
+The upper 64 indexes of the \TNaCle{i64 x[80]} intermediate variable of
+\TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code,
+we fixed it.
+
+\todo{Mention Peter Wu and Jason A. Donenfeld change to car25519}
