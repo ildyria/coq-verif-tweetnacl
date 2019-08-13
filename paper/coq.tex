@@ -1,0 +1,105 @@
+\subsection{Coq definitions}
+\label{appendix:coq}
+
+\subsubsection{Montgomery Ladder}
+\label{subsubsec:coq-ladder}
+
+Generic definition of the ladder:
+
+\begin{lstlisting}[language=Coq]
+(* Typeclass to encapsulate the operations *)
+Class Ops (T T': Type) (Mod: T -> T):=
+{
+  +   : T -> T -> T;           (* Add           *)
+  *   : T -> T -> T;           (* Mult          *)
+  -   : T -> T -> T;           (* Sub           *)
+  x^2  : T -> T;                (* Square        *)
+  C_0 : T;                     (* Constant 0    *)
+  C_1 : T;                     (* Constant 1    *)
+  C_121665: T;                 (* const (a-2)/4 *)
+  Sel25519: Z -> T -> T -> T; (* CSWAP         *)
+  Getbit: Z -> T' -> Z;       (* ith bit       *)
+}.
+
+Fixpoint montgomery_rec (m : nat) (z : T')
+(a: T) (b: T) (c: T) (d: T) (e: T) (f: T) (x: T) :
+(* a: x2              *)
+(* b: x3              *)
+(* c: z2              *)
+(* d: z3              *)
+(* e: temporary  var  *)
+(* f: temporary  var  *)
+(* x: x1              *)
+(T * T * T * T * T * T) :=
+match m with
+| 0%nat => (a,b,c,d,e,f)
+| S n =>
+  let r := Getbit (Z.of_nat n) z in
+    (* k_t = (k >> t) & 1                       *)
+    (* swap <- k_t                              *)
+  let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)            *)
+  let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)            *)
+  let e := a + c in  (* A = x_2 + z_2              *)
+  let a := a - c in  (* B = x_2 - z_2              *)
+  let c := b + d in  (* C = x_3 + z_3              *)
+  let b := b - d in  (* D = x_3 - z_3              *)
+  let d := e ^2 in    (* AA = A^2                  *)
+  let f := a ^2 in    (* BB = B^2                  *)
+  let a := c * a in  (* CB = C * B               *)
+  let c := b * e in  (* DA = D * A               *)
+  let e := a + c in  (* x_3 = (DA + CB)^2          *)
+  let a := a - c in  (* z_3 = x_1 * (DA - CB)^2     *)
+  let b := a ^2 in    (* z_3 = x_1 * (DA - CB)^2     *)
+  let c := d - f in  (* E = AA - BB             *)
+  let a := c * C_121665 in
+                     (* z_2 = E * (AA + a24 * E) *)
+  let a := a + d in  (* z_2 = E * (AA + a24 * E) *)
+  let c := c * a in  (* z_2 = E * (AA + a24 * E) *)
+  let a := d * f in  (* x_2 = AA * BB            *)
+  let d := b * x in  (* z_3 = x_1 * (DA - CB)^2    *)
+  let b := e ^2 in    (* x_3 = (DA + CB)^2         *)
+  let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)           *)
+  let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)           *)
+  montgomery_rec n z a b c d e f x
+end.
+
+Definition get_a (t:(T * T * T * T * T * T)) : T :=
+match t with
+  (a,b,c,d,e,f) => a
+end.
+Definition get_c (t:(T * T * T * T * T * T)) : T :=
+match t with
+  (a,b,c,d,e,f) => c
+end.
+\end{lstlisting}
+
+\subsubsection{Equivalence between For Loops}
+\label{subsubsec:for}
+
+\begin{lstlisting}[language=Coq]
+Variable T: Type.
+Variable g: nat -> T -> T.
+
+Fixpoint rec_fn (n:nat) (s:T) :=
+  match n with
+  | 0 => s
+  | S n => rec_fn n (g n s)
+  end.
+
+Fixpoint rec_fn_rev_acc (n:nat) (m:nat) (s:T) :=
+  match n with
+  | 0 => s
+  | S n => g (m - n - 1) (rec_fn_rev_acc n m s)
+  end.
+
+Definition rec_fn_rev (n:nat) (s:T) :=
+  rec_fn_rev_acc n n s.
+
+Lemma Tail_Head_equiv :
+  forall (n:nat) (s:T),
+  rec_fn n s = rec_fn_rev n s.
+\end{lstlisting}

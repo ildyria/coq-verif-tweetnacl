@@ -19,6 +19,10 @@ correct with VST (\tref{thm:VST}).
 Then we discuss techniques used to prove equivalence of operations between
 different number representations (\ref{}), proving the equivalence with the RFC (\tref{thm:RFC}).
 
+
+
+
+
 \subsection{Structure of our proof}
 \label{subsec:proof-structure}
 
@@ -81,21 +85,34 @@ This guarantees us the correctness of the implementation.
   \label{tikz:ProofStructure}
 \end{figure}
 
-\subsection{Correctness Specification}
+
+
+
+
+\subsection{A Correct Specification}
 
 TweetNaCl implements X25519 with numbers represented as arrays.
-RFC~7748 defines X25519 over field elements.
+RFC~7748 defines X25519 over field elements. In order to simplify our proofs,
+we define generic operations used in the ladder over generic types
+\coqe{T} and \coqe{T'}. Those types are later instanciated as natural number,
+integers, field elements, list of integers...
+The generic definition of the ladder (\coqe{montgomery_rec}) and its match with
+the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
+It has to be noted that the RFC uses an additional variable to optimize the number
+of \texttt{CSWAP}:
+\emph{``Note that these formulas are slightly different from Montgomery's
+original paper.  Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
+We later prove our lader correct in that respect (\sref{sec:maths}).
 
-\noindent
--- Definition of \Coqe{Crypto_Scalarmult} CSM\\
--- explain why we have a generic definition, explain instanciation
+\coqe{montgomery_rec} only computes the ladder steps, we define
 
+\todo{more stuff on list, and numbers, add code into appendix.}
 
 
 \subsection{With the Verifiable Software Toolchain}
 \label{subsec:with-VST}
 
-\subheading{Specifications}
+\subheading{Specifications.}
 We show the soundness of TweetNaCl by proving the following specification matches a pure Coq function. % why "pure" ?
 This defines the equivalence between the Clight representation and a Coq definition of the ladder.
 
@@ -186,15 +203,15 @@ This provide with multiple advantages: the verification by the Coq kernel can be
 in parallel and multiple users can work on proving different functions at the same time.
 For the sake of completeness we proved all intermediate functions.
 
-\subheading{Memory aliasing} is the next point a user should pay attention. The way VST
-deals with the separation logic is similar to a consumer producer problem.
+\subheading{Memory aliasing.}
+VST implementation of separation logic is similar to a consumer-producer problem.
 A simple specification of \texttt{M(o,a,b)} will assume three distinct memory share.
 When called with three memory share (\texttt{o, a, b}), the three of them will be consumed.
 However assuming this naive specification when \texttt{M(o,a,a)} is called (squaring),
 the first two memory shares (\texttt{o, a}) are consumed and VST will expect a third
 memory share where the last \texttt{a} is pointing at which does not \textit{exist} anymore.
 
-Examples of such cases are summarized in \fref{tikz:MemSame}.
+Examples of such cases are illustrated in \fref{tikz:MemSame}.
 \begin{figure}[h]
   \centering
   \include{tikz/memory_same_sh}
@@ -202,27 +219,31 @@ Examples of such cases are summarized in \fref{tikz:MemSame}.
   \label{tikz:MemSame}
 \end{figure}
 
-This forces the user to either define multiple specifications for a single function
-or specify in his specification which aliasing version is being used.
-For our specifications of functions with 3 arguments, named here after \texttt{o, a, b},
-we define an additional parameter $k$ with values in
-$\{0,1,2,3\}$:
+A single function must either have multiple specifications or specify which
+aliasing set up is being used. The first option would require us to prove
+specifications multiple times for a same function. We chose the second approach:
+for functions with 3 arguments, named here after \texttt{o, a, b},
+we define an additional parameter $k$ with values in $\{0,1,2,3\}$:
 \begin{itemize}
   \item if $k=0$ then \texttt{o} and \texttt{a} are aliased.
   \item if $k=1$ then \texttt{o} and \texttt{b} are aliased.
   \item if $k=2$ then \texttt{a} and \texttt{b} are aliased.
   \item else there is no aliasing.
 \end{itemize}
-This solution allows us to make cases analysis over possible aliasing.
+In the proof of our specification, we then do a case analysis over $k$ when needed.
+This solution does not cover all cases (e.g. all arguments are aliased)
+but it is enough for our needs.
 
-\subheading{Verifying \texttt{for} loops}
+\subheading{Verifying \texttt{for} loops.}
 Final state of \texttt{for} loops are usually computed by simple recursive functions.
-However we must define invariants which are true for each iteration.
+However we must define invariants which are true for each iteration step.
 
 Assume we want to prove a decreasing loop where indexes go from 3 to 0.
-Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as input an integer for the index and a state,
-then return a state. It simulate the body of the \texttt{for} loop.
-Assume it's recursive call: $f : \N \rightarrow State \rightarrow State $ which iteratively apply $g$ with decreasing index:
+Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as
+input an integer for the index and a state, then return a state.
+It simulate the body of the \texttt{for} loop.
+Assume its recursive call: $f : \N \rightarrow State \rightarrow State $ which
+iteratively apply $g$ with decreasing index:
 \begin{equation*}
   f ( i , s ) =
   \begin{cases}
@@ -238,58 +259,26 @@ Then we have :
 \end{align*}
 To prove the correctness of $f(4,s)$, we need to prove that intermediate steps
 $g(3,s)$; $g(2,g(3,s))$; $g(1,g(2,g(3,s)))$; $g(0,g(1,g(2,g(3,s))))$ are correct.
-Due to the computation order of recursive function, our loop invariant for $i\in\{0;1;2;3;4\}$ cannot use $f(i)$.
-To solve this, we define an auxiliary function with an accumulator such that given $i\in\{0;1;2;3;4\}$, it will compute the first $i$ steps of the loop.
-We then prove for the complete number of steps, the function with the accumulator and without returns the same result.
+Due to the computation order of recursive function, our loop invariant for
+$i\in\{0;1;2;3;4\}$ cannot use $f(i)$.
+To solve this, we define an auxiliary function with an accumulator such that
+given $i\in\{0;1;2;3;4\}$, it will compute the first $i$ steps of the loop.
 
-We formalized this result in a generic way as follows:
-\begin{lstlisting}[language=Coq]
-Variable T: Type.
-Variable g: nat -> T -> T.
+We then prove for the complete number of steps, the function with the accumulator
+and without returns the same result.
+We formalized this result in a generic way in Appendix~\ref{subsubsec:for}.
 
-Fixpoint rec_fn (n:nat) (s:T) :=
-  match n with
-  | 0 => s
-  | S n => rec_fn n (g n s)
-  end.
-
-Fixpoint rec_fn_rev_acc (n:nat) (m:nat) (s:T) :=
-  match n with
-  | 0 => s
-  | S n => g (m - n - 1) (rec_fn_rev_acc n m s)
-  end.
-
-Definition rec_fn_rev (n:nat) (s:T) :=
-  rec_fn_rev_acc n n s.
-
-Lemma Tail_Head_equiv :
-  forall (n:nat) (s:T),
-  rec_fn n s = rec_fn_rev n s.
-\end{lstlisting}
 Using this formalization, we prove that the 255 steps of the Montgomery ladder
 in C provide the same computations are the one defined in \aref{alg:montgomery-double-add}.
 
-\subsection{Number Representation and C Implementation}
-
-\subsection{Inversions, Reflections and Packing}
-% \subsection{Speeding up with Reflections}
-% \subsection{Packing and other Applications of Reflections}
 
 
 
-\vspace{1em}
-\hrule
-\vspace{1em}
-
-
-
-
-\subsection{Correctness Specification}
 
 
 \subsection{Number Representation and C Implementation}
 
-As described in Section \ref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are represented
+As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are represented
 in base $2^{16}$ and we use a direct mapping to represent that array as a list
 integers in Coq. However in order to show the correctness of the basic operations,
 we need to convert this number as a full integer.
@@ -333,8 +322,9 @@ Lemma mult_GF_Zlength :
    (Z16.lst a * Z16.lst b) :GF.
 \end{Coq}
 
-\subsection{Inversions in \Zfield}
+\subsection{Inversions, Reflections and Packing}
 
+\subheading{Inversions in \Zfield.}
 We define a Coq version of the inversion mimicking
 the behavior of \TNaCle{inv25519} (see below) over \Coqe{list Z}.
 \begin{lstlisting}[language=Ctweetnacl]
@@ -417,7 +407,8 @@ apply the unrolling and exponentiation formulas 255 times. This can be automated
 in Coq with tacticals such as \Coqe{repeat}, but it generates a proof object which
 will take a long time to verify.
 
-\subsection{Speeding up with Reflections}
+
+\subheading{Speeding up with Reflections.}
 
 In order to speed up the verification, we use a technique called reflection.
 It provides us with flexibility, for example, we don't need to know the number of
@@ -497,7 +488,7 @@ Lemma pow_inv_pow_fn_rev_eq :
 \end{lstlisting}
 We then derive the following lemma.
 \begin{lemma}
-\label{reify}
+\label{lm:reify}
 With an appropriate choice of variables,
 \Coqe{pow_inv} denotes \Coqe{Inv25519_Z}.
 \end{lemma}
@@ -535,7 +526,7 @@ Definition decide_f_inv (f:formula_inv) : bool :=
 \end{lstlisting}
 We prove our decision procedure correct.
 \begin{lemma}
-\label{decide}
+\label{lm:decide}
 For all formulas $f$, if the decision over $f$ returns \Coqe{true},
 then the denoted equality by $f$ is true.
 \end{lemma}
@@ -546,11 +537,12 @@ Lemma decide_formula_inv_impl :
   decide_f_inv f = true ->
   f_inv_denote f.
 \end{lstlisting}
-By reification to over DSL (lemma \ref{reify}) and by applying our decision (lemma \ref{decide}).
+By reification to over DSL (\lref{lm:reify}) and by applying our decision (\lref{lm:decide}).
 we proved the following theorem.
-\begin{theorem}
+\begin{lemma}
+\label{lm:inv_comput_inv}
 \Coqe{Inv25519_Z} computes an inverse in \Zfield.
-\end{theorem}
+\end{lemma}
 \begin{lstlisting}[language=Coq]
 Theorem Inv25519_Z_correct :
   forall (x:Z),
@@ -560,6 +552,7 @@ Theorem Inv25519_Z_correct :
 From \Coqe{Inv25519_Z_GF} and \Coqe{Inv25519_Z_correct}, we conclude the
 functional correctness of the inversion over \Zfield.
 \begin{corollary}
+\label{cor:inv_comput_field}
 \Coqe{Inv25519} computes an inverse in \Zfield.
 \end{corollary}
 \begin{lstlisting}[language=Coq]
@@ -570,8 +563,7 @@ Corollary Inv25519_Zpow_GF :
   (pow (Z16.lst g) (2^255-21)) :GF.
 \end{lstlisting}
 
-\subsection{Packing and other Applications of Reflection}
-
+\subheading{Another applications of reflections: packing}
 We prove the functional correctness of \Coqe{Inv25519} with reflections.
 This technique can also be used where proofs requires some computing or a small and
 finite domain of variable to test e.g. for all $i$ such that $0 \le i < 16$.
@@ -603,6 +595,11 @@ Zlength l = 16 ->
 Forall (fun x => -2^62 < x < 2^62) l ->
 ZofList 8 (Pack25519 l) = (Z16.lst l) mod (2^255-19).
 \end{lstlisting}
+
+
+\vspace{1em}
+\hrule
+\vspace{1em}
 
 
 
