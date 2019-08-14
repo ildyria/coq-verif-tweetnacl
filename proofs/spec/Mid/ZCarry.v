@@ -326,15 +326,10 @@ Lemma secondIterCar:
 Proof.
   assert(0 < 2^256 ) by reflexivity.
   assert(2 ^ 256 - 38 + 2 ^ 256 < 2 ^ 257) by Psatz.nia.
-  repeat match goal with
-    | _ => progress intros
-    | _ => progress unfold Mid.car25519
-    | _ => progress unfold getResidue
-    | _ => progress unfold getCarry
-    | _ => progress orewrite Z.shiftl_mul_pow2
-    | _ => progress orewrite Z.shiftr_div_pow2
-    | [  |- context[?x/2^256] ] => progress orewrite (eq_1_div256 x)
-  end.
+  intros.
+  rewrite /Mid.car25519 getResidue_mod_eq //.
+  rewrite /getResidue_mod Zmod_eq /getCarry //.
+  rewrite Z.shiftr_div_pow2 // (eq_1_div256 x) ; omega.
 Qed.
 
 Lemma doubleCar_str_case:

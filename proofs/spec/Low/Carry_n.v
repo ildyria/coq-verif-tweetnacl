@@ -113,7 +113,7 @@ Proof.
     | [ |- -2^62 < getCarry _ _ ∧ _ < _ ] => apply getCarry_bound_str63
   end.
 Qed.
-(* THIS QED IS REALLY SLOW... should be improved by reflection ... *)
+(* THIS QED IS REALLY SLOW... could be improved by reflection ... *)
 
 Lemma Carry_n_length_False: forall (h:Z) (q:list Z), Carrying_n 16 15 0 (h :: q) = [] -> False.
 Proof. intros ; rewrite Carry_n_step in H ; false. Qed.

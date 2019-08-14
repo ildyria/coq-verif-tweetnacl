@@ -1,6 +1,5 @@
 Set Warnings "-notation-overridden,-parsing".
 Require Import Tweetnacl.Low.Unpack25519.
-Require Import Tweetnacl.Mid.ScalarMult.
 Require Import Tweetnacl_verif.init_tweetnacl.
 Require Import Tweetnacl_verif.spec_unpack25519.
 

@@ -228,24 +228,19 @@ Proof.
   change (0 + z0) with z0 => Eq.
   repeat (destruct l0; tryfalse).
   move: Eq ; rewrite ?ListSame => Eq ; jauto_set ; try reflexivity.
-(*   clear H H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H15 H16 H18. *)
-  unfold nth.
-  - subst z30.
-    rewrite getCarry16_256.
+  all:   clear H H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H15 H16 H18.
+  all: unfold nth; subst z30.
+  - rewrite getCarry16_256.
     assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
     apply getCarry_impl_0 ; omega.
+    rewrite H.
     omega.
-  - unfold getResidue.
-  erewrite (getCarry_16_eq_256 z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15).
-  2: rewrite ?Carry_n_step2 Carry_n_step_02 ; change (0 + z0) with z0; rewrite ?ListSame ; jauto_set ; try assumption.
-    assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
-    apply getCarry_impl_0 ; omega.
-  clear H19 H18 H17 H16 H15 H14 H13 H13 H12 H11 H10 H9 H8 H7 H6 H5 H4 H3 H2 H.
-    simpl nth.
-    assert(getCarry 256 (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) = 0).
-    apply getCarry_impl_0 ; omega.
-  rewrite H.
-  change (0 ≪ 16) with 0. omega.
+  - rewrite getCarry16_240.
+    remember (ℤ16.lst [z0; z1; z2; z3; z4; z5; z6; z7; z8; z9; z10; z11; z12; z13; z14; z15]) as M.
+    rewrite /getCarry Z.shiftr_div_pow2 => //.
+    assert(0 ≤ M `div` 2 ^ 240) by apply Z_div_pos => //=.
+    assert(M `div` 2^240 < 2^16) by apply Zdiv_lt_upper_bound => //=.
+    rewrite getResidue_mod_eq /getResidue_mod //= Z.mod_small //.
 Qed.
 
 Lemma BackCarry_fix_Zlength: forall l, Zlength l = 16 -> 0 <= ℤ16.lst l < 2^256 -> car25519 l = Carrying_n 16 15 0 l.

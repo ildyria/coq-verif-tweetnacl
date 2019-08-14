@@ -56,15 +56,9 @@ Proof.
   eapply Zcarry_n_bounds_length ; go.
   intros ; simpl in H ; solve_bounds_by_values.
   }
-  rewrite /sem_and.
-  rewrite /tint.
-  rewrite /sem_binarith.
-  rewrite /classify_binarith.
+  rewrite /sem_and /tint /sem_binarith /classify_binarith.
   simpl sem_cast.
-  rewrite /sem_cast_i2l.
-  rewrite /sem_cast_l2l.
-  rewrite /both_long.
-  rewrite /force_val.
+  rewrite /sem_cast_i2l /sem_cast_l2l /both_long /force_val.
   rewrite /cast_int_long.
   rewrite and64_repr.
   rewrite upd_Znth_map.
@@ -74,9 +68,7 @@ Proof.
   rewrite Int.signed_repr.
   2: solve_bounds_by_values.
   change 65535 with (Z.ones 16).
-  rewrite Z.land_ones.
-  rewrite /sem_and.
-  2: omega.
+  rewrite Z.land_comm.
   repeat orewrite upd_Znth_upd_nth.
   repeat orewrite Znth_nth.
   unfold nat_of_Z.
@@ -87,16 +79,14 @@ Proof.
   rewrite Zlength_correct in Hlengthcontents_o.
   assert(Ho' : (length contents_o = 16)%nat) by go.
   repeat (destruct contents_o ; tryfalse).
-  rewrite Zmod_eq_full.
 
   repeat match goal with
       | [H : _ \/ _ |- _ ] => destruct H ; subst
       | _ => idtac
-    end; Grind_add_Z; change_Z_to_nat ; repeat rewrite Carry_n_step ; repeat rewrite Carry_n_step_0 ; unfold upd_nth ; unfold nth;
-  unfold getResidue;
-  unfold getCarry ; 
-  repeat orewrite Int64.Zshiftl_mul_two_p ; repeat orewrite Int64.Zshiftr_div_two_p; change_Z_to_nat ; simpl ; try reflexivity.
-  compute; intro ; omega.
+    end; Grind_add_Z; repeat change_Z_to_nat ; repeat rewrite Carry_n_step ; repeat rewrite Carry_n_step_0 ; unfold upd_nth ; unfold nth;
+  unfold getResidue ;
+  unfold getCarry ;
+  repeat orewrite Int64.Zshiftl_mul_two_p ; repeat orewrite Int64.Zshiftr_div_two_p ; reflexivity.
 Qed.
 
 Lemma car25519low_level: forall o, Forall (fun x : ℤ => - 2 ^ 62 < x < 2 ^ 62) o ->
@@ -144,16 +134,9 @@ Proof.
   rewrite upd_Znth_map.
   rewrite (Znth_map Int64.zero).
   2: rewrite upd_Znth_Zlength Zlength_map ; omega.
-  rewrite /sem_and.
-  rewrite /tint.
-  rewrite /sem_binarith.
-  rewrite /classify_binarith.
+  rewrite /sem_and /tint /sem_binarith /classify_binarith.
   simpl sem_cast.
-  rewrite /sem_cast_i2l.
-  rewrite /sem_cast_l2l.
-  rewrite /both_long.
-  rewrite /force_val.
-  rewrite /cast_int_long.
+  rewrite /sem_cast_i2l /sem_cast_l2l /both_long /force_val /cast_int_long.
   rewrite upd_Znth_map.
   rewrite upd_Znth_map.
   rewrite (Znth_map 0).
@@ -188,12 +171,8 @@ Proof.
   unfold getResidue;
   unfold getCarry.
   change 65535 with (Z.ones 16).
-  rewrite Z.land_ones; [|omega].
-  orewrite Int64.Zshiftl_mul_two_p;
-  orewrite Int64.Zshiftr_div_two_p.
-  rewrite -Zmod_eq_full.
-  2: compute ; intro; discriminate.
-  fequals.
+  rewrite Z.land_comm.
+  orewrite Int64.Zshiftr_div_two_p => //.
 Qed.
 
 Close Scope Z.

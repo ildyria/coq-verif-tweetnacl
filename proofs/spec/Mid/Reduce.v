@@ -58,7 +58,8 @@ Qed.
 
 Definition getCarry (m:Z) : Z :=  Z.shiftr m n.
 
-Definition getResidue (m:Z) : Z := m - Z.shiftl (getCarry m) n.
+Definition getResidue (m:Z) : Z := Z.land (Z.ones n) m.
+(*  - Z.shiftl (getCarry m) n. *)
 
 Definition getResidue_mod (m:Z) : Z := m mod 2^n.
 
@@ -68,14 +69,8 @@ Proof.
   symmetry.
   unfold getResidue.
   unfold getResidue_mod.
-  unfold getCarry.
-  orewrite Z.shiftr_div_pow2.
-  orewrite Z.shiftl_mul_pow2.
-  apply Zplus_minus_eq.
-  rewrite Z.mul_comm.
-  apply Z_div_mod_eq.
-  apply pown0.
-  assumption.
+  rewrite Z.land_comm Z.land_ones //=.
+  omega.
 Qed.
 
 Lemma getResidue_0 : getResidue 0 = 0.
@@ -97,12 +92,11 @@ Qed.
 Lemma residuteCarry: forall m:Z, getResidue m + 2^n *getCarry m = m.
 Proof.
   intro m.
-  unfold getResidue.
+  rewrite getResidue_mod_eq.
+  unfold getResidue_mod.
   unfold getCarry.
   orewrite Z.shiftr_div_pow2.
-  orewrite Z.shiftl_mul_pow2.
-  rewrite Z.mul_comm.
-  omega.
+  apply mod_div => //.
 Qed.
 
 Lemma getCarryMonotone_pos: forall m,
