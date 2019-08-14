@@ -205,7 +205,7 @@ With those coordinates we prove the following lemmas for the addition of two poi
   such that $\chi_0(\Oinf) = 0$ and $\chi_0((x,y)) = x$.
 \end{dfn}
 \begin{lemma}
-\label{lemma-add}
+\label{lemma:add}
 Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and
 let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$, $(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
 Define
@@ -250,7 +250,7 @@ then for any point $P_1$ and $P_2$ on $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_
 
 With those coordinates we also prove a similar lemma for point doubling.
 \begin{lemma}
-\label{lemma-double}
+\label{lemma:double}
 Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and
 let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$. Define
 \begin{align*}
@@ -274,7 +274,7 @@ we have $X_3/Z_3 = \chi(2P_1)$.
 %   (p \+ p)#x = inf_div x3 z3.
 % \end{lstlisting}
 
-With these two lemmas (\ref{lemma-add} and \ref{lemma-double}), we have the basic
+With these two lemmas (\ref{lemma:add} and \ref{lemma:double}), we have the basic
 tools to compute efficiently additions and point doubling on projective coordinates.
 
 \subsubsection{Scalar Multiplication Algorithms}
@@ -292,12 +292,12 @@ it provides slightly more computations and an extra variable, we can prevent suc
 See \aref{alg:montgomery-ladder}.
 
 \begin{lemma}
-\label{lemma-montgomery-ladder}
+\label{lemma:montgomery-ladder}
 \aref{alg:montgomery-ladder} is correct, \ie it respects its output conditions given the input conditions.
 \end{lemma}
 
 In Curve25519 we are only interested in the $x$ coordinate of points, using
-Lemmas \ref{lemma-add} and \ref{lemma-double}, and replacing the if statements
+Lemmas \ref{lemma:add} and \ref{lemma:double}, and replacing the if statements
 with conditional swapping we can define a ladder similar to the one used in TweetNaCl.
 See \aref{alg:montgomery-double-add}
 
@@ -340,14 +340,14 @@ See \aref{alg:montgomery-double-add}
 \end{algorithm}
 
 \begin{lemma}
-\label{lemma-montgomery-double-add}
+\label{lemma:montgomery-double-add}
 \aref{alg:montgomery-double-add} is correct, \ie it respects its output
 conditions given the input conditions.
 \end{lemma}
 
 %% here we have \chi and \chi_0 ...
 
-We formalized this lemma (\ref{lemma-montgomery-double-add}):
+We formalized this lemma (\ref{lemma:montgomery-double-add}):
 \begin{lstlisting}[language=Coq]
 Lemma opt_montgomery_x :
   forall (n m : nat) (x : K),
@@ -365,7 +365,7 @@ Also \Oinf\ is the neutral element over $M_{a,b}(\K)$, we have:
 $$\forall P, P + \Oinf\ = P$$
 thus we derive the following lemma.
 % \begin{lemma}
-% \label{lemma-montgomery-double-add}
+% \label{lemma:montgomery-double-add}
 % Algorithm \ref{montgomery-double-add} is correct even if $x=0$, \ie it respects its output conditions given the input conditions or $x=0$.
 % \end{lemma}
 \begin{lstlisting}[language=Coq]

@@ -134,9 +134,6 @@ Local Ltac solve_equiv_fabcdef i :=
   [| assumption];
   replace (254 - (254 - i)) with i ; [|omega];
   subst; simpl;
-(*   rewrite /fa /fb /fc /fd /fe /ff; *)
-(*   rewrite /ScalarMult_gen_small.fa /ScalarMult_gen_small.fb /ScalarMult_gen_small.fc; *)
-(*   rewrite /ScalarMult_gen_small.fd /ScalarMult_gen_small.fe /ScalarMult_gen_small.ff; *)
   reflexivity.
 
 Lemma body_crypto_scalarmult: semax_body Vprog Gprog f_crypto_scalarmult_curve25519_tweet crypto_scalarmult_spec.
@@ -441,7 +438,6 @@ replace (force_val
   reflexivity.
   omega.
   }
-(*   apply Z.land_nonneg ; right ; omega. *)
 
   freeze [0;1;4;5;6;7;8;9] L.
   assert(Hgb:= getbit_0_or_1 i z).
@@ -590,7 +586,6 @@ replace (force_val
   unfold_nm_overlap_array_sep ; simpl.
   thaw L.
 
-(*   clear Heqf0 H55 f0. *)
   clears f0.
 
   freeze [0;2;3;4;6;7;8;9] L.
@@ -790,8 +785,7 @@ replace (force_val
   remember (Low.A a1 c1) as e'.
   remember (Low.Sel25519 (Low.getbit i z) a4 b2) as a'.
   remember (Low.Sel25519 (Low.getbit i z) b2 a4) as b'.
-(*   Opaque c_121665. *)
-  (* this is sper slow with cancel and entailer, better do it manually *)
+  (* this is super slow with cancel and entailer, better do it manually *)
   focus_SEP 8 9 2 3 0 1 4 6 5.
   solve_bounds_by_values. (* this does nothing but if forces the 2^16 to be in Z and not in Z.pos ! *)
   go_lowerx.
@@ -828,7 +822,7 @@ replace (force_val
     apply Z.eqb_neq; omega.
   }
   rewrite H254false.
-  (* this is sper slow with cancel and entailer, better do it manually *)
+  (* this is super slow with cancel and entailer, better do it manually *)
   solve_bounds_by_values. (* this does nothing but if forces the 2^16 to be in Z and not in Z.pos ! *)
   go_lowerx.
   rewrite <- andp_assoc.
@@ -855,7 +849,7 @@ replace (force_val
   }
   rewrite H254false.
 
-  (* this is sper slow with cancel and entailer, better do it manually *)
+  (* this is super slow with cancel and entailer, better do it manually *)
   remember (montgomery_fn List_Z_Ops 255 254 z a b c d nil16 nil16 x) as m. (* prevent some computing... *)
   go_lowerx.
   rewrite <- andp_assoc.
