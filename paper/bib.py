@@ -105,8 +105,6 @@ def find_subblock_end(block, i):
     else:
         return find_subblock_end(block, i + 1)
 
-
-
 def find_subblock(block, i, list_subblock):
     if (len(block)) == i:
         return list_subblock;
@@ -128,14 +126,11 @@ def find_subblock(block, i, list_subblock):
         return list_subblock;
 
 
-
 def find_section(parts, section):
     for p in parts:
         if p[0] == section:
             return p[1]
     return 'not found'
-
-
 
 def find_section_index(parts, section):
     i = 0
@@ -149,6 +144,11 @@ def extract_subblock(block, start, end, eq):
     s = slice(start, end + 1, 1)
 
     k = block[s][0][0:eq].strip()
+    # this is to remove the _ we add for non recognized sections
+    # this is useful if we want to change the kind: Misc -> article etc...
+    if k[:1] == '_':
+        k = k[1:]
+
     c = ' '.join(block[s])[eq+1:].strip()
     if c[-1:] == ',':
         c = c[:-1]
@@ -237,12 +237,9 @@ def generate_entry(block):
             diagnostic(DarkGray('{}---------------------------'.format('ignored'.ljust(9,'-'))))
             output += '\n'
             for b in block['sections']:
-                b0 = b[0]
-                if b0[:1] == '_':
-                    b0 = b0[1:]
-                diagnostic(LightPurple('extra field:'.ljust(17)) + b0.ljust(13) + b[1])
+                diagnostic(LightPurple('extra field:'.ljust(17)) + b[0].ljust(13) + b[1])
                 if not config['purify']:
-                    output += '  _{:14}= {},\n'.format(b0,b[1])
+                    output += '  _{:14}= {},\n'.format(b[0],b[1])
 
         diagnostic(DarkGray('{}---------------------------'.format('done'.ljust(9,'-'))))
 
