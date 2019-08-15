@@ -13,19 +13,27 @@ BIBTEX = {
     # An article from a journal or magazine.
     'ARTICLE': [['author', 'title', 'journal', 'year'], ['volume', 'number', 'pages', 'month', 'note']],
     # A book with an explicit publisher.
-    'BOOK': [['author', 'title', 'publisher', 'year'], ['volume', 'number', 'series', 'address', 'edition', 'month', 'note']],
+    'BOOK': [['author', 'editor', 'title', 'publisher', 'year'], ['volume', 'number', 'series', 'address', 'edition', 'month', 'note']],
+    # A book with an explicit publisher.
+    'BOOKLET': [['author', 'editor', 'title', 'publisher', 'year'], ['volume', 'number', 'series', 'address', 'edition', 'month', 'note']],
+    # An article in a conference proceedings.
+    'CONFERENCE': [['author', 'title', 'booktitle', 'year'], ['editor', 'volume', 'number','series', 'pages', 'address', 'month', 'organization', 'publisher', 'note']],
+    # A part of a book, which may be a chapter.
+    'INBOOK': [['author', 'editor', 'title', 'chapter', 'pages', 'publisher', 'year'], ['volume', 'number', 'series', 'type', 'address', 'edition', 'month', 'note']],
     # A book with an explicit publisher.
     'INCOLLECTION': [['author', 'title', 'booktitle', 'publisher', 'year'], ['editor', 'volume', 'number', 'series', 'type', 'chapter', 'pages', 'address', 'edition', 'month', 'note']],
     # An article in a conference proceedings.
     'INPROCEEDINGS': [['author', 'title', 'booktitle', 'year'], ['editor', 'volume', 'number','series', 'pages', 'address', 'month', 'organization', 'publisher', 'note']],
-    # A Master’s thesis
-    'MASTERSTHESIS': [['author', 'title', 'school', 'year'], ['type', 'address', 'month', 'note']],
-    # A PhD thesis
-    'PHDTHESIS': [['author', 'title', 'school', 'year'], ['type', 'address', 'month', 'note']],
     # Technical documentation
     'MANUAL': [['title'], ['author', 'organization', 'address', 'edition', 'month', 'year', 'note']],
+    # A Master’s thesis
+    'MASTERSTHESIS': [['author', 'title', 'school', 'year'], ['type', 'address', 'month', 'note']],
     # Use this type when nothing else fits
     'MISC': [[], ['author', 'title', 'howpublished', 'month', 'year', 'note']],
+    # A PhD thesis
+    'PHDTHESIS': [['author', 'title', 'school', 'year'], ['type', 'address', 'month', 'note']],
+    # The proceedings of a conference.
+    'PROCEEDINGS': [['title', 'year'], ['editor', 'volume', 'number','series', 'address', 'month', 'organization', 'publisher', 'note']],
     # A document having an author and title, but not formally published
     'TECHREPORT': [['author', 'title', 'institution', 'year'], ['type', 'number', 'address', 'month', 'note']],
     # A document having an author and title, but not formally published
@@ -278,7 +286,7 @@ def parse_arguments():
     parser.add_argument('-dr','--dry-run', action='store_true', help='Dry-run.')
     args = parser.parse_args()
 
-    print(args)
+    # print(args)
     interactive = args.interactive or args.input == ''
     if not interactive:
         config['debug'] = args.verbose
