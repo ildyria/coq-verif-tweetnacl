@@ -235,10 +235,15 @@ def generate_entry(block):
                         output += '  {:15}= {},\n'.format(s,'{}')
                 else:
                     c = block['sections'].pop(idx)[1]
-                    diagnostic(Green('field found:'.ljust(17)) + s.ljust(13) + c)
-                    if s == 'author':
-                        c = authors(c)
-                    output += '  {:15}= {},\n'.format(s,c)
+                    if c == '' or c == '{}':
+                        diagnostic(Red('field not found:'.ljust(17)) + s)
+                        if i != 1 or config['extend']:
+                            output += '  {:15}= {},\n'.format(s,'{}')
+                    else:
+                        diagnostic(Green('field found:'.ljust(17)) + s.ljust(13) + c)
+                        if s == 'author':
+                            c = authors(c)
+                        output += '  {:15}= {},\n'.format(s,c)
 
         if len(block['sections']) > 0:
             block['sections'].sort(key=lambda a : a[0])
