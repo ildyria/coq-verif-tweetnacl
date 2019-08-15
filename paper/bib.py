@@ -114,10 +114,10 @@ def find_subblock_end(block, i):
         return find_subblock_end(block, i + 1)
 
 def find_subblock(block, i, list_subblock):
-    if (len(block)) == i:
+    if len(block) == i:
         return list_subblock;
-    while block[i] == '':
-        i += 1
+    if block[i] == '':
+        return find_subblock(block, i+1, list_subblock)
 
     idx = block[i].find('=');
     if idx != -1:
@@ -237,7 +237,7 @@ def generate_entry(block):
                     c = block['sections'].pop(idx)[1]
                     if c == '' or c == '{}':
                         diagnostic(Red('field not found:'.ljust(17)) + s)
-                        if i != 1 or config['extend']:
+                        if config['extend']:
                             output += '  {:15}= {},\n'.format(s,'{}')
                     else:
                         diagnostic(Green('field found:'.ljust(17)) + s.ljust(13) + c)
