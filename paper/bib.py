@@ -115,7 +115,12 @@ def find_subblock(block, i, list_subblock):
 
     idx = block[i].find('=');
     if idx != -1:
-        end = find_subblock_end(block, i)
+
+        idx2 = block[i].find('{');
+        if idx2 != -1:
+            end = find_subblock_end(block, i)
+        else:
+            end = i
         list_subblock.append([i,end,idx])
         return find_subblock(block, end+1 , list_subblock)
     else:
