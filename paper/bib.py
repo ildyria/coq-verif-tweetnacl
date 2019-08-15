@@ -217,7 +217,7 @@ def generate_entry(block):
         # mandatory blocks:
         for i,t in {0: 'mandatory', 1: 'optional'}.items():
             diagnostic(DarkGray('{}---------------------------'.format(t.ljust(9,'-'))))
-            if len(BIBTEX[kind][i]) > 0:
+            if len(BIBTEX[kind][i]) > 0 and i > 0:
                 output += '\n'
             for s in BIBTEX[kind][i]:
                 idx = find_section_index(block['sections'], s)
