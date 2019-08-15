@@ -14,12 +14,7 @@
   note           = {\url{http://doi.acm.org/10.1145/363235.363259}},
 
   _acmid         = {363259},
-  _doi           = {10.1145/363235.363259},
   _issn          = {0001-0782},
-  _issue_date    = {Oct. 1969},
-  _numpages      = {5},
-  _publisher     = {ACM},
-  _url           = {http://doi.acm.org/10.1145/363235.363259},
 }
 
 @article{2007-Blazy-C-chronique,
@@ -31,6 +26,7 @@
   volume         = {26},
   number         = {9},
   pages          = {1195-1200},
+  month          = {June},
   note           = {\url{http://hal.inria.fr/inria-00292049/}},
 
   _hal           = {http://hal.inria.fr/inria-00292049/},
@@ -49,31 +45,19 @@
   pages          = {2},
   publisher      = SV,
   note           = {\url{https://doi.org/10.1007/978-3-642-28891-3_2}},
-
-  _doi           = {10.1007/978-3-642-28891-3_2},
-  _url           = {https://doi.org/10.1007/978-3-642-28891-3_2},
 }
 
 @article{2015-Appel,
   author         = {Andrew W. Appel},
   title          = {Verification of a Cryptographic Primitive: SHA-256},
-  journal        = {ACM Trans. Program. Lang. Syst.},
+  journal        = {{ACM} Transactions on Programming Languages and Systems},
   year           = {2015},
 
   volume         = {37},
   number         = {2},
   pages          = {7:1--7:31},
-  month          = apr,
+  month          = {Apr},
   note           = {\url{http://doi.acm.org/10.1145/2701415}},
-
-  _acmid         = {2701415},
-  _articleno     = {7},
-  _doi           = {10.1145/2701415},
-  _issn          = {0164-0925},
-  _issue_date    = {April 2015},
-  _numpages      = {31},
-  _publisher     = {ACM},
-  _url           = {http://doi.acm.org/10.1145/2701415},
 }
 
 @book{Abrial:1996:BAP:236705,
@@ -140,7 +124,9 @@
 @misc{Ber14,
 
   author         = {Daniel J. Bernstein},
-  title          = {25519 naming, Posting to the CFRG mailing list},
+  title          = {25519 naming},
+  howpublished   = {Posting to the CFRG mailing list},
+  month          = {Aug},
   year           = {2008},
   note           = {\url{https://www.ietf.org/mail-archive/web/cfrg/current/msg04996.html}},
 }
@@ -150,10 +136,13 @@
                     Adam Petcher and
                     Katherine Q. Ye and
                     Andrew W. Appel},
-  title          = {Verified Correctness and Security of OpenSSL HMAC},
-  booktitle      = {USENIX Security Symposium},
+  title          = {Verified Correctness and Security of OpenSSL {HMAC}},
+  booktitle      = {24th {USENIX} Security Symposium ({USENIX} Security 15)},
   year           = {2015},
 
+  pages          = {207--221},
+  address        = {Washington, D.C.},
+  publisher      = {{USENIX} Association},
   note           = {\url{https://www.cs.cmu.edu/~kqy/resources/verified-hmac.pdf}},
 }
 
@@ -167,6 +156,7 @@
   volume         = {43},
   number         = {3},
   pages          = {263-288},
+  month          = {Oct},
   note           = {\url{http://gallium.inria.fr/~xleroy/publi/Clight.pdf}},
 
   _hal           = {http://hal.inria.fr/inria-00352524/},
@@ -183,9 +173,14 @@
                     Bo-Yin Yang and
                     Shang-Yi Yang},
   title          = {Verifying Curve25519 Software},
-  booktitle      = {ACM Conference on Computer and Communications Security},
+  booktitle      = {Proceedings of the 2014 {ACM} {SIGSAC} Conference on Computer and Communications Security},
   year           = {2014},
 
+  series         = {CCS '14},
+  pages          = {299--309},
+  address        = {New York, NY, USA},
+  month          = {Nov},
+  publisher      = {ACM},
   note           = {\url{https://cryptojedi.org/papers/verify25519-20140428.pdf}},
 }
 
@@ -213,11 +208,12 @@
   volume         = {8558},
   series         = LNCS,
   pages          = {77-92},
+  address        = {Cham},
   publisher      = SV,
   note           = {\url{https://hal.inria.fr/hal-01102288}},
 }
 
-@article{DBLP:journals/corr/BhargavanDFHPRR17,
+@inproceedings{DBLP:journals/corr/BhargavanDFHPRR17,
   author         = {Karthikeyan Bhargavan and
                     Antoine Delignat{-}Lavaud and
                     C{\'{e}}dric Fournet and
@@ -229,36 +225,32 @@
                     Peng Wang and
                     Santiago Zanella B{\'{e}}guelin and
                     Jean Karim Zinzindohou{\'{e}}},
-  title          = {Verified Low-Level Programming Embedded in {F}},
-  journal        = {Proceedings of the ACM on Programming Languages},
+  title          = {Verified Low-Level Programming Embedded in {F*}},
+  booktitle      = {Proceedings of the {ACM} on Programming Languages},
   year           = {2017},
 
   volume         = {1},
   number         = {ICFP},
   pages          = {17},
+  month          = {Sep},
+  publisher      = {ACM},
   note           = {\url{http://arxiv.org/abs/1703.00053}},
-
-  _eprint        = {1703.00053},
-  _publisher     = {ACM},
-  _timestamp     = {Mon, 13 Aug 2018 16:46:57 +0200},
-  _url           = {http://arxiv.org/abs/1703.00053},
 }
 
-@inproceedings{Erbsen2016SystematicSO,
+@misc{Erbsen2016SystematicSO,
+
   author         = {Andres Erbsen and
                     Jason Gross and
                     Adam Chlipala},
   title          = {Systematic Synthesis of Elliptic Curve Cryptography Implementations},
-  booktitle      = {},
   year           = {2016},
-
   note           = {\url{https://people.csail.mit.edu/jgross/personal-website/papers/2017-fiat-crypto-pldi-draft.pdf}},
 }
 
-@inproceedings{Erbsen2017CraftingCE,
+@mastersthesis{Erbsen2017CraftingCE,
   author         = {Andres Erbsen},
   title          = {Crafting certified elliptic curve cryptography implementations in Coq},
-  booktitle      = {},
+  school         = {Massachusetts Institute of Technology},
   year           = {2017},
 
   note           = {\url{http://adam.chlipala.net/theses/andreser_meng.pdf}},
@@ -275,15 +267,12 @@
   note           = {\url{https://www.cs.cmu.edu/~crary/819-f09/Howard80.pdf}},
 }
 
-@techreport{ISO:C99,
-  author         = {ISO},
+@manual{ISO:C99,
   title          = {ISO C Standard 1999},
-  institution    = {},
+
+  author         = {ISO},
   year           = {1999},
-
   note           = {\url{http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf}},
-
-  _editor        = {WG14},
 }
 
 @article{Leroy-backend,
@@ -298,7 +287,6 @@
   note           = {\url{http://gallium.inria.fr/~xleroy/publi/compcert-backend.pdf}},
 
   _hal           = {http://hal.inria.fr/inria-00360768/},
-  _pubkind       = {journal-int-mono},
   _urlpublisher  = {http://dx.doi.org/10.1007/s10817-009-9155-4},
 }
 
@@ -330,37 +318,39 @@
   _doi           = {10.1090/S0025-5718-1987-0866113-7},
 }
 
-@inproceedings{Philipoom2018CorrectbyconstructionFF,
+@mastersthesis{Philipoom2018CorrectbyconstructionFF,
   author         = {Jade Philipoom},
   title          = {Correct-by-construction finite field arithmetic in Coq},
-  booktitle      = {},
+  school         = {Massachusetts Institute of Technology},
   year           = {2018},
 
   note           = {\url{http://adam.chlipala.net/theses/jadep_meng.pdf}},
 }
 
-@article{Reynolds02separationlogic,
+@inproceedings{Reynolds02separationlogic,
   author         = {John C. Reynolds},
   title          = {Separation Logic: A Logic for Shared Mutable Data Structures},
-  journal        = {LICS},
+  booktitle      = {Proceedings 17th Annual {IEEE} Symposium on Logic in Computer Science},
   year           = {2002},
 
   volume         = {17},
+  number         = {July},
+  series         = {LICS},
   pages          = {55-74},
+  publisher      = {{IEEE}},
   note           = {\url{http://www.cs.cmu.edu/~jcr/seplogic.pdf}},
-
-  _url           = {http://www.cs.cmu.edu/~jcr/seplogic.pdf},
 }
 
-@article{Zinzindohoue2016AVE,
+@inproceedings{Zinzindohoue2016AVE,
   author         = {Jean Karim Zinzindohoue and
                     Evmorfia-Iro Bartzia and
                     Karthikeyan Bhargavan},
   title          = {A Verified Extensible Library of Elliptic Curves},
-  journal        = {2016 IEEE 29th Computer Security Foundations Symposium (CSF)},
+  booktitle      = {2016 {IEEE} 29th Computer Security Foundations Symposium (CSF)},
   year           = {2016},
 
   pages          = {296-309},
+  publisher      = {{IEEE}},
   note           = {\url{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7536383}},
 }
 
@@ -426,9 +416,6 @@
   note           = {\url{https://people.csail.mit.edu/jgross/personal-website/papers/2019-fiat-crypto-ieee-sp.pdf}},
 
   _code-github   = {https://github.com/mit-plv/fiat-crypto},
-  _owner         = {jgross},
-  _timestamp     = {2018.06.01},
-  _url           = {https://people.csail.mit.edu/jgross/personal-website/papers/2019-fiat-crypto-ieee-sp.pdf},
 }
 
 @article{gonthier2008formal,
@@ -463,9 +450,9 @@
 @misc{things-that-use-curve25519,
 
   title          = {Things that use Curve25519},
+  month          = {July},
+  year           = {2019},
   note           = {\url{https://ianix.com/pub/curve25519-deployment.html}},
-
-  _url           = {https://ianix.com/pub/curve25519-deployment.html},
 }
 
 @inproceedings{zinzindohoue2017hacl,
@@ -473,8 +460,8 @@
                     Karthikeyan Bhargavan and
                     Jonathan Protzenko and
                     Benjamin Beurdouche},
-  title          = {HACL*: A verified modern cryptographic library},
-  booktitle      = {Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security},
+  title          = {{HACL*}: A verified modern cryptographic library},
+  booktitle      = {Proceedings of the 2017 {ACM} {SIGSAC} Conference on Computer and Communications Security},
   year           = {2017},
 
   pages          = {1789--1806},

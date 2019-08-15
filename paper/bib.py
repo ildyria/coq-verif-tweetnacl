@@ -208,7 +208,7 @@ def authors(s):
             out += ''.rjust(20) + list_authors[i]
     return out
 
-def generate_entry(block):
+def generate_entry(block, summary):
     output = '\n';
     kind = block['kind'].upper();
     c_kind = Yellow(kind).ljust(13)
@@ -229,16 +229,25 @@ def generate_entry(block):
                 output += '\n'
             for s in BIBTEX[kind][i]:
                 idx = find_section_index(block['sections'], s)
+
                 if idx == -1:
                     diagnostic(Red('field not found:'.ljust(17)) + s)
                     if i != 1 or config['extend']:
                         output += '  {:15}= {},\n'.format(s,'{}')
+
+                    if i == 0 and config['summary']:
+                        summary.append(c_kind + ' ' + c_referer)
+                        summary.append(Red('field not found:'.ljust(17)) + s)
+
                 else:
                     c = block['sections'].pop(idx)[1]
                     if c == '' or c == '{}':
                         diagnostic(Red('field not found:'.ljust(17)) + s)
                         if config['extend']:
                             output += '  {:15}= {},\n'.format(s,'{}')
+                        if i == 0 and config['summary']:
+                            summary.append(c_kind + ' ' + c_referer)
+                            summary.append(Red('field not found:'.ljust(17)) + s)
                     else:
                         diagnostic(Green('field found:'.ljust(17)) + s.ljust(13) + c)
                         if s == 'author':
@@ -283,7 +292,8 @@ def parse_arguments():
     parser.add_argument('input', nargs='?', default='', help='input: file.bib', type=check_bib)
     parser.add_argument('-o','--output', nargs='?', default='', help='ouput: file.bib', type=check_bib)
     parser.add_argument('-v','--verbose', action='store_true', help='enable debugger output')
-    parser.add_argument('--no-diagnostic', action='store_true', help='check for missing fields')
+    parser.add_argument('--diagnostic', action='store_true', help='check for missing fields (all)')
+    parser.add_argument('--no-summary', action='store_true', help='Don\'t check for missing fields (only mandatory)')
     parser.add_argument('--extend', action='store_true', help='if a field is missing, add it to the generated bibtex.')
     parser.add_argument('-p','--purify', action='store_true', help='extra fields are stripped from the generated bibtex.')
     parser.add_argument('-i','--interactive', action='store_true', help='Interactive.')
@@ -295,7 +305,8 @@ def parse_arguments():
     interactive = args.interactive or args.input == ''
     if not interactive:
         config['debug'] = args.verbose
-        config['diagnostic'] = not args.no_diagnostic
+        config['diagnostic'] = args.diagnostic
+        config['summary'] = not args.no_summary
         config['extend'] = args.extend
         config['purify'] = args.purify
         config['input'] = args.input
@@ -334,7 +345,8 @@ def parse_arguments():
 
     if args.yes:
         config['debug'] = args.verbose
-        config['diagnostic'] = not args.no_diagnostic
+        config['diagnostic'] = args.diagnostic
+        config['summary'] = not args.no_summary
         config['extend'] = args.extend
         config['purify'] = args.purify
         config['output'] = args.output if args.output != '' else config['input']
@@ -343,9 +355,12 @@ def parse_arguments():
         v = args.verbose
         tmp = input('Enable verbose mode [{}]? '.format('Y/n' if v else 'y/N'))
         config['debug'] = str2bool(tmp if tmp != '' else ('Y' if v else 'n'))
-        v = not args.no_diagnostic
+        v = args.diagnostic
         tmp = input('Enable Diagnostics [{}]? '.format('Y/n' if v else 'y/N'))
         config['diagnostic'] = str2bool(tmp if tmp != '' else ('Y' if v else 'n'))
+        v = not args.no_summary
+        tmp = input('Enable Summary [{}]? '.format('Y/n' if v else 'y/N'))
+        config['summary'] = str2bool(tmp if tmp != '' else ('Y' if v else 'n'))
         v = args.extend
         tmp = input('Add missing field [{}]? '.format('Y/n' if v else 'y/N'))
         config['extend'] = str2bool(tmp if tmp != '' else ('Y' if v else 'n'))
@@ -360,7 +375,6 @@ def parse_arguments():
         fn = input('Output file [{}]:'.format(fn))
         if fn == '':
             fn = config['input']
-            print(DarkGray('Input file is the same as output file, we will generate a backup at {}.bck'.format(config['input'])))
         config['output'] = fn
 
     debug(args)
@@ -392,17 +406,21 @@ def main():
             debug(DarkGray((s)))
 
     output = ''
+    summary = []
 
     for p in oneliners:
         output += p + '\n'
     for p in blocks:
-        output += generate_entry(p)
+        output += generate_entry(p, summary)
 
     if config['dry_run']:
         print(output)
     else:
         if config['input'] == config['output']:
+            print(DarkGray('Input file is the same as output file, we will generate a backup at {}.bck'.format(config['input'])))
             os.rename(config['input'], config['input']+'.bck')
         save(config['output'], output)
 
+    for s in summary:
+        print(s)
 main();
