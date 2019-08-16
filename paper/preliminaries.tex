@@ -258,7 +258,7 @@ In order to compute the scalar multiplication,
 X25519 uses the Montgomery ladder~\cite{Mon85}.
 
 $x$-coordinates are represented as fractions, the computation of the actual
-value is deffered to the end of the ladder with \TNaCle{inv25519}.
+value is deferred to the end of the ladder with \TNaCle{inv25519}.
 
 First extract and clamp the value of $n$. Then unpack the value of $p$.
 As per RFC~7748~\cite{rfc7748}, set its most significant bit to 0.

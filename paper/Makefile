@@ -1,4 +1,6 @@
-FILES := $(wildcard *.tex) $(wildcard tikz/*.tex) $(wildcard *.sty)
+TEX := $(wildcard *.tex)
+FILES := $(TEX) $(wildcard tikz/*.tex) $(wildcard *.sty)
+
 
 tweetverif.pdf: FORCE $(FILES) collection.bib
 	./latexrun.py tweetverif.tex
@@ -24,11 +26,6 @@ clean:
 	@rm */*.aux 2> /dev/null || true
 
 spell:
-	aspell -t -c tweetverif.tex
-	aspell -t -c intro.tex
-	aspell -t -c preliminaries.tex
-	aspell -t -c lowlevel.tex
-	aspell -t -c highlevel.tex
-	aspell -t -c conclusion.tex
-	aspell -t -c tweetnacl.tex
-
+	for f in $(TEX) ; do \
+		aspell -t -c $$f; \
+	done

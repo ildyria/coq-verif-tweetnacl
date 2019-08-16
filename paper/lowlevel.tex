@@ -345,7 +345,7 @@ Lemma mult_GF_Zlength :
 
 However for our purpose, simple functional correctness is not enough.
 We also need to define the bounds under which the operation is correct,
-allowing us to chain them, guaranting us the absence of overflow.
+allowing us to chain them, guaranteeing us the absence of overflow.
 
 \begin{lemma}
   \label{lemma:mult_bounded}
@@ -366,7 +366,7 @@ Lemma M_bound_Zlength :
 \subsection{Inversions, Reflections and Packing}
 
 We now turn our attention to the inversion in \Zfield and techniques to
-increase the verifications speed of complex formulas.
+increase the verification speed of complex formulas.
 
 \subheading{Inversions in \Zfield.}
 We define a Coq version of the inversion mimicking
@@ -434,7 +434,7 @@ By using \lref{lemma:mult_correct}, we prove their equivalence in $\Zfield$.
 \begin{lemma}
 \label{lemma:Inv_equivalence}
 The function \coqe{Inv25519} over list of integers computes the same
-result at \coqe{Inv25519_Z} over intergers in \Zfield.
+result at \coqe{Inv25519_Z} over integers in \Zfield.
 \end{lemma}
 This is formalized in Coq as follows:
 \begin{lstlisting}[language=Coq]
@@ -596,8 +596,8 @@ Theorem Inv25519_Z_correct :
   Inv25519_Z x = pow x (2^255-21).
 \end{lstlisting}
 
-% From \Coqe{Inv25519_Z_GF} (\lref{lemma:Inv_equivalence}) and \Coqe{Inv25519_Z_correct} (Corrolary~\ref{lemma:inv_comput_inv}),
-From \lref{lemma:Inv_equivalence} and Corrolary~\ref{lemma:inv_comput_inv},
+% From \Coqe{Inv25519_Z_GF} (\lref{lemma:Inv_equivalence}) and \Coqe{Inv25519_Z_correct} (Corollary~\ref{lemma:inv_comput_inv}),
+From \lref{lemma:Inv_equivalence} and Corollary~\ref{lemma:inv_comput_inv},
 we conclude the functional correctness of the inversion over \Zfield.
 \begin{corollary}
 \label{cor:inv_comput_field}
