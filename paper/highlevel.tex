@@ -37,7 +37,7 @@ This equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
 Let $a \in \K$, and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$
 The \textit{elliptic curve} $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
 $$y^2 = x^3 + ax + b,$$
-along with an additional formal point $\Oinf$, ``at infinity''. Such curve does not present any singularity.
+along with an additional formal point $\Oinf$, ``at infinity''. Such a curve does not present any singularity.
 \end{dfn}
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
@@ -450,7 +450,7 @@ Given $n$ and $x$, $Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$.
 such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.
 Given $n$ and $x$, $Twist25519\_Fp(n,x) = \chi_0(n \cdot P)$.
 \end{lemma}
-As the Montgomery ladder defined above does not depends on $b$, it is trivial to see that the computations done for points of $M_{486662,1}(\F{p})$ and of $M_{486662,2}(\F{p})$ are the same.
+As the Montgomery ladder defined above does not depend on $b$, it is trivial to see that the computations done for points of $M_{486662,1}(\F{p})$ and of $M_{486662,2}(\F{p})$ are the same.
 \begin{lstlisting}[language=Coq]
 Theorem curve_twist_eq: forall n x,
   curve25519_Fp_ladder n x = twist25519_Fp_ladder n x.

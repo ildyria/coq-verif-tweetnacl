@@ -42,7 +42,7 @@ in \sref{sec:maths}.
   \label{tikz:ProofOverview}
 \end{figure}
 
-Verifying \TNaCle{crypto_scalarmult} also implies to verify all the functions
+Verifying \TNaCle{crypto_scalarmult} also implies verifying all the functions
 subsequently called: \TNaCle{unpack25519}; \TNaCle{A}; \TNaCle{Z}; \TNaCle{M};
 \TNaCle{S}; \TNaCle{car25519}; \TNaCle{inv25519}; \TNaCle{set25519}; \TNaCle{sel25519};
 \TNaCle{pack25519}.
@@ -95,7 +95,7 @@ This guarantees us the correctness of the implementation.
 TweetNaCl implements X25519 with numbers represented as arrays.
 RFC~7748 defines X25519 over field elements. In order to simplify our proofs,
 we define operations used in the ladder over generic types
-\coqe{T} and \coqe{T'}. Those types are later instanciated as natural number,
+\coqe{T} and \coqe{T'}. Those types are later instantiated as natural numbers,
 integers, field elements, list of integers...
 The generic definition of the ladder (\coqe{montgomery_rec}) and its match with
 the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
@@ -103,15 +103,15 @@ It has to be noted that the RFC uses an additional variable to optimize the numb
 of \texttt{CSWAP}:
 \emph{``Note that these formulas are slightly different from Montgomery's
 original paper.  Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
-We later prove our lader correct in that respect (\sref{sec:maths}).
+We later prove our ladder correct in that respect (\sref{sec:maths}).
 
 \coqe{montgomery_rec} only computes the ladder steps.
-While the inversion; the packing; the unpacking (setting bit 255 to \texttt{0})
-and clamping are not defined in a generic manner, we show their equivalence
+While the inversion, the packing, the unpacking (setting bit 255 to \texttt{0})
+and the clamping are not defined in a generic manner, we show their equivalence
 between the different representations.
 
-Appendix~\ref{subsubsec:ZCryptoScalarmult} show the instantiation of our ladder
-over Intergers (type \coqe{Z}). We call it \coqe{ZCrypto_Scalarmult}.
+Appendix~\ref{subsubsec:ZCryptoScalarmult} shows the instantiation of our ladder
+over Integers (type \coqe{Z}). We call it \coqe{ZCrypto_Scalarmult}.
 The modulo reduction is applied in \coqe{ZPack25519} translating every
 underlying operations as over \Zfield. As a result this specification can be
 interpreted as the formalization of X25519 in RFC~7748.
@@ -126,7 +126,7 @@ The location of the definitions are listed in Appendix~\ref{appendix:proof-files
 \label{subsec:with-VST}
 
 We now turn our focus to the specification of the Hoare triple with our
-specifications of \TNaCle{crypto_scalarmult} over list of integers and proving
+specifications of \TNaCle{crypto_scalarmult} over lists of integers and proving
 its correctness.
 
 \subheading{Specifications.}
@@ -232,7 +232,7 @@ The location of the proof of this Hoare triple can be found in Appendix~\ref{app
 
 \subheading{Memory aliasing.}
 In the VST, a simple specification of \texttt{M(o,a,b)} will assume three
-distinct memory share. When called with three memory share (\texttt{o, a, b}),
+distinct memory share. When called with three memory shares (\texttt{o, a, b}),
 the three of them will be consumed. However assuming this naive specification
 when \texttt{M(o,a,a)} is called (squaring), the first two memory shares (\texttt{o, a})
 are consumed and VST will expect a third memory share (\texttt{a}) which does not \textit{exist} anymore.
@@ -265,10 +265,10 @@ However we must define invariants which are true for each iteration step.
 
 Assume we want to prove a decreasing loop where indexes go from 3 to 0.
 Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as
-input an integer for the index and a state, then return a state.
-It simulate the body of the \texttt{for} loop.
+input an integer for the index and a state, then returns a state.
+It simulates the body of the \texttt{for} loop.
 Assume its recursive call: $f : \N \rightarrow State \rightarrow State $ which
-iteratively apply $g$ with decreasing index:
+iteratively applies $g$ with decreasing index:
 \begin{equation*}
   f ( i , s ) =
   \begin{cases}
@@ -301,7 +301,7 @@ in C provide the same computations as in \coqe{CSM}.
 As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are represented
 in base $2^{16}$ and we use a direct mapping to represent that array as a list
 integers in Coq. However in order to show the correctness of the basic operations,
-we need to convert this number as a full integer.
+we need to convert this number to a full integer.
 \begin{dfn}
 Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list} \Z \rightarrow \Z$,
 a parameterized map by $n$ between a list $l$ and its little endian representation
@@ -444,9 +444,9 @@ Lemma Inv25519_Z_GF : forall (g:list Z),
   (Inv25519_Z (Z16.lst g)) :GF.
 \end{lstlisting}
 In TweetNaCl, \TNaCle{inv25519} computes an inverse in $\Zfield$.
-It uses the Fermat's little theorem by doing an exponentiation to $2^{255}-21$.
+It uses Fermat's little theorem by doing an exponentiation to $2^{255}-21$.
 This is done by applying a square-and-multiply algorithm. The binary representation
-of $p-2$ implies to always do multiplications aside for bits 2 and 4.
+of $p-2$ implies to always do multiplications except for bits 2 and 4.
 To prove the correctness of the result we can use multiple strategies such as:
 \begin{itemize}
   \item Proving it is a special case of square-and-multiply algorithm applied to $2^{255}-21$.
@@ -511,7 +511,7 @@ Definition f_inv_denote (t : formula_inv) : Prop :=
 All denote functions also take as an argument the environment containing the variables.
 We do not show it here for the sake of readability,
 given that an environment, \Coqe{term_denote} returns the appropriate variable.
-With such Domain Specific Language we have the following equality:
+With this Domain Specific Language we have the following equality:
 \begin{lstlisting}[backgroundcolor=\color{white}]
 f_inv_denote
  (Eq_inv (M_inv R_inv (S_inv R_inv))
@@ -614,7 +614,7 @@ Corollary Inv25519_Zpow_GF :
 
 \subheading{Another applications of reflections: packing}
 This reflection technique can also be used where proofs requires some computing
-over a small and finite domain of variable to test e.g. for all $i$ such that $0 \le i < 16$.
+over a small and finite domain of variables to test e.g. for all $i$ such that $0 \le i < 16$.
 Using reflection we prove that we can split the for loop in \TNaCle{pack25519} into two parts.
 \begin{lstlisting}[language=Ctweetnacl]
 for(i=1;i<15;i++) {
@@ -622,7 +622,7 @@ for(i=1;i<15;i++) {
   m[i-1]&=0xffff;
 }
 \end{lstlisting}
-The first loop is computing the subtraction while the second is applying the carrying.
+The first loop is computing the subtraction while the second is applying the carries.
 \begin{lstlisting}[language=Ctweetnacl]
 for(i=1;i<15;i++) {
   m[i]=t[i]-0xffff

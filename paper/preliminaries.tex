@@ -258,7 +258,7 @@ In order to compute the scalar multiplication,
 X25519 uses the Montgomery ladder~\cite{Mon85}.
 
 $x$-coordinates are represented as fractions, the computation of the actual
-value is differed to the end of the ladder with \TNaCle{inv25519}.
+value is deffered to the end of the ladder with \TNaCle{inv25519}.
 
 First extract and clamp the value of $n$. Then unpack the value of $p$.
 As per RFC~7748~\cite{rfc7748}, set its most significant bit to 0.
@@ -355,6 +355,6 @@ The first step consists of translating the source code into CLight,
 an intermediate representation used by CompCert.
 For such purpose we use the parser CompCert: \texttt{clightgen}.
 In second step we define the Hoare triple encapsulating the specification of the
-piece of software we want to prove. Then using VST, we  uses a strongest
+piece of software we want to prove. Then using VST, we  use a strongest
 postcondition approach to prove the correctness of the triple.
 This approach can be seen as a forward symbolic execution of the program.

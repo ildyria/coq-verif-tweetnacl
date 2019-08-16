@@ -3,7 +3,7 @@
 
 The Networking and Cryptography library (NaCl)~\cite{BLS12}
 is an easy-to-use, high-security, high-speed cryptography library.
-It uses specialized code for different platform, which makes it rather complex and hard to audit.
+It uses specialized code for different platforms, which makes it rather complex and hard to audit.
 TweetNaCl~\cite{BGJ+15} is a compact re-implementation in C
 of the core functionalities of NaCl and is claimed to be
 \emph{``the first cryptographic library that allows correct functionality
@@ -53,31 +53,31 @@ implementation satisfies it.
 
 % One of the earliest example of this first approach is the
 % B-method~\cite{Abrial:1996:BAP:236705} in 1986.
-Using the synthesis approach, Zinzindohou{\'{e}} et al. wrote an verified extensible
+Using the synthesis approach, Zinzindohou{\'{e}} et al. wrote a verified extensible
 library of elliptic curves~\cite{Zinzindohoue2016AVE} in F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}.
 This served as ground work for the cryptographic library HACL*~\cite{zinzindohoue2017hacl}
 used in the NSS suite from Mozilla.
 
-Coq does not only allows verification but also synthesis~\cite{CpdtJFR}.
+Coq not only allows verification but also synthesis~\cite{CpdtJFR}.
 Erbsenm; Philipoom; Gross; and Chlipala et al. make use of it to have
 correct-by-construction finite field arithmetic~\cite{Philipoom2018CorrectbyconstructionFF}.
 In such way, they synthesized~\cite{Erbsen2016SystematicSO} certified elliptic curve
 implementations~\cite{Erbsen2017CraftingCE}. These are now being used in
 BoringSSL~\cite{fiat-crypto}.
 
-The verification approach, have been used to prove the correctness of OpenSSL
+The verification approach has been used to prove the correctness of OpenSSL
 HMAC~\cite{Beringer2015VerifiedCA} and SHA-256~\cite{2015-Appel}. Compared to
 their work our approaches makes a complete link between the C implementation and
 the formal mathematical definition of the group theory behind elliptic curves.
 
 Synthesis approaches forces the user to depend on generated code which may not
-be optimal (speed, compactness...), they require to tweak the compiler in order
-to achieve the desired properties. On the other hand a carefully handcrafted
+be optimal (speed, compactness...) and they require compiler tweaks in order
+to achieve the desired properties. On the other hand, carefully handcrafted
 optimized code will force the verifier to consider all the possible special cases
 and write a complex low level specification in order to prove the correctness of
 the algorithm.
 
-It has to be noted that Curve25519 implementations has already been under the scrutiny~\cite{Chen2014VerifyingCS}.
+It has to be noted that Curve25519 implementations have already been under scrutiny~\cite{Chen2014VerifyingCS}.
 However in this paper we provide a proofs of correctness and soundness of a C program up to
 the theory of elliptic curves.
 
