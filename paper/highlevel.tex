@@ -1,16 +1,18 @@
 \section{Proving that X25519 in Coq matches the mathematical model}
 \label{sec:maths}
 
-\begin{theorem}\label{thm:Elliptic-CSM}
-\todo{DESCRIBE}
+In this section we prove the following theorem:
+\begin{theorem}
+\label{thm:Elliptic-CSM}
+The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) computes the
+$\F{p}$-restricted $x$-coordinate scalar multiplication on $E(\F{p^2})$ where $p$ is $\p$
+and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 \end{theorem}
 
-In this section we first present the work of Bartzia and Strub \cite{DBLP:conf/itp/BartziaS14} (\ref{subsec:ECC-Weierstrass}).
-We extend it to support Montgomery curves (\ref{subsec:ECC-Montgomery}) with homogeneous coordinates (\ref{subsec:ECC-projective}) and prove the correctness of the ladder (\ref{subsec:ECC-ladder}).
-
-We then prove the Montgomery ladder computes
-the x-coordinate of scalar multiplication over $\F{p^2}$
-(Theorem 2.1 by Bernstein \cite{Ber06}) where $p$ is the prime $\p$.
+We first review the work of Bartzia and Strub \cite{BartziaS14} (\ref{subsec:ECC-Weierstrass}).
+We extend it to support Montgomery curves (\ref{subsec:ECC-Montgomery})
+with homogeneous coordinates (\ref{subsec:ECC-projective}) and prove the
+correctness of the ladder (\ref{subsec:ECC-ladder}).
 
 \subsection{Formalization of Elliptic Curves}
 \label{subsec:ECC}
@@ -59,7 +61,7 @@ Definition oncurve (p : point) :=
 Inductive ec : Type := EC p of oncurve p.
 \end{lstlisting}
 
-Points of an elliptic curve can be equipped with a structure of an abelian group.
+Points of an elliptic curve are equipped with a structure of an abelian group.
 \begin{itemize}
   \item The negation of a point $P = (x,y)$ by taking the symmetric with respect to the x axis $-P = (x, -y)$.
   \item The addition of two points $P$ and $Q$ is defined by the negation of third intersection
@@ -67,7 +69,7 @@ Points of an elliptic curve can be equipped with a structure of an abelian group
   \item $\Oinf$ is the neutral element under this law: if 3 points are collinear, their sum is equal to $\Oinf$.
 \end{itemize}
 
-This operation are defined in Coq as follow:
+These operations are defined in Coq as follow:
 \begin{lstlisting}[language=Coq]
 Definition neg (p : point) :=
   if p is (| x, y |) then (| x, -y |) else EC_Inf.
@@ -84,7 +86,7 @@ Definition add (p1 p2 : point) :=
   end.
 \end{lstlisting}
 
-And is proven internal to the curve (with coercion):
+And are proven internal to the curve (with coercion):
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : ec): oncurve (add p q).
 
@@ -95,9 +97,8 @@ Definition addec (p1 p2 : ec) : ec :=
 \subsubsection{Montgomery Curves}
 \label{subsec:ECC-Montgomery}
 
-Computation over elliptic curves are hard. Speedups can be obtained by using
-homogeneous coordinates and other forms than the Weierstra{\ss} form. We consider
-the Montgomery form \cite{MontgomerySpeeding}.
+Speedups can be obtained by switching to homogeneous coordinates and other forms
+than the Weierstra{\ss} form. We consider the Montgomery form \cite{MontgomerySpeeding}.
 
 \begin{dfn}
   Let $a \in \K \backslash \{-2, 2\}$, and $b \in \K \backslash \{ 0\}$.
@@ -174,20 +175,20 @@ Lemma ec_of_mc_bij : bijective ec_of_mc.
 \subsubsection{Projective Coordinates}
 \label{subsec:ECC-projective}
 
-Points on a projective plane are represented with a triple $(X:Y:Z)$. Any points
-except $(0:0:0)$ defines a point on a projective plane. A scalar multiple of a point defines the same point, \ie
-for all $\alpha \neq 0$, $(X:Y:Z)$ and $(\alpha X:\alpha Y:\alpha Z)$ defines
-the same point. For $Z\neq 0$, the projective point $(X:Y:Z)$ corresponds to the
-point $(X/Z,Y/Z)$ on the Euclidean plane, likewise the point $(X,Y)$ on the Euclidean plane corresponds to $(X:Y:1)$ on the projective plane.
+On a projective plane, points are represented with a triple $(X:Y:Z)$.
+With the exception of $(0:0:0)$, any points can be projected.
+Scalar multiples are representing the same point, \ie
+for all $\lambda \neq 0$, $(X:Y:Z)$ are $(\lambda X:\lambda Y:\lambda Z)$ defining
+the same point.
+For $Z\neq 0$, the projective point $(X:Y:Z)$ corresponds to the
+point $(X/Z,Y/Z)$ on the Euclidean plane, likewise the point $(X,Y)$ on the
+Euclidean plane corresponds to $(X:Y:1)$ on the projective plane.
 
-We write the equation for a Montgomery curve $M_{a,b}(\K)$ as such:
-\begin{equation}
-b \bigg(\frac{Y}{Z}\bigg)^2 = \bigg(\frac{X}{Z}\bigg)^3 + a \bigg(\frac{X}{Z}\bigg)^2 + \bigg(\frac{X}{Z}\bigg)
-\end{equation}
+Using fractions as coordinates, the equation for a Montgomery curve $M_{a,b}(\K)$
+becomes:
+$$b \bigg(\frac{Y}{Z}\bigg)^2 = \bigg(\frac{X}{Z}\bigg)^3 + a \bigg(\frac{X}{Z}\bigg)^2 + \bigg(\frac{X}{Z}\bigg)$$
 Multiplying both sides by $Z^3$ yields:
-\begin{equation}
-b Y^2Z = X^3 + a X^2Z + XZ^2
-\end{equation}
+$$b Y^2Z = X^3 + a X^2Z + XZ^2$$
 With this equation we can additionally represent the ``point at infinity''. By
 setting $Z=0$, we derive $X=0$, giving us the ``infinite points'' $(0:Y:0)$ with $Y\neq 0$.
 
@@ -197,13 +198,15 @@ square in \K, we ensure that $(0,0)$ is the only point with a $y$-coordinate of 
 Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 \end{lstlisting}
 
-With those coordinates we prove the following lemmas for the addition of two points.
-\begin{dfn}Define the functions $\chi$ and $\chi_0$:\\
+We define $\chi$ and $\chi_0$ to return the $x$-coordinate of points on a curve.
+\begin{dfn}Let $\chi$ and $\chi_0$:\\
 -- $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$\\
   such that $\chi(\Oinf) = \infty$ and $\chi((x,y)) = x$.\\
 -- $\chi_0 : M_{a,b}(\K) \to \K$\\
   such that $\chi_0(\Oinf) = 0$ and $\chi_0((x,y)) = x$.
 \end{dfn}
+Using projective coordinates we prove the
+With those coordinates we prove the following lemmas for the addition of two points.
 \begin{lemma}
 \label{lemma:add}
 Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and

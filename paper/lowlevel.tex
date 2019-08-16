@@ -4,7 +4,7 @@
 In this section we prove the following theorems:
 \begin{theorem}
 \label{thm:VST}
-The implementation X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches our
+The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches our
 functional specification in Coq.
 \end{theorem}
 
@@ -627,6 +627,7 @@ The first loop is computing the subtraction while the second is applying the car
 for(i=1;i<15;i++) {
   m[i]=t[i]-0xffff
 }
+
 for(i=1;i<15;i++) {
   m[i]=m[i]-((m[i-1]>>16)&1);
   m[i-1]&=0xffff;
@@ -634,13 +635,14 @@ for(i=1;i<15;i++) {
 \end{lstlisting}
 This loop separation allows simpler proofs. The first loop is seen as the subtraction of a number in \Zfield.
 We then prove that with the iteration of the second loop, the number represented in $\Zfield$ stays the same.
-This leads to the proof that \TNaCle{pack25519} is effectively reducing mod $\p$ and returning a number in base $2^8$.
+This leads to the proof that \TNaCle{pack25519} is effectively reducing modulo $\p$ and returning a number in base $2^8$.
 \begin{lstlisting}[language=Coq]
 Lemma Pack25519_mod_25519 :
-forall (l:list Z),
-Zlength l = 16 ->
-Forall (fun x => -2^62 < x < 2^62) l ->
-ZofList 8 (Pack25519 l) = (Z16.lst l) mod (2^255-19).
+  forall (l:list Z),
+  Zlength l = 16 ->
+  Forall (fun x => -2^62 < x < 2^62) l ->
+  ZofList 8 (Pack25519 l) =
+  (Z16.lst l) mod (2^255-19).
 \end{lstlisting}
 
 By proving that each functions \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};

@@ -130,7 +130,7 @@ def find_subblock(block, i, list_subblock):
         list_subblock.append([i,end,idx])
         return find_subblock(block, end+1 , list_subblock)
     else:
-        debug(Red("this should not happen"))
+        print(Red("this should not happen"))
         return list_subblock;
 
 
