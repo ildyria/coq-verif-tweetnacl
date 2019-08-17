@@ -1,6 +1,3 @@
-~\\
-~\\
-~\\
 \subsection{Coq definitions}
 \label{appendix:coq}
 
@@ -141,7 +138,7 @@ Definition Zclamp (n : Z) : Z :=
 Definition ZInv25519 (x:Z) : Z :=
   Z.pow x (Z.pow 2 255 - 21).
 
-(* instanciate over Z *)
+(* instantiate over Z *)
 Instance Z_Ops : (Ops Z Z modP) := {}.
 Proof.
   apply Mid.A.        (* instantiate +       *)
@@ -155,7 +152,7 @@ Proof.
   apply Mid.getbit.   (* instantiate ith bit *)
 Defined.
 
-(* instanciate montgomery_rec with Z_Ops *)
+(* instantiate montgomery_rec with Z_Ops *)
 Definition ZCrypto_Scalarmult n p :=
   let t := montgomery_rec
     255               (* iterate 255 times *)

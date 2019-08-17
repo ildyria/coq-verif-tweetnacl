@@ -128,21 +128,21 @@ Definition Zclamp (n : Z) : Z :=
 (* x^{p - 2} *)
 Definition ZInv25519 (x:Z) : Z := Z.pow x (Z.pow 2 255 - 21).
 
-(* instanciate over Z *)
+(* instantiate over Z *)
 Instance Z_Ops : (Ops Z Z modP) := {}.
 Proof.
-  apply Mid.A.        (* instanciate +       *)
-  apply Mid.M.        (* instanciate *       *)
-  apply Mid.Zub.      (* instanciate -       *)
-  apply Mid.Sq.       (* instanciate x^2      *)
-  apply Mid.C_0.      (* instanciate Const 0 *)
-  apply Mid.C_1.      (* instanciate Const 1 *)
-  apply Mid.C_121665. (* instanciate (a-2)/4 *)
-  apply Mid.Sel25519. (* instanciate CSWAP   *)
-  apply Mid.getbit.   (* instanciate ith bit *)
+  apply Mid.A.        (* instantiate +       *)
+  apply Mid.M.        (* instantiate *       *)
+  apply Mid.Zub.      (* instantiate -       *)
+  apply Mid.Sq.       (* instantiate x^2      *)
+  apply Mid.C_0.      (* instantiate Const 0 *)
+  apply Mid.C_1.      (* instantiate Const 1 *)
+  apply Mid.C_121665. (* instantiate (a-2)/4 *)
+  apply Mid.Sel25519. (* instantiate CSWAP   *)
+  apply Mid.getbit.   (* instantiate ith bit *)
 Defined.
 
-(* instanciate montgomery_rec with Z_Ops *)
+(* instantiate montgomery_rec with Z_Ops *)
 Definition ZCrypto_Scalarmult n p :=
   let t := montgomery_rec
     255               (* iterate 255 times *)
