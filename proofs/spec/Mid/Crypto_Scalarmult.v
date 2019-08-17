@@ -55,7 +55,7 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma ZCrypto_Scalarmult_curve25519_ladder n x :
+Lemma ZCrypto_Scalarmult_curve25519_ladder_ n x :
   ZCrypto_Scalarmult n x = val (curve25519_Fp_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi (modP (ZUnpack25519 x)))).
 Proof.
 assert (Hn:= Zclamp_min n).
@@ -144,6 +144,17 @@ f_equal.
   rewrite /modP in Fermat.
   rewrite -pow_mod //.
   }
+Qed.
+
+Lemma ZCrypto_Scalarmult_curve25519_ladder n x :
+  ZCrypto_Scalarmult n x = val (curve25519_Fp_ladder (Z.to_nat (Zclamp n)) (Zmodp.pi (ZUnpack25519 x))).
+Proof.
+  replace (Zmodp.pi (ZUnpack25519 x)) with (Zmodp.pi (modP (ZUnpack25519 x))).
+  apply ZCrypto_Scalarmult_curve25519_ladder_.
+  apply val_inj => /=.
+  rewrite /p -lock /=.
+  rewrite /modP.
+  apply Zmod_mod.
 Qed.
 
 Close Scope Z.

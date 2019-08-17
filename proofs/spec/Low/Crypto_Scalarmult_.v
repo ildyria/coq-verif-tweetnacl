@@ -38,7 +38,7 @@ Lemma CSM_Eq : forall (n p:list Z),
   Zlength p = 32 ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) n ->
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult n p) = val (curve25519_Fp_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (modP (ZUnpack25519 (ZofList 8 p))))).
+  ZofList 8 (Crypto_Scalarmult n p) = val (curve25519_Fp_ladder (Z.to_nat (Zclamp (ZofList 8 n))) (Zmodp.pi (ZUnpack25519 (ZofList 8 p)))).
 Proof.
 move => n p Hln Hlp HBn HBp.
 rewrite -ZCrypto_Scalarmult_curve25519_ladder.
@@ -74,7 +74,7 @@ rewrite expn_pown.
 by move/ltP.
 Qed.
 
-Local Notation "'Fp2_x' P" := (Zmodp2.Zmodp2 (Zmodp.pi (modP P)) 0) (at level 30).
+Local Notation "'Fp2_x' P" := (Zmodp2.Zmodp2 (Zmodp.pi P) 0) (at level 30).
 Local Notation "P '_x0'" := (val ((P )#x0 /p)) (at level 30).
 
 Theorem Crypto_Scalarmult_Correct: forall (n p:list Z) (P:mc curve25519_Fp2_mcuType),
