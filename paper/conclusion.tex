@@ -26,12 +26,11 @@ Lemma f_ext: forall (A B:Type),
   \item \textbf{Verifiable Software Toolchain}. This framework developed at
   Princeton allows a user to prove that a \texttt{CLight} code matches pure Coq
   specification. However one must trust the framework properly captures and
-  map the CLight behavior to the basic pure Coq functions. At the beginning of
-  the project we found inconsistency and reported them to the authors.
+  map the CLight behavior to the basic pure Coq functions.
+  % At the beginning of the project we found inconsistency and reported them to the authors.
 
   \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
-  model captures correctly the C standard.
-  \todo{VERIFY THIS, WHICH STANDARD ?}.
+  model captures correctly the C99 standard.
   Our proof also assumes that the TweetNaCl code will behave as expected if
   compiled under CompCert. We do not provide guarantees for other C compilers
   such as Clang or GCC.
@@ -47,10 +46,8 @@ o[i] = aux1 + aux2;
 \end{lstlisting}
   The trust of the proof relied on the trust of a correct translation from the
   initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
-
-  While this problem is still present, the CompCert developers provided us with
-  the \texttt{-normalize} option for \texttt{clightgen} which takes care of
-  generating auxiliary variables in order to automatically derive these steps.
+  \texttt{clightgen} now comes with \texttt{-normalize} flag which
+  factors out function calls and assignments from inside subexpressions.
   The changes required for a C-code to make it Verifiable are now minimal.
 
   \item Last but not the least, we must trust: the \textbf{Coq kernel} and its
@@ -59,10 +56,26 @@ o[i] = aux1 + aux2;
   done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
-\subsection{Modifications in TweetNaCl}
+\subsection{Corrections in TweetNaCl}
 
-The upper 64 indexes of the \TNaCle{i64 x[80]} intermediate variable of
-\TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code,
-we fixed it.
+As a result of this verification, we removed superflous code.
+Indeed the upper 64 indexes of the \TNaCle{i64 x[80]} intermediate variable of
+\TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code, we fixed it.
 
-\todo{Mention Peter Wu and Jason A. Donenfeld change to car25519}
+Peter Wu and Jason A. Donenfeld brought to our attention that the original
+\TNaCle{car25519} function presented risk of Undefined Behavior if \texttt{c}
+is a negative number.
+\begin{lstlisting}[language=Ctweetnacl]
+c=o[i]>>16;
+o[i]-=c<<16; // c < 0 = UB !
+\end{lstlisting}
+By replacing statement by a logical \texttt{and} (and proving the correctness)
+we solved this problem.
+\begin{lstlisting}[language=Ctweetnacl]
+o[i]&=0xffff;
+\end{lstlisting}
+
+We believe that the type change of the loop index (\TNaCle{int} instead of \TNaCle{i64})
+does not impact the trust of our proof.
+
+\todo{I don't see what to say more here.}

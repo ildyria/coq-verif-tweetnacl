@@ -296,6 +296,9 @@ We formalized this result in a generic way in Appendix~\ref{subsubsec:for}.
 Using this formalization, we prove that the 255 steps of the Montgomery ladder
 in C provide the same computations as in \coqe{CSM}.
 
+
+
+
 \subsection{Number Representation and C Implementation}
 
 As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are represented
@@ -323,7 +326,6 @@ To facilitate working in \Zfield, we define the \coqe{:GF} notation.
 \begin{lstlisting}[language=Coq]
 Notation "A :GF" := (A mod (2^255-19)).
 \end{lstlisting}
-
 Later in \sref{sec:maths}, we formally define \F{\p}.
 Equivalence between operations under \coqe{:GF} and in \F{\p} are easily proven.
 
@@ -362,6 +364,9 @@ Lemma M_bound_Zlength :
   Forall (fun x => -2^26 < x < 2^26) b ->
     Forall (fun x => -38 <= x < 2^16 + 38) (Low.M a b).
 \end{lstlisting}
+
+
+
 
 \subsection{Inversions, Reflections and Packing}
 
@@ -403,7 +408,6 @@ Function pow_fn_rev (a:Z) (b:Z)
       let prev := pow_fn_rev (a - 1) b c g in
         step_pow (b - a) prev g.
 \end{lstlisting}
-
 This \Coqe{Function} requires a proof of termination. It is done by proving the
 well-foundedness of the decreasing argument: \Coqe{measure Z.to_nat a}. Calling
 \Coqe{pow_fn_rev} 254 times allows us to reproduce the same behavior as the \texttt{Clight} definition.
@@ -443,6 +447,7 @@ Lemma Inv25519_Z_GF : forall (g:list Z),
   (Z16.lst (Inv25519 g)) :GF =
   (Inv25519_Z (Z16.lst g)) :GF.
 \end{lstlisting}
+
 In TweetNaCl, \TNaCle{inv25519} computes an inverse in $\Zfield$.
 It uses Fermat's little theorem by doing an exponentiation to $2^{255}-21$.
 This is done by applying a square-and-multiply algorithm. The binary representation
@@ -570,6 +575,7 @@ Definition decide_f_inv (f:formula_inv) : bool :=
   | Eq_inv x y => decide_e_inv x y
   end.
 \end{lstlisting}
+
 We prove our decision procedure correct.
 \begin{lemma}
 \label{lemma:decide}
@@ -583,6 +589,7 @@ Lemma decide_formula_inv_impl :
   decide_f_inv f = true ->
     f_inv_denote f.
 \end{lstlisting}
+
 By reification to over DSL (\lref{lemma:reify}) and by applying our decision
 (\lref{lemma:decide}), we prove the following corollary.
 \begin{lemma}
@@ -633,6 +640,7 @@ for(i=1;i<15;i++) {
   m[i-1]&=0xffff;
 }
 \end{lstlisting}
+
 This loop separation allows simpler proofs. The first loop is seen as the subtraction of a number in \Zfield.
 We then prove that with the iteration of the second loop, the number represented in $\Zfield$ stays the same.
 This leads to the proof that \TNaCle{pack25519} is effectively reducing modulo $\p$ and returning a number in base $2^8$.

@@ -68,7 +68,6 @@ Points of an elliptic curve are equipped with a structure of an abelian group.
   of the line passing by $P$ and $Q$ or tangent to $P$ if $P = Q$.
   \item $\Oinf$ is the neutral element under this law: if 3 points are collinear, their sum is equal to $\Oinf$.
 \end{itemize}
-
 These operations are defined in Coq as follow:
 \begin{lstlisting}[language=Coq]
 Definition neg (p : point) :=
@@ -85,7 +84,6 @@ Definition add (p1 p2 : point) :=
           (| xs, - s * (xs - x1 ) - y1 |)
   end.
 \end{lstlisting}
-
 And are proven internal to the curve (with coercion):
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : ec): oncurve (add p q).
@@ -102,7 +100,8 @@ than the Weierstra{\ss} form. We consider the Montgomery form \cite{MontgomerySp
 
 \begin{dfn}
   Let $a \in \K \backslash \{-2, 2\}$, and $b \in \K \backslash \{ 0\}$.
-  The \textit{Montgomery curve} $M_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
+  The \textit{Montgomery curve} $M_{a,b}(\K)$ is the set of all points
+  $(x,y) \in \K^2$ satisfying the equation:
   $$by^2 = x^3 + ax^2 + x,$$
   along with an additional formal point $\Oinf$, ``at infinity''.
 \end{dfn}
@@ -148,8 +147,10 @@ Definition addmc (p1 p2 : mc) : mc :=
 
 We then prove a bijection between a Montgomery curve and its Weierstra{\ss} equation.
 \begin{lemma}
-  Let $M_{a,b}(\K)$ be a Montgomery curve, define $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
-  then $E_{a',b'}(\K)$ is an elliptic curve, and the mapping $\varphi : M_{a,b}(\K) \mapsto E_{a',b'}(\K)$ defined as:
+  Let $M_{a,b}(\K)$ be a Montgomery curve, define
+  $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
+  then $E_{a',b'}(\K)$ is an elliptic curve, and the mapping
+  $\varphi : M_{a,b}(\K) \mapsto E_{a',b'}(\K)$ defined as:
   \begin{align*}
     \varphi(\Oinf_M) &= \Oinf_E\\
     \varphi( (x , y) ) &= ( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} )
@@ -194,6 +195,10 @@ setting $Z=0$, we derive $X=0$, giving us the ``infinite points'' $(0:Y:0)$ with
 
 By restricting the parameter $a$ of $M_{a,b}(\K)$ such that $a^2-4$ is not a
 square in \K, we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
+\begin{hypothesis}
+\label{hyp:a_minus_4_not_square}
+$a^2-4$ is not a square in \K.
+\end{hypothesis}
 \begin{lstlisting}[language=Coq]
 Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 \end{lstlisting}
@@ -205,55 +210,25 @@ We define $\chi$ and $\chi_0$ to return the $x$-coordinate of points on a curve.
 -- $\chi_0 : M_{a,b}(\K) \to \K$\\
   such that $\chi_0(\Oinf) = 0$ and $\chi_0((x,y)) = x$.
 \end{dfn}
-Using projective coordinates we prove the
-With those coordinates we prove the following lemmas for the addition of two points.
+Using projective coordinates we prove the formula for differential addition (\lref{lemma:xADD}).
 \begin{lemma}
-\label{lemma:add}
+\label{lemma:xADD}
 Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and
-let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$, $(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
+let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$,
+$(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
 Define
 \begin{align*}
 X_3 &= Z_4((X_1 - Z_1)(X_2+Z_2) + (X_1+Z_1)(X_2-Z_2))^2\\
 Z_3 &= X_4((X_1 - Z_1)(X_2+Z_2) - (X_1+Z_1)(X_2-Z_2))^2,
 \end{align*}
-then for any point $P_1$ and $P_2$ on $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_1), X_2/Z_2 = \chi(P_2)$, and $X_4/Z_4 = \chi(P_1 - P_2)$, we have $X_3/Z_3 = \chi(P_1+P_2)$.\\
+then for any point $P_1$ and $P_2$ on $M_{a,b}(\K)$ such that
+$X_1/Z_1 = \chi(P_1), X_2/Z_2 = \chi(P_2)$, and $X_4/Z_4 = \chi(P_1 - P_2)$,
+we have $X_3/Z_3 = \chi(P_1+P_2)$.\\
 \textbf{Remark:} For any $x \in \K \backslash\{0\}, x/0$ should be understood as $\infty$.
 \end{lemma}
-% This can be formalized as follow:
-% \begin{lstlisting}[language=Coq]
-% Inductive K_infty :=
-% | K_Inf : K_infty
-% | K_Fin : K -> K_infty.
-%
-% Definition point_x (p : point K) :=
-%   if p is (|x, _|) then K_Fin x else K_Inf.
-% Local Notation "p '#x'" := (point_x p) (at level 30).
-% Definition point_x0 (p : point K) :=
-%   if p is (|x, _|) then x else 0.
-%   Local Notation "p '#x0'" := (point_x0 p) (at level 30).
-%
-% Definition inf_div (x z : K) :=
-%   if z == 0 then K_Inf else K_Fin (x / z).
-% Definition hom_ok (x z : K) := (x != 0) || (z != 0).
-% Lemma montgomery_hom_neq :
-%   forall x1 x2 x4 z1 z2 z4 : K,
-%   hom_ok x1 z1 -> hom_ok x2 z2 ->
-%   (x4 != 0) && (z4 != 0) ->
-%   let x3 := z4 * ((x1 - z1)*(x2 + z2)
-%     + (x1 + z1)*(x2 - z2))^+2 in
-%   let z3 := x4 * ((x1 - z1)*(x2 + z2)
-%     - (x1 + z1)*(x2 - z2))^+2 in
-%   forall p1 p2 : point K,
-%   oncurve M p1 -> oncurve M p2 ->
-%   p1#x = inf_div x1 z1 ->
-%   p2#x = inf_div x2 z2 ->
-%   (p1 \- p2)#x = inf_div x4 z4 ->
-%   hom_ok x3 z3 && ((p1 \+ p2)#x == inf_div x3 z3).
-% \end{lstlisting}
-
-With those coordinates we also prove a similar lemma for point doubling.
+Similarly we also prove the formula point doubling (\lref{lemma:xDBL}).
 \begin{lemma}
-\label{lemma:double}
+\label{lemma:xDBL}
 Let $M_{a,b}(\K)$ be a Montgomery curve such that $a^2-4$ is not a square, and
 let $X_1, Z_1, X_2, Z_2, X_3, Z_3 \in \K$, such that $(X_1,Z_1) \neq (0,0)$. Define
 \begin{align*}
@@ -264,45 +239,16 @@ Z_3 &= c\Big((X_1 + Z_1)^2+\frac{a-2}{4}\times c\Big),
 then for any point $P_1$ on $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_1)$,
 we have $X_3/Z_3 = \chi(2P_1)$.
 \end{lemma}
-% Which is formalized as follow:
-% \begin{lstlisting}[language=Coq]
-% Lemma montgomery_hom_eq :
-%   forall x1 z1 : K,
-%   hom_ok x1 z1 ->
-%   let c := (x1 + z1)^+2 - (x1 - z1)^+2 in
-%   let x3 := (x1 + z1)^+2 * (x1 - z1)^+2 in
-%   let z3 := c * ((x1 + z1)^+2 + (((M#a) - 2%:R)/4%:R) * c) in
-%   forall p : point K, oncurve M p ->
-%   p#x = inf_div x1 z1 ->
-%   (p \+ p)#x = inf_div x3 z3.
-% \end{lstlisting}
 
-With these two lemmas (\ref{lemma:add} and \ref{lemma:double}), we have the basic
-tools to compute efficiently additions and point doubling on projective coordinates.
+With \lref{lemma:xADD} and \lref{lemma:xDBL}, we are able to compute efficiently
+differential additions and point doubling on projective coordinates.
 
 \subsubsection{Scalar Multiplication Algorithms}
 \label{subsec:ECC-ladder}
 
-Suppose we have a scalar $n$ and a point $P$ on some curve. The most straightforward
-way to compute $n \cdot P$ is to repetitively add $P$ \ie computing $P + \ldots + P$.
-However there is an more efficient algorithm which makes use of the binary
-representation of $n$ and by combining doubling and adding and starting from $\Oinf$.
-\eg for $n=11$, we compute $2(2(2(2\Oinf + P)) + P)+ P$.
-
-With a simple double-and-add algorithm, with careful timing, an attacker could reconstruct $n$.
-In the case of X25519, $n$ is the private key. With the Montgomery's ladder, while
-it provides slightly more computations and an extra variable, we can prevent such weakness.
-See \aref{alg:montgomery-ladder}.
-
-\begin{lemma}
-\label{lemma:montgomery-ladder}
-\aref{alg:montgomery-ladder} is correct, \ie it respects its output conditions given the input conditions.
-\end{lemma}
-
-In Curve25519 we are only interested in the $x$ coordinate of points, using
-Lemmas \ref{lemma:add} and \ref{lemma:double}, and replacing the if statements
-with conditional swapping we can define a ladder similar to the one used in TweetNaCl.
-See \aref{alg:montgomery-double-add}
+By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL} and \texttt{xADD}
+with their respective formula (\lref{lemma:xADD} and \lref{lemma:xDBL}),
+we can define a ladder similar to the one used in TweetNaCl (See \aref{alg:montgomery-double-add}).
 
 \begin{algorithm}
 \caption{Montgomery ladder for scalar multiplication on $M_{a,b}(\K)$ with optimizations}
@@ -347,10 +293,7 @@ See \aref{alg:montgomery-double-add}
 \aref{alg:montgomery-double-add} is correct, \ie it respects its output
 conditions given the input conditions.
 \end{lemma}
-
-%% here we have \chi and \chi_0 ...
-
-We formalized this lemma (\ref{lemma:montgomery-double-add}):
+We formalized \lref{lemma:montgomery-double-add} as follows:
 \begin{lstlisting}[language=Coq]
 Lemma opt_montgomery_x :
   forall (n m : nat) (x : K),
@@ -358,7 +301,6 @@ Lemma opt_montgomery_x :
   forall (p : mc M), p#x0 = x ->
   opt_montgomery n m x = (p *+ n)#x0.
 \end{lstlisting}
-
 We can remark that for an input $x = 0$, the ladder returns $0$.
 \begin{lstlisting}[language=Coq]
 Lemma opt_montgomery_0:
@@ -367,17 +309,13 @@ Lemma opt_montgomery_0:
 Also \Oinf\ is the neutral element over $M_{a,b}(\K)$, we have:
 $$\forall P, P + \Oinf\ = P$$
 thus we derive the following lemma.
-% \begin{lemma}
-% \label{lemma:montgomery-double-add}
-% Algorithm \ref{montgomery-double-add} is correct even if $x=0$, \ie it respects its output conditions given the input conditions or $x=0$.
-% \end{lemma}
 \begin{lstlisting}[language=Coq]
 Lemma p_x0_0_eq_0 : forall (n : nat) (p : mc M),
   p #x0 = 0%:R -> (p *+ n) #x0 = 0%R.
 \end{lstlisting}
 And thus the theorem of the correctness of the Montgomery ladder.
 \begin{theorem}
-\label{montgomery-ladder-correct}
+\label{thm:montgomery-ladder-correct}
 For all $n, m \in \N$, $x \in \K$, $P \in M_{a,b}(\K)$,
 if $\chi_0(P) = x$ then \aref{alg:montgomery-double-add} returns $\chi_0(n \cdot P)$
 \end{theorem}
@@ -390,10 +328,15 @@ Theorem opt_montgomery_ok (n m: nat) (x : K) :
 
 \subsection{Curves, Twists and Extension Fields}
 
-One hypothesis to be able to use the above theorem is that $a^2-4$ is not a square:
+To be able to use the above theorem we need to satisfy hypothesis
+\ref{hyp:a_minus_4_not_square}: $a^2-4$ is not a square in \K:
 $$\forall x \in \K,\ x^2 \neq a^2-4$$
-As Curve25519 is defined over the field $\K = \F{p^2}$, there exists $x$ such that $x^2 = a^2-4$.
-We first study Curve25519 and one of the quadratic twist Twist25519, first defined over \F{p}.
+As we consider the quadratic extension field $\F{p^2}$,
+there exists $x$ such that $x^2 = a^2-4$, preventing use \tref{thm:montgomery-ladder-correct}
+with $\K = \F{p^2}$.
+
+We first study Curve25519 and one of the quadratic twist Twist25519, both defined
+over \F{p}.
 
 \subsubsection{Curves and Twists}
 
@@ -416,44 +359,42 @@ Coercion repr (x : type) : Z :=
 End Zmodp.
 \end{lstlisting}
 
-We define the basic operations ($+, -, \times$) with their respective neutral elements ($0, 1$).
+We define the basic operations ($+, -, \times$) with their respective neutral
+elements ($0, 1$) and prove \lref{lemma:Zmodp_ring}.
 \begin{lemma}
-$\F{p}$ is a commutative ring.
+  \label{lemma:Zmodp_ring}
+  $\F{p}$ is a commutative ring.
 \end{lemma}
-% \begin{lstlisting}[language=Coq]
-% Definition zero : type := pi 0.
-% Definition one : type := pi 1.
-% Definition opp (x : type) : type := pi (p - x).
-% Definition add (x y : type) : type := pi (x + y).
-% Definition sub (x y : type) : type := pi (x - y).
-% Definition mul (x y : type) : type := pi (x * y).
-%
-% Lemma Zmodp_ring :
-%   ring_theory zero one add mul sub opp eq.
-% \end{lstlisting}
-And finally for $a = 486662$, by using the Legendre symbol we prove that $a^2 - 4$ and $2$ are not squares in $\F{p}$.
+And finally for $a = 486662$, by using the Legendre symbol we prove that
+$a^2 - 4$ and $2$ are not squares in $\F{p}$.
 \begin{lstlisting}[language=Coq]
-Lemma a_not_square : forall x: Zmodp.type,
+Fact a_not_square : forall x: Zmodp.type,
   x^+2 != (Zmodp.pi 486662)^+2 - 4%:R.
 \end{lstlisting}
 \begin{lstlisting}[language=Coq,label=two_not_square]
-Lemma two_not_square : forall x : Zmodp.type,
+Fact two_not_square : forall x: Zmodp.type,
   x^+2 != 2%:R.
 \end{lstlisting}
 We consider $M_{486662,1}(\F{p})$ and $M_{486662,2}(\F{p})$, one of its quadratic twist.
-% $M_{486662,1}(\F{p})$ has the same equation as $M_{486662,1}(\F{p^2})$ while $M_{486662,2}(\F{p})$ is one of its quadratic twist.
+\begin{dfn}Let the following instantiations of \aref{alg:montgomery-double-add}:\\
+-- $Curve25519\_Fp(n,x)$ for $M_{486662,1}(\F{p})$.\\
+-- $Twist25519\_Fp(n,x)$ for $M_{486662,2}(\F{p})$.
+\end{dfn}
 
-
-By instantiating theorem \ref{montgomery-ladder-correct} we derive the following two lemmas:
-\begin{lemma} For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$,\\
+With \tref{thm:montgomery-ladder-correct} we derive the following two lemmas:
+\begin{lemma}
+For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$,\\
 such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.
 Given $n$ and $x$, $Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$.
 \end{lemma}
-\begin{lemma} For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$\\
+\begin{lemma}
+For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$\\
 such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.
 Given $n$ and $x$, $Twist25519\_Fp(n,x) = \chi_0(n \cdot P)$.
 \end{lemma}
-As the Montgomery ladder defined above does not depend on $b$, it is trivial to see that the computations done for points of $M_{486662,1}(\F{p})$ and of $M_{486662,2}(\F{p})$ are the same.
+As the Montgomery ladder does not depend on $b$, it is trivial to
+see that the computations done for points in $M_{486662,1}(\F{p})$ and in
+$M_{486662,2}(\F{p})$ are the same.
 \begin{lstlisting}[language=Coq]
 Theorem curve_twist_eq: forall n x,
   curve25519_Fp_ladder n x = twist25519_Fp_ladder n x.
@@ -461,14 +402,16 @@ Theorem curve_twist_eq: forall n x,
 
 Because $2$ is not a square in $\F{p}$, it allows us split $\F{p}$ into two sets.
 \begin{lemma}
-\label{square-or-2square}
-For all $x$ in $\F{p}$, there exists $y$ in $\F{p}$ such that
-$$y^2 = x\ \ \ \lor\ \ 2y^2 = x$$
+  \label{lemma:square-or-2square}
+  For all $x$ in $\F{p}$, there exists $y$ in $\F{p}$ such that
+  $$y^2 = x\ \ \ \lor\ \ 2y^2 = x$$
 \end{lemma}
-For all $x \in \F{p}$, we can compute $x^3 + ax^2 + x$. Using Lemma \ref{square-or-2square} we can find a $y$ such that $(x,y)$ is either on the curve or on the quadratic twist:
+For all $x \in \F{p}$, we can compute $x^3 + ax^2 + x$. Using \lref{lemma:square-or-2square}
+we can find a $y$ such that $(x,y)$ is either on the curve or on the quadratic twist:
 \begin{lemma}
-\label{curve-or-twist}
-For all $x \in \F{p}$, there exists a point $P$ over $M_{486662,1}(\F{p})$ or over $M_{486662,2}(\F{p})$ such that the $x$-coordinate of $P$ is $x$.
+  \label{lemma:curve-or-twist}
+  For all $x \in \F{p}$, there exists a point $P$ over $M_{486662,1}(\F{p})$ or
+  over $M_{486662,2}(\F{p})$ such that the $x$-coordinate of $P$ is $x$.
 \end{lemma}
 \begin{lstlisting}[language=Coq]
 Theorem x_is_on_curve_or_twist: forall x : Zmodp.type,
@@ -478,8 +421,10 @@ Theorem x_is_on_curve_or_twist: forall x : Zmodp.type,
 
 \subsubsection{Curve25519 over \F{p^2}}
 
-We use the same definitions as in \cite{Ber06}. We consider the extension field $\F{p^2}$ as the set $\F{p} \times \F{p}$ with $\delta = 2$, in other words,
-the polynomial with coefficients in $\F{p}$ modulo $X^2 - 2$. In a similar way as for $\F{p}$ we use Module in Coq.
+The quadratic extension $\F{p^2}$ is defined as $\F{p}[\sqrt{2}]$ by~\cite{Ber06}.
+We can represent it as the set $\F{p} \times \F{p}$ with $\delta = 2$, in other words,
+the polynomial with coefficients in $\F{p}$ modulo $X^2 - 2$. In a similar way
+as for $\F{p}$ we use Module in Coq.
 \begin{lstlisting}[language=Coq]
 Module Zmodp2.
 Inductive type :=
@@ -504,16 +449,21 @@ Definition mul (x y : type) : type :=
   pi ((x.1 * y.1) + (2%:R * (x.2 * y.2)),
       (x.1 * y.2) + (x.2 * y.1)).
 \end{lstlisting}
-We define the basic operations ($+, -, \times$) with their respective neutral elements ($0, 1$).
-Additionally we verify that for each element of in $\F{p^2}\backslash\{0\}$, there exists a multiplicative inverse.
-\begin{lemma} For all $x \in \F{p^2}\backslash\{0\}$ and $a,b \in \F{p}$ such that $x = (a,b)$,
-$$x^{-1} = \Big(\frac{a}{a^2-2b^2}\ , \frac{-b}{a^2-2b^2}\Big)$$
-\end{lemma}
-Similarly as in $\F{p}$, we define $0^{-1} = 0$.
+We define the basic operations ($+, -, \times$) with their respective neutral
+elements $0$ and $1$. Additionally we verify that for each element of in
+$\F{p^2}\backslash\{0\}$, there exists a multiplicative inverse.
 \begin{lemma}
-$\F{p^2}$ is a commutative ring.
+  \label{lemma:Zmodp2_inv}
+  For all $x \in \F{p^2}\backslash\{0\}$ and $a,b \in \F{p}$ such that $x = (a,b)$,
+  $$x^{-1} = \Big(\frac{a}{a^2-2b^2}\ , \frac{-b}{a^2-2b^2}\Big)$$
 \end{lemma}
-We can then specialize the basic operations in order to speed up the verification of formulas by using rewrite rules:
+Similarly as in $\F{p}$, we define $0^{-1} = 0$ and prove \lref{lemma:Zmodp2_ring}.
+\begin{lemma}
+  \label{lemma:Zmodp2_ring}
+  $\F{p^2}$ is a commutative ring.
+\end{lemma}
+We can then specialize the basic operations in order to speed up the verification
+of formulas by using rewrite rules:
 \begin{align*}
 (a,0) + (b,0) &= (a+b, 0)\\
 (a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
@@ -523,13 +473,19 @@ We can then specialize the basic operations in order to speed up the verificatio
 (0, a)\cdot (0,b) &= (2\cdot a\cdot b, 0)\\
 (0,a)^{-1} &= ((2\cdot a)^{-1},0)
 \end{align*}
-The injection $a \mapsto (a,0)$ from $\F{p}$ to $\F{p^2}$ preserves $0, 1, +, -, \times$. Thus $(a,0)$ can be abbreviated as $a$ without confusions.
+The injection $a \mapsto (a,0)$ from $\F{p}$ to $\F{p^2}$ preserves
+$0, 1, +, -, \times$. Thus $(a,0)$ can be abbreviated as $a$ without confusions.
 
-We define $M_{486662,1}(\F{p^2})$. With the rewrite rule above, it is straightforward to prove that any point on the curve $M_{486662,1}(\F{p})$ is also on the curve $M_{486662,1}(\F{p^2})$. Similarly, any point on the quadratic twist $M_{486662,2}(\F{p})$ is also on the curve $M_{486662,1}(\F{p^2})$.
-As direct consequence, using lemma \ref{curve-or-twist}, we prove that for all $x \in \F{p}$, there exists a point $P \in \F{p^2}\times\F{p^2}$ on $M_{486662,2}(\F{p})$ such that $\chi_0(P)$ is $(x,0)$
+We define $M_{486662,1}(\F{p^2})$. With the rewrite rule above, it is straightforward
+to prove that any point on the curve $M_{486662,1}(\F{p})$ is also on the curve
+$M_{486662,1}(\F{p^2})$. Similarly, any point on the quadratic twist
+$M_{486662,2}(\F{p})$ is also on the curve $M_{486662,1}(\F{p^2})$.
+As direct consequence, using \lref{lemma:curve-or-twist}, we prove that for all
+$x \in \F{p}$, there exists a point $P \in \F{p^2}\times\F{p^2}$ on
+$M_{486662,1}(\F{p^2})$ such that $\chi_0(P) = (x,0) = x$.
 
 \begin{lstlisting}[language=Coq]
-Theorem x_is_on_curve_or_twist_implies_x_in_Fp2:
+Lemma x_is_on_curve_or_twist_implies_x_in_Fp2:
   forall (x:Zmodp.type),
     exists (p: mc curve25519_Fp2_mcuType),
       p#x0 = Zmodp2.Zmodp2 x 0.
@@ -547,53 +503,64 @@ Define the functions $\varphi_c$, $\varphi_t$ and $\psi$\\
 \end{dfn}
 
 \begin{lemma}
-For all $n \in \N$, for all point $P\in\F{p}\times\F{p}$ on the curve $M_{486662,1}(\F{p})$ (respectively on the quadratic twist $M_{486662,2}(\F{p})$), we have:
-\begin{align*}
-P \in M_{486662,1}(\F{p}) &\implies \varphi_c(n \cdot P) = n \cdot \varphi_c(P)\\
-P \in M_{486662,2}(\F{p}) &\implies \varphi_t(n \cdot P) = n \cdot \varphi_t(P)
-\end{align*}
+  \label{lemma:proj}
+  For all $n \in \N$, for all point $P\in\F{p}\times\F{p}$ on the curve
+  $M_{486662,1}(\F{p})$ (respectively on the quadratic twist $M_{486662,2}(\F{p})$), we have:
+  \begin{align*}
+  P \in M_{486662,1}(\F{p}) &\implies \varphi_c(n \cdot P) = n \cdot \varphi_c(P)\\
+  P \in M_{486662,2}(\F{p}) &\implies \varphi_t(n \cdot P) = n \cdot \varphi_t(P)
+  \end{align*}
 \end{lemma}
-
 Notice that:
 \begin{align*}
 \forall P \in M_{486662,1}(\F{p}),\ \ \psi(\chi_0(\varphi_c(P))) = \chi_0(P)\\
 \forall P \in M_{486662,2}(\F{p}),\ \ \psi(\chi_0(\varphi_t(P))) = \chi_0(P)
 \end{align*}
 
-In summary for all $n \in \N,\ n < 2^{255}$, for any given point $P\in\F{p}\times\F{p}$ on $M_{486662,1}(\F{p})$ or $M_{486662,2}(\F{p})$ \texttt{curve25519\_Fp\_ladder} computes the $\chi_0(n \cdot P)$.
-We have proved that for all $P \in \F{p^2}\times\F{p^2}$ such that $\chi_0(P) \in \F{p}$ there exists a corresponding point on the curve or the twist over $\F{p}$.
-We have proved that for any point, on the curve or the twist we can compute the scalar multiplication by $n$ and yield to the same result as if we did the computation in $\F{p^2}$. As a result we have proved theorem 2.1 of \cite{Ber06}:
+In summary for all $n \in \N,\ n < 2^{255}$, for any given point $P\in\F{p}\times\F{p}$
+on $M_{486662,1}(\F{p})$ or $M_{486662,2}(\F{p})$, $Curve25519\_Fp$
+computes the $\chi_0(n \cdot P)$.
+We have proved that for all $P \in \F{p^2}\times\F{p^2}$ such that $\chi_0(P) \in \F{p}$
+there exists a corresponding point on the curve or the twist over $\F{p}$.
+We have proved that for any point, on the curve or the twist we can compute the
+scalar multiplication by $n$ and yield to the same result as if we did the
+computation in $\F{p^2}$.
+% As a result we have proved theorem 2.1 of \cite{Ber06}:
+% No: missing uniqueness !
 \begin{theorem}
-For all $n \in \N$, $x \in \F{P}$, $P \in M_{486662,1}(\F{p^2})$, such that $n < 2^{255}$ and $\chi_0(P) = \varphi(x)$, \texttt{curve25519\_Fp\_ladder}$(n, x)$ computes $\psi(\chi_0(n \cdot P))$.
+  \label{thm:general-scalarmult}
+  For all $n \in \N$, such that $n < 2^{255}$,
+  for all $x \in \F{p}$ and $P \in M_{486662,1}(\F{p^2})$ such that $\chi_0(P) = x$,
+  $Curve25519\_Fp(n,x)$ computes $\chi_0(n \cdot P)$.
 \end{theorem}
 which can be formalized in Coq as:
 \begin{lstlisting}[language=Coq]
-Lemma curve25519_Fp2_ladder_ok (n : nat) (x:Zmodp.type) :
-    (n < 2^255)%nat ->
-    forall (p  : mc curve25519_Fp2_mcuType),
-    p #x0 = Zmodp2.Zmodp2 x 0 ->
-    curve25519_Fp_ladder n x = (p *+ n)#x0 /p.
+Theorem curve25519_Fp2_ladder_ok:
+  forall (n : nat) (x:Zmodp.type),
+  (n < 2^255)%nat ->
+  forall (p  : mc curve25519_Fp2_mcuType),
+  p #x0 = Zmodp2.Zmodp2 x 0 ->
+  curve25519_Fp_ladder n x = (p *+ n)#x0 /p.
 \end{lstlisting}
 
+We then prove the equivalence between of operations over \coqe{Zmodp} and \coqe{:GF} (seen as \Zfield).
+This allows us to show that given a clamped value $n$ and normalized $x$-coordinate of $P$,
+$Curve25519\_Fp$ is equivalent to RFC~7748~\cite{rfc7748}. This is formalized as follows:
+\begin{lstlisting}[language=Coq]
+Lemma ZCrypto_Scalarmult_curve25519_ladder:
+  forall (n:nat) (x:Z),
+  ZCrypto_Scalarmult n x = val
+    (curve25519_Fp_ladder
+        (Z.to_nat (Zclamp n))
+        (Zmodp.pi (modP (ZUnpack25519 x)))).
+\end{lstlisting}
 
-
-
-
-By converting those array of 32 bytes into their respective little-endian value
-we prove the correctness of \TNaCle{crypto_scalarmult} (Theorem \ref{CSM-correct})
-in Coq (for the sake of simplicity we do not display the conversion in the theorem).
-\begin{theorem}
-\label{CSM-correct}
-For all $n \in \N, n < 2^{255}$ and where the bits 1, 2, 5 248, 249, 250
-are cleared and bit 6 is set, for all $P \in E(\F{p^2})$,
-for all $p \in \F{p}$ such that $P.x = p$,
-there exists $Q \in E(\F{p^2})$ such that $Q = \cdot P$ where $Q.x = q$ and $q$ = \VSTe{CSM} $n$ $p$.
-\end{theorem}
-A more complete description in Coq of Theorem \ref{CSM-correct} with the associated conversions
-is as follow:
+From \tref{thm:RFC} and \tref{thm:general-scalarmult}, we prove the correctness
+of \TNaCle{crypto_scalarmult} (\tref{thm:Elliptic-CSM}).
 \begin{lstlisting}[language=Coq]
 Theorem Crypto_Scalarmult_Correct:
-  forall (n p:list Z) (P:mc curve25519_Fp2_mcuType),
+  forall (n:list Z) (p:list Z)
+    (P:mc curve25519_Fp2_mcuType),
   Zlength n = 32 ->
   Zlength p = 32 ->
   Forall (fun x => 0 <= x /\ x < 2^8) n ->
