@@ -258,4 +258,27 @@ Proof.
   apply get_c_abstract_fn_montgomery_fn => //.
 Qed.
 
+Corollary Crypto_Scalarmult_Eq2 : forall (n p: list Z),
+  Zlength n = 32 ->
+  Zlength p = 32 ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
+  Crypto_Scalarmult n p = ListofZ32 8 (ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p)).
+Proof.
+  move => n p Hn Hp Hbn Hbp.
+  rewrite -Crypto_Scalarmult_Eq => //.
+  rewrite ListofZ32_ZofList_Zlength => //.
+  all: rewrite -Crypto_Scalarmult_eq.
+  all: rewrite /Crypto_Scalarmult_proof.
+  2: rewrite /Pack25519.
+  2: apply Pack.pack_for_Zlength_32_16.
+  2: apply Reduce_by_P.get_t_subst_select_Zlength => //=.
+  2: do 3 apply car25519_Zlength.
+  apply Pack25519_bound.
+  2: apply M_bounded ; assumption.
+  all: apply M_Zlength.
+  1,3: apply Zlength_a ; assumption.
+  all: apply Inv25519_Zlength ; apply Zlength_c ; assumption.
+Qed.
+
 Close Scope Z.
