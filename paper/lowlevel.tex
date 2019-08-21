@@ -71,7 +71,7 @@ By instantiating $\K$ with $\Zfield$, and the parameters of Curve25519 ($a = 486
 we define a mid-level specification.
 Additionally we also provide a low-level specification close to the \texttt{C} code
 (over lists of $\Z$). We show this specification to be equivalent to the
-\textit{semantic version} of C (\texttt{CLight}) with VST.
+\textit{semantic version} of C (Clight) with VST.
 This low level specification gives us the soundness assurance.
 By showing that operations over instances ($\K = \Zfield$, $\Z$, list of $\Z$) are
 equivalent, we bridge the gap between the low level and the high level specification
@@ -218,7 +218,7 @@ The location of the proof of this Hoare triple can be found in Appendix~\ref{app
 % The Verifiable Software Toolchain uses a strongest postcondition strategy.
 % The user must first write a formal specification of the function he wants to verify in Coq.
 % This should be as close as possible to the C implementation behavior.
-% This will simplify the proof and help with stepping through the CLight version of the software.
+% This will simplify the proof and help with stepping through the Clight version of the software.
 % With the range of inputs defined, VST mechanically steps through each instruction
 % and ask the user to verify auxiliary goals such as array bound access, or absence of overflows/underflows.
 % We call this specification a low level specification. A user will then have an easier
@@ -410,7 +410,7 @@ Function pow_fn_rev (a:Z) (b:Z)
 \end{lstlisting}
 This \Coqe{Function} requires a proof of termination. It is done by proving the
 well-foundedness of the decreasing argument: \Coqe{measure Z.to_nat a}. Calling
-\Coqe{pow_fn_rev} 254 times allows us to reproduce the same behavior as the \texttt{Clight} definition.
+\Coqe{pow_fn_rev} 254 times allows us to reproduce the same behavior as the Clight definition.
 \begin{lstlisting}[language=Coq]
 Definition Inv25519 (x:list Z) : list Z :=
   pow_fn_rev 254 254 x x.

@@ -4,7 +4,7 @@
 Any formal system relies on a trusted base. In this section we describe our
 chain of trust.
 
-\subsection{Trusted Core Base of the proof}
+\subsection{Trusted Code Base of the proof}
 
 Our proof relies on a trusted base, i.e. a foundation of specifications
 and implementations that must stay correct with respect to their specifications.
@@ -24,9 +24,9 @@ Lemma f_ext: forall (A B:Type),
 \end{lstlisting}
 
   \item \textbf{Verifiable Software Toolchain}. This framework developed at
-  Princeton allows a user to prove that a \texttt{CLight} code matches pure Coq
+  Princeton allows a user to prove that a Clight code matches pure Coq
   specification. However one must trust the framework properly captures and
-  map the CLight behavior to the basic pure Coq functions.
+  map the Clight behavior to the basic pure Coq functions.
   % At the beginning of the project we found inconsistency and reported them to the authors.
 
   \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
