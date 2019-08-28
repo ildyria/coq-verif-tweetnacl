@@ -9,7 +9,72 @@ We provide below the location of the most important definitions and lemmas of ou
   \begin{tabular}{ l | l | l }
     Definition & File & Description \\
     \hline
-    % \coqe{} & \texttt{} & \\
+    \texttt{ZofList} & \texttt{ListsOp/ZofList.v} & List $\leftrightarrow$ \Z\\
+    \hline
+    \multicolumn{3}{c}{Generic ladder}\\
+    \hline
+    \texttt{get\_a} & \texttt{Gen/Get\_abcdef.v} & $(a,b,c,d,e,f) \mapsto a$ \\
+    \texttt{get\_c} & \texttt{Gen/Get\_abcdef.v} & $(a,b,c,d,e,f) \mapsto c$ \\
+    \texttt{Ops.A} & \texttt{Gen/AMZubSqSel.v} & Addition \\
+    \texttt{Ops.M} & \texttt{Gen/AMZubSqSel.v} & Multiplication \\
+    \texttt{Ops.Zub} & \texttt{Gen/AMZubSqSel.v} & Subtraction \\
+    \texttt{Ops.Sq} & \texttt{Gen/AMZubSqSel.v} & Squaring \\
+    \texttt{Ops.C\_0} & \texttt{Gen/AMZubSqSel.v} & Constant $0$ \\
+    \texttt{Ops.C\_1} & \texttt{Gen/AMZubSqSel.v} & Constant $1$ \\
+    \texttt{Ops.C\_121665} & \texttt{Gen/AMZubSqSel.v} & Constant $121665$ \\
+    \texttt{Ops.Sel25519} & \texttt{Gen/AMZubSqSel.v} & Conditional Swap \\
+    \texttt{Ops.Getbit} & \texttt{Gen/GetBit.v} & Bit selection \\
+    \texttt{montgomery\_rec} & \texttt{Gen/montgomery\_rec.v} & Montgomery ladder \\
+    \hline
+    \multicolumn{3}{c}{Operations over \Z and \Zfield}\\
+    \hline
+    \texttt{Mid.A} & \texttt{Mid/AMZubSqSel.v} & Addition \\
+    \texttt{Mid.M} & \texttt{Mid/AMZubSqSel.v} & Multiplication \\
+    \texttt{Mid.Zub} & \texttt{Mid/AMZubSqSel.v} & Subtraction \\
+    \texttt{Mid.Sq} & \texttt{Mid/AMZubSqSel.v} & Squaring \\
+    \texttt{Mid.C\_0} & \texttt{Mid/AMZubSqSel.v} & Constant $0$ \\
+    \texttt{Mid.C\_1} & \texttt{Mid/AMZubSqSel.v} & Constant $1$ \\
+    \texttt{Mid.C\_121665} & \texttt{Mid/AMZubSqSel.v} & Constant $121665$ \\
+    \texttt{Mid.Sel25519} & \texttt{Mid/AMZubSqSel.v} & Conditional Swap \\
+    \texttt{Mid.car25519} & \texttt{Mid/Car25519.v} & Carry propagation \\
+    \texttt{Mid.getbit} & \texttt{Mid/GetBit.v} & Bit selection \\
+    \texttt{Inv25519\_Z} & \texttt{Mid/Inv25519.v} & $x^{2^{255}-21}$ \\
+    \texttt{ZInv25519} & \texttt{Mid/Inv25519.v} & power computed recursively \\
+    \texttt{modP} & \texttt{Mid/Mod.v} & mod \p\\
+    \texttt{ZPack25519} & \texttt{Mid/Pack25519.v} & packing mod \p\\
+    \texttt{Zclamp} & \texttt{Mid/Prep\_n.v} & Clamping \\
+    \texttt{ZUnpack25519} & \texttt{Mid/Unpack25519.v} & unpacking (mod $2^{255}$)\\
+    \hline
+    \multicolumn{3}{c}{Operations over list of \Z}\\
+    \hline
+    \texttt{Low.A} & \texttt{Low/A.v} & Addition \\
+    \texttt{Low.M} & \texttt{Low/M.v} & Multiplication \\
+    \texttt{Low.Z} & \texttt{Low/Z.v} & Subtraction \\
+    \texttt{Low.S} & \texttt{Low/S.v} & Squaring \\
+    \texttt{Low.C\_0} & \texttt{Low/Constant.v} & Constant $0$ \\
+    \texttt{Low.C\_1} & \texttt{Low/Constant.v} & Constant $1$\\
+    \texttt{Low.C\_121665} & \texttt{Low/Constant.v} & Constant $121665$\\
+    \texttt{Low.C\_25519} & \texttt{Low/Constant.v} & Constant $2^{255}-19$\\
+    \texttt{Low.Sel25519} & \texttt{Low/Sel25519.v} & Conditional Swap \\
+    \texttt{car25519} & \texttt{Low/Car25519.v} & Carry propagation \\
+    \texttt{Low.getbit} & \texttt{Low/GetBit.v} & Bit selection \\
+    \texttt{Inv25519} & \texttt{Low/Inv25519.v} & Recursive power \\
+    \texttt{Pack25519} & \texttt{Low/Pack25519.v} & packing mod \p\\
+    \texttt{clamp} & \texttt{Low/Prep\_n.v} & Clamping \\
+    \texttt{Unpack25519} & \texttt{Low/Unpack25519.v} & unpacking (mod $2^{255}$)\\
+    \hline
+    \multicolumn{3}{c}{Instanciations of \texttt{Ops} over \Z and list of \Z}\\
+    \hline
+    \texttt{Z\_Ops} & \texttt{Mid/Instances.v} & \\
+    \texttt{Z25519\_Ops} & \texttt{Mid/Instances.v} & \\
+    \texttt{List\_Z\_Ops} & \texttt{Mid/Instances.v} & \\
+    \hline
+    \multicolumn{3}{c}{X25519 over \Z and list of \Z}\\
+    \hline
+    \texttt{ZCrypto\_Scalarmult} & \texttt{Mid/Crypto\_Scalarmult.v} & RFC specification of X25519\\
+    \texttt{Crypto\_Scalarmult} & \texttt{Low/Crypto\_Scalarmult.v} & list specification of X25519\\
+    \texttt{CSM} & \texttt{Low/Crypto\_Scalarmult\_.v} & aliasing of \texttt{Crypto\_Scalarmult} \\
+    \hline
 \end{tabular}
 \end{table}
 
