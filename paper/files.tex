@@ -6,10 +6,35 @@ We provide below the location of the most important definitions and lemmas of ou
 \subsubsection{Definitions}
 ~
 \begin{table}[h]
+  % \caption{Definitions}
+  % \label{table:specs}
   \begin{tabular}{ l | l | l }
     Definition & File & Description \\
     \hline
     \texttt{ZofList} & \texttt{ListsOp/ZofList.v} & List $\leftrightarrow$ \Z\\
+    \hline
+    \multicolumn{3}{c}{Elliptic Curve \& Fields }\\
+    \hline
+    \texttt{mcuType} & \texttt{High/mc.v} & $M_{a,b}$ \\
+    % \texttt{oncurve} & \texttt{High/mc.v} & Boolean decision of a point on a curve \\
+    \texttt{mc} & \texttt{High/mc.v} & $M_{a,b}(\K)$ \\
+    \texttt{neg} & \texttt{High/mc.v} & Negation \\
+    \texttt{add} & \texttt{High/mc.v} & Addition \\
+    \texttt{ec\_of\_mc} & \texttt{High/mcgroup.v} & $M_{a,b}(\K) \mapsto E(\K)$ \\
+    \texttt{mc\_of\_ec} & \texttt{High/mcgroup.v} & $E(\K) \mapsto M_{a,b}(\K)$ \\
+    \texttt{point\_x0} & \texttt{High/montgomery.v} & $\chi_0 : M_{a,b}(\K) \to \K$ \\
+    \texttt{point\_x} & \texttt{High/montgomery.v} & $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$ \\
+    % \texttt{mcu\_no\_square} & \texttt{High/montgomery.v} & $a^2-4$ is not a square in \K \\
+    \texttt{cswap} & \texttt{High/opt\_ladder.v} & Conditional swap \\
+    \texttt{opt\_montgomery} & \texttt{High/opt\_ladder.v} & Montgomery over \K \\
+    % \texttt{mcu\_no\_square} & \texttt{High/opt\_ladder.v} & $a^2-4$ is not a square in \K \\
+    \texttt{Zmodp.type} & \texttt{High/Zmodp.v} & $\F{p}$ with $p = \p$ \\
+    \texttt{Zmodp2.type} & \texttt{High/Zmodp2.v} & $\F{p^2}$ with $p = \p$ \\
+    \texttt{curve25519\_Fp\_ladder} & \texttt{High/curve25519\_Fp.v} & Montgomery ladder for the curve $M_{486662,1}$ over \F{p} \\
+    \texttt{curve25519\_Fp\_to\_Fp2} & \texttt{High/curve25519\_Fp\_incl\_Fp2.v} & $\varphi_c: M_{486662,1}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$ \\
+    \texttt{twist25519\_Fp\_ladder} & \texttt{High/twist25519\_Fp.v} & Montgomery ladder for the quadratic twist $M_{486662,2}$ over \F{p} \\
+    \texttt{twist25519\_Fp\_to\_Fp2} & \texttt{High/twist25519\_Fp\_incl\_Fp2.v} & $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$ \\
+    % \texttt{primo} & \texttt{High/prime\_cert.v} & $\p$ is prime \\
     \hline
     \multicolumn{3}{c}{Generic ladder}\\
     \hline
@@ -22,7 +47,7 @@ We provide below the location of the most important definitions and lemmas of ou
     \texttt{Ops.C\_0} & \texttt{Gen/AMZubSqSel.v} & Constant $0$ \\
     \texttt{Ops.C\_1} & \texttt{Gen/AMZubSqSel.v} & Constant $1$ \\
     \texttt{Ops.C\_121665} & \texttt{Gen/AMZubSqSel.v} & Constant $121665$ \\
-    \texttt{Ops.Sel25519} & \texttt{Gen/AMZubSqSel.v} & Conditional Swap \\
+    \texttt{Ops.Sel25519} & \texttt{Gen/AMZubSqSel.v} & Conditional swap \\
     \texttt{Ops.Getbit} & \texttt{Gen/GetBit.v} & Bit selection \\
     \texttt{montgomery\_rec} & \texttt{Gen/montgomery\_rec.v} & Montgomery ladder \\
     \hline
@@ -35,7 +60,7 @@ We provide below the location of the most important definitions and lemmas of ou
     \texttt{Mid.C\_0} & \texttt{Mid/AMZubSqSel.v} & Constant $0$ \\
     \texttt{Mid.C\_1} & \texttt{Mid/AMZubSqSel.v} & Constant $1$ \\
     \texttt{Mid.C\_121665} & \texttt{Mid/AMZubSqSel.v} & Constant $121665$ \\
-    \texttt{Mid.Sel25519} & \texttt{Mid/AMZubSqSel.v} & Conditional Swap \\
+    \texttt{Mid.Sel25519} & \texttt{Mid/AMZubSqSel.v} & Conditional swap \\
     \texttt{Mid.car25519} & \texttt{Mid/Car25519.v} & Carry propagation \\
     \texttt{Mid.getbit} & \texttt{Mid/GetBit.v} & Bit selection \\
     \texttt{Inv25519\_Z} & \texttt{Mid/Inv25519.v} & $x^{2^{255}-21}$ \\
@@ -55,7 +80,7 @@ We provide below the location of the most important definitions and lemmas of ou
     \texttt{Low.C\_1} & \texttt{Low/Constant.v} & Constant $1$\\
     \texttt{Low.C\_121665} & \texttt{Low/Constant.v} & Constant $121665$\\
     \texttt{Low.C\_25519} & \texttt{Low/Constant.v} & Constant $2^{255}-19$\\
-    \texttt{Low.Sel25519} & \texttt{Low/Sel25519.v} & Conditional Swap \\
+    \texttt{Low.Sel25519} & \texttt{Low/Sel25519.v} & Conditional swap \\
     \texttt{car25519} & \texttt{Low/Car25519.v} & Carry propagation \\
     \texttt{Low.getbit} & \texttt{Low/GetBit.v} & Bit selection \\
     \texttt{Inv25519} & \texttt{Low/Inv25519.v} & Recursive power \\
@@ -63,11 +88,11 @@ We provide below the location of the most important definitions and lemmas of ou
     \texttt{clamp} & \texttt{Low/Prep\_n.v} & Clamping \\
     \texttt{Unpack25519} & \texttt{Low/Unpack25519.v} & unpacking (mod $2^{255}$)\\
     \hline
-    \multicolumn{3}{c}{Instanciations of \texttt{Ops} over \Z and list of \Z}\\
+    \multicolumn{3}{c}{Instanciations of \texttt{Ops}}\\
     \hline
-    \texttt{Z\_Ops} & \texttt{Mid/Instances.v} & \\
-    \texttt{Z25519\_Ops} & \texttt{Mid/Instances.v} & \\
-    \texttt{List\_Z\_Ops} & \texttt{Mid/Instances.v} & \\
+    \texttt{Z25519\_Ops} & \texttt{Mid/Instances.v} & Instanciations over \F{p} with $p = \p$\\
+    \texttt{Z\_Ops} & \texttt{Mid/Instances.v} & Instanciations over \Z \\
+    \texttt{List\_Z\_Ops} & \texttt{Mid/Instances.v} & Instanciations lists of \Z \\
     \hline
     \multicolumn{3}{c}{X25519 over \Z and list of \Z}\\
     \hline
@@ -80,12 +105,12 @@ We provide below the location of the most important definitions and lemmas of ou
 
 \subsubsection{Lemmas and Theorems}
 ~
-\begin{table}[h]
-  \begin{tabular}{ l | l | l }
-    Definition & File & Description \\
-    \hline
-\end{tabular}
-\end{table}
+% \begin{table}[h]
+%   \begin{tabular}{ l | l | l }
+%     Definition & File & Description \\
+%     \hline
+% \end{tabular}
+% \end{table}
 
 % \subsection{Files}
 %
