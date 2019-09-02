@@ -4,12 +4,10 @@
 Any formal system relies on a trusted base. In this section we describe our
 chain of trust.
 
-\subsection{Trusted Code Base of the proof}
-
-Our proof relies on a trusted base, i.e. a foundation of specifications
-and implementations that must stay correct with respect to their specifications.
-One should not be able to prove a false statement in that system e.g. by proving
-an inconsistency.
+\subheading{Trusted Code Base of the proof.}
+Our proof relies on a trusted base, i.e. a foundation of definitions that must be
+correct. One should not be able to prove a false statement in that system, \eg, by
+proving an inconsistency.
 
 In our case we rely on:
 \begin{itemize}
@@ -25,15 +23,13 @@ Lemma f_ext: forall (A B:Type),
 
   \item \textbf{Verifiable Software Toolchain}. This framework developed at
   Princeton allows a user to prove that a Clight code matches pure Coq
-  specification. However one must trust the framework properly captures and
-  map the Clight behavior to the basic pure Coq functions.
-  % At the beginning of the project we found inconsistency and reported them to the authors.
+  specification.
 
   \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
-  model captures correctly the C99 standard.
+  model captures correctly the C17 standard.
   Our proof also assumes that the TweetNaCl code will behave as expected if
-  compiled under CompCert. We do not provide guarantees for other C compilers
-  such as Clang or GCC.
+  compiled under CompCert.
+  % We do not provide guarantees for other C compilers such as Clang or GCC.
 
   \item \textbf{\texttt{clightgen}}. The tool making the translation from \textbf{C} to
   \textbf{Clight}. It is the first step of the compilation.
@@ -45,8 +41,8 @@ aux2 = b[i];
 o[i] = aux1 + aux2;
 \end{lstlisting}
   The trust of the proof relied on the trust of a correct translation from the
-  initial version of \textit{TweetNaCl} to \textit{TweetNaclVerificable}.
-  \texttt{clightgen} now comes with \texttt{-normalize} flag which
+  initial version of \emph{TweetNaCl} to \emph{TweetNaclVerifiableC}.
+  \texttt{clightgen} comes with \texttt{-normalize} flag which
   factors out function calls and assignments from inside subexpressions.
   The changes required for a C-code to make it Verifiable are now minimal.
 
@@ -56,11 +52,11 @@ o[i] = aux1 + aux2;
   done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
-\subsection{Corrections in TweetNaCl}
-
+\subheading{Corrections in TweetNaCl.}
 As a result of this verification, we removed superfluous code.
-Indeed the upper 64 indexes of the \TNaCle{i64 x[80]} intermediate variable of
-\TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code, we fixed it.
+Indeed indexes 17 to 79 of the \TNaCle{i64 x[80]} intermediate variable of
+\TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code,
+we removed them.
 
 Peter Wu and Jason A. Donenfeld brought to our attention that the original
 \TNaCle{car25519} function presented risk of Undefined Behavior if \texttt{c}
@@ -69,7 +65,7 @@ is a negative number.
 c=o[i]>>16;
 o[i]-=c<<16; // c < 0 = UB !
 \end{lstlisting}
-By replacing statement by a logical \texttt{and} (and proving the correctness)
+By replacing this statement by a logical \texttt{and} (and proving the correctness)
 we solved this problem.
 \begin{lstlisting}[language=Ctweetnacl]
 o[i]&=0xffff;
@@ -78,4 +74,10 @@ o[i]&=0xffff;
 We believe that the type change of the loop index (\TNaCle{int} instead of \TNaCle{i64})
 does not impact the trust of our proof.
 
-\todo{I don't see what to say more here.}
+\subheading{A complete proof.}
+We provide a mechanized formal proof of the correctness of the X25519 implementation in TweetNaCl.
+We first proved that TweetNaCl's implementation of X25519 matches RFC~7748 (\tref{thm:VST-RFC}).
+In a second step we extended the COq library for elliptic cruves \cite{BartziaS14}
+by Bartzia and Strub to support Montgomery curves. Using this extension we
+proved that the X25519 implementation in TweetNaCl matches the mathematical
+definitions as given in~\cite[Sec.~2]{Ber06} (\tref{thm:Elliptic-CSM}).

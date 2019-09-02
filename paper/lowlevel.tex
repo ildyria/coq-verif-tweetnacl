@@ -1,24 +1,20 @@
 \section{Proving equivalence of X25519 in C and Coq}
 \label{sec:C-Coq-RFC}
 
-In this section we prove the following theorems:
+In this section we prove the following theorem:
+% In this section we outline the structure of our proofs of the following theorem:
 \begin{theorem}
-\label{thm:VST}
-The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches our
-functional specification in Coq.
-\end{theorem}
-
-\begin{theorem}
-\label{thm:RFC}
-Our functional specification in Coq matches the specifications of RFC~7748~\cite{rfc7748}.
+\label{thm:VST-RFC}
+The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
+the specifications of RFC~7748~\cite{rfc7748}
 \end{theorem}
 
 We first describe the global structure of our proof (\ref{subsec:proof-structure}).
-Then we introduce our specification, we specify the Hoare triple and prove it
-correct with VST (\tref{thm:VST}).
-Then we discuss techniques used to prove equivalence of operations between
-different number representations,
-proving the equivalence with the RFC (\tref{thm:RFC}).
+We introduce our translation of RFC~7748 (\ref{subsec:spec-rfc}) and specify
+the Hoare triple before proving its correctness with VST (\ref{subsec:with-VST}).
+We provide an example of equivalence of operations over different number
+representations (\ref{subsec:num-repr-rfc}). Then, we describe efficient techniques
+used to in some of our more complex proofs (\ref{subsec:inversions-reflections}).
 
 
 
@@ -29,16 +25,15 @@ proving the equivalence with the RFC (\tref{thm:RFC}).
 
 In order to prove the correctness of X25519 in TweetNaCl code \TNaCle{crypto_scalarmult},
 we use VST to prove that the code matches our functional Coq specification of \Coqe{Crypto_Scalarmult}
-(sometimes abbreviated as \Coqe{CSM}). Then, we prove that our specification of the scalar
-multiplication matches the mathematical definition of elliptic curves and Theorem 2.1 by
-Bernstein~\cite{Ber06} (\tref{thm:Elliptic-CSM}).
-\fref{tikz:ProofOverview} shows a graph of dependencies of the proofs considered.
-The mathematical proof of our specification is presented
-in \sref{sec:maths}.
+(to save space we sometimes abbreviate this as \Coqe{CSM}). Then, we prove that
+our specification of the scalar multiplication matches the mathematical definition
+of elliptic curves and Theorem 2.1 by Bernstein~\cite{Ber06} (\tref{thm:Elliptic-CSM}).
+\fref{tikz:ProofOverview} shows a graph of dependencies of the proofs.
+The mathematical proof of X25519 is presented in \sref{sec:maths}.
 \begin{figure}[h]
   \centering
   \include{tikz/proof}
-  \caption{Overview of the proof}
+  \caption{Structure of the proof}
   \label{tikz:ProofOverview}
 \end{figure}
 
@@ -50,28 +45,29 @@ subsequently called: \TNaCle{unpack25519}; \TNaCle{A}; \TNaCle{Z}; \TNaCle{M};
 We prove the implementation of X25519 is \textbf{sound}, \ie:
 \begin{itemize}
 \item absence of access out-of-bounds of arrays (memory safety).
-\item absence of overflows/underflow on the arithmetic.
+\item absence of overflows/underflow in the arithmetic.
 \end{itemize}
 We also prove that TweetNaCl's code is \textbf{correct}:
 \begin{itemize}
 \item X25519 is correctly implemented (we get what we expect) .
-\item Operations on \texttt{gf} (\texttt{A}, \texttt{Z}, \texttt{M}, \texttt{S})
+\item Operations on \TNaCle{gf} (\TNaCle{A}, \TNaCle{Z}, \TNaCle{M}, \TNaCle{S})
 are equivalent to operations ($+,-,\times,x^2$) in \Zfield.
-\item The Montgomery ladder computes a scalar multiplication between a natural
-number and a point.
+\item The Montgomery ladder computes the multiple of a point.
+% \item The Montgomery ladder computes a scalar multiplication between a natural
+% number and a point.
 \end{itemize}
 
 In order to prove the soundness and correctness of \TNaCle{crypto_scalarmult},
 we first create a skeleton of the Montgomery ladder with abstract operations which
-can be instantiated over lists, integers, field elements...
+can be instantiated over \eg lists, integers, field elements.
 A high level specification (over a generic field $\K$) allows us to prove the
-correctness of the ladder with respect to the curves theory.
+correctness of the ladder with respect to the theory of elliptic curves.
 This high-level specification does not rely on the parameters of Curve25519.
 By instantiating $\K$ with $\Zfield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
 we define a mid-level specification.
 Additionally we also provide a low-level specification close to the \texttt{C} code
 (over lists of $\Z$). We show this specification to be equivalent to the
-\textit{semantic version} of C (Clight) with VST.
+\emph{semantic version} of C (Clight) using the VST.
 This low level specification gives us the soundness assurance.
 By showing that operations over instances ($\K = \Zfield$, $\Z$, list of $\Z$) are
 equivalent, we bridge the gap between the low level and the high level specification
@@ -91,16 +87,17 @@ This guarantees us the correctness of the implementation.
 
 
 \subsection{A Correct Specification}
+\label{subsec:spec-rfc}
 
 TweetNaCl implements X25519 with numbers represented as arrays.
 RFC~7748 defines X25519 over field elements. In order to simplify our proofs,
 we define operations used in the ladder over generic types
 \coqe{T} and \coqe{T'}. Those types are later instantiated as natural numbers,
-integers, field elements, list of integers...
-The generic definition of the ladder (\coqe{montgomery_rec}) and its match with
+integers, field elements, list of integers.
+The generic definition of the ladder (\coqe{montgomery_rec}) and its parallel with
 the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
 It has to be noted that the RFC uses an additional variable to optimize the number
-of \texttt{CSWAP}:
+of \texttt{CSWAP} calls:
 \emph{``Note that these formulas are slightly different from Montgomery's
 original paper.  Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
 We later prove our ladder correct in that respect (\sref{sec:maths}).
@@ -119,10 +116,15 @@ interpreted as the formalization of X25519 in RFC~7748.
 In appendix~\ref{subsubsec:CryptoScalarmult}, we show the the formalization of
 \TNaCle{crypto_scalarmult} over lists of integers. We define it as
 \Coqe{Crypto_Scalarmult} or \Coqe{CSM}. For the sake of space and simplicity we
-do not display the definitions of each underlying functions.
-The location of the definitions are listed in Appendix~\ref{appendix:proof-files}.
+do not display the definitions of each underlying function.
+% The location of the definitions are listed in Appendix~\ref{appendix:proof-files}.
 
-\subsection{With the Verifiable Software Toolchain}
+
+
+
+
+
+\subsection{Applying the Verifiable Software Toolchain}
 \label{subsec:with-VST}
 
 We now turn our focus to the specification of the Hoare triple with our
@@ -183,11 +185,11 @@ In this specification we state as preconditions:
   In the memory share \texttt{sh}, the address \VSTe{v_p} points
   to a list of integer values \VSTe{mVI p}.
   \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) p}\\
-  In order to consider all the possible inputs, we assumed each
+  In order to consider all the possible inputs, we assume each
   elements of the list \texttt{p} to be bounded by $0$ included and $2^8$
   excluded.
   \item[] \VSTe{PROP}: \VSTe{Zlength p = 32}\\
-  We also assumed that the length of the list \texttt{p} is 32. This defines the
+  We also assume that the length of the list \texttt{p} is 32. This defines the
   complete representation of \TNaCle{u8[32]}.
 \end{itemize}
 
@@ -200,7 +202,7 @@ As Post-condition we have:
   \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (CSM n p)}\\
   In the memory share \texttt{sh}, the address \VSTe{v_q} points
   to a list of integer values \VSTe{mVI (CSM n p)} where \VSTe{CSM n p} is the
-  result of the \VSTe{crypto_scalarmult} over \VSTe{n} and \VSTe{p}.
+  result of the \VSTe{crypto_scalarmult} of \VSTe{n} and \VSTe{p}.
   \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (CSM n p)}\\
   \VSTe{PROP}: \VSTe{Zlength (CSM n p) = 32}\\
   We show that the computation for \VSTe{CSM} fits in  \TNaCle{u8[32]}.
@@ -209,7 +211,16 @@ As Post-condition we have:
 This specification shows that \TNaCle{crypto_scalarmult} in C computes the same
 result as \VSTe{CSM} in Coq provided that inputs are within their respective
 bounds: arrays of 32 bytes.
-The location of the proof of this Hoare triple can be found in Appendix~\ref{appendix:proof-files}.
+
+\begin{theorem}
+\label{thm:crypto-vst}
+\TNaCle{crypto_scalarmult} in TweetNaCl has the same behavior as \coqe{Crypto_Scalarmult} in Coq.
+\end{theorem}
+
+
+
+% % this does not exists anymore
+% The location of the proof of this Hoare triple can be found in Appendix~\ref{appendix:proof-files}.
 
 % We now bring the attention of the reader to details of verifications using the VST.
 
@@ -235,7 +246,7 @@ In the VST, a simple specification of \texttt{M(o,a,b)} will assume three
 distinct memory share. When called with three memory shares (\texttt{o, a, b}),
 the three of them will be consumed. However assuming this naive specification
 when \texttt{M(o,a,a)} is called (squaring), the first two memory shares (\texttt{o, a})
-are consumed and VST will expect a third memory share (\texttt{a}) which does not \textit{exist} anymore.
+are consumed and VST will expect a third memory share (\texttt{a}) which does not \emph{exist} anymore.
 Examples of such cases are illustrated in \fref{tikz:MemSame}.
 \begin{figure}[h]
   \centering
@@ -260,7 +271,7 @@ This solution does not cover all cases (e.g. all arguments are aliased) but it
 is enough for our needs.
 
 \subheading{Verifying \texttt{for} loops.}
-Final state of \texttt{for} loops are usually computed by simple recursive functions.
+Final states of \texttt{for} loops are usually computed by simple recursive functions.
 However we must define invariants which are true for each iteration step.
 
 Assume we want to prove a decreasing loop where indexes go from 3 to 0.
@@ -299,14 +310,16 @@ in C provide the same computations as in \coqe{CSM}.
 
 
 
+
 \subsection{Number Representation and C Implementation}
+\label{subsec:num-repr-rfc}
 
 As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are represented
 in base $2^{16}$ and we use a direct mapping to represent that array as a list
 integers in Coq. However in order to show the correctness of the basic operations,
 we need to convert this number to a full integer.
 \begin{dfn}
-Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list} \Z \rightarrow \Z$,
+Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
 a parameterized map by $n$ between a list $l$ and its little endian representation
 with a radix $2^n$.
 \end{dfn}
@@ -329,13 +342,13 @@ Notation "A :GF" := (A mod (2^255-19)).
 Later in \sref{sec:maths}, we formally define \F{\p}.
 Equivalence between operations under \coqe{:GF} and in \F{\p} are easily proven.
 
-Using these two definitions, we proved intermediates lemmas such as the correctness of the
-multiplication \Coqe{Low.MM} where \Coqe{Low.M} replicate the computations and steps done in C.
+Using these two definitions, we prove intermediate lemmas such as the correctness of the
+multiplication \Coqe{Low.M} where \Coqe{Low.M} replicate the computations and steps done in C.
 \begin{lemma}
   \label{lemma:mult_correct}
   \Coqe{Low.M} implements correctly the multiplication over \Zfield.
 \end{lemma}
-And seen in Coq as follows:
+And specified in Coq as follows:
 \begin{lstlisting}[language=Coq]
 Lemma mult_GF_Zlength :
   forall (a:list Z) (b:list Z),
@@ -368,12 +381,14 @@ Lemma M_bound_Zlength :
 
 
 
+
 \subsection{Inversions, Reflections and Packing}
+\label{subsec:inversions-reflections}
 
-We now turn our attention to the inversion in \Zfield and techniques to
-increase the verification speed of complex formulas.
+We now turn our attention to the multiplicative inverse in \Zfield and techniques
+to improve the verification speed of complex formulas.
 
-\subheading{Inversions in \Zfield.}
+\subheading{Inversion in \Zfield.}
 We define a Coq version of the inversion mimicking
 the behavior of \TNaCle{inv25519} (see below) over \Coqe{list Z}.
 \begin{lstlisting}[language=Ctweetnacl]
@@ -469,7 +484,7 @@ will take a long time to verify.
 flexibility, \eg we don't need to know the number of times nor the order
 in which the lemmas needs to be applied (chapter 15 in \cite{CpdtJFR}).
 
-The idea is to \textit{reflect} the goal into a decidable environment.
+The idea is to \emph{reflect} the goal into a decidable environment.
 We show that for a property $P$, we can define a decidable Boolean property
 $P_{bool}$ such that if $P_{bool}$ is \Coqe{true} then $P$ holds.
 $$reify\_P : P_{bool} = true \implies P$$
@@ -656,7 +671,13 @@ Lemma Pack25519_mod_25519 :
 By proving that each functions \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
 \coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{car25519} are behaving over \coqe{list Z}
 as their equivalent over \coqe{Z} in \coqe{:GF} (in \Zfield), we prove the correctness of
-\tref{thm:RFC}. This is formalized as follows in Coq:
+
+\begin{theorem}
+  \label{thm:crypto-rfc}
+\coqe{Crypto_Scalarmult} matches the specification of RFC~7748.
+\end{theorem}
+
+This is formalized as follows in Coq:
 \begin{lstlisting}[language=Coq]
 Theorem Crypto_Scalarmult_Eq :
   forall (n p:list Z),
@@ -667,3 +688,8 @@ Theorem Crypto_Scalarmult_Eq :
   ZofList 8 (Crypto_Scalarmult n p) =
   ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
 \end{lstlisting}
+
+We prove that \coqe{Crypto_Scalarmult} matches the specification of RFC~7748 (\tref{thm:crypto-rfc}).
+With the VST we also prove that \coqe{Crypto_Scalarmult} matches the Clight translation of Tweetnacl (\tref{thm:crypto-vst}).
+We infer that the implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
+the specifications of RFC~7748 (\tref{thm:VST-RFC}).

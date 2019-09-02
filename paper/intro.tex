@@ -22,7 +22,7 @@ curve $E: y^2 = x^3 + 486662 x^2 + x$ over the field $\F{\p}$.
 Note that originally, the name ``Curve25519'' referred to the key exchange protocol,
 but Bernstein suggested to rename the scheme to X25519 and to use the name
 X25519 for the protocol and Curve25519 for the underlying elliptic curve~\cite{Ber14}.
-We make use of this updated notation in this paper.
+We make use of this updated terminology in this paper.
 
 \subheading{Contribution of this paper}
 We provide a mechanized formal proof of the correctness of the X25519
@@ -46,7 +46,7 @@ support Montgomery curves (and in particular Curve25519).
 This extension may be of independent interest.
 
 \subheading{Related work.}
-Two methodologies exist to get formal guarantees a software meets its specifications.
+Two methodologies exist to get formal guarantees that software meets its specification.
 This can be done either by synthesizing a formal specification and then generating
 machine code by refinement, or by writing a specification and verifying that the
 implementation satisfies it.
@@ -67,15 +67,15 @@ BoringSSL~\cite{fiat-crypto}.
 
 The verification approach has been used to prove the correctness of OpenSSL
 HMAC~\cite{Beringer2015VerifiedCA} and SHA-256~\cite{2015-Appel}. Compared to
-their work our approaches makes a complete link between the C implementation and
+that work our approach makes a complete link between the C implementation and
 the formal mathematical definition of the group theory behind elliptic curves.
 
-Synthesis approaches forces the user to depend on generated code which may not
+Synthesis approaches force the user to depend on generated code which may not
 be optimal (speed, compactness...) and they require compiler tweaks in order
 to achieve the desired properties. On the other hand, carefully handcrafted
 optimized code will force the verifier to consider all the possible special cases
-and write a complex low level specification in order to prove the correctness of
-the algorithm.
+and write a low level specification of the details of the code in order to prove
+the correctness of the algorithm.
 
 It has to be noted that Curve25519 implementations have already been under scrutiny~\cite{Chen2014VerifyingCS}.
 However in this paper we provide a proofs of correctness and soundness of a C program up to
@@ -89,14 +89,14 @@ A description of the content of the archive is provided in
 Appendix~\ref{appendix:proof-folders}.
 
 \subheading{Organization of this paper.}
-\sref{sec:preliminaries} give the necessary background on Curve25519
-implementation and a rough understanding of how formal verification works.
-\sref{sec:C-Coq-RFC} provides the specification of X25519 and the in addition to proofs
+\sref{sec:preliminaries} give the necessary background on Curve25519 and X25519
+implementations and a brief explanation of how formal verification works.
+\sref{sec:C-Coq-RFC} provides the specification of X25519 and in addition the proofs
 techniques used to show the correctness with respect to RFC~7748~\cite{rfc7748}.
 \sref{sec:maths} describes our extension of the formal library by Bartzia
-and Strub and the correctness of X25519 implementation with respect to Bernstein
+and Strub and the correctness of X25519 implementation with respect to Bernstein's
 specifications~\cite{Ber14}.
-And lastly in \sref{sec:Conclusion} we discuss the trust in this proof.
+And lastly in \sref{sec:Conclusion} we discuss the trusted code base of this proof.
 
 
 % Five years ago:
