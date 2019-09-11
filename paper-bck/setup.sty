@@ -1,0 +1,453 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage[pdf]{pstricks}
+\usepackage{multido}
+
+\usepackage{amsfonts,amsmath,amscd,amscd,amssymb,array}
+\usepackage{type1cm}
+\newcommand{\lstsize}{\fontsize{8.5pt}{8.5pt}\selectfont}
+\usepackage{algorithm, algorithmic}
+\usepackage{amsmath}
+\usepackage{xspace}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{ntheorem}
+\usepackage{textcomp}
+\usepackage{bussproofs}
+\usepackage{xcolor}
+
+\definecolor{linkcolor}{rgb}{0.65,0,0}
+\definecolor{citecolor}{rgb}{0,0.45,0}
+\definecolor{urlcolor}{rgb}{0,0,0.65}
+\usepackage[colorlinks=true, backref=page, linkcolor=linkcolor, urlcolor=urlcolor, citecolor=citecolor]{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:\ }}
+\renewcommand{\algorithmicensure}{\textbf{Output:\ }}
+
+\usepackage{cite}
+\usepackage{dsfont}
+\usepackage{xspace}
+\usepackage{float}
+
+\newcommand{\todo}[1]{
+{\color{red} \bf TODO: #1}
+}
+
+\floatstyle{ruled}
+\newfloat{Listing}{htb}{lst}
+\floatstyle{plain}
+\newfloat{Protocol}{htb}{proto}
+\newcounter{subListing}
+\newcounter{subListing@save}
+\renewcommand{\thesubListing}{\alph{subListing}}
+
+\usepackage[framemethod=tikz]{mdframed}
+\mdfsetup{leftmargin=0cm,skipabove=0.1cm,hidealllines=true,%
+  innerleftmargin=0.05cm,innerrightmargin=0.05cm,
+  innertopmargin=-0.10cm,innerbottommargin=-0.20cm,
+  skipbelow=-0.2cm}
+
+\renewcommand{\tabcolsep}{4pt}
+
+\def\subheading#1{\medskip\noindent{\boldmath\textbf{#1}}~\ignorespaces}
+
+\newcommand{\crd}[1]{\textcolor{red}{#1}}
+\newcommand{\cbl}[1]{\textcolor{blue}{#1}}
+
+\definecolor{doc@lstidentifier}{HTML}{000000}   % black
+\definecolor{doc@lstcomment}{HTML}{CC3300}      % dark orange
+\definecolor{doc@lstfunctions}{HTML}{006600}    % dark green
+\definecolor{doc@lststring}{HTML}{FF5500}       % orange
+\definecolor{doc@lstkeyword}{HTML}{0000CC}      % deep blue
+\definecolor{doc@lstkeyword2}{rgb}{0.127,0.427,0.514}
+\definecolor{doc@lstdirective}{HTML}{881000}    % dark red
+\definecolor{doc@lstconstants}{HTML}{0033AA}    % dark blue
+\definecolor{doc@lstidentifiers2}{HTML}{FF0033} % purple-red
+\definecolor{doc@lstnumbers}{HTML}{AA00AA}      % purple
+\definecolor{doc@lstbackground}{HTML}{FFF8DC}   % white
+\definecolor{doc@lstframe}{HTML}{FFFFFF}        % white
+
+\lstloadlanguages{% check documentation for other languages...
+  C
+}
+\def\-{\raisebox{.75pt}{-}}
+
+
+%
+%   DEFINITION OF VST SYNTAX COLORING
+%
+\lstdefinelanguage{CoqVST}{%
+  morekeywords=[1]{PROP, SEP, POST, PRE, LOCAL, DECLARE, WITH, Definition},
+  morekeywords=[2]{val, list, Z, tuchar, uch32, lg16, share, tint},
+  morekeywords=[3]{fun, tptr, mVI, mVI64, Vint, OF},
+  morekeywords=[4]{Forall, temp, Zlength, writable_share, readable_share, gvar},
+  morekeywords=[5]{ 0, 2^8, 16, 32},
+  sensitive=true,
+  mathescape=true,
+  alsoletter   = {0123456789^} ,
+  morestring=[b]",
+  morecomment=[l]{//},
+  identifierstyle=\color[rgb]{0,0,0},
+  delim=[s][\color{doc@lstdirective}]{(*}{*)},
+  % backgroundcolor=\color{doc@lstbackground}, % set the background color
+  literate=
+      {=>}{{$\mapsto$}}1
+      {<}{{$\!<\!$}}1
+      {<=}{{$\!\leq\!$}}1
+      {[\{}{$\!\!\![\!\!\{\!\!$}1
+      {\}]}{$\!\!\}\!\!]\!\!\!$}1
+      {<<(}{$\leftarrow$\!\!(}1
+      {)--}{)\!\!$-$}1
+      {fun}{{\color{doc@lstkeyword2}{$\lambda\!\!$}}}1
+      {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
+      {2^62}{{\color{doc@lstnumbers}{$2^{62}$}}}1
+}
+\def\VSTe{\lstinline[language=CoqVST, basicstyle=\ttfamily\normalsize]}
+\def\VSTes{\lstinline[language=CoqVST, basicstyle=\scriptsize]}
+
+\lstnewenvironment{CoqVST}{
+% \mdframed[backgroundcolor=doc@lstbackground]%
+\lstset{language=CoqVST}}{
+% \endmdframed
+}
+
+
+
+%
+%   DEFINITION OF COQ SYNTAX COLORING
+%
+\lstdefinelanguage{Coq}{
+%
+% Anything betweeen $ becomes LaTeX math mode
+mathescape=true,
+%
+% Comments may or not include Latex commands
+texcl=false,
+%
+% Vernacular commands
+morekeywords=[1]{Section, Module, End, Require, Import, Export,
+  Variable, Variables, Parameter, Parameters, Axiom, Hypothesis,
+  Hypotheses, Notation, Local, Tactic, Reserved, Scope, Open, Close,
+  Bind, Delimit, Definition, Let, Ltac, Fixpoint, CoFixpoint, Add,
+  Morphism, Relation, Implicit, Arguments, Unset, Contextual, Function,
+  Strict, Prenex, Implicits, Inductive, CoInductive, Record,
+  Structure, Canonical, Coercion, Context, Class, Global, Instance,
+  Program, Infix, Theorem, Lemma, Corollary, Proposition, Fact,
+  Remark, Example, Proof, Goal, Save, Qed, Defined, Hint, Resolve,
+  Rewrite, View, Search, Show, Print, Printing, All, Eval, Check,
+  Projections, inside, outside, Def},
+%
+% Gallina
+morekeywords=[2]{forall, exists, exists2, fun, fix, cofix, struct,
+  match, with, end, as, in, return, let, if, is, then, else, for, of,
+  nosimpl, when, measure},
+%
+% Sorts
+morekeywords=[3]{Type, Prop, Set, true, false, option, bool, list, Z, nat, T, T', positive},
+%
+% Various tactics, some are std Coq subsumed by ssr, for the manual purpose
+morekeywords=[4]{pose, set, move, case, elim, apply, clear, hnf,
+  intro, intros, generalize, rename, pattern, after, destruct,
+  induction, using, refine, inversion, injection, rewrite, congr,
+  unlock, compute, ring, field, fourier, replace, fold, unfold,
+  change, cutrewrite, simpl, have, suff, wlog, suffices, without,
+  loss, nat_norm, assert, cut, trivial, revert, bool_congr, nat_congr,
+  symmetry, transitivity, auto, split, left, right, autorewrite},
+%
+% Terminators
+morekeywords=[5]{by, done, exact, reflexivity, tauto, romega, omega,
+  assumption, solve, contradiction, discriminate},
+%
+% Control
+morekeywords=[6]{do, last, first, try, idtac, repeat},
+%
+% Control
+morekeywords=[7]{Forall, ZofList, Zlength, length},
+%
+% Comments delimiters, we do turn this off for the manual
+morecomment=[s]{(*}{*)},
+%
+% Spaces are not displayed as a special character
+showstringspaces=false,
+%
+% String delimiters
+morestring=[b]",
+morestring=[d],
+%
+% Size of tabulations
+tabsize=3,
+%
+% Enables ASCII chars 128 to 255
+extendedchars=false,
+%
+% Case sensitivity
+sensitive=true,
+%
+% Automatic breaking of long lines
+breaklines=false,
+%
+% Default style fors listings
+% basicstyle=\small,
+%
+% Position of captions is bottom
+captionpos=b,
+%
+% flexible columns
+columns=[l]flexible,
+%
+% Style for (listings') identifiers
+% identifierstyle={\ttfamily\color{black}},
+% Style for declaration keywords
+% keywordstyle=[1]{\ttfamily\color{dkviolet}},
+% Style for gallina keywords
+% keywordstyle=[2]{\ttfamily\color{dkgreen}},
+% Style for sorts keywords
+% keywordstyle=[3]{\ttfamily\color{ltblue}},
+% Style for tactics keywords
+% keywordstyle=[4]{\ttfamily\color{dkblue}},
+% Style for terminators keywords
+% keywordstyle=[5]{\ttfamily\color{dkred}},
+%Style for iterators
+%keywordstyle=[6]{\ttfamily\color{dkpink}},
+% Style for strings
+% stringstyle=\ttfamily,
+% Style for comments
+% commentstyle={\ttfamily\color{dkgreen}},
+%
+%moredelim=**[is][\ttfamily\color{red}]{/&}{&/},
+literate=
+    % {\\forall}{{\color{dkgreen}{$\forall\;$}}}1
+    % {\\exists}{{$\exists\;$}}1
+    {<-}{{$\leftarrow\;$}}1
+    {=>}{{$\Rightarrow\;$}}1
+    {==>}{{\texttt{==>}\;}}1
+%    {:>}{{\texttt{:>}\;}}1
+    {->}{{$\rightarrow\;$}}1
+    {<->}{{$\leftrightarrow\;$}}1
+    {<=}{{$\leq\;$}}1
+    {==}{{\texttt{==}\;}}1
+    % {\#}{{$^\star$}}1
+    {\\o}{{$\circ\;$}}1
+    % {\@}{{$\cdot$}}1
+    {\/\\}{{$\wedge\;$}}1
+    {\\\/}{{$\vee\;$}}1
+    {<<}{{$\!<\!$}}1
+    {<>}{{$\neq$}}1
+    {!=}{{$\neq$}}1
+    {++}{{\texttt{++}}}1
+    {~}{{\ }}1
+    % {\@\@}{{$@$}}1
+    {:GF}{{\color{doc@lstfunctions}{:$GF$}}}1
+    % {0}{{\color{doc@lstnumbers}{$0$}}}1
+    {32}{{\color{doc@lstnumbers}{$32$}}}1
+    {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
+    {2^16}{{\color{doc@lstnumbers}{$2^{16}$}}}1
+    {2^26}{{\color{doc@lstnumbers}{$2^{26}$}}}1
+    {2^62}{{\color{doc@lstnumbers}{$2^{62}$}}}1
+    {2^256}{{\color{doc@lstnumbers}{$2^{256}$}}}1
+    {2^255-19}{{\color{doc@lstnumbers}{$2^{255}-19$}}}1
+    {2^255-21}{{\color{doc@lstnumbers}{$2^{255}-21$}}}1
+    {fun}{{\color{doc@lstkeyword2}{$\lambda\!\!$}}}1
+    {\\hline}{{\rule{\linewidth}{0.5pt}}}1
+    {Z16.lst}{{\color{doc@lstfunctions}{$\mathbb{Z}$16.lst}}}1
+    {\\N}{{$\mathbb{N}$}}1
+    {\\Z}{{$\mathbb{Z}$}}1
+    {\\K}{{$\mathbb{K}$}}1
+    {^n}{{$^n$}}1
+    {^+n}{{$^n$}}1
+    {^m}{{$^m$}}1
+    {^2}{{$^2$}}1
+    {^+2}{{$^2$}}1
+    {^3}{{$^3$}}1
+    {^+3}{{$^3$}}1
+    {^nd}{{$^{nd}$}}1
+    {^rd}{{$^{rd}$}}1
+    {^th}{{$^{th}$}}1
+    {^255}{{$^{255}$}}1
+    {^-1}{{$^{-1}$}}1
+    {\%:R}{{}}1
+    {p1}{{p$_1$}}1
+    {p2}{{p$_2$}}1
+    {x1}{{x$_1$}}1
+    {x2}{{x$_2$}}1
+    {x3}{{x$_3$}}1
+    {x_1}{{x$_1$}}1
+    {x_2}{{x$_2$}}1
+    {x_3}{{x$_3$}}1
+    {x4}{{x$_4$}}1
+    {y1}{{y$_1$}}1
+    {y2}{{y$_2$}}1
+    {y3}{{y$_3$}}1
+    {y4}{{y$_4$}}1
+    {z1}{{z$_1$}}1
+    {z2}{{z$_2$}}1
+    {z3}{{z$_3$}}1
+    {z4}{{z$_4$}}1
+    {z_2}{{z$_2$}}1
+    {z_3}{{z$_3$}}1
+    {xs}{{x$_s$}}1
+    {\\-}{{$-$}}1
+    {\\+}{{$+$}}1
+    {\\boxplus}{{$\boxplus$}}1
+    {\\circ}{{$\circ$}}1
+    {\\GF}{{$\mathbb{F}_{2^{255}-19}$}}1
+    {\\infty}{{$\infty$}}1
+    {(M\#a)}{{$a$}}1
+    {(M\#b)}{{$b$}}1
+    {---}{{\textemdash}}1
+%
+}[keywords,comments,strings]
+
+\lstnewenvironment{coq}{\lstset{language=Coq}}{}
+\lstnewenvironment{Coq}{\lstset{language=Coq}}{}
+
+% inline in text
+\def\coqe{\lstinline[language=Coq, basicstyle=\ttfamily\normalsize]}
+\def\Coqe{\lstinline[language=Coq, basicstyle=\ttfamily\normalsize]}
+% inline in table / displaymath...
+\def\coqes{\lstinline[language=Coq, basicstyle=\normalsize]}
+\def\Coqes{\lstinline[language=Coq, basicstyle=\normalsize]}
+
+
+
+
+
+\lstdefinelanguage{Ctweetnacl}{%
+  morekeywords=[1]{FOR,for, return},
+  morekeywords=[2]{sv, int, i64, gf, unsigned, char, long, u8},
+  morekeywords=[3]{const, typedef},
+  morekeywords=[4]{A, Z, M, S, car25519, pack25519, inv25519,
+  crypto_scalarmult, unpack25519, sel25519, set25519},
+  morekeywords=[5]{ 0, 1, 1LL, 2, 3, 4, 7, 8, 14, 15, 16, 31, 32, 37, 38, 127, 64,
+  248, 253, 254, _121665, 0x7fff, 0xffed, 0xffff, 0xff },
+  sensitive=true,
+  alsoletter   = {0123456789^'} ,
+  % morekeywords = [1]{1,2,3,40} ,
+  % otherkeywords={<, >, \\=, |, &, ^},
+  %
+  morestring=[b]",
+  %
+  morecomment=[l]{//},
+  %
+  identifierstyle=\color[rgb]{0,0,0},
+  delim=[l][\color{doc@lstdirective}]{\#},
+  literate=
+}
+
+\def\TNaCle{\lstinline[language=Ctweetnacl, basicstyle=\ttfamily\normalsize]}
+\def\TNaCles{\lstinline[language=Ctweetnacl, basicstyle=\scriptsize]}
+
+
+
+% \newcommand{\lstbg}[3][0pt]{{\fboxsep#1\colorbox{#2}{\strut #3}}}
+\lstdefinelanguage{diff}{
+  basicstyle=\ttfamily\small,
+  % morecomment=[f][\lstbg{red!20}]<,
+  % morecomment=[f][\lstbg{green!20}]>,
+  morecomment=[f][\color{doc@lstidentifiers2}]<,
+  morecomment=[f][\color{doc@lstfunctions}]>,
+  morecomment=[f][\color{gray}\textit]{@@},
+  %morecomment=[f][\textit]{---},
+  %morecomment=[f][\textit]{+++},
+}
+
+\lstset{%
+  lineskip=-0.1em,
+  %
+  % basicstyle=\ttfamily\scriptsize, % font that is used for the code
+  % basicstyle=\ttfamily\small, % font that is used for the code
+  basicstyle=\ttfamily\footnotesize, % font that is used for the code
+  identifierstyle=\color{doc@lstidentifier},
+  commentstyle=\color{doc@lstcomment}\itshape,
+  stringstyle=\color{doc@lststring},
+  keywordstyle=\color{doc@lstkeyword},
+  keywordstyle=[1]\color{doc@lstidentifiers2},
+  keywordstyle=[2]\color{doc@lstconstants},
+  keywordstyle=[3]\color{doc@lstkeyword2},
+  keywordstyle=[4]\color{doc@lstfunctions},
+  keywordstyle=[5]\color{doc@lstnumbers},
+  %
+  extendedchars=true,
+  inputencoding=utf8,
+  upquote=true, %
+  tabsize=2, % set default tabsize to 4 spaces
+  showtabs=false, % show tabs within strings adding particular underscores
+  %  tab=$\to$,
+  showspaces=false, % show spaces adding particular underscores
+  showstringspaces=false, % underline spaces within strings
+  %
+  numbers=left, % where to put the line numbers
+  stepnumber=0, % step between two line numbers
+  numberstyle=\small, % line number font size
+  %
+  captionpos=b, % set the caption position to `bottom'
+  %
+  xleftmargin=0.2em, % text to the right
+  xrightmargin=0.2em, % text to the left
+  breaklines=false, % don't break long lines of code
+  %
+  frame=single, % add a frame around the code
+  framexleftmargin=0pt, % frame back to the left
+  framexrightmargin=0pt, % frame back to the right
+  backgroundcolor=\color{white}, % set the background color
+  rulecolor=\color{doc@lstframe}, % frame color
+  %
+  columns=flexible, % try not to ruin the spacing intended by the font designer
+  keepspaces=true, % don't drop spaces to fix column alignment
+  directivestyle={\color{doc@lstdirective}},
+  %
+  % mathescape, % allow escaping to (La)TeX mode within $..$
+  escapechar=², % allow escaping to (La)TeX mode within ²..²
+  % The backquote was NOT judicious: in some code (comments), I wrap vars
+  % between such a backquote (`var')
+  %
+  % conversion of UTF-8 chars to latin1
+  literate=
+  { }{{~}}1
+  {á}{{\'a}}1
+  {à}{{\`a}}1
+  {â}{{\^a}}1
+  {ä}{{\"a}}1
+  {ç}{{\c{c}}}1
+  {é}{{\'e}}1
+  {è}{{\`e}}1
+  {ê}{{\^e}}1
+  {ë}{{\"e}}1
+  {í}{{\'i}}1
+  {ì}{{\`i}}1
+  {î}{{\^i}}1
+  {ï}{{\"i}}1
+  {ó}{{\'o}}1
+  {ò}{{\`o}}1
+  {ô}{{\^o}}1
+  {ö}{{\"o}}1
+  {ú}{{\'u}}1
+  {ù}{{\`u}}1
+  {û}{{\^u}}1
+  {ü}{{\"u}}1
+  {Á}{{\'A}}1
+  {À}{{\`A}}1
+  {Â}{{\^A}}1
+  {Ä}{{\"A}}1
+  {Ç}{{\c{C}}}1
+  {É}{{\'E}}1
+  {È}{{\`E}}1
+  {Ê}{{\^E}}1
+  {Ë}{{\"E}}1
+  {Í}{{\'I}}1
+  {Ì}{{\`I}}1
+  {Î}{{\^I}}1
+  {Ï}{{\"I}}1
+  {Ó}{{\'O}}1
+  {Ò}{{\`O}}1
+  {Ô}{{\^O}}1
+  {Ö}{{\"O}}1
+  {Ú}{{\'U}}1
+  {Ù}{{\`U}}1
+  {Û}{{\^U}}1
+  {Ü}{{\"U}}1
+}

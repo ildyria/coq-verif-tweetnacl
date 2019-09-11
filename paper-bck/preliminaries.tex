@@ -1,0 +1,384 @@
+\section{Preliminaries}
+\label{sec:preliminaries}
+
+In this section, we first give a brief summary of the mathematical background
+on elliptic curves. We then describe X25519 and its implementation in TweetNaCl.
+Finally, we provide a brief description of the formal tools we use in our proofs.
+
+
+
+
+
+\subsection{Arithmetic on Montgomery curves}
+\label{subsec:arithmetic-montgomery}
+
+\begin{dfn}
+  Given a field \K, let $a,b \in \K$ such that $a^2 \neq 4$ and $b \neq 0$,
+  $M_{a,b}$ is a Montgomery curve defined over $\K$ with equation:
+  $$M_{a,b}: by^2 = x^3 + ax^2 + x$$
+\end{dfn}
+
+\begin{dfn}
+  For any algebraic extension $\L$ of $\K$, $\K \subseteq	\L$,
+  $M_{a,b}(\L)$ is the set of $\L$-rational points which satisfy the equation with
+  addition to the point at infinity $\Oinf$.
+  $$M_{a,b}(\L) = \{\Oinf\} \cup \{(x,y) \in \L \times \L~|~by^2 = x^3 + ax^2 + x\}$$
+\end{dfn}
+Details of the formalization can be found in \sref{subsec:ECC-Montgomery}.
+
+For $M_{a,b}$ over $\F{p}$, the parameter $b$ is known as the ``twisting factor'',
+for $b'\in \F{p}\backslash\{0\}$ and $b' \neq b$, the curves $M_{a,b}$ and $M_{a,b'}$
+are isomorphic via $(x,y) \mapsto (x, \sqrt{b'/b} \cdot y)$.
+
+\begin{dfn}
+  When $b'/b$ is not a square in \F{p}, $M_{a,b'}$ is a \emph{quadratic twist} of $M_{a,b}$:
+  isomorphic over $\F{p^2}$~\cite{cryptoeprint:2017:212}.
+\end{dfn}
+
+Points over $M_{a,b}(\K)$ can be equipped with a structure of an abelian group
+with the addition operation $\boxplus$ and with neutral element the point at infinity $\Oinf$.
+Using this law, we have the scalar multiplication over $M_{a,b}(\K)$ defined by:
+  $$n\cdot P = \underbrace{P \boxplus \cdots \boxplus P}_{n\text{ times}}$$
+
+In order to efficiently computes the scalar multiplication we use an algorithm
+similar to square-and-multiply: the Montgomery ladder where the basic operations
+are addition and doubling.
+
+We consider x-coordinate-only operations. In order to simplify computations,
+such coordinates are represented as $X/Z$ fractions. We define two operations:
+\begin{align*}
+\texttt{xADD} &: (X_P, Z_P, X_Q , Z_Q, X_{P \boxminus Q}, Z_{P \boxminus Q}) \mapsto (X_{P \boxplus Q}, Z_{P \boxplus Q})\\
+\texttt{xDBL} &: (X_P, Z_P) \mapsto (X_{2 \cdot P}, Z_{2 \cdot P})
+\end{align*}
+In the Montgomery ladder, % notice that
+the arguments of \texttt{xADD} and \texttt{xDBL}
+are swapped depending of the value of the $k^{th}$ bit. We use a conditional
+swap \texttt{CSWAP} to change the arguments of the above function while keeping
+the same body of the loop.
+Given a pair $(X_0, X_1)$ and a Boolean $b$, \texttt{CSWAP} returns the pair
+$(X_b, X_{1-b})$.
+
+By using the differential addition and doubling operations we define the Montgomery ladder
+computing a $x$-coordinate-only scalar multiplication (see \aref{alg:montgomery-ladder}).
+\begin{algorithm}
+\caption{Montgomery ladder for scalar mult.}
+\label{alg:montgomery-ladder}
+\begin{algorithmic}
+\REQUIRE{x-coordinate of $P$ : $P.x$, scalars $n$ and $m$, $n < 2^m$}
+\ENSURE{$Q = n \cdot P$}
+\STATE $Q \leftarrow \Oinf$
+\STATE $R \leftarrow (X_P,Z_P)$
+\FOR{$k$ := $m$ down to $1$}
+  \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
+  \STATE $Q \leftarrow \texttt{xDBL}(Q)$
+  \STATE $R \leftarrow \texttt{xADD}(Q,R,X_P,Z_P)$
+  \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
+\ENDFOR
+\RETURN $Q$
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+\subsection{The X25519 key exchange}
+\label{subsec:X25519-key-exchange}
+
+For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
+defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
+such that $x$ is the $x$-coordinate of $P$.
+
+Given $n \in \N$ and $x \in \F{\p}$, such that $x$ is the $x$-coordinate of
+a point $P$ of $E(\F{\p})$, X25519 returns the $x$-coordinate of the
+scalar multiplication of $P$ by $n$, thus $n \cdot P$.
+% Note that the result is the same with $n \cdot (-P) = -(n \cdot P)$.
+
+X25519 makes use of the little endian bijection for its arguments of 32-bytes:
+\texttt{n} the secret key and \texttt{p} the public key.
+Curve25519 has a cofactor of 8. In order to avoid attacks where an attacker
+could discover some bits of the private key, values of $n$ are forced into the
+shape of $2^{254} + 8\{0,1,\ldots,2^{251}-1\}$. This is done by setting bit 255
+to \texttt{0}; bit 254 to \texttt{1} and the lower 3 bits to \texttt{0},
+making $n$ effectively a multiple of 8. This operation is known as the clamping.
+
+RFC~7748~\cite{rfc7748} formalized the X25519 Diffie–Hellman key-exchange algorithm.
+Given the base point $B$ where $B.x=9$, each party generate a secret random number
+$s_a$ (respectively $s_b$), and computes $P_a$ (respectively $P_b$), the result
+of the scalar multiplication between $B$ and $s_a$ (respectively $s_b$).
+The party exchanges $P_a$ and $P_b$ and computes their shared secret with X25519
+over $s_a$ and $P_b$ (respectively $s_b$ and $P_a$).
+
+
+
+
+
+\subsection{TweetNaCl specifics}
+\label{subsec:Number-TweetNaCl}
+
+As its name suggests, TweetNaCl aims for code compactness (in tweets).
+As a result it uses a few defines and typedef to gain precious bytes while
+still remaining readable.
+\begin{lstlisting}[language=Ctweetnacl]
+#define FOR(i,n) for (i = 0;i < n;++i)
+#define sv static void
+typedef unsigned char u8;
+typedef long long i64;
+\end{lstlisting}
+
+TweetNaCl functions take pointers as arguments. By convention the first one
+points to the output array. It is then followed by the input arguments.
+
+Due to some limitations of VST, indexes used in \TNaCle{for} loops have to be
+of type \TNaCle{int} instead of \TNaCle{i64}. We change the code to allow our
+proofs to carry through. We believe this does not affect the correctness of the
+original code. A complete diff of our modifications to TweetNaCl can be found in
+Appendix~\ref{verified-C-and-diff}.
+
+
+
+
+
+\subsection{X25519 in TweetNaCl}
+\label{subsec:X25519-TweetNaCl}
+
+We now describe the implementation of X25519 in TweetNaCl.
+
+\subheading{Arithmetic in \Ffield.}
+In X25519, all computations are performed in $\F{p}$.
+Throughout the computation, elements of that field
+are represented in radix $2^{16}$,
+i.e., an element $A$ is represented as $(a_0,\dots,a_{15}$,
+with $A = \sum_{i=0}^{15}a_i2^{16i}$.
+The individual ``limbs'' $a_i$ are represented as
+64-bit \TNaCle{long long} variables:
+\begin{lstlisting}[language=Ctweetnacl]
+typedef i64 gf[16];
+\end{lstlisting}
+
+Conversion from the input byte array to this representation is done
+as follows:
+\begin{lstlisting}[language=Ctweetnacl]
+sv unpack25519(gf o, const u8 *n)
+{
+  int i;
+  FOR(i,16) o[i]=n[2*i]+((i64)n[2*i+1]<<8);
+  o[15]&=0x7fff;
+}
+\end{lstlisting}
+
+The radix-$2^{16}$ representation in limbs of $64$ bits is
+highly redundant; for any element $A \in \F{\p}$ there are
+multiple ways to represent $A$ as $(a_0,\dots,a_{15})$.
+This is used to avoid carry handling in the implementations of addition
+(\TNaCle{A}) and subtraction (\TNaCle{Z}) in $\F{\p}$:
+\begin{lstlisting}[language=Ctweetnacl]
+sv A(gf o,const gf a,const gf b) {
+  int i;
+  FOR(i,16) o[i]=a[i]+b[i];
+}
+
+sv Z(gf o,const gf a,const gf b) {
+  int i;
+  FOR(i,16) o[i]=a[i]-b[i];
+}
+\end{lstlisting}
+
+Also multiplication (\TNaCle{M}) is heavily exploiting the redundancy
+of the representation to delay carry handling.
+\begin{lstlisting}[language=Ctweetnacl]
+sv M(gf o,const gf a,const gf b) {
+  i64 i,j,t[31];
+  FOR(i,31) t[i]=0;
+  FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
+  FOR(i,15) t[i]+=38*t[i+16];
+  FOR(i,16) o[i]=t[i];
+  car25519(o);
+  car25519(o);
+}
+\end{lstlisting}
+
+After the actual multiplication, the limbs of the result \texttt{o} are
+too large to be used again as input, which is why the two calls to
+\TNaCle{car25519} at the end of \TNaCle{M} propagate the carries through the limbs:
+\begin{lstlisting}[language=Ctweetnacl]
+sv car25519(gf o)
+{
+  int i;
+  FOR(i,16) {
+    o[(i+1)%16]+=(i<15?1:38)*(o[i]>>16);
+    o[i]&=0xffff;
+  }
+}
+\end{lstlisting}
+
+In order to simplify the verification of this function,
+we treat the last iteration of the loop $i = 15$ as a separate step.
+
+Inverses in $\Zfield$ are computed with \TNaCle{inv25519}.
+It takes the exponentiation by $2^{255}-21$ with the square-and-multiply algorithm.
+Fermat's little theorem gives the correctness.
+Notice that in this case the inverse of $0$ is defined as $0$.
+
+\TNaCle{sel25519} implements a constant-time conditional swap (\texttt{CSWAP}) by
+applying a mask between two fields elements.
+\begin{lstlisting}[language=Ctweetnacl]
+sv sel25519(gf p,gf q,i64 b)
+{
+  int i;
+  i64 t,c=~(b-1);
+  FOR(i,16) {
+    t= c&(p[i]^q[i]);
+    p[i]^=t;
+    q[i]^=t;
+  }
+}
+\end{lstlisting}
+
+Finally, we require the \TNaCle{pack25519} function,
+which converts from the internal redundant radix-$2^{16}$
+representation to a unique byte array:
+\begin{lstlisting}[language=Ctweetnacl]
+sv pack25519(u8 *o,const gf n)
+{
+  int i,j;
+  i64 b;
+  gf t,m={0};
+  set25519(t,n);
+  car25519(t);
+  car25519(t);
+  car25519(t);
+  FOR(j,2) {
+    m[0]=t[0]- 0xffed;
+    for(i=1;i<15;i++) {
+      m[i]=t[i]-0xffff-((m[i-1]>>16)&1);
+      m[i-1]&=0xffff;
+    }
+    m[15]=t[15]-0x7fff-((m[14]>>16)&1);
+    m[14]&=0xffff;
+    b=1-((m[15]>>16)&1);
+    sel25519(t,m,b);
+  }
+  FOR(i,16) {
+    o[2*i]=t[i]&0xff;
+    o[2*i+1]=t[i]>>8;
+  }
+}
+\end{lstlisting}
+As we can see, this function is considerably more complex than the
+unpacking function. The reason is that it needs to convert
+to a \emph{unique} representation before packing into the output
+byte array.
+
+\subheading{The Montgomery ladder.}
+With these low-level arithmetic and helper functions at hand, we can now
+turn our attention to the core of the X25519 computation:
+the \TNaCle{crypto_scalarmult} API function of TweetNaCl.
+In order to compute the scalar multiplication,
+X25519 uses the Montgomery ladder~\cite{Mon85}.
+
+$x$-coordinates are represented as not evaluated fractions, the computation of
+the quotient is deferred to the end of the ladder with \TNaCle{inv25519}.
+
+First extract and clamp the value of $n$. Then unpack the value of $p$.
+As per RFC~7748~\cite{rfc7748}, set its most significant bit to 0.
+Finally compute the Montgomery ladder over the clamped $n$ and $p$,
+and pack the result into $q$.
+\begin{lstlisting}[language=Ctweetnacl]
+int crypto_scalarmult(u8 *q,
+                      const u8 *n,
+                      const u8 *p)
+{
+  u8 z[32];
+  i64 r;
+  int i;
+  gf x,a,b,c,d,e,f;
+  FOR(i,31) z[i]=n[i];
+  z[31]=(n[31]&127)|64;
+  z[0]&=248;
+  unpack25519(x,p);
+  FOR(i,16) {
+    b[i]=x[i];
+    d[i]=a[i]=c[i]=0;
+  }
+  a[0]=d[0]=1;
+  for(i=254;i>=0;--i) {
+    r=(z[i>>3]>>(i&7))&1;
+    sel25519(a,b,r);
+    sel25519(c,d,r);
+    A(e,a,c);
+    Z(a,a,c);
+    A(c,b,d);
+    Z(b,b,d);
+    S(d,e);
+    S(f,a);
+    M(a,c,a);
+    M(c,b,e);
+    A(e,a,c);
+    Z(a,a,c);
+    S(b,a);
+    Z(c,d,f);
+    M(a,c,_121665);
+    A(a,a,d);
+    M(c,c,a);
+    M(a,d,f);
+    M(d,b,x);
+    S(b,e);
+    sel25519(a,b,r);
+    sel25519(c,d,r);
+  }
+  inv25519(c,c);
+  M(a,a,c);
+  pack25519(q,a);
+  return 0;
+}
+\end{lstlisting}
+
+
+
+
+
+\subsection{Coq and VST}
+\label{subsec:Coq-VST}
+
+Coq~\cite{coq-faq} is an interactive theorem prover. It provides an expressive
+formal language to write mathematical definitions, algorithms and theorems together
+with their proofs. It has been used in the proof of the four-color theorem~\cite{gonthier2008formal}.
+The CompCert C compiler~\cite{Leroy-backend} was implemented with it.
+The Compcert C semantic is very close to C17~\cite{ISO:C17}, giving us the guarantee
+that the intended behavior is preserved through the compilation to the machine code.
+
+As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
+Coq does not rely on an SMT solver in its trusted code base.
+It uses its type system to verify the applications of hypotheses,
+lemmas, and theorems~\cite{Howard1995-HOWTFN}.
+
+Hoare logic is a formal system which allows reasoning about programs.
+It uses triples such as
+$$\{{\color{doc@lstnumbers}\textbf{Pre}}\}\texttt{~Prog~}\{{\color{doc@lstdirective}\textbf{Post}}\}$$
+where ${\color{doc@lstnumbers}\textbf{Pre}}$ and ${\color{doc@lstdirective}\textbf{Post}}$
+are assertions and \texttt{Prog} is a fragment of code.
+It is read as
+``when the precondition  ${\color{doc@lstnumbers}\textbf{Pre}}$ is met,
+executing \texttt{Prog} will yield postcondition ${\color{doc@lstdirective}\textbf{Post}}$''.
+We use compositional rules to prove the truth value of a Hoare triple.
+For example, here is the rule for sequential composition:
+\begin{prooftree}
+  \AxiomC{$\{P\}C_1\{Q\}$}
+  \AxiomC{$\{Q\}C_2\{R\}$}
+  \LeftLabel{Hoare-Seq}
+  \BinaryInfC{$\{P\}C_1;C_2\{R\}$}
+\end{prooftree}
+Separation logic is an extension of Hoare logic which allows reasoning about
+pointers and memory manipulation. This logic enforces strict conditions on the
+memory shared such as being disjoint.
+We discuss this limitation further in \sref{subsec:with-VST}.
+The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework
+which uses Separation logic to prove the functional correctness of C programs.
+The first step consists of translating the source code into Clight,
+an intermediate representation used by CompCert.
+For such purpose we use the parser of CompCert: \texttt{clightgen}.
+In a second step we define the Hoare triple encapsulating the specification of the
+piece of software we want to prove. Then using VST, we  use a strongest
+postcondition approach to prove the correctness of the triple.
+This approach can be seen as a forward symbolic execution of the program.

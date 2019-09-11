@@ -1,0 +1,83 @@
+\section{Conclusion}
+\label{sec:Conclusion}
+
+Any formal system relies on a trusted base. In this section we describe our
+chain of trust.
+
+\subheading{Trusted Code Base of the proof.}
+Our proof relies on a trusted base, i.e. a foundation of definitions that must be
+correct. One should not be able to prove a false statement in that system, \eg, by
+proving an inconsistency.
+
+In our case we rely on:
+\begin{itemize}
+  \item \textbf{Calculus of Inductive Construction}. The intuitionistic logic
+  used by Coq must be consistent in order to trust the proofs. As an axiom,
+  we assumed that the functional extensionality, which is also consistent with that logic.
+  $$\forall x, f(x) = g(x) \implies f = g$$
+\begin{lstlisting}[language=Coq]
+Lemma f_ext: forall (A B:Type),
+  forall (f g: A -> B),
+  (forall x, f(x) = g(x)) -> f = g.
+\end{lstlisting}
+
+  \item \textbf{Verifiable Software Toolchain}. This framework developed at
+  Princeton allows a user to prove that a Clight code matches pure Coq
+  specification.
+
+  \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
+  model captures correctly the C17 standard.
+  Our proof also assumes that the TweetNaCl code will behave as expected if
+  compiled under CompCert.
+  % We do not provide guarantees for other C compilers such as Clang or GCC.
+
+  \item \textbf{\texttt{clightgen}}. The tool making the translation from \textbf{C} to
+  \textbf{Clight}. It is the first step of the compilation.
+  VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
+  This required us to rewrite the lines into:
+\begin{lstlisting}[language=C]
+aux1 = a[i];
+aux2 = b[i];
+o[i] = aux1 + aux2;
+\end{lstlisting}
+  The trust of the proof relied on the trust of a correct translation from the
+  initial version of \emph{TweetNaCl} to \emph{TweetNaclVerifiableC}.
+  \texttt{clightgen} comes with \texttt{-normalize} flag which
+  factors out function calls and assignments from inside subexpressions.
+  The changes required for a C-code to make it Verifiable are now minimal.
+
+  \item Last but not the least, we must trust: the \textbf{Coq kernel} and its
+  associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
+  the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
+  done with this architecture \cite{2015-Appel,coq-faq}.
+\end{itemize}
+
+\subheading{Corrections in TweetNaCl.}
+As a result of this verification, we removed superfluous code.
+Indeed indexes 17 to 79 of the \TNaCle{i64 x[80]} intermediate variable of
+\TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code,
+we removed them.
+
+Peter Wu and Jason A. Donenfeld brought to our attention that the original
+\TNaCle{car25519} function presented risk of Undefined Behavior if \texttt{c}
+is a negative number.
+\begin{lstlisting}[language=Ctweetnacl]
+c=o[i]>>16;
+o[i]-=c<<16; // c < 0 = UB !
+\end{lstlisting}
+By replacing this statement by a logical \texttt{and} (and proving the correctness)
+we solved this problem.
+\begin{lstlisting}[language=Ctweetnacl]
+o[i]&=0xffff;
+\end{lstlisting}
+
+We believe that the type change of the loop index (\TNaCle{int} instead of \TNaCle{i64})
+does not impact the trust of our proof.
+
+\subheading{A complete proof.}
+We provide a mechanized formal proof of the correctness of the X25519 implementation in TweetNaCl.
+We first proved that TweetNaCl's implementation of X25519 matches RFC~7748 (\tref{thm:VST-RFC}).
+In a second step we extended the Coq library for elliptic curves \cite{BartziaS14}
+by Bartzia and Strub to support Montgomery curves. Using this extension we
+proved that the X25519 implementation in TweetNaCl matches the mathematical
+definitions as given in~\cite[Sec.~2]{Ber06} (\tref{thm:Elliptic-CSM}).

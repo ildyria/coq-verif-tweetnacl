@@ -1,0 +1,294 @@
+\todo{I don't think this belongs to the paper but more to the associated materials}
+
+\subsection{Content of the proof files}
+\label{appendix:proof-files}
+
+We provide below the location of the most important definitions and lemmas of our proofs.
+
+\subsubsection{Definitions}
+~
+\begin{table}[h]
+  % \caption{Definitions}
+  % \label{table:specs}
+  \begin{tabular}{ l | l | l }
+    Definition & File & Description \\
+    \hline
+    \texttt{ZofList} & \texttt{ListsOp/ZofList.v} & List $\leftrightarrow$ \Z\\
+    \hline
+    \multicolumn{3}{c}{Elliptic Curve \& Fields }\\
+    \hline
+    \texttt{mcuType} & \texttt{High/mc.v} & $M_{a,b}$ \\
+    % \texttt{oncurve} & \texttt{High/mc.v} & Boolean decision of a point on a curve \\
+    \texttt{mc} & \texttt{High/mc.v} & $M_{a,b}(\K)$ \\
+    \texttt{neg} & \texttt{High/mc.v} & Negation \\
+    \texttt{add} & \texttt{High/mc.v} & Addition \\
+    \texttt{ec\_of\_mc} & \texttt{High/mcgroup.v} & $M_{a,b}(\K) \mapsto E(\K)$ \\
+    \texttt{mc\_of\_ec} & \texttt{High/mcgroup.v} & $E(\K) \mapsto M_{a,b}(\K)$ \\
+    \texttt{point\_x0} & \texttt{High/montgomery.v} & $\chi_0 : M_{a,b}(\K) \to \K$ \\
+    \texttt{point\_x} & \texttt{High/montgomery.v} & $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$ \\
+    % \texttt{mcu\_no\_square} & \texttt{High/montgomery.v} & $a^2-4$ is not a square in \K \\
+    \texttt{cswap} & \texttt{High/opt\_ladder.v} & Conditional swap \\
+    \texttt{opt\_montgomery} & \texttt{High/opt\_ladder.v} & Montgomery over \K \\
+    % \texttt{mcu\_no\_square} & \texttt{High/opt\_ladder.v} & $a^2-4$ is not a square in \K \\
+    \texttt{Zmodp.type} & \texttt{High/Zmodp.v} & $\F{p}$ with $p = \p$ \\
+    \texttt{Zmodp2.type} & \texttt{High/Zmodp2.v} & $\F{p^2}$ with $p = \p$ \\
+    \texttt{curve25519\_Fp\_ladder} & \texttt{High/curve25519\_Fp.v} & Montgomery ladder for the curve $M_{486662,1}$ over \F{p} \\
+    \texttt{curve25519\_Fp\_to\_Fp2} & \texttt{High/curve25519\_Fp\_incl\_Fp2.v} & $\varphi_c: M_{486662,1}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$ \\
+    \texttt{twist25519\_Fp\_ladder} & \texttt{High/twist25519\_Fp.v} & Montgomery ladder for the quadratic twist $M_{486662,2}$ over \F{p} \\
+    \texttt{twist25519\_Fp\_to\_Fp2} & \texttt{High/twist25519\_Fp\_incl\_Fp2.v} & $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$ \\
+    % \texttt{primo} & \texttt{High/prime\_cert.v} & $\p$ is prime \\
+    \hline
+    \multicolumn{3}{c}{Generic ladder}\\
+    \hline
+    \texttt{get\_a} & \texttt{Gen/Get\_abcdef.v} & $(a,b,c,d,e,f) \mapsto a$ \\
+    \texttt{get\_c} & \texttt{Gen/Get\_abcdef.v} & $(a,b,c,d,e,f) \mapsto c$ \\
+    \texttt{Ops.A} & \texttt{Gen/AMZubSqSel.v} & Addition \\
+    \texttt{Ops.M} & \texttt{Gen/AMZubSqSel.v} & Multiplication \\
+    \texttt{Ops.Zub} & \texttt{Gen/AMZubSqSel.v} & Subtraction \\
+    \texttt{Ops.Sq} & \texttt{Gen/AMZubSqSel.v} & Squaring \\
+    \texttt{Ops.C\_0} & \texttt{Gen/AMZubSqSel.v} & Constant $0$ \\
+    \texttt{Ops.C\_1} & \texttt{Gen/AMZubSqSel.v} & Constant $1$ \\
+    \texttt{Ops.C\_121665} & \texttt{Gen/AMZubSqSel.v} & Constant $121665$ \\
+    \texttt{Ops.Sel25519} & \texttt{Gen/AMZubSqSel.v} & Conditional swap \\
+    \texttt{Ops.Getbit} & \texttt{Gen/GetBit.v} & Bit selection \\
+    \texttt{montgomery\_rec} & \texttt{Gen/montgomery\_rec.v} & Montgomery ladder \\
+    \hline
+    \multicolumn{3}{c}{Operations over \Z and \Zfield}\\
+    \hline
+    \texttt{Mid.A} & \texttt{Mid/AMZubSqSel.v} & Addition \\
+    \texttt{Mid.M} & \texttt{Mid/AMZubSqSel.v} & Multiplication \\
+    \texttt{Mid.Zub} & \texttt{Mid/AMZubSqSel.v} & Subtraction \\
+    \texttt{Mid.Sq} & \texttt{Mid/AMZubSqSel.v} & Squaring \\
+    \texttt{Mid.C\_0} & \texttt{Mid/AMZubSqSel.v} & Constant $0$ \\
+    \texttt{Mid.C\_1} & \texttt{Mid/AMZubSqSel.v} & Constant $1$ \\
+    \texttt{Mid.C\_121665} & \texttt{Mid/AMZubSqSel.v} & Constant $121665$ \\
+    \texttt{Mid.Sel25519} & \texttt{Mid/AMZubSqSel.v} & Conditional swap \\
+    \texttt{Mid.car25519} & \texttt{Mid/Car25519.v} & Carry propagation \\
+    \texttt{Mid.getbit} & \texttt{Mid/GetBit.v} & Bit selection \\
+    \texttt{Inv25519\_Z} & \texttt{Mid/Inv25519.v} & $x^{2^{255}-21}$ \\
+    \texttt{ZInv25519} & \texttt{Mid/Inv25519.v} & power computed recursively \\
+    \texttt{modP} & \texttt{Mid/Mod.v} & mod \p\\
+    \texttt{ZPack25519} & \texttt{Mid/Pack25519.v} & packing mod \p\\
+    \texttt{Zclamp} & \texttt{Mid/Prep\_n.v} & Clamping \\
+    \texttt{ZUnpack25519} & \texttt{Mid/Unpack25519.v} & unpacking (mod $2^{255}$)\\
+    \hline
+    \multicolumn{3}{c}{Operations over list of \Z}\\
+    \hline
+    \texttt{Low.A} & \texttt{Low/A.v} & Addition \\
+    \texttt{Low.M} & \texttt{Low/M.v} & Multiplication \\
+    \texttt{Low.Z} & \texttt{Low/Z.v} & Subtraction \\
+    \texttt{Low.S} & \texttt{Low/S.v} & Squaring \\
+    \texttt{Low.C\_0} & \texttt{Low/Constant.v} & Constant $0$ \\
+    \texttt{Low.C\_1} & \texttt{Low/Constant.v} & Constant $1$\\
+    \texttt{Low.C\_121665} & \texttt{Low/Constant.v} & Constant $121665$\\
+    \texttt{Low.C\_25519} & \texttt{Low/Constant.v} & Constant $2^{255}-19$\\
+    \texttt{Low.Sel25519} & \texttt{Low/Sel25519.v} & Conditional swap \\
+    \texttt{car25519} & \texttt{Low/Car25519.v} & Carry propagation \\
+    \texttt{Low.getbit} & \texttt{Low/GetBit.v} & Bit selection \\
+    \texttt{Inv25519} & \texttt{Low/Inv25519.v} & Recursive power \\
+    \texttt{Pack25519} & \texttt{Low/Pack25519.v} & packing mod \p\\
+    \texttt{clamp} & \texttt{Low/Prep\_n.v} & Clamping \\
+    \texttt{Unpack25519} & \texttt{Low/Unpack25519.v} & unpacking (mod $2^{255}$)\\
+    \hline
+    \multicolumn{3}{c}{Instanciations of \texttt{Ops}}\\
+    \hline
+    \texttt{Z25519\_Ops} & \texttt{Mid/Instances.v} & Instanciations over \F{p} with $p = \p$\\
+    \texttt{Z\_Ops} & \texttt{Mid/Instances.v} & Instanciations over \Z \\
+    \texttt{List\_Z\_Ops} & \texttt{Mid/Instances.v} & Instanciations lists of \Z \\
+    \hline
+    \multicolumn{3}{c}{X25519 over \Z and list of \Z}\\
+    \hline
+    \texttt{ZCrypto\_Scalarmult} & \texttt{Mid/Crypto\_Scalarmult.v} & RFC specification of X25519\\
+    \texttt{Crypto\_Scalarmult} & \texttt{Low/Crypto\_Scalarmult.v} & list specification of X25519\\
+    \texttt{CSM} & \texttt{Low/Crypto\_Scalarmult\_.v} & aliasing of \texttt{Crypto\_Scalarmult} \\
+    \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Lemmas and Theorems}
+~
+% \begin{table}[h]
+%   \begin{tabular}{ l | l | l }
+%     Definition & File & Description \\
+%     \hline
+% \end{tabular}
+% \end{table}
+
+% \subsection{Files}
+%
+% \begin{table}
+%   \begin{tabular}{ l | l }
+%     File & Content \\
+%     \hline
+% \texttt{Gen/ABCDEF\_eq.v} & ...  \\
+% \texttt{Gen/ABCDEF.v} & ...  \\
+% \texttt{Gen/abstract\_fn\_rev\_abcdef.v} & ...  \\
+% \texttt{Gen/abstract\_fn\_rev\_eq.v} & ...  \\
+% \texttt{Gen/abstract\_fn\_rev.v} & ...  \\
+% \texttt{Gen/abstract\_rec\_rev\_abcdef.v} & ...  \\
+% \texttt{Gen/abstract\_rec\_rev\_eq.v} & ...  \\
+% \texttt{Gen/abstract\_rec\_rev.v} & ...  \\
+% \texttt{Gen/abstract\_rec.v} & ...  \\
+% \texttt{Gen/AMZubSqSel\_List.v} & ...  \\
+% \texttt{Gen/AMZubSqSel\_Prop.v} & ...  \\
+% \texttt{Gen/AMZubSqSel.v} & ...  \\
+% \texttt{Gen/Get\_abcdef.v} & ...  \\
+% \texttt{Gen/montgomery\_rec\_eq.v} & ...  \\
+% \texttt{Gen/montgomery\_rec.v} & ...  \\
+% \texttt{Gen/montgomery\_step\_gen.v} & ...  \\
+% \texttt{Gen/rec\_f\_extr.v} & ...  \\
+% \texttt{Gen/step\_gen.v} & ...  \\
+% \texttt{High/curve25519\_Fp2.v} & ...  \\
+% \texttt{High/curve25519\_Fp\_incl\_Fp2.v} & ...  \\
+% \texttt{High/curve25519\_Fp\_twist25519\_Fp\_eq.v} & ...  \\
+% \texttt{High/curve25519\_Fp.v} & ...  \\
+% \texttt{High/curve25519\_twist25519\_Fp\_incl\_Fp2.v} & ...  \\
+% \texttt{High/fermat.v} & ...  \\
+% \texttt{High/GRing\_tools.v} & ...  \\
+% \texttt{High/ladder.v} & ...  \\
+% \texttt{High/mcgroup.v} & ...  \\
+% \texttt{High/mc.v} & ...  \\
+% \texttt{High/montgomery.v} & ...  \\
+% \texttt{High/opt\_ladder\_extr.v} & ...  \\
+% \texttt{High/opt\_ladder.v} & ...  \\
+% \texttt{High/prime\_and\_legendre.v} & ...  \\
+% \texttt{High/prime\_cert.v} & ...  \\
+% \texttt{High/prime\_ssrprime.v} & ...  \\
+% \texttt{High/twist25519\_Fp\_incl\_Fp2.v} & ...  \\
+% \texttt{High/twist25519\_Fp.v} & ...  \\
+% \texttt{High/Zmodp2\_rules.v} & ...  \\
+% \texttt{High/Zmodp2.v} & ...  \\
+% \texttt{High/Zmodp\_Ring.v} & ...  \\
+% \texttt{High/Zmodp.v} & ...  \\
+% \texttt{Libs/Bound\_Decidable.v} & ...  \\
+% \texttt{Libs/Decidable.v} & ...  \\
+% \texttt{Libs/Export.v} & ...  \\
+% \texttt{Libs/Expr\_Decidable.v} & ...  \\
+% \texttt{Libs/Forall\_extended.v} & ...  \\
+% \texttt{Libs/Formula\_Decidable.v} & ...  \\
+% \texttt{Libs/Fun\_Decidable.v} & ...  \\
+% \texttt{Libs/HeadTailRec.v} & ...  \\
+% \texttt{Libs/LibTactics\_Rennes.v} & ...  \\
+% \texttt{Libs/LibTactics\_SF.v} & ...  \\
+% \texttt{Libs/LibTactics.v} & ...  \\
+% \texttt{Libs/List\_Decidable.v} & ...  \\
+% \texttt{Libs/List\_ext\_Decidable.v} & ...  \\
+% \texttt{Libs/List\_Ltac.v} & ...  \\
+% \texttt{Libs/Lists\_extended.v} & ...  \\
+% \texttt{Libs/Logic\_extended.v} & ...  \\
+% \texttt{Libs/Relations.v} & ...  \\
+% \texttt{Libs/Term\_Decidable.v} & ...  \\
+% \texttt{Libs/ZArith\_extended.v} & ...  \\
+% \texttt{ListsOp/Export.v} & ...  \\
+% \texttt{ListsOp/Forall\_ZofList.v} & ...  \\
+% \texttt{ListsOp/Forall\_ZopList.v} & ...  \\
+% \texttt{ListsOp/LogicalList.v} & ...  \\
+% \texttt{ListsOp/Zipp.v} & ...  \\
+% \texttt{ListsOp/ZofList.v} & ...  \\
+% \texttt{ListsOp/ZunopList.v} & ...  \\
+% \texttt{Low/AMZubSqSel\_Correct.v} & ...  \\
+% \texttt{Low/A.v} & ...  \\
+% \texttt{Low/BackCarry.v} & ...  \\
+% \texttt{Low/Binary\_select.v} & ...  \\
+% \texttt{Low/Car25519\_bounds.v} & ...  \\
+% \texttt{Low/Car25519.v} & ...  \\
+% \texttt{Low/Carry\_n.v} & ...  \\
+% \texttt{Low/Carry.v} & ...  \\
+% \texttt{Low/Constant.v} & ...  \\
+% \texttt{Low/Crypto\_Scalarmult\_lemmas\_List\_List16.v} & ...  \\
+% \texttt{Low/Crypto\_Scalarmult\_lemmas.v} & ...  \\
+% \texttt{Low/Crypto\_Scalarmult\_lemmas\_Z\_List16.v} & ...  \\
+% \texttt{Low/Crypto\_Scalarmult.v} & ...  \\
+% \texttt{Low/Crypto\_Scalarmult\_.v} & ...  \\
+% \texttt{Low/Export.v} & ...  \\
+% \texttt{Low/Get\_abcdef.v} & ...  \\
+% \texttt{Low/GetBit\_pack25519.v} & ...  \\
+% \texttt{Low/GetBit.v} & ...  \\
+% \texttt{Low/Inner\_M1.v} & ...  \\
+% \texttt{Low/Inv25519\_gen.v} & ...  \\
+% \texttt{Low/Inv25519.v} & ...  \\
+% \texttt{Low/List16.v} & ...  \\
+% \texttt{Low/M\_low\_level\_compute.v} & ...  \\
+% \texttt{Low/M.v} & ...  \\
+% \texttt{Low/Outer\_M1.v} & ...  \\
+% \texttt{Low/Pack25519.v} & ...  \\
+% \texttt{Low/Pack.v} & ...  \\
+% \texttt{Low/Prep\_n.v} & ...  \\
+% \texttt{Low/Reduce\_by\_P\_aux.v} & ...  \\
+% \texttt{Low/Reduce\_by\_P\_compose\_1b.v} & ...  \\
+% \texttt{Low/Reduce\_by\_P\_compose\_1.v} & ...  \\
+% \texttt{Low/Reduce\_by\_P\_compose\_2b.v} & ...  \\
+% \texttt{Low/Reduce\_by\_P\_compose\_2.v} & ...  \\
+% \texttt{Low/Reduce\_by\_P\_compose\_step.v} & ...  \\
+% \texttt{Low/Reduce\_by\_P\_compose.v} & ...  \\
+% \texttt{Low/Reduce\_by\_P.v} & ...  \\
+% \texttt{Low/ScalarMult\_gen\_small.v} & ...  \\
+% \texttt{Low/ScalarMult\_rev\_fn\_gen.v} & ...  \\
+% \texttt{Low/ScalarMult\_rev.v} & ...  \\
+% \texttt{Low/Sel25519.v} & ...  \\
+% \texttt{Low/S.v} & ...  \\
+% \texttt{Low/Unpack25519.v} & ...  \\
+% \texttt{Low/Z.v} & ...  \\
+% \texttt{Mid/AMZubSqSel.v} & ...  \\
+% \texttt{Mid/Car25519.v} & ...  \\
+% \texttt{Mid/Crypto\_Scalarmult\_Fp.v} & ...  \\
+% \texttt{Mid/Crypto\_Scalarmult\_Mod.v} & ...  \\
+% \texttt{Mid/Crypto\_Scalarmult.v} & ...  \\
+% \texttt{Mid/Export.v} & ...  \\
+% \texttt{Mid/GetBit\_bitn.v} & ...  \\
+% \texttt{Mid/GetBit.v} & ...  \\
+% \texttt{Mid/Instances.v} & ...  \\
+% \texttt{Mid/Inv25519.v} & ...  \\
+% \texttt{Mid/MinusList.v} & ...  \\
+% \texttt{Mid/M\_low\_level.v} & ...  \\
+% \texttt{Mid/Mod.v} & ...  \\
+% \texttt{Mid/M.v} & ...  \\
+% \texttt{Mid/Pack25519.v} & ...  \\
+% \texttt{Mid/Prep\_n.v} & ...  \\
+% \texttt{Mid/Reduce.v} & ...  \\
+% \texttt{Mid/ScalMult.v} & ...  \\
+% \texttt{Mid/SubList.v} & ...  \\
+% \texttt{Mid/SumList.v} & ...  \\
+% \texttt{Mid/Unpack25519.v} & ...  \\
+% \texttt{Mid/ZCarry.v} & ...  \\
+% \end{tabular}
+% \end{table}
+%
+% \begin{table}
+%   \begin{tabular}{ l | l }
+%     File & Content \\
+%     \hline
+% \texttt{c/tweetnaclVerifiableC.v} & \\
+% \texttt{init/init\_tweetnacl.v} & \\
+% \texttt{init/missing\_lemmae.v} & \\
+% \texttt{proofs/split\_array\_lemmas.v} & \\
+% \texttt{proofs/verif\_A.v} & \\
+% \texttt{proofs/verif\_car25519\_compute.v} & \\
+% \texttt{proofs/verif\_car25519.v} & \\
+% \texttt{proofs/verif\_crypto\_scalarmult\_lemmas.v} & \\
+% \texttt{proofs/verif\_crypto\_scalarmult.v} & \\
+% \texttt{proofs/verif\_inv25519.v} & \\
+% \texttt{proofs/verif\_M\_compute\_pre.v} & \\
+% \texttt{proofs/verif\_M\_compute.v} & \\
+% \texttt{proofs/verif\_M\_lemmas.v} & \\
+% \texttt{proofs/verif\_M.v} & \\
+% \texttt{proofs/verif\_pack25519\_lemmas.v} & \\
+% \texttt{proofs/verif\_pack25519.v} & \\
+% \texttt{proofs/verif\_sel25519.v} & \\
+% \texttt{proofs/verif\_set25519.v} & \\
+% \texttt{proofs/verif\_S.v} & \\
+% \texttt{proofs/verif\_unpack25519.v} & \\
+% \texttt{proofs/verif\_Z.v} & \\
+% \texttt{spec/spec\_A.v} & \\
+% \texttt{spec/spec\_car25519.v} & \\
+% \texttt{spec/spec\_crypto\_scalarmult.v} & \\
+% \texttt{spec/spec\_inv25519.v} & \\
+% \texttt{spec/spec\_M.v} & \\
+% \texttt{spec/spec\_pack25519.v} & \\
+% \texttt{spec/spec\_sel25519.v} & \\
+% \texttt{spec/spec\_set25519.v} & \\
+% \texttt{spec/spec\_S.v} & \\
+% \texttt{spec/spec\_unpack25519.v} & \\
+% \texttt{spec/spec\_Z.v} & \\
+% \end{tabular}
+% \end{table}

@@ -1,0 +1,79 @@
+% \documentclass[letterpaper,twocolumn,9pt]{article}
+\documentclass[conference]{IEEEtran}
+
+\IEEEoverridecommandlockouts % this enables the \thanks command
+
+\usepackage{epsfig}
+\usepackage{setup}
+
+\newif\ifpublic
+\publicfalse
+
+\newif\iffull
+\fulltrue
+
+\input{macros}
+
+\begin{document}
+
+%don't want date printed
+\date{}
+
+%make title bold and 14 pt font (Latex default is non-bold, 16 pt)
+\title{\Large \bf A Coq proof of TweetNaCl's X25519 correctness}
+
+%for single author (just remove % characters)
+\ifpublic
+\author{
+\IEEEauthorblockN{Peter Schwabe}
+\IEEEauthorblockA{Radboud University,\\
+The Netherlands}
+\and
+\IEEEauthorblockN{Beno\^it Viguier}
+\IEEEauthorblockA{Radboud University,\\
+The Netherlands}
+\and
+\IEEEauthorblockN{Timmy Weerwag}
+\IEEEauthorblockA{XXX: Affiliation,\\
+The Netherlands}
+\and
+\IEEEauthorblockN{Freek Wiedijk}
+\IEEEauthorblockA{Radboud University,\\
+The Netherlands}
+}
+\else
+% just to remove complains from compilation
+\author{}
+\fi
+
+\maketitle
+
+%XXX: Figure out how to put this somewhere nice
+%\thanks{
+%XXX:
+%This work would not have been possible without the assistance of multiple people.
+%Andrew Appel and Lennart Beringer for having us in Princeton and teaching us the use of VST.
+%John Wiegley for introducing us to proofs by reflection at the DeepSpec Summer School 2017.
+%}
+
+%\thispagestyle{empty}
+
+\input{abstract.tex}
+\input{intro.tex}
+\input{preliminaries.tex}
+\input{lowlevel.tex}
+\input{highlevel.tex}
+\input{conclusion.tex}
+
+\vspace*{1cm}
+{\footnotesize \bibliographystyle{IEEEtran}
+\bibliography{collection}}
+
+\begin{appendix}
+  \input{code-tweetnacl.tex}
+  \input{coq.tex}
+  \input{proofs.tex}
+  \input{files.tex}
+\end{appendix}
+
+\end{document}

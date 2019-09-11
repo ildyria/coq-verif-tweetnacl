@@ -1,0 +1,118 @@
+\section{Introduction}
+\label{sec:intro}
+
+The Networking and Cryptography library (NaCl)~\cite{BLS12}
+is an easy-to-use, high-security, high-speed cryptography library.
+It uses specialized code for different platforms, which makes it rather complex and hard to audit.
+TweetNaCl~\cite{BGJ+15} is a compact re-implementation in C
+of the core functionalities of NaCl and is claimed to be
+\emph{``the first cryptographic library that allows correct functionality
+to be verified by auditors with reasonable effort''}~\cite{BGJ+15}.
+The original paper presenting TweetNaCl describes some effort to support
+this claim, for example, formal verification of memory safety, but does not actually
+prove correctness of any of the primitives implemented by the library.
+
+One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519~\cite{rfc7748}.
+This protocol is being used by a wide variety of applications~\cite{things-that-use-curve25519}
+such as SSH, Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
+an insecure channel.
+The X25519 key exchange protocol is a an $x$-coordinate only
+elliptic-curve Diffie-Hellman key-exchange using the Montgomery
+curve $E: y^2 = x^3 + 486662 x^2 + x$ over the field $\F{\p}$.
+Note that originally, the name ``Curve25519'' referred to the key exchange protocol,
+but Bernstein suggested to rename the scheme to X25519 and to use the name
+X25519 for the protocol and Curve25519 for the underlying elliptic curve~\cite{Ber14}.
+We make use of this updated terminology in this paper.
+
+\subheading{Contribution of this paper}
+We provide a mechanized formal proof of the correctness of the X25519
+implementation in TweetNaCl.
+This proof is done in two steps:
+We first prove equivalence of the C implementation of X25519
+to an implementation in Coq~\cite{coq-faq}.
+This part of the proof uses the Verifiable Software Toolchain (VST)~\cite{2012-Appel}
+to establish a link between C and Coq.
+VST uses Separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
+to show that the semantics of the program satisfy a functional specification in Coq.
+To the best of our knowledge, this is the first time that
+VST is used in the formal proof of correctness of an implementation
+of an asymmetric cryptographic primitive.
+
+In a second step we prove that the Coq implementation matches
+the mathematical definition of X25519 as given in~\cite[Sec.~2]{Ber06}.
+We accomplish this step of the proof by extending the Coq library
+for elliptic curves~\cite{BartziaS14} by Bartzia and Strub to
+support Montgomery curves (and in particular Curve25519).
+This extension may be of independent interest.
+
+\subheading{Related work.}
+Two methodologies exist to get formal guarantees that software meets its specification.
+This can be done either by synthesizing a formal specification and then generating
+machine code by refinement, or by writing a specification and verifying that the
+implementation satisfies it.
+
+% One of the earliest example of this first approach is the
+% B-method~\cite{Abrial:1996:BAP:236705} in 1986.
+Using the synthesis approach, Zinzindohou{\'{e}} et al. wrote a verified extensible
+library of elliptic curves~\cite{Zinzindohoue2016AVE} in F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}.
+This served as ground work for the cryptographic library HACL*~\cite{zinzindohoue2017hacl}
+used in the NSS suite from Mozilla.
+
+Coq not only allows verification but also synthesis~\cite{CpdtJFR}.
+Erbsenm; Philipoom; Gross; and Chlipala et al. make use of it to have
+correct-by-construction finite field arithmetic~\cite{Philipoom2018CorrectbyconstructionFF}.
+In such way, they synthesized~\cite{Erbsen2016SystematicSO} certified elliptic curve
+implementations~\cite{Erbsen2017CraftingCE}. These are now being used in
+BoringSSL~\cite{fiat-crypto}.
+
+The verification approach has been used to prove the correctness of OpenSSL
+HMAC~\cite{Beringer2015VerifiedCA} and SHA-256~\cite{2015-Appel}. Compared to
+that work our approach makes a complete link between the C implementation and
+the formal mathematical definition of the group theory behind elliptic curves.
+
+Synthesis approaches force the user to depend on generated code which may not
+be optimal (speed, compactness...) and they require compiler tweaks in order
+to achieve the desired properties. On the other hand, carefully handcrafted
+optimized code will force the verifier to consider all the possible special cases
+and write a low level specification of the details of the code in order to prove
+the correctness of the algorithm.
+
+It has to be noted that Curve25519 implementations have already been under scrutiny~\cite{Chen2014VerifyingCS}.
+However in this paper we provide a proofs of correctness and soundness of a C program up to
+the theory of elliptic curves.
+
+\subheading{Reproducing the proofs.}
+To maximize reusability of our results we placed the code of our formal proof
+presented in this paper into the public domain. They are available at XXXXXXX
+with instructions of how to compile and verify our proof.
+A description of the content of the archive is provided in
+Appendix~\ref{appendix:proof-folders}.
+
+\subheading{Organization of this paper.}
+\sref{sec:preliminaries} give the necessary background on Curve25519 and X25519
+implementations and a brief explanation of how formal verification works.
+\sref{sec:C-Coq-RFC} provides the specification of X25519 and in addition the proofs
+techniques used to show the correctness with respect to RFC~7748~\cite{rfc7748}.
+\sref{sec:maths} describes our extension of the formal library by Bartzia
+and Strub and the correctness of X25519 implementation with respect to Bernstein's
+specifications~\cite{Ber14}.
+And lastly in \sref{sec:Conclusion} we discuss the trusted code base of this proof.
+
+
+% Five years ago:
+% \url{https://www.imperialviolet.org/2014/09/11/moveprovers.html}
+% \url{https://www.imperialviolet.org/2014/09/07/provers.html}
+
+% \section{Related Works}
+%
+% \begin{itemize}
+%   \item HACL*
+%   \item Proving SHA-256 and HMAC
+%   \item \url{http://www.iis.sinica.edu.tw/~bywang/papers/ccs17.pdf}
+%   \item \url{http://www.iis.sinica.edu.tw/~bywang/papers/ccs14.pdf}
+%   \item \url{https://cryptojedi.org/crypto/#gfverif}
+%   \item \url{https://cryptojedi.org/crypto/#verify25519}
+%   \item Fiat Crypto : synthesis
+% \end{itemize}
+%
+% Add comparison with Fiat-crypto
