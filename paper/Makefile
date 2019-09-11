@@ -1,9 +1,12 @@
-TEX := $(wildcard *.tex)
+TEX := $(filter-out tweetverif.tex,$(wildcard *.tex))
 FILES := $(TEX) $(wildcard tikz/*.tex) $(wildcard *.sty)
 
+tweetverif.pdf: FORCE tweetverif.tex
+	python3 latexrun.py tweetverif.tex
 
-tweetverif.pdf: FORCE $(FILES) collection.bib
-	./latexrun.py tweetverif.tex
+tweetverif.tex: FORCE $(FILES) collection.bib
+	python3 gen.py tweetverif.tex
+
 
 depend:
 		@echo $(FILES)

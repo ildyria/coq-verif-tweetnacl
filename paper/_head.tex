@@ -12,7 +12,7 @@
 \newif\iffull
 \fulltrue
 
-\input{macros}
+\input{_macros}
 
 \begin{document}
 
@@ -57,23 +57,3 @@ The Netherlands}
 %}
 
 %\thispagestyle{empty}
-
-\input{abstract.tex}
-\input{intro.tex}
-\input{preliminaries.tex}
-\input{lowlevel.tex}
-\input{highlevel.tex}
-\input{conclusion.tex}
-
-\vspace*{1cm}
-{\footnotesize \bibliographystyle{IEEEtran}
-\bibliography{collection}}
-
-\begin{appendix}
-  \input{code-tweetnacl.tex}
-  \input{coq.tex}
-  \input{proofs.tex}
-  \input{files.tex}
-\end{appendix}
-
-\end{document}
