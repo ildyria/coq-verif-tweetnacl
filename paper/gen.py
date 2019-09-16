@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import os
+import glob
 import argparse
+from string import Template
 
 
 
@@ -32,6 +34,9 @@ def is_appendix(fn):
 def is_not_tex(s):
     return s != '' and s[-4:] != '.tex'
 
+def is_not_tikz(s):
+    return "tikz/" not in s
+
 def check_tex(s):
     if is_not_tex(s):
         msg = "%r is not a .tex" % s
@@ -52,36 +57,32 @@ def main():
 
     fn = parse_arguments()
 
-    files = [x for x in os.listdir('.') if not is_ignored(x) and is_tex(x) and not (x == fn)]
+    files = [x for x in glob.glob("**/*.tex", recursive=True) if not is_ignored(x) and is_tex(x) and not (x == fn) and is_not_tikz(x)]
 
-    appendices = [x for x in files if is_tex(x) and is_appendix(x)]
-    main = [x for x in files if x not in appendices]
+    for f in files:
+        print(f)
+
+    main = [x for x in files if not is_appendix(x)]
+    appendices = [x for x in files if is_appendix(x)]
 
     main.sort()
     appendices.sort()
 
-    output = read('_head.tex')
-    output += "\n"
-
+    main_output = ''
     for f in main:
-        output += "\\input{{{}}}\n".format(f)
+        main_output += "\\input{{{}}}\n".format(f)
 
-    output += "\n"
-    output += "\\vspace*{1cm}\n"
-    output += "{\\footnotesize \\bibliographystyle{IEEEtran}\n"
-    output += "\\bibliography{collection}}\n"
-    output += "\n"
-    output += "\\begin{appendix}\n"
-
+    appendix_output = ''
     for f in appendices:
-        output += "  \\input{{{}}}\n".format(f)
+        appendix_output += "  \\input{{{}}}\n".format(f)
 
+    output = read('_head.tex')
+    output = output.replace('\\intput{main}\n', '$main_output')
+    output = output.replace('\\intput{appendix}\n', '$appendix_output')
+    output = Template(output)
+    output = output.safe_substitute(main_output = main_output, appendix_output = appendix_output)
+    print(output)
 
-    output += "\\end{appendix}\n"
-    output += "\n"
-    output += "\\end{document}\n"
-
-    # print(output)
     save(fn, output)
 
 main()
