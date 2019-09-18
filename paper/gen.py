@@ -59,8 +59,8 @@ def main():
 
     files = [x for x in glob.glob("**/*.tex", recursive=True) if not is_ignored(x) and is_tex(x) and not (x == fn) and is_not_tikz(x)]
 
-    for f in files:
-        print(f)
+    # for f in files:
+    #     print(f)
 
     main = [x for x in files if not is_appendix(x)]
     appendices = [x for x in files if is_appendix(x)]
@@ -76,12 +76,12 @@ def main():
     for f in appendices:
         appendix_output += "  \\input{{{}}}\n".format(f)
 
-    output = read('_head.tex')
+    output = read('_' + fn)
     output = output.replace('\\intput{main}\n', '$main_output')
     output = output.replace('\\intput{appendix}\n', '$appendix_output')
     output = Template(output)
     output = output.safe_substitute(main_output = main_output, appendix_output = appendix_output)
-    print(output)
+    # print(output)
 
     save(fn, output)
 

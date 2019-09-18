@@ -1,0 +1,84 @@
+\section{Formalizing X25519 from RFC~7748}
+\label{sec:Coq-RFC}
+
+In this section we present our formalization of RFC~7748~\cite{rfc7748}.
+
+\begin{informaltheorem}
+The specification of X25519 in RFC~7748 is formalized by \Coqe{ZCrypto_Scalarmult}.
+\end{informaltheorem}
+
+More precisely, we formalized X25519 with the following definition.
+\begin{coq}
+Definition ZCrypto_Scalarmult n p :=
+  let t := montgomery_rec
+    255               (* iterate 255 times *)
+    (Zclamp n)        (* clamped n         *)
+    1                 (* x_2                *)
+    (ZUnpack25519 p)  (* x_3                *)
+    0                 (* z_2                *)
+    1                 (* z_3                *)
+    0                 (* dummy             *)
+    0                 (* dummy             *)
+    (ZUnpack25519 p)  (* x_1                *) in
+  let a := get_a t in
+  let c := get_c t in
+  ZPack25519 (Z.mul a (ZInv25519 c)).
+\end{coq}
+
+We first present a generic description of the Montgomery ladder (\ref{subsec:spec-ladder}).
+Then we turn our attention to the different steps of the computation (\ref{subsec:spec-unpack-clamp-inv-pack}).
+
+
+
+\subsection{A generic ladder}
+\label{subsec:spec-ladder}
+
+% \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}
+
+TweetNaCl implements X25519 with numbers represented as arrays.
+RFC~7748 defines X25519 over field elements. As we show the equivalence between
+the different representation, to simplify our proof, we define operations used
+in the ladder over generic types \coqe{T} and \coqe{T'}.
+Those types are later instantiated as natural numbers, integers, field elements,
+list of integers.
+
+The generic definition of the ladder (\coqe{montgomery_rec}) and its parallel with
+the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
+
+Our formalization differs slightly from the RFC. Indeed in order to optimize the
+number of \texttt{CSWAP} calls the RFC uses an additional variable to decide
+whether a conditionnal swap is required or not. Our description of the ladder
+follows strictly the shape of the exponent as described in \aref{alg:montgomery-ladder}.
+This divergence is allowed by the RFC:
+\emph{``Note that these formulas are slightly different from Montgomery's
+original paper.  Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
+We later prove our ladder correct in that respect (\sref{sec:maths}).
+
+% In appendix~\ref{subsubsec:CryptoScalarmult}, we show the the formalization of
+% \TNaCle{crypto_scalarmult} over lists of integers. We define it as
+% \Coqe{Crypto_Scalarmult} or \Coqe{CSM}. For the sake of space and simplicity we
+% do not display the definitions of each underlying function.
+
+
+
+\subsection{Unpacking, clamping, Inversion and Packing}
+\label{subsec:spec-unpack-clamp-inv-pack}
+
+Inputs of X25519
+% \emph{``To implement the X25519(k, u) and X448(k, u) functions (where k is
+% the scalar and u is the u-coordinate), first decode k and u and then
+% perform the following procedure, which is taken from [curve25519] and
+% based on formulas from [montgomery].  All calculations are performed
+% in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
+
+
+\coqe{montgomery_rec} only computes the ladder steps.
+While the inversion, the packing, the unpacking (setting bit 255 to \texttt{0})
+and the clamping are not defined in a generic manner, we show their equivalence
+between the different representations.
+
+Appendix~\ref{subsubsec:ZCryptoScalarmult} shows the instantiation of our ladder
+over Integers (type \coqe{Z}). We call it \coqe{ZCrypto_Scalarmult}.
+The modulo reduction is applied in \coqe{ZPack25519} translating every
+underlying operations as over \Zfield. As a result this specification can be
+interpreted as the formalization of X25519 in RFC~7748.

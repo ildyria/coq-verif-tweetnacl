@@ -1,13 +1,16 @@
 \section{Proving equivalence of X25519 in C and Coq}
-\label{sec:C-Coq-RFC}
+\label{sec:C-Coq}
 
 In this section we prove the following theorem:
 % In this section we outline the structure of our proofs of the following theorem:
-\begin{theorem}
+\begin{informaltheorem}
 \label{thm:VST-RFC}
 The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
-the specifications of RFC~7748~\cite{rfc7748}
-\end{theorem}
+the specifications of RFC~7748~\cite{rfc7748} (\Coqe{ZCrypto_Scalarmult})
+\end{informaltheorem}
+
+More formally.
+\todo{INSERT COQ DEFINITION HERE}
 
 We first describe the global structure of our proof (\ref{subsec:proof-structure}).
 We introduce our translation of RFC~7748 (\ref{subsec:spec-rfc}) and specify
@@ -86,37 +89,7 @@ This guarantees us the correctness of the implementation.
 
 
 
-\subsection{A Correct Specification}
-\label{subsec:spec-rfc}
 
-TweetNaCl implements X25519 with numbers represented as arrays.
-RFC~7748 defines X25519 over field elements. In order to simplify our proofs,
-we define operations used in the ladder over generic types
-\coqe{T} and \coqe{T'}. Those types are later instantiated as natural numbers,
-integers, field elements, list of integers.
-The generic definition of the ladder (\coqe{montgomery_rec}) and its parallel with
-the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
-It has to be noted that the RFC uses an additional variable to optimize the number
-of \texttt{CSWAP} calls:
-\emph{``Note that these formulas are slightly different from Montgomery's
-original paper.  Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
-We later prove our ladder correct in that respect (\sref{sec:maths}).
-
-\coqe{montgomery_rec} only computes the ladder steps.
-While the inversion, the packing, the unpacking (setting bit 255 to \texttt{0})
-and the clamping are not defined in a generic manner, we show their equivalence
-between the different representations.
-
-Appendix~\ref{subsubsec:ZCryptoScalarmult} shows the instantiation of our ladder
-over Integers (type \coqe{Z}). We call it \coqe{ZCrypto_Scalarmult}.
-The modulo reduction is applied in \coqe{ZPack25519} translating every
-underlying operations as over \Zfield. As a result this specification can be
-interpreted as the formalization of X25519 in RFC~7748.
-
-In appendix~\ref{subsubsec:CryptoScalarmult}, we show the the formalization of
-\TNaCle{crypto_scalarmult} over lists of integers. We define it as
-\Coqe{Crypto_Scalarmult} or \Coqe{CSM}. For the sake of space and simplicity we
-do not display the definitions of each underlying function.
 % The location of the definitions are listed in Appendix~\ref{appendix:proof-files}.
 
 
