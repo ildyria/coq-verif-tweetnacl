@@ -67,8 +67,6 @@ Require Import Tweetnacl_verif.verif_crypto_scalarmult_lemmas.
 Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Tweetnacl.Low.ScalarMult_rev.
 Require Import Tweetnacl.Low.Constant.
-(* Require Import Tweetnacl.Low.Crypto_Scalarmult. *)
-(* Require Import Tweetnacl.Low.Crypto_Scalarmult_. *)
 Require Import Tweetnacl.Mid.Instances.
 Require Import Tweetnacl.rfc.rfc.
 Open Scope Z.

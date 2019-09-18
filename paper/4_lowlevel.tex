@@ -3,10 +3,11 @@
 
 In this section we prove the following theorem:
 % In this section we outline the structure of our proofs of the following theorem:
+
 \begin{informaltheorem}
 \label{thm:VST-RFC}
 The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
-the specifications of RFC~7748~\cite{rfc7748} (\Coqe{ZCrypto_Scalarmult})
+the specifications of RFC~7748~\cite{rfc7748} (\Coqe{RFC})
 \end{informaltheorem}
 
 More formally.
@@ -27,10 +28,9 @@ used to in some of our more complex proofs (\ref{subsec:inversions-reflections})
 \label{subsec:proof-structure}
 
 In order to prove the correctness of X25519 in TweetNaCl code \TNaCle{crypto_scalarmult},
-we use VST to prove that the code matches our functional Coq specification of \Coqe{Crypto_Scalarmult}
-(to save space we sometimes abbreviate this as \Coqe{CSM}). Then, we prove that
-our specification of the scalar multiplication matches the mathematical definition
-of elliptic curves and Theorem 2.1 by Bernstein~\cite{Ber06} (\tref{thm:Elliptic-CSM}).
+we use VST to prove that the code matches our functional Coq specification of \Coqe{RFC}.
+Then, we prove that our specification of the scalar multiplication matches the mathematical definition
+of elliptic curves and Theorem 2.1 by Bernstein~\cite{Ber06} (\tref{thm:Elliptic-RFC}).
 \fref{tikz:ProofOverview} shows a graph of dependencies of the proofs.
 The mathematical proof of X25519 is presented in \sref{sec:maths}.
 \begin{figure}[h]
@@ -111,7 +111,7 @@ a pure Coq function.
 % A pure function is a function where the return value is only determined by its
 % input values, without observable side effects (Side effect are e.g. printing)
 This defines the equivalence between the Clight representation and our Coq
-definition of the ladder (\coqe{CSM}).
+definition of the ladder (\coqe{RFC}).
 
 \begin{lstlisting}[language=CoqVST]
 Definition crypto_scalarmult_spec :=
@@ -137,10 +137,10 @@ SEP  (sh [{ v_q }] <<(uch32)-- q;
       Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665)
 (*------------------------------------------*)
 POST [ tint ]
-PROP (Forall (fun x => 0 <= x < 2^8) (CSM n p);
-      Zlength (CSM n p) = 32)
+PROP (Forall (fun x => 0 <= x < 2^8) (RFC n p);
+      Zlength (RFC n p) = 32)
 LOCAL(temp ret_temp (Vint Int.zero))
-SEP  (sh [{ v_q }] <<(uch32)-- mVI (CSM n p);
+SEP  (sh [{ v_q }] <<(uch32)-- mVI (RFC n p);
       sh [{ v_n }] <<(uch32)-- mVI n;
       sh [{ v_p }] <<(uch32)-- mVI p;
       Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665
@@ -172,22 +172,22 @@ As Post-condition we have:
   The function \TNaCle{crypto_scalarmult} returns an integer.
   \item[] \VSTe{LOCAL}: \VSTe{temp ret_temp (Vint Int.zero)}\\
   The returned integer has value $0$.
-  \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (CSM n p)}\\
+  \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (RFC n p)}\\
   In the memory share \texttt{sh}, the address \VSTe{v_q} points
-  to a list of integer values \VSTe{mVI (CSM n p)} where \VSTe{CSM n p} is the
+  to a list of integer values \VSTe{mVI (RFC n p)} where \VSTe{RFC n p} is the
   result of the \VSTe{crypto_scalarmult} of \VSTe{n} and \VSTe{p}.
-  \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (CSM n p)}\\
-  \VSTe{PROP}: \VSTe{Zlength (CSM n p) = 32}\\
-  We show that the computation for \VSTe{CSM} fits in  \TNaCle{u8[32]}.
+  \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (RFC n p)}\\
+  \VSTe{PROP}: \VSTe{Zlength (RFC n p) = 32}\\
+  We show that the computation for \VSTe{RFC} fits in  \TNaCle{u8[32]}.
 \end{itemize}
 
 This specification shows that \TNaCle{crypto_scalarmult} in C computes the same
-result as \VSTe{CSM} in Coq provided that inputs are within their respective
+result as \VSTe{RFC} in Coq provided that inputs are within their respective
 bounds: arrays of 32 bytes.
 
 \begin{theorem}
 \label{thm:crypto-vst}
-\TNaCle{crypto_scalarmult} in TweetNaCl has the same behavior as \coqe{Crypto_Scalarmult} in Coq.
+\TNaCle{crypto_scalarmult} in TweetNaCl has the same behavior as \coqe{RFC} in Coq.
 \end{theorem}
 
 
@@ -278,7 +278,7 @@ and without returns the same result.
 We formalized this result in a generic way in Appendix~\ref{subsubsec:for}.
 
 Using this formalization, we prove that the 255 steps of the Montgomery ladder
-in C provide the same computations as in \coqe{CSM}.
+in C provide the same computations as in \coqe{RFC}.
 
 
 
@@ -645,22 +645,22 @@ By proving that each functions \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{
 \coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{car25519} are behaving over \coqe{list Z}
 as their equivalent over \coqe{Z} in \coqe{:GF} (in \Zfield), we prove the correctness of
 
-\begin{theorem}
-  \label{thm:crypto-rfc}
-\coqe{Crypto_Scalarmult} matches the specification of RFC~7748.
-\end{theorem}
+% \begin{theorem}
+%   \label{thm:crypto-rfc}
+% \coqe{Crypto_Scalarmult} matches the specification of RFC~7748.
+% \end{theorem}
 
-This is formalized as follows in Coq:
-\begin{lstlisting}[language=Coq]
-Theorem Crypto_Scalarmult_Eq :
-  forall (n p:list Z),
-  Zlength n = 32 ->
-  Zlength p = 32 ->
-  Forall (fun x : Z, 0 <= x /\ x < 2 ^ 8) n ->
-  Forall (fun x : Z, 0 <= x /\ x < 2 ^ 8) p ->
-  ZofList 8 (Crypto_Scalarmult n p) =
-  ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
-\end{lstlisting}
+% This is formalized as follows in Coq:
+% \begin{lstlisting}[language=Coq]
+% Theorem Crypto_Scalarmult_Eq :
+%   forall (n p:list Z),
+%   Zlength n = 32 ->
+%   Zlength p = 32 ->
+%   Forall (fun x : Z, 0 <= x /\ x < 2 ^ 8) n ->
+%   Forall (fun x : Z, 0 <= x /\ x < 2 ^ 8) p ->
+%   ZofList 8 (Crypto_Scalarmult n p) =
+%   ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
+% \end{lstlisting}
 
 We prove that \coqe{Crypto_Scalarmult} matches the specification of RFC~7748 (\tref{thm:crypto-rfc}).
 With the VST we also prove that \coqe{Crypto_Scalarmult} matches the Clight translation of Tweetnacl (\tref{thm:crypto-vst}).

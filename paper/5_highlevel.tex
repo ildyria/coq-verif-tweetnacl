@@ -2,12 +2,26 @@
 \label{sec:maths}
 
 In this section we prove the following theorem:
-\begin{theorem}
-\label{thm:Elliptic-CSM}
+
+\begin{informaltheorem}
+\label{thm:Elliptic-RFC}
 The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) computes the
 $\F{p}$-restricted $x$-coordinate scalar multiplication on $E(\F{p^2})$ where $p$ is $\p$
 and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
-\end{theorem}
+\end{informaltheorem}
+
+More formally:
+\begin{lstlisting}[language=Coq]
+Theorem RFC_Correct: forall (n p : list Z)
+  (P:mc curve25519_Fp2_mcuType),
+  Zlength n = 32 ->
+  Zlength p = 32 ->
+  Forall (fun x => 0 <= x /\ x < 2 ^ 8) n ->
+  Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
+  Fp2_x (decodeUCoordinate p) = P#x0 ->
+  RFC n p =
+    encodeUCoordinate ((P *+ (Z.to_nat (decodeScalar25519 n))) _x0).
+\end{lstlisting}
 
 We first review the work of Bartzia and Strub \cite{BartziaS14} (\ref{subsec:ECC-Weierstrass}).
 We extend it to support Montgomery curves (\ref{subsec:ECC-Montgomery})
@@ -414,7 +428,8 @@ we can find a $y$ such that $(x,y)$ is either on the curve or on the quadratic t
   over $M_{486662,2}(\F{p})$ such that the $x$-coordinate of $P$ is $x$.
 \end{lemma}
 \begin{lstlisting}[language=Coq]
-Theorem x_is_on_curve_or_twist: forall x : Zmodp.type,
+Theorem x_is_on_curve_or_twist:
+  forall x : Zmodp.type,
   (exists (p : mc curve25519_mcuType), p#x0 = x) \/
   (exists (p' : mc twist25519_mcuType), p'#x0 = x).
 \end{lstlisting}
@@ -430,22 +445,22 @@ Module Zmodp2.
 Inductive type :=
   Zmodp2 (x: Zmodp.type) (y:Zmodp.type).
 
-Definition pi (x : Zmodp.type * Zmodp.type) : type :=
+Definition pi (x: Zmodp.type * Zmodp.type) : type :=
   Zmodp2 x.1 x.2.
-Coercion repr (x : type) : Zmodp.type*Zmodp.type :=
+Coercion repr (x: type) : Zmodp.type*Zmodp.type :=
   let: Zmodp2 u v := x in (u, v).
 
 Definition zero : type :=
   pi ( 0%:R, 0%:R ).
 Definition one : type :=
   pi ( 1, 0%:R ).
-Definition opp (x : type) : type :=
+Definition opp (x: type) : type :=
   pi (- x.1 , - x.2).
-Definition add (x y : type) : type :=
+Definition add (x y: type) : type :=
   pi (x.1 + y.1, x.2 + y.2).
-Definition sub (x y : type) : type :=
+Definition sub (x y: type) : type :=
   pi (x.1 - y.1, x.2 - y.2).
-Definition mul (x y : type) : type :=
+Definition mul (x y: type) : type :=
   pi ((x.1 * y.1) + (2%:R * (x.2 * y.2)),
       (x.1 * y.2) + (x.2 * y.1)).
 \end{lstlisting}
@@ -556,16 +571,4 @@ Lemma ZCrypto_Scalarmult_curve25519_ladder:
 \end{lstlisting}
 
 From \tref{thm:RFC} and \tref{thm:general-scalarmult}, we prove the correctness
-of \TNaCle{crypto_scalarmult} (\tref{thm:Elliptic-CSM}).
-\begin{lstlisting}[language=Coq]
-Theorem Crypto_Scalarmult_Correct:
-  forall (n:list Z) (p:list Z)
-    (P:mc curve25519_Fp2_mcuType),
-  Zlength n = 32 ->
-  Zlength p = 32 ->
-  Forall (fun x => 0 <= x /\ x < 2^8) n ->
-  Forall (fun x => 0 <= x /\ x < 2^8) p ->
-  Fp2_x (ZUnpack25519 (ZofList 8 p)) = P#x0 ->
-  ZofList 8 (Crypto_Scalarmult n p) =
-    (P *+ (Z.to_nat (Zclamp (ZofList 8 n)))) _x0.
-\end{lstlisting}
+of \TNaCle{crypto_scalarmult} (\tref{thm:Elliptic-RFC}).

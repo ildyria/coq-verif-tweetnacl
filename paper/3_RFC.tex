@@ -4,26 +4,29 @@
 In this section we present our formalization of RFC~7748~\cite{rfc7748}.
 
 \begin{informaltheorem}
-The specification of X25519 in RFC~7748 is formalized by \Coqe{ZCrypto_Scalarmult}.
+The specification of X25519 in RFC~7748 is formalized by \Coqe{RFC}.
 \end{informaltheorem}
 
 More precisely, we formalized X25519 with the following definition.
-\begin{coq}
-Definition ZCrypto_Scalarmult n p :=
+\begin{lstlisting}[language=Coq]
+Definition RFC (n: list Z) (p: list Z) : list Z :=
+  let k := decodeScalar25519 n in
+  let u := decodeUCoordinate p in
   let t := montgomery_rec
-    255               (* iterate 255 times *)
-    (Zclamp n)        (* clamped n         *)
-    1                 (* x_2                *)
-    (ZUnpack25519 p)  (* x_3                *)
-    0                 (* z_2                *)
-    1                 (* z_3                *)
-    0                 (* dummy             *)
-    0                 (* dummy             *)
-    (ZUnpack25519 p)  (* x_1                *) in
+    255  (* iterate 255 times *)
+    k    (* clamped n         *)
+    1    (* x_2                *)
+    u    (* x_3                *)
+    0    (* z_2                *)
+    1    (* z_3                *)
+    0    (* dummy             *)
+    0    (* dummy             *)
+    u    (* x_1                *) in
   let a := get_a t in
   let c := get_c t in
-  ZPack25519 (Z.mul a (ZInv25519 c)).
-\end{coq}
+  let o := ZPack25519 (Z.mul a (ZInv25519 c))
+  in encodeUCoordinate o.
+\end{lstlisting}
 
 We first present a generic description of the Montgomery ladder (\ref{subsec:spec-ladder}).
 Then we turn our attention to the different steps of the computation (\ref{subsec:spec-unpack-clamp-inv-pack}).
@@ -63,6 +66,18 @@ We later prove our ladder correct in that respect (\sref{sec:maths}).
 
 \subsection{Unpacking, clamping, Inversion and Packing}
 \label{subsec:spec-unpack-clamp-inv-pack}
+
+
+\begin{lstlisting}[language=Coq]
+Definition decodeScalar25519 (l: list Z) : Z :=
+  ZofList 8 (clamp l).
+
+Definition decodeUCoordinate (l: list Z) : Z :=
+  ZofList 16 (Unpack25519 l).
+
+Definition encodeUCoordinate (x: Z) : list Z :=
+  ListofZ32 8 x.
+\end{lstlisting}
 
 Inputs of X25519
 % \emph{``To implement the X25519(k, u) and X448(k, u) functions (where k is
