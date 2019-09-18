@@ -77,4 +77,15 @@ Proof.
   apply car25519_bound ; assumption.
 Qed.
 
+Lemma Pack25519_Zlength : forall (l:list Z),
+  Zlength l = 16 ->
+  Zlength (Pack25519 l) = 32.
+Proof.
+  move => l Hl.
+  rewrite /Pack25519.
+  apply Pack.pack_for_Zlength_32_16.
+  apply Reduce_by_P.get_t_subst_select_Zlength => //=.
+  do 3 apply car25519_Zlength => //.
+Qed.
+
 Close Scope Z.

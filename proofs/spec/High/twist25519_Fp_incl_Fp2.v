@@ -110,15 +110,15 @@ Proof.
   by rewrite ?GRing.mulrS -IHn twist25519_add_Fp_to_Fp2.
 Qed.
 
-Definition tFp_to_Fp2 p := match p with
+Definition tFp2_to_Fp p := match p with
   | Zmodp2.Zmodp2 x y => x
   end.
 
-Lemma tFp_to_Fp2_cancel : forall (p: mc twist25519_Fp_mcuType),
-  p#x0 = tFp_to_Fp2 ((twist25519_Fp_to_Fp2 p)#x0).
+Lemma tFp2_to_Fp_cancel : forall (p: mc twist25519_Fp_mcuType),
+  p#x0 = tFp2_to_Fp ((twist25519_Fp_to_Fp2 p)#x0).
 Proof. by case; case. Qed.
 
-Local Notation "p '/p'" := (tFp_to_Fp2 p) (at level 40).
+Local Notation "p '/p'" := (tFp2_to_Fp p) (at level 40).
 
 From mathcomp Require Import ssrnat.
 
@@ -129,12 +129,12 @@ Theorem twist25519_ladder_Fp_Fp2 (n : nat) x :
     twist25519_Fp_ladder n x = ((twist25519_Fp_to_Fp2 p) *+ n)#x0 /p.
 Proof.
   move => Hn p Hp.
-  have Hp' := tFp_to_Fp2_cancel p.
+  have Hp' := tFp2_to_Fp_cancel p.
   have Hp'' : p #x0 = x.
     rewrite Hp' Hp //.
   rewrite (twist25519_Fp_ladder_ok n x Hn p Hp'').
   rewrite -nP_is_nP2.
-  rewrite tFp_to_Fp2_cancel //.
+  rewrite tFp2_to_Fp_cancel //.
 Qed.
 
 Close Scope ring_scope.

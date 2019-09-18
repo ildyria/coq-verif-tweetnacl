@@ -242,4 +242,10 @@ Proof.
   reflexivity.
 Qed.
 
+Lemma Unpack25519_eq_ZUnpack25519_Zlength : forall l,
+  Zlength l = 32 ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) l ->
+  ZUnpack25519 (ZofList 8 l) = ZofList 16 (Unpack25519 l).
+Proof. convert_length_to_Zlength Unpack25519_eq_ZUnpack25519. Qed.
+
 Close Scope Z.

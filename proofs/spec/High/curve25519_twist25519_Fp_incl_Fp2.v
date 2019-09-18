@@ -69,17 +69,17 @@ Proof.
   - apply ontwist25519_Fp.
 Qed.
 
-Definition Fp_to_Fp2 p := match p with
+Definition Fp2_to_Fp p := match p with
   | Zmodp2.Zmodp2 x y => x
   end.
 
-Lemma Fp_to_Fp2_eq_C: Fp_to_Fp2 = cFp_to_Fp2.
+Lemma Fp2_to_Fp_eq_C: Fp2_to_Fp = cFp2_to_Fp.
 Proof. reflexivity. Qed.
 
-Lemma Fp_to_Fp2_eq_T: Fp_to_Fp2 = tFp_to_Fp2.
+Lemma Fp2_to_Fp_eq_T: Fp2_to_Fp = tFp2_to_Fp.
 Proof. reflexivity. Qed.
 
-Local Notation "p '/p'" := (Fp_to_Fp2 p) (at level 40).
+Local Notation "p '/p'" := (Fp2_to_Fp p) (at level 40).
 
 
 
@@ -107,7 +107,7 @@ move: Hxy.
 done.
 Qed.
 
-Lemma Fp2_to_Fp :
+Lemma Fp2_to_Fp_eq :
   forall (x: Zmodp.type) (p : mc curve25519_Fp2_mcuType),
   p #x0 = Zmodp2.Zmodp2 x 0 ->
   (exists c:mc curve25519_Fp_mcuType, curve25519_Fp_to_Fp2 c = p) \/ (exists t:mc twist25519_Fp_mcuType, twist25519_Fp_to_Fp2 t = p).
@@ -142,12 +142,12 @@ Lemma curve25519_Fp2_ladder_ok (n : nat) (x:Zmodp.type) :
     curve25519_Fp_ladder n x = (p *+ n)#x0 /p.
 Proof.
   move => Hn p Hp.
-  have [[c] Hc|[t] Ht] := Fp2_to_Fp x p Hp.
+  have [[c] Hc|[t] Ht] := Fp2_to_Fp_eq x p Hp.
   + have Hcx0: curve25519_Fp_to_Fp2 c #x0 = Zmodp2.Zmodp2 x 0 by rewrite Hc.
-    rewrite (curve25519_ladder_Fp_Fp2 n x Hn c Hcx0) -Fp_to_Fp2_eq_C Hc //.
+    rewrite (curve25519_ladder_Fp_Fp2 n x Hn c Hcx0) -Fp2_to_Fp_eq_C Hc //.
   + have Htx0: twist25519_Fp_to_Fp2 t #x0 = Zmodp2.Zmodp2 x 0 by rewrite Ht.
     rewrite curve25519_twist25519_Fp_eq.
-    rewrite (twist25519_ladder_Fp_Fp2 n x Hn t Htx0) -Fp_to_Fp2_eq_T Ht //.
+    rewrite (twist25519_ladder_Fp_Fp2 n x Hn t Htx0) -Fp2_to_Fp_eq_T Ht //.
 Qed.
 
 Close Scope ring_scope.

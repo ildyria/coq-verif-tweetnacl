@@ -35,9 +35,21 @@ Definition ZCrypto_Scalarmult_rev_gen n p :=
 
 End ZCrypto_Scalarmult_gen.
 
+(* instantiate montgomery_rec with Z_Ops *)
 Definition ZCrypto_Scalarmult n p :=
-  let t := montgomery_rec 255 (Zclamp n) 1 (ZUnpack25519 p) 0 1 0 0 (ZUnpack25519 p) in
-  ZPack25519 (Z.mul (get_a t) (ZInv25519 (get_c t))).
+  let t := montgomery_rec
+    255               (* iterate 255 times *)
+    (Zclamp n)        (* clamped n         *)
+    1                 (* x_2                *)
+    (ZUnpack25519 p)  (* x_3                *)
+    0                 (* z_2                *)
+    1                 (* z_3                *)
+    0                 (* dummy             *)
+    0                 (* dummy             *)
+    (ZUnpack25519 p)  (* x_1                *) in
+  let a := get_a t in
+  let c := get_c t in
+  ZPack25519 (Z.mul a (ZInv25519 c)).
 
 (* This is the equivalence between ladders defined as fn with type class and ladders defined as recursive *)
 Theorem ZCrypto_Scalarmult_eq : forall (n p : Z),

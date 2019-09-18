@@ -67,9 +67,10 @@ Require Import Tweetnacl_verif.verif_crypto_scalarmult_lemmas.
 Require Import Tweetnacl.Low.Get_abcdef.
 Require Import Tweetnacl.Low.ScalarMult_rev.
 Require Import Tweetnacl.Low.Constant.
-Require Import Tweetnacl.Low.Crypto_Scalarmult.
-Require Import Tweetnacl.Low.Crypto_Scalarmult_.
+(* Require Import Tweetnacl.Low.Crypto_Scalarmult. *)
+(* Require Import Tweetnacl.Low.Crypto_Scalarmult_. *)
 Require Import Tweetnacl.Mid.Instances.
+Require Import Tweetnacl.rfc.rfc.
 Open Scope Z.
 
 Import Low.
@@ -97,10 +98,10 @@ Definition crypto_scalarmult_spec :=
               Ews [{ c121665 }] <<(lg16)-- mVI64 C_121665)
   POST [ tint ]
         PROP (
-                Forall (fun x => 0 <= x < Z.pow 2 8) (Crypto_Scalarmult n p);
-                Zlength (Crypto_Scalarmult n p) = 32)
+                Forall (fun x => 0 <= x < Z.pow 2 8) (RFC n p);
+                Zlength (RFC n p) = 32)
         LOCAL(temp ret_temp (Vint Int.zero))
-        SEP (sh [{ v_q }] <<(uch32)-- mVI (Crypto_Scalarmult n p);
+        SEP (sh [{ v_q }] <<(uch32)-- mVI (RFC n p);
               sh [{ v_n }] <<(uch32)-- mVI n;
               sh [{ v_p }] <<(uch32)-- mVI p;
               Ews [{ c121665 }] <<(lg16)-- mVI64 C_121665

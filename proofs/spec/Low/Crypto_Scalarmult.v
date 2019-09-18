@@ -216,6 +216,39 @@ rewrite /montgomery_fn clamp_ZofList_eq ?Unpack25519_eq_ZUnpack25519 => // ; try
 apply (abstract_fn_rev_eq_List_Z_c (fun x => Z.modulo x (Z.pow 2 255 - 19)) Z_Ops List_Z_Ops List_Z_Ops_Prop List_Z_Ops_Prop_Correct) => //.
 Qed.
 
+Lemma Crypto_Scalarmult_Zlength : forall (n p:list Z),
+  Zlength n = 32 ->
+  Zlength p = 32 ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
+Zlength (Crypto_Scalarmult n p) = 32.
+Proof.
+  move => n p Hln Hlp HBn HBp.
+  rewrite -Crypto_Scalarmult_eq.
+  rewrite /Crypto_Scalarmult_proof.
+  rewrite Pack25519_Zlength //.
+  apply M_Zlength.
+  apply Zlength_a ; assumption.
+  apply Inv25519_Zlength ; apply Zlength_c ; assumption.
+Qed.
+
+Lemma Crypto_Scalarmult_Bound : forall (n p:list Z),
+  Zlength n = 32 ->
+  Zlength p = 32 ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) n ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) p ->
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) (Crypto_Scalarmult n p).
+Proof.
+  move => n p Hln Hlp HBn HBp.
+  rewrite -Crypto_Scalarmult_eq.
+  rewrite /Crypto_Scalarmult_proof.
+  apply Pack25519_bound.
+  apply M_Zlength.
+  apply Zlength_a ; assumption.
+  apply Inv25519_Zlength ; apply Zlength_c ; assumption.
+  apply M_bounded ; assumption.
+Qed.
+
 Theorem Crypto_Scalarmult_Eq : forall (n p:list Z),
   Zlength n = 32 ->
   Zlength p = 32 ->
@@ -268,17 +301,8 @@ Proof.
   move => n p Hn Hp Hbn Hbp.
   rewrite -Crypto_Scalarmult_Eq => //.
   rewrite ListofZ32_ZofList_Zlength => //.
-  all: rewrite -Crypto_Scalarmult_eq.
-  all: rewrite /Crypto_Scalarmult_proof.
-  2: rewrite /Pack25519.
-  2: apply Pack.pack_for_Zlength_32_16.
-  2: apply Reduce_by_P.get_t_subst_select_Zlength => //=.
-  2: do 3 apply car25519_Zlength.
-  apply Pack25519_bound.
-  2: apply M_bounded ; assumption.
-  all: apply M_Zlength.
-  1,3: apply Zlength_a ; assumption.
-  all: apply Inv25519_Zlength ; apply Zlength_c ; assumption.
+  apply Crypto_Scalarmult_Bound => //.
+  apply Crypto_Scalarmult_Zlength => //.
 Qed.
 
 Close Scope Z.

@@ -124,4 +124,10 @@ repeat rewrite Z.lor_0_r.
 reflexivity.
 Qed.
 
-Close Scope Z.
+Lemma clamp_ZofList_eq_Zlength : forall l,
+  Zlength l = 32 -> 
+  Forall (λ x : ℤ, 0 ≤ x ∧ x < 2 ^ 8) l ->
+  Zclamp (ZofList 8 l) = ZofList 8 (clamp l).
+Proof. convert_length_to_Zlength clamp_ZofList_eq. Qed.
+
+Local Close Scope Z.

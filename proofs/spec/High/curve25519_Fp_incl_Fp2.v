@@ -111,15 +111,15 @@ Proof.
 Qed.
 
 (* this is a truncation, meaning we do not have the garantee that y = 0 *)
-Definition cFp_to_Fp2 p := match p with
+Definition cFp2_to_Fp p := match p with
   | Zmodp2.Zmodp2 x y => x
   end.
 
-Lemma cFp_to_Fp2_cancel : forall p: mc curve25519_Fp_mcuType,
-  p#x0 = cFp_to_Fp2 ((curve25519_Fp_to_Fp2 p)#x0).
+Lemma cFp2_to_Fp_cancel : forall p: mc curve25519_Fp_mcuType,
+  p#x0 = cFp2_to_Fp ((curve25519_Fp_to_Fp2 p)#x0).
 Proof. by case ; case. Qed.
 
-Local Notation "p '/p'" := (cFp_to_Fp2 p) (at level 40).
+Local Notation "p '/p'" := (cFp2_to_Fp p) (at level 40).
 
 From mathcomp Require Import ssrnat.
 
@@ -130,12 +130,12 @@ Theorem curve25519_ladder_Fp_Fp2 (n : nat) x :
     curve25519_Fp_ladder n x = ((curve25519_Fp_to_Fp2 p) *+ n)#x0 /p.
 Proof.
   move => Hn p Hp.
-  have Hp' := cFp_to_Fp2_cancel p.
+  have Hp' := cFp2_to_Fp_cancel p.
   have Hp'' : p #x0 = x.
   move: Hp'; rewrite Hp => //=.
   rewrite (curve25519_Fp_ladder_ok n x Hn p Hp'').
   rewrite -nP_is_nP2.
-  rewrite cFp_to_Fp2_cancel //.
+  rewrite cFp2_to_Fp_cancel //.
 Qed.
 
 Close Scope ring_scope.

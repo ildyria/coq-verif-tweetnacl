@@ -1,3 +1,4 @@
+Local Set Warnings "-notation-overridden".
 From Tweetnacl.Libs Require Import Export.
 From Tweetnacl.ListsOp Require Import Export.
 From mathcomp Require Import ssreflect eqtype ssralg ssrnat ssrbool.
@@ -49,7 +50,7 @@ Open Scope ring_scope.
 Import GRing.Theory.
 
 Local Notation "p '#x0'" := (point_x0 p) (at level 30).
-Local Notation "p '/p'" := (Fp_to_Fp2 p) (at level 40).
+Local Notation "p '/p'" := (Fp2_to_Fp p) (at level 40).
 
 Local Lemma expn_pown : forall n x, Nat.pow x n = expn x n.
 Proof.

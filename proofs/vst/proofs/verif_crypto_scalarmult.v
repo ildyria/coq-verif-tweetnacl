@@ -77,6 +77,7 @@ Require Import Tweetnacl.Low.ScalarMult_gen_small.
 Require Import Tweetnacl.Low.ScalarMult_rev.
 Require Import Tweetnacl.Mid.Instances.
 Require Import Tweetnacl.Gen.ABCDEF.
+Require Import Tweetnacl.rfc.rfc.
 
 Open Scope Z.
 
@@ -910,9 +911,10 @@ replace (force_val
   thaw F.
   replace (Pack25519 (Low.M aa ccc)) with (Crypto_Scalarmult n p).
   deadvars!.
+  rewrite Crypto_Scalarmult_RFC_eq ; try assumption.
   unfold POSTCONDITION.
   unfold abbreviate.
-  remember (Crypto_Scalarmult n p) as sc.
+  remember (RFC n p) as sc.
   eapply (semax_return_Some _ _ _ _ _ (stackframe_of f_crypto_scalarmult_curve25519_tweet) 
     [Tsh [{v_a}]<<( lg16 )-- undef16; Tsh [{v_c}]<<( lg16 )-- undef16; 
 Tsh [{v_z}]<<( uch32 )-- undef32; Tsh [{v_b}]<<( lg16 )-- undef16; Tsh [{v_d}]<<( lg16 )-- undef16;
@@ -954,6 +956,7 @@ Tsh [{v_e}]<<( lg16 )-- undef16; Tsh [{v_f}]<<( lg16 )-- undef16; Tsh [{v_x}]<<(
   2: cancel. (* Q |-- Q *)
   2: subst aa ccc m cc a b c d x z.
   subst sc.
+  rewrite -Crypto_Scalarmult_RFC_eq ; try assumption.
   all: rewrite -Crypto_Scalarmult_eq.
   2: reflexivity.
   split ; [|split]; rewrite /Crypto_Scalarmult_proof.
