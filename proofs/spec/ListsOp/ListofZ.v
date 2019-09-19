@@ -13,7 +13,7 @@ Hypothesis Hn: n > 0.
 Fixpoint ListofZn_fp (a:Z) (fuel:nat) : list Z :=
 match fuel with 
   | 0%nat => []
-  | S fuel => (Z.modulo a (Z.pow 2 n)) :: ListofZn_fp (Z.div a (Z.pow 2 n)) fuel
+  | S fuel => (a mod 2^n) :: ListofZn_fp (a/2^n) fuel
 end.
 
 Definition ListofZ16 (a:Z) : list Z := ListofZn_fp a 16.

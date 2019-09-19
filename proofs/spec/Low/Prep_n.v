@@ -21,7 +21,15 @@ z[0]&=248;
 *)
 
 Definition clamp (n : list Z) : list Z :=
-  upd_nth 0 (upd_nth 31 n (Z.lor (Z.land (nth 31 n 0) 127) 64)) (Z.land (nth 0 n 0) 248).
+  (* set last 3 bits to 0 *)
+  let x := nth 0 n 0 in
+  let x' := Z.land x 248 in
+  (* set bit 255 to 0 and bit 254 to 1 *)
+  let t := nth 31 n 0 in
+  let t' := Z.lor (Z.land t 127) 64 in
+  (* update the list *)
+  let n' := upd_nth 31 n t' in
+    upd_nth 0 n' x'.
 
 Lemma clamp_bound : forall l,
     Forall (fun x => 0 <= x < Z.pow 2 8) l ->

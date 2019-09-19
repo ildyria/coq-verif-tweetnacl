@@ -189,6 +189,41 @@ Qed.
 
 Definition Unpack25519 l := upd_nth 15 (unpack_for 8 l) (mask0x7FFF (nth 15 (unpack_for 8 l) 0)).
 
+Lemma Unpack25519' : forall l,
+  (length l = 32)%nat ->
+  Forall (fun x : ℤ => 0 <= x < 2 ^ 8) l ->
+  ZofList 8 (upd_nth 31 l (Z.land (nth 31 l 0) 127)) = ZUnpack25519 (ZofList 8 l).
+Proof.
+  move => l Hl Up8Bounded.
+  rewrite /ZUnpack25519.
+  replace (Z.ones 255) with (ZofList 8 [255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;255;127]).
+  2: compute ; reflexivity.
+  rewrite Zlist_and_ZofList.
+  2: reflexivity.
+  2: assumption.
+  2: repeat apply list.Forall_cons_2 ; try apply list.Forall_nil ; compute ; go.
+  f_equal.
+  do 33 (destruct l ; tryfalse).
+  simpl nth.
+  simpl upd_nth.
+  rewrite /Zlist_and.
+  simpl Zipp.
+  assert(HX: forall x, 0 <= x < 2^8 -> Z.land x (Z.ones 8) = x).
+  {
+  intros ; rewrite Z.land_ones ; try apply Z.mod_small ; omega.
+  }
+  change (255) with (Z.ones 8).
+  repeat (apply list.Forall_cons_1 in Up8Bounded ; destruct Up8Bounded as [? Up8Bounded]).
+  repeat (rewrite HX ; [|assumption]).
+  reflexivity.
+Qed.
+
+Lemma Unpack25519'_Zlength : forall l,
+  Zlength l = 32 ->
+  Forall (fun x : ℤ => 0 <= x < 2 ^ 8) l ->
+  ZofList 8 (upd_nth 31 l (Z.land (nth 31 l 0) 127)) = ZUnpack25519 (ZofList 8 l).
+Proof. convert_length_to_Zlength Unpack25519'. Qed.
+
 Lemma Unpack25519_bounded : forall l, Forall (fun x : ℤ => 0 <= x < 2 ^ 8) l ->  Forall (fun x : ℤ => 0 <= x < 2 ^ 16) (Unpack25519 l).
 Proof.
 move=> l H ; rewrite /Unpack25519.

@@ -22,7 +22,6 @@ From Tweetnacl.High Require Import Zmodp.
 From Tweetnacl.High Require Import Zmodp2.
 From Tweetnacl.High Require Import curve25519_Fp2.
 From Tweetnacl.High Require Import curve25519_twist25519_Fp_incl_Fp2.
-(* From Tweetnacl.High Require Import prime_and_legendre. *)
 From Tweetnacl.High Require Import montgomery.
 From Tweetnacl.High Require Import mc.
 From Tweetnacl.High Require Import mcgroup.
@@ -34,7 +33,7 @@ Definition decodeScalar25519 (l: list Z) : Z :=
   ZofList 8 (clamp l).
 
 Definition decodeUCoordinate (l: list Z) : Z :=
-  ZofList 16 (Unpack25519 l).
+  ZofList 8 (upd_nth 31 l (Z.land (nth 31 l 0) 127)).
 
 Definition encodeUCoordinate (x: Z) : list Z := 
   ListofZ32 8 x.
@@ -69,13 +68,11 @@ Proof.
   rewrite Crypto_Scalarmult_Eq2 ; try assumption.
   apply f_equal.
   rewrite /ZCrypto_Scalarmult.
-  rewrite Unpack25519_eq_ZUnpack25519_Zlength.
+  rewrite Unpack25519'_Zlength.
   rewrite clamp_ZofList_eq_Zlength.
   reflexivity.
   all: assumption.
 Qed.
-
-(* Local Close Scope Z. *)
 
 Open Scope ring_scope.
 Import GRing.Theory.
@@ -95,7 +92,7 @@ Theorem RFC_Correct: forall (n p : list Z) (P:mc curve25519_Fp2_mcuType),
 Proof.
   move => n p P Hln Hlp HBn HBp.
   rewrite /encodeUCoordinate /decodeUCoordinate /decodeScalar25519.
-  rewrite -Unpack25519_eq_ZUnpack25519_Zlength => //.
+  rewrite Unpack25519'_Zlength => //.
   rewrite -clamp_ZofList_eq_Zlength => //.
   move => HP.
   rewrite -(Crypto_Scalarmult_Correct n p P) => //.

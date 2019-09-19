@@ -16,7 +16,7 @@ end.
 
 Fixpoint ZofList (a : list Z) : Z := match a with 
 | [] => 0
-| h :: q => h + Z.pow 2 n * ZofList q
+| h :: q => h + 2^n * ZofList q
 end.
 Notation "ℤ.lst A" := (ZofList A) (at level 65, right associativity).
 
