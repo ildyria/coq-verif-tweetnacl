@@ -4,7 +4,7 @@
 In this section we present our formalization of RFC~7748~\cite{rfc7748}.
 
 \begin{informaltheorem}
-The specification of X25519 in RFC~7748 is formalized by \Coqe{RFC}.
+The specification of X25519 in RFC~7748 is formalized by \Coqe{RFC} in Coq.
 \end{informaltheorem}
 
 More precisely, we formalized X25519 with the following definition.
@@ -29,7 +29,11 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
 \end{lstlisting}
 
 We first present a generic description of the Montgomery ladder (\ref{subsec:spec-ladder}).
-Then we turn our attention to the different steps of the computation (\ref{subsec:spec-unpack-clamp-inv-pack}).
+Then we describe our mapping between little-endian representations and integers
+(\ref{subsec:integer-bytes}) which we use to formalize the encoding and decoding.
+We then turn our attention to the last steps of the computation
+(\ref{subsec:spec-unpack-clamp-inv-pack}).
+
 
 
 
@@ -39,9 +43,9 @@ Then we turn our attention to the different steps of the computation (\ref{subse
 % \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}
 
 TweetNaCl implements X25519 with numbers represented as arrays.
-RFC~7748 defines X25519 over field elements. As we show the equivalence between
-the different representation, to simplify our proof, we define operations used
-in the ladder over generic types \coqe{T} and \coqe{T'}.
+RFC~7748 defines X25519 over field elements. We show the equivalence between
+the different number representations. To simplify our proof, we define operations
+used in the ladder over generic types \coqe{T} and \coqe{T'}.
 Those types are later instantiated as natural numbers, integers, field elements,
 list of integers.
 
@@ -57,43 +61,92 @@ This divergence is allowed by the RFC:
 original paper.  Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
 We later prove our ladder correct in that respect (\sref{sec:maths}).
 
-% In appendix~\ref{subsubsec:CryptoScalarmult}, we show the the formalization of
-% \TNaCle{crypto_scalarmult} over lists of integers. We define it as
-% \Coqe{Crypto_Scalarmult} or \Coqe{CSM}. For the sake of space and simplicity we
-% do not display the definitions of each underlying function.
 
 
 
-\subsection{Unpacking, clamping, Inversion and Packing}
-\label{subsec:spec-unpack-clamp-inv-pack}
+\subsection{Integers and Bytes}
+\label{subsec:integer-bytes}
 
+\emph{``To implement the X25519(k, u) [...] functions (where k is
+the scalar and u is the u-coordinate), first decode k and u and then
+perform the following procedure, which is taken from [curve25519] and
+based on formulas from [montgomery].  All calculations are performed
+in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
+
+Operations used in the montgomery ladder of \coqe{RFC} are intentiated over
+integers (See Appendix~\ref{subsubsec:RFC-Coq}). The modulo reduction by $\p$
+is done  at the end with the \coqe{ZPack25519} operation.
+
+In TweetNaCl, as described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are
+represented in base $2^{16}$ and we use a direct mapping to represent that array as a list
+integers in Coq.
+
+We define the little-endian projection to integers as follows.
+\begin{dfn}
+Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
+a parameterized map by $n$ between a list $l$ and its little endian representation
+with a radix $2^n$.
+\end{dfn}
+We define it in Coq as:
+\begin{lstlisting}[language=Coq]
+Fixpoint ZofList {n:Z} (a:list Z) : Z :=
+  match a with
+  | [] => 0
+  | h :: q => h + 2^n * ZofList q
+  end.
+\end{lstlisting}
+
+\Coqe{ZofList} is used in the decoding of the bytes array and also as a
+base to verify operations over lists in TweetNaCl (See~\ref{subsec:num-repr-rfc}).
+Similarly the encoding from integers to bytes is defined:
+\begin{dfn}
+Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
+$n$ and $a$ returns $a$'s little-endian representation
+as a list with radix $2^n$.
+\end{dfn}
+We define it in Coq as:
+\begin{lstlisting}[language=Coq]
+Fixpoint ListofZn_fp {n:Z} (a:Z) (f:nat) : list Z :=
+match f with
+  | 0%nat => []
+  | S fuel => (a mod 2^n) :: ListofZn_fp (a/2^n) fuel
+end.
+
+Definition ListofZ32 {n:Z} (a:Z) : list Z :=
+  ListofZn_fp n a 32.
+\end{lstlisting}
+In order to increase the trust in our formalization, we prove that
+\Coqe{ListofZ32} and \Coqe{ZofList} are inverse to each other.
+
+\begin{lstlisting}[language=Coq]
+Lemma ListofZ32_ZofList_Zlength: forall (l:list Z),
+  Forall (fun x => 0 <= x < 2^n) l ->
+  Zlength l = 32 ->
+  ListofZ32 n (ZofList n l) = l.
+\end{lstlisting}
+
+With those tools at hand, we formally define the decoding and encoding as specified in the RFC.
 
 \begin{lstlisting}[language=Coq]
 Definition decodeScalar25519 (l: list Z) : Z :=
   ZofList 8 (clamp l).
 
 Definition decodeUCoordinate (l: list Z) : Z :=
-  ZofList 16 (Unpack25519 l).
+  ZofList 8 (upd_nth 31 l
+    (Z.land (nth 31 l 0) 127)).
 
 Definition encodeUCoordinate (x: Z) : list Z :=
   ListofZ32 8 x.
 \end{lstlisting}
 
-Inputs of X25519
-% \emph{``To implement the X25519(k, u) and X448(k, u) functions (where k is
-% the scalar and u is the u-coordinate), first decode k and u and then
-% perform the following procedure, which is taken from [curve25519] and
-% based on formulas from [montgomery].  All calculations are performed
-% in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
+\subsection{Clamping, Inversion and Packing}
+\label{subsec:spec-unpack-clamp-inv-pack}
 
+We have seen that \coqe{montgomery_rec} only computes the ladder steps.
+While the inversion, the packing
 
-\coqe{montgomery_rec} only computes the ladder steps.
-While the inversion, the packing, the unpacking (setting bit 255 to \texttt{0})
-and the clamping are not defined in a generic manner, we show their equivalence
-between the different representations.
-
-Appendix~\ref{subsubsec:ZCryptoScalarmult} shows the instantiation of our ladder
-over Integers (type \coqe{Z}). We call it \coqe{ZCrypto_Scalarmult}.
-The modulo reduction is applied in \coqe{ZPack25519} translating every
-underlying operations as over \Zfield. As a result this specification can be
-interpreted as the formalization of X25519 in RFC~7748.
+% Appendix~\ref{subsubsec:ZCryptoScalarmult} shows the instantiation of our ladder
+% over Integers (type \coqe{Z}). We call it \coqe{ZCrypto_Scalarmult}.
+% The modulo reduction is applied in \coqe{ZPack25519} translating every
+% underlying operations as over \Zfield. As a result this specification can be
+% interpreted as the formalization of X25519 in RFC~7748.

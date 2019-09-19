@@ -81,7 +81,7 @@
   % SECTION V
 
   % Spec of Curve nP
-  \begin{scope}[yshift=-7.25 cm,xshift=0 cm]
+  \begin{scope}[yshift=-7.5 cm,xshift=0 cm]
     \draw (0,0) -- (0.4, 0.4) -- (1.75,0.4) -- (1.75,0) -- cycle;
     \draw (0,0) -- (1.75,0) -- (1.75,-1) -- (0, -1) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Definition};
@@ -89,7 +89,7 @@
   \end{scope}
 
   % Correctness Theorem
-  \begin{scope}[yshift=-6.75 cm,xshift=6 cm]
+  \begin{scope}[yshift=-7 cm,xshift=6 cm]
     \draw (0,0) -- (0.4, 0.4) -- (2.5,0.4) -- (2.5,0) -- cycle;
     \draw (0,0) -- (2.5,0) -- (2.5,-1.5) -- (0, -1.5) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Proof};
@@ -99,10 +99,10 @@
 
   \path [thick, double, ->] (1.75,-3.5) edge  [out=0, in=-180] (3, -3.5);
   \path [thick, double] (1.75,-3.5) edge [out=0, in=90] (2.25, -4);
-  \path [thick, double] (2.25, -4) edge [out=-90, in=90] (2.25, -6.75);
-  \path [thick, double] (2.25, -6.75) edge [out=-90, in=-180] (3, -7.5);
-  \path [thick, double, ->] (3, -7.5) edge [out=0, in=-180] (6, -7.5);
-  \path [thick, double, ->] (1.75,-7.75) edge [out=0, in=-180] (6, -7.75);
+  \path [thick, double] (2.25, -4) edge [out=-90, in=90] (2.25, -7);
+  \path [thick, double] (2.25, -7) edge [out=-90, in=-180] (3, -7.75);
+  \path [thick, double, ->] (3, -7.75) edge [out=0, in=-180] (6, -7.75);
+  \path [thick, double, ->] (1.75,-8) edge [out=0, in=-180] (6, -8);
 
 
 \end{tikzpicture}

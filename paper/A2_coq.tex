@@ -10,16 +10,22 @@ Generic definition of the ladder:
 (* Typeclass to encapsulate the operations *)
 Class Ops (T T': Type) (Mod: T -> T):=
 {
-  +   : T -> T -> T;           (* Add           *)
-  *   : T -> T -> T;           (* Mult          *)
-  -   : T -> T -> T;           (* Sub           *)
-  x^2  : T -> T;                (* Square        *)
+  A   : T -> T -> T;           (* Add           *)
+  M   : T -> T -> T;           (* Mult          *)
+  Zub : T -> T -> T;           (* Sub           *)
+  Sq  : T -> T;                (* Square        *)
   C_0 : T;                     (* Constant 0    *)
   C_1 : T;                     (* Constant 1    *)
   C_121665: T;                 (* const (a-2)/4 *)
   Sel25519: Z -> T -> T -> T; (* CSWAP         *)
   Getbit: Z -> T' -> Z;       (* ith bit       *)
 }.
+
+Local Notation "X + Y" := (A X Y) (only parsing).
+Local Notation "X - Y" := (Zub X Y) (only parsing).
+Local Notation "X * Y" := (M X Y) (only parsing).
+Local Notation "X ^2" := (Sq X) (at level 40,
+  only parsing, left associativity).
 
 Fixpoint montgomery_rec (m : nat) (z : T')
 (a: T) (b: T) (c: T) (d: T) (e: T) (f: T) (x: T) :
@@ -122,17 +128,17 @@ Module Mid.
         Z.land (Z.shiftr a i) 1.
 End Mid.
 
-(* Packing is applying a modulo p *)
-Definition ZPack25519 n :=
-  Z.modulo n (Z.pow 2 255 - 19).
-
-(* And with 255 ones *)
-(* unset last 3 bits *)
-(* set bit 254       *)
-Definition Zclamp (n : Z) : Z :=
-  (Z.lor
-    (Z.land n (Z.land (Z.ones 255) (-8)))
-    (Z.shiftl 64 (31 * 8))).
+(* Clamping *)
+Definition clamp (n : list Z) : list Z :=
+  (* set last 3 bits to 0 *)
+  let x := nth 0 n 0 in
+  let x' := Z.land x 248 in
+  (* set bit 255 to 0 and bit 254 to 1 *)
+  let t := nth 31 n 0 in
+  let t' := Z.lor (Z.land t 127) 64 in
+  (* update the list *)
+  let n' := upd_nth 31 n t' in
+    upd_nth 0 n' x'.
 
 (* x^{p - 2} *)
 Definition ZInv25519 (x:Z) : Z :=
@@ -156,7 +162,7 @@ Definition decodeScalar25519 (l: list Z) : Z :=
   ZofList 8 (clamp l).
 
 Definition decodeUCoordinate (l: list Z) : Z :=
-  ZofList 16 (Unpack25519 l).
+  ZofList 8 (upd_nth 31 l (Z.land (nth 31 l 0) 127)).
 
 Definition encodeUCoordinate (x: Z) : list Z :=
   ListofZ32 8 x.
@@ -181,27 +187,25 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
   in encodeUCoordinate o.
 \end{lstlisting}
 
-\subsubsection{CSM}
-\label{subsubsec:CryptoScalarmult}
-~
-\begin{lstlisting}[language=Coq]
-Definition Crypto_Scalarmult n p :=
-let t := montgomery_rec
-  255               (* iterate 255 times *)
-  (clamp n)         (* clamped n         *)
-  Low.C_1           (* x_2                *)
-  (Unpack25519 p)   (* x_3                *)
-  Low.C_0           (* z_2                *)
-  Low.C_1           (* z_3                *)
-  Low.C_0           (* dummy             *)
-  Low.C_0           (* dummy             *)
-  (Unpack25519 p)   (* x_1                *) in
-let a := get_a t in
-let c := get_c t in
-Pack25519 (Low.M a (Inv25519 c)).
-
-Definition CSM := Crypto_Scalarmult.
-\end{lstlisting}
+% \subsubsection{CSM}
+% \label{subsubsec:CryptoScalarmult}
+% ~
+% \begin{lstlisting}[language=Coq]
+% Definition Crypto_Scalarmult n p :=
+% let t := montgomery_rec
+%   255               (* iterate 255 times *)
+%   (clamp n)         (* clamped n         *)
+%   Low.C_1           (* x_2                *)
+%   (Unpack25519 p)   (* x_3                *)
+%   Low.C_0           (* z_2                *)
+%   Low.C_1           (* z_3                *)
+%   Low.C_0           (* dummy             *)
+%   Low.C_0           (* dummy             *)
+%   (Unpack25519 p)   (* x_1                *) in
+% let a := get_a t in
+% let c := get_c t in
+% Pack25519 (Low.M a (Inv25519 c)).
+% \end{lstlisting}
 
 \subsubsection{Equivalence between For Loops}
 \label{subsubsec:for}

@@ -3,14 +3,14 @@
 
 In this section we prove the following theorem:
 
+% \label{thm:Elliptic-RFC}
 \begin{informaltheorem}
-\label{thm:Elliptic-RFC}
-The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) computes the
+The implementation of X25519 in TweetNaCl computes the
 $\F{p}$-restricted $x$-coordinate scalar multiplication on $E(\F{p^2})$ where $p$ is $\p$
 and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 \end{informaltheorem}
 
-More formally:
+More formally, we prove that our formalization of the RFC matches the definitions of Curve25519 by Bernstein:
 \begin{lstlisting}[language=Coq]
 Theorem RFC_Correct: forall (n p : list Z)
   (P:mc curve25519_Fp2_mcuType),
@@ -20,7 +20,8 @@ Theorem RFC_Correct: forall (n p : list Z)
   Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
   Fp2_x (decodeUCoordinate p) = P#x0 ->
   RFC n p =
-    encodeUCoordinate ((P *+ (Z.to_nat (decodeScalar25519 n))) _x0).
+    encodeUCoordinate
+      ((P *+ (Z.to_nat (decodeScalar25519 n))) _x0).
 \end{lstlisting}
 
 We first review the work of Bartzia and Strub \cite{BartziaS14} (\ref{subsec:ECC-Weierstrass}).
