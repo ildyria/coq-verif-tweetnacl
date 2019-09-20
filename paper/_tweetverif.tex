@@ -1,20 +1,27 @@
-% \documentclass[letterpaper,twocolumn,9pt]{article}
 \documentclass[conference]{IEEEtran}
 
 \IEEEoverridecommandlockouts % this enables the \thanks command
 
-\usepackage{epsfig}
 \usepackage{setup}
 
 \newif\ifpublic
 \publicfalse
 
+% to display line numbers and page numbers
+\newif\ifwip
+\wiptrue
+
+% what is iffull used for ??? O.o
 \newif\iffull
 \fulltrue
 
 \input{_macros}
 
 \begin{document}
+
+\ifwip
+  \linenumbers
+\fi
 
 %don't want date printed
 \date{}
@@ -47,6 +54,12 @@ The Netherlands}
 \fi
 
 \maketitle
+
+\ifwip
+% add page numbers : https://tex.stackexchange.com/questions/52729/forcing-page-numbers-with-ieeetran/52785
+\thispagestyle{plain}
+\pagestyle{plain}
+\fi
 
 %XXX: Figure out how to put this somewhere nice
 %\thanks{

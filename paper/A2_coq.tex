@@ -27,7 +27,7 @@ Local Notation "X * Y" := (M X Y) (only parsing).
 Local Notation "X ^2" := (Sq X) (at level 40,
   only parsing, left associativity).
 
-Fixpoint montgomery_rec (m : nat) (z : T')
+Fixpoint montgomery_rec (m: nat) (z: T')
 (a: T) (b: T) (c: T) (d: T) (e: T) (f: T) (x: T) :
 (* a: x2              *)
 (* b: x3              *)
@@ -94,18 +94,18 @@ Definition modP (x:Z) : Z :=
 (* Encapsulate in a module. *)
 Module Mid.
   (* shift to the right by n bits *)
-  Definition getCarry (n:Z) (m:Z) : Z :=
+  Definition getCarry (n: Z) (m: Z) : Z :=
     Z.shiftr m n.
 
   (* logical and with n ones *)
-  Definition getResidue (n:Z)  (m:Z) : Z :=
+  Definition getResidue (n: Z)  (m: Z) : Z :=
     Z.land n (Z.ones n).
 
-  Definition car25519 (n:Z) : Z  :=
+  Definition car25519 (n: Z) : Z  :=
     38 * getCarry 256 n +  getResidue 256 n.
   (* The carry operation is invariant under modulo *)
   Lemma Zcar25519_correct:
-    forall (n:Z), n:GF = (Mid.car25519 n) :GF.
+    forall (n: Z), n:GF = (Mid.car25519 n) :GF.
 
   (* Define Mid.A, Mid.M ... *)
   Definition A a b := Z.add a b.
@@ -116,20 +116,20 @@ Module Mid.
   Definition C_0 := 0.
   Definition C_1 := 1.
   Definition C_121665 := 121665.
-  Definition Sel25519 (b p q:Z) :=
+  Definition Sel25519 (b p q: Z) :=
     if (Z.eqb b 0) then p else q.
 
   Definition getbit (i:Z) (a: Z) :=
-    if (Z.ltb a 0) then
+    if (Z.ltb a 0) then      (* a < 0*)
       0
-    else if (Z.ltb i 0) then
+    else if (Z.ltb i 0) then (* i < 0 *)
         Z.land a 1
-    else
+    else                     (* 0 <= a & 0 <= i *)
         Z.land (Z.shiftr a i) 1.
 End Mid.
 
 (* Clamping *)
-Definition clamp (n : list Z) : list Z :=
+Definition clamp (n: list Z) : list Z :=
   (* set last 3 bits to 0 *)
   let x := nth 0 n 0 in
   let x' := Z.land x 248 in
@@ -141,8 +141,13 @@ Definition clamp (n : list Z) : list Z :=
     upd_nth 0 n' x'.
 
 (* x^{p - 2} *)
-Definition ZInv25519 (x:Z) : Z :=
+Definition ZInv25519 (x: Z) : Z :=
   Z.pow x (Z.pow 2 255 - 21).
+
+(* reduction modulo P *)
+Definition ZPack25519 (n: Z) : Z :=
+  Z.modulo n (Z.pow 2 255 - 19).
+
 
 (* instantiate over Z *)
 Instance Z_Ops : (Ops Z Z modP) := {}.

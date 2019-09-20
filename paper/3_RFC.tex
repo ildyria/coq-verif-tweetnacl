@@ -28,19 +28,76 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
   in encodeUCoordinate o.
 \end{lstlisting}
 
+Where \coqe{montgomery_rec} is defined as follows:
+
+\begin{lstlisting}[language=Coq]
+Fixpoint montgomery_rec (m : nat) (z : T')
+(a: T) (b: T) (c: T) (d: T) (e: T) (f: T) (x: T) :
+(* a: x2              *)
+(* b: x3              *)
+(* c: z2              *)
+(* d: z3              *)
+(* e: temporary  var  *)
+(* f: temporary  var  *)
+(* x: x1              *)
+(T * T * T * T * T * T) :=
+match m with
+| 0%nat => (a,b,c,d,e,f)
+| S n =>
+  let r := Getbit (Z.of_nat n) z in
+    (* k_t = (k >> t) & 1                       *)
+    (* swap <- k_t                              *)
+  let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)            *)
+  let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)            *)
+  let e := a + c in  (* A = x_2 + z_2              *)
+  let a := a - c in  (* B = x_2 - z_2              *)
+  let c := b + d in  (* C = x_3 + z_3              *)
+  let b := b - d in  (* D = x_3 - z_3              *)
+  let d := e ^2 in    (* AA = A^2                  *)
+  let f := a ^2 in    (* BB = B^2                  *)
+  let a := c * a in  (* CB = C * B               *)
+  let c := b * e in  (* DA = D * A               *)
+  let e := a + c in  (* x_3 = (DA + CB)^2          *)
+  let a := a - c in  (* z_3 = x_1 * (DA - CB)^2     *)
+  let b := a ^2 in    (* z_3 = x_1 * (DA - CB)^2     *)
+  let c := d - f in  (* E = AA - BB             *)
+  let a := c * C_121665 in
+                     (* z_2 = E * (AA + a24 * E) *)
+  let a := a + d in  (* z_2 = E * (AA + a24 * E) *)
+  let c := c * a in  (* z_2 = E * (AA + a24 * E) *)
+  let a := d * f in  (* x_2 = AA * BB            *)
+  let d := b * x in  (* z_3 = x_1 * (DA - CB)^2    *)
+  let b := e ^2 in    (* x_3 = (DA + CB)^2         *)
+  let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)           *)
+  let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)           *)
+  montgomery_rec n z a b c d e f x
+end.
+\end{lstlisting}
+
+RFC~7748 states \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}.
+Operations used in the Montgomery ladder of \coqe{RFC} are intentiated over
+integers $Z$ (See Appendix~\ref{subsubsec:RFC-Coq}). The modulo reduction by $\p$
+is deferred at the end with the \coqe{ZPack25519} operation.
+We define $\Zfield$ as the field of integers where the modulo reduction by $\p$ is
+deferred at the end of the computations.
+This aims to formalize its difference with $\Ffield$ where the
+modulo by $\p$ is applied in each operations.
+
 We first present a generic description of the Montgomery ladder (\ref{subsec:spec-ladder}).
 Then we describe our mapping between little-endian representations and integers
 (\ref{subsec:integer-bytes}) which we use to formalize the encoding and decoding.
-We then turn our attention to the last steps of the computation
-(\ref{subsec:spec-unpack-clamp-inv-pack}).
 
 
 
-
+% subsection or subheading ?
 \subsection{A generic ladder}
 \label{subsec:spec-ladder}
 
-% \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}
+
 
 TweetNaCl implements X25519 with numbers represented as arrays.
 RFC~7748 defines X25519 over field elements. We show the equivalence between
@@ -53,7 +110,7 @@ The generic definition of the ladder (\coqe{montgomery_rec}) and its parallel wi
 the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
 
 Our formalization differs slightly from the RFC. Indeed in order to optimize the
-number of \texttt{CSWAP} calls the RFC uses an additional variable to decide
+number of calls to \texttt{CSWAP} the RFC uses an additional variable to decide
 whether a conditionnal swap is required or not. Our description of the ladder
 follows strictly the shape of the exponent as described in \aref{alg:montgomery-ladder}.
 This divergence is allowed by the RFC:
@@ -73,13 +130,9 @@ perform the following procedure, which is taken from [curve25519] and
 based on formulas from [montgomery].  All calculations are performed
 in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
 
-Operations used in the montgomery ladder of \coqe{RFC} are intentiated over
-integers (See Appendix~\ref{subsubsec:RFC-Coq}). The modulo reduction by $\p$
-is done  at the end with the \coqe{ZPack25519} operation.
-
-In TweetNaCl, as described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are
-represented in base $2^{16}$ and we use a direct mapping to represent that array as a list
-integers in Coq.
+In TweetNaCl, as described in \sref{subsec:Number-TweetNaCl}, numbers in
+\TNaCle{gf} are represented in base $2^{16}$ and we use a direct mapping to
+represent that array as a list integers in Coq.
 
 We define the little-endian projection to integers as follows.
 \begin{dfn}
@@ -125,7 +178,8 @@ Lemma ListofZ32_ZofList_Zlength: forall (l:list Z),
   ListofZ32 n (ZofList n l) = l.
 \end{lstlisting}
 
-With those tools at hand, we formally define the decoding and encoding as specified in the RFC.
+With those tools at hand, we formally define the decoding and encoding as
+specified in the RFC.
 
 \begin{lstlisting}[language=Coq]
 Definition decodeScalar25519 (l: list Z) : Z :=
@@ -139,14 +193,5 @@ Definition encodeUCoordinate (x: Z) : list Z :=
   ListofZ32 8 x.
 \end{lstlisting}
 
-\subsection{Clamping, Inversion and Packing}
-\label{subsec:spec-unpack-clamp-inv-pack}
-
-We have seen that \coqe{montgomery_rec} only computes the ladder steps.
-While the inversion, the packing
-
-% Appendix~\ref{subsubsec:ZCryptoScalarmult} shows the instantiation of our ladder
-% over Integers (type \coqe{Z}). We call it \coqe{ZCrypto_Scalarmult}.
-% The modulo reduction is applied in \coqe{ZPack25519} translating every
-% underlying operations as over \Zfield. As a result this specification can be
-% interpreted as the formalization of X25519 in RFC~7748.
+Where \coqe{clamp} is taking care of setting and unsetting the selected bits
+as per stated in the RFC.

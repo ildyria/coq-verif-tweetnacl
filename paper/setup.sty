@@ -1,14 +1,14 @@
+\usepackage{epsfig}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[switch]{lineno}
 
 \usepackage[pdf]{pstricks}
-\usepackage{multido}
 
 \usepackage{amsfonts,amsmath,amscd,amscd,amssymb,array}
 \usepackage{type1cm}
 \newcommand{\lstsize}{\fontsize{8.5pt}{8.5pt}\selectfont}
 \usepackage{algorithm, algorithmic}
-\usepackage{amsmath}
 \usepackage{xspace}
 \usepackage{listings}
 \usepackage{booktabs}
@@ -17,6 +17,9 @@
 \usepackage{textcomp}
 \usepackage{bussproofs}
 \usepackage{xcolor}
+\usepackage{cite}
+\usepackage{dsfont}
+\usepackage{float}
 \usepackage{soul}\let\strikethrough\st\let\st\undefined
 
 \definecolor{linkcolor}{rgb}{0.65,0,0}
@@ -29,16 +32,15 @@
 \renewcommand{\algorithmicrequire}{\textbf{Input:\ }}
 \renewcommand{\algorithmicensure}{\textbf{Output:\ }}
 
-\usepackage{cite}
-\usepackage{dsfont}
-\usepackage{xspace}
-\usepackage{float}
-
 \newcommand{\todo}[1]{
 {\color{red} \bf TODO: #1}
 }
 
 \newenvironment{informaltheorem}{\bigskip\itshape\noindent}{\bigskip}
+
+
+
+
 
 \floatstyle{ruled}
 \newfloat{Listing}{htb}{lst}
@@ -57,9 +59,6 @@
 \renewcommand{\tabcolsep}{4pt}
 
 \def\subheading#1{\medskip\noindent{\boldmath\textbf{#1}}~\ignorespaces}
-
-\newcommand{\crd}[1]{\textcolor{red}{#1}}
-\newcommand{\cbl}[1]{\textcolor{blue}{#1}}
 
 \definecolor{doc@lstidentifier}{HTML}{000000}   % black
 \definecolor{doc@lstcomment}{HTML}{CC3300}      % dark orange
@@ -305,6 +304,7 @@ literate=
     {(M\#a)}{{$a$}}1
     {(M\#b)}{{$b$}}1
     {---}{{\textemdash}}1
+    {fct}{{function}}1
 %
 }[keywords,comments,strings]
 

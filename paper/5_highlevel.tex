@@ -1,16 +1,15 @@
 \section{Proving that X25519 in Coq matches the mathematical model}
 \label{sec:maths}
 
-In this section we prove the following theorem:
+In this section we prove the following informal theorem:
 
-% \label{thm:Elliptic-RFC}
 \begin{informaltheorem}
 The implementation of X25519 in TweetNaCl computes the
 $\F{p}$-restricted $x$-coordinate scalar multiplication on $E(\F{p^2})$ where $p$ is $\p$
 and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 \end{informaltheorem}
 
-More formally, we prove that our formalization of the RFC matches the definitions of Curve25519 by Bernstein:
+More precisely, we prove that our formalization of the RFC matches the definitions of Curve25519 by Bernstein:
 \begin{lstlisting}[language=Coq]
 Theorem RFC_Correct: forall (n p : list Z)
   (P:mc curve25519_Fp2_mcuType),
@@ -559,17 +558,11 @@ Theorem curve25519_Fp2_ladder_ok:
   curve25519_Fp_ladder n x = (p *+ n)#x0 /p.
 \end{lstlisting}
 
+\todo{FINALIZE / CONCLUDE HERE}
+
 We then prove the equivalence between of operations over \coqe{Zmodp} and \coqe{:GF} (seen as \Zfield).
 This allows us to show that given a clamped value $n$ and normalized $x$-coordinate of $P$,
-$Curve25519\_Fp$ is equivalent to RFC~7748~\cite{rfc7748}. This is formalized as follows:
-\begin{lstlisting}[language=Coq]
-Lemma ZCrypto_Scalarmult_curve25519_ladder:
-  forall (n:nat) (x:Z),
-  ZCrypto_Scalarmult n x = val
-    (curve25519_Fp_ladder
-        (Z.to_nat (Zclamp n))
-        (Zmodp.pi (modP (ZUnpack25519 x)))).
-\end{lstlisting}
+$Curve25519\_Fp$ is equivalent to RFC~7748~\cite{rfc7748}.
 
 From \tref{thm:RFC} and \tref{thm:general-scalarmult}, we prove the correctness
 of \TNaCle{crypto_scalarmult} (\tref{thm:Elliptic-RFC}).

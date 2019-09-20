@@ -89,14 +89,15 @@ For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
 defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
 such that $x$ is the $x$-coordinate of $P$.
 
-Given $n \in \N$ and $x \in \F{\p}$, such that $x$ is the $x$-coordinate of
-a point $P$ of $E(\F{\p})$, X25519 returns the $x$-coordinate of the
+Given $n \in \N$ and $x \in \Ffield$, such that $x$ is the $x$-coordinate of
+a point $P$ of $E(\F{p^2})$, X25519 returns the $x$-coordinate of the
 scalar multiplication of $P$ by $n$, thus $n \cdot P$.
 % Note that the result is the same with $n \cdot (-P) = -(n \cdot P)$.
 
 X25519 makes use of the little endian bijection for its arguments of 32-bytes:
 \texttt{n} the secret key and \texttt{p} the public key.
-Curve25519 has a cofactor of 8. In order to avoid attacks where an attacker
+% Curve25519 has a cofactor of 8.
+In order to avoid attacks where an attacker
 could discover some bits of the private key, values of $n$ are forced into the
 shape of $2^{254} + 8\{0,1,\ldots,2^{251}-1\}$. This is done by setting bit 255
 to \texttt{0}; bit 254 to \texttt{1} and the lower 3 bits to \texttt{0},
@@ -168,10 +169,10 @@ sv unpack25519(gf o, const u8 *n)
 \end{lstlisting}
 
 The radix-$2^{16}$ representation in limbs of $64$ bits is
-highly redundant; for any element $A \in \F{\p}$ there are
+highly redundant; for any element $A \in \Ffield$ there are
 multiple ways to represent $A$ as $(a_0,\dots,a_{15})$.
 This is used to avoid carry handling in the implementations of addition
-(\TNaCle{A}) and subtraction (\TNaCle{Z}) in $\F{\p}$:
+(\TNaCle{A}) and subtraction (\TNaCle{Z}) in $\Ffield$:
 \begin{lstlisting}[language=Ctweetnacl]
 sv A(gf o,const gf a,const gf b) {
   int i;
@@ -215,7 +216,7 @@ sv car25519(gf o)
 In order to simplify the verification of this function,
 we treat the last iteration of the loop $i = 15$ as a separate step.
 
-Inverses in $\Zfield$ are computed with \TNaCle{inv25519}.
+Inverses in $\Ffield$ are computed with \TNaCle{inv25519}.
 It takes the exponentiation by $2^{255}-21$ with the square-and-multiply algorithm.
 Fermat's little theorem gives the correctness.
 Notice that in this case the inverse of $0$ is defined as $0$.
@@ -277,7 +278,7 @@ the \TNaCle{crypto_scalarmult} API function of TweetNaCl.
 In order to compute the scalar multiplication,
 X25519 uses the Montgomery ladder~\cite{Mon85}.
 
-$x$-coordinates are represented as not evaluated fractions, the computation of
+$x$-coordinates are represented as not-evaluated fractions, the computation of
 the quotient is deferred to the end of the ladder with \TNaCle{inv25519}.
 
 First extract and clamp the value of $n$. Then unpack the value of $p$.

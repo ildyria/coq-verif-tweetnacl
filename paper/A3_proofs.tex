@@ -36,13 +36,17 @@ In this folder the reader will find multiple levels of implementation of X25519.
   instantiated with different operations. This ladder is the stub for the
   following implementations.
   \item \textbf{\texttt{Mid/}} provides a list-based implementation of the
-  basic operations \TNaCle{A}, \TNaCle{Z}, \TNaCle{M} \ldots and the ladder. It
+  basic operations \TNaCle{A}, \TNaCle{Z}, \TNaCle{M} \ldots~and the ladder. It
   makes the link with the theory of Montgomery curves.
   \item \textbf{\texttt{Low/}} provides a second list-based implementation of
-  the basic operations \TNaCle{A}, \TNaCle{Z}, \TNaCle{M} \ldots and the ladder.
+  the basic operations \TNaCle{A}, \TNaCle{Z}, \TNaCle{M} \ldots~and the ladder.
   Those functions are proven to provide the same results as the ones in
   \texttt{Mid/}, however their implementation are closer to \texttt{C} in order
   facilitate the proof of equivalence with TweetNaCl code.
+  \item \textbf{\texttt{rfc/}} provides our rfc formalization.
+  It uses integers for the basic operations \TNaCle{A}, \TNaCle{Z}, \TNaCle{M}
+  \ldots and the ladder. It specifies the decoding/encoding of/to byte
+  arrays (seen as list of integers) as in RFC~7748.
 \end{itemize}
 
 \subheading{\texttt{proofs/vst/}}

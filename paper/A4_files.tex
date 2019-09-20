@@ -1,19 +1,20 @@
-\todo{I don't think this belongs to the paper but more to the associated materials}
+% \todo{I don't think this belongs to the paper but more to the associated materials}
 
 \subsection{Content of the proof files}
 \label{appendix:proof-files}
 
 We provide below the location of the most important definitions and lemmas of our proofs.
 
-\subsubsection{Definitions}
-~
-\begin{table}[h]
+% \subsubsection{Definitions}
+% ~
+\begin{table*}[h]
   % \caption{Definitions}
   % \label{table:specs}
   \begin{tabular}{ l | l | l }
     Definition & File & Description \\
     \hline
-    \texttt{ZofList} & \texttt{ListsOp/ZofList.v} & List $\leftrightarrow$ \Z\\
+    \texttt{ZofList} & \texttt{ListsOp/ZofList.v} & \Z $\rightarrow$ List \Z $\rightarrow$ \Z\\
+    \texttt{ListofZ32} & \texttt{ListsOp/ListofZ.v} & \Z $\rightarrow$  \Z $\rightarrow$ list \Z\\
     \hline
     \multicolumn{3}{c}{Elliptic Curve \& Fields }\\
     \hline
@@ -98,15 +99,21 @@ We provide below the location of the most important definitions and lemmas of ou
     \hline
     \multicolumn{3}{c}{X25519 over \Z and list of \Z}\\
     \hline
-    \texttt{ZCrypto\_Scalarmult} & \texttt{Mid/Crypto\_Scalarmult.v} & RFC specification of X25519\\
+    \texttt{ZCrypto\_Scalarmult} & \texttt{Mid/Crypto\_Scalarmult.v} & integers specification of X25519\\
     \texttt{Crypto\_Scalarmult} & \texttt{Low/Crypto\_Scalarmult.v} & list specification of X25519\\
-    \texttt{CSM} & \texttt{Low/Crypto\_Scalarmult\_.v} & aliasing of \texttt{Crypto\_Scalarmult} \\
+    \hline
+    \multicolumn{3}{c}{RFC~7748}\\
+    \hline
+    \texttt{decodeScalar25519} & \texttt{rfc/rfc.v} & Decode the scalar\\
+    \texttt{decodeUCoordinate} & \texttt{rfc/rfc.v} & Decode the x-coordinate\\
+    \texttt{encodeUCoordinate} & \texttt{rfc/rfc.v} & Encode the resulting x-coordinate\\
+    \texttt{RFC} & \texttt{rfc/rfc.v} & specification of X25519 as in RFC~7748\\
     \hline
 \end{tabular}
-\end{table}
+\end{table*}
 
-\subsubsection{Lemmas and Theorems}
-~
+% \subsubsection{Lemmas and Theorems}
+% ~
 % \begin{table}[h]
 %   \begin{tabular}{ l | l | l }
 %     Definition & File & Description \\

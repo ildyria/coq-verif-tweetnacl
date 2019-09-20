@@ -2,11 +2,6 @@
 
 
   % adapt line thickness and line width, if needed
-  \tikzstyle{vecArrow} = [thick, decoration={markings,mark=at position
-     1 with {\arrow[semithick]{open triangle 60}}},
-     double distance=1.4pt, shorten >= 5.5pt,
-     preaction = {decorate},
-     postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 
    \path [thick, dashed] (2.5,1) edge +(0,-6.75);
    \draw (2.5,1) node[anchor=north east] {\sref{sec:Coq-RFC}};
@@ -46,7 +41,7 @@
     % \draw (1.25,0)  node[anchor=south east, inner sep=0pt] {\includegraphics[width=.0125\textwidth]{img/coq_logo.png}};
   \end{scope}
 
-  \path [thick, double, ->] (4.25,-0.75) edge (5, -0.75);
+  \path [thick, dotted, double, ->] (4.25,-0.75) edge (5, -0.75);
 
   % VST Spec
   \begin{scope}[yshift=-3 cm,xshift=3 cm]
