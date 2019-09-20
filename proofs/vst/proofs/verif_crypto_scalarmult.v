@@ -137,7 +137,7 @@ Local Ltac solve_equiv_fabcdef i :=
   subst; simpl;
   reflexivity.
 
-Lemma body_crypto_scalarmult: semax_body Vprog Gprog f_crypto_scalarmult_curve25519_tweet crypto_scalarmult_spec.
+Theorem body_crypto_scalarmult: semax_body Vprog Gprog f_crypto_scalarmult_curve25519_tweet crypto_scalarmult_spec.
 Proof.
 name v__121665 __121665.
   start_function.
