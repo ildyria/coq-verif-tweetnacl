@@ -78,13 +78,13 @@ match m with
 end.
 \end{lstlisting}
 
-RFC~7748 states \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}.
+RFC~7748 states \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}
 Operations used in the Montgomery ladder of \coqe{RFC} are intentiated over
 integers $Z$ (See Appendix~\ref{subsubsec:RFC-Coq}). The modulo reduction by $\p$
 is deferred at the end with the \coqe{ZPack25519} operation.
 We define $\Zfield$ as the field of integers where the modulo reduction by $\p$ is
 deferred at the end of the computations.
-This aims to formalize its difference with $\Ffield$ where the
+We use this notation to emphasis its difference with $\Ffield$ where the
 modulo by $\p$ is applied in each operations.
 
 We first present a generic description of the Montgomery ladder (\ref{subsec:spec-ladder}).
@@ -111,7 +111,7 @@ the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
 
 Our formalization differs slightly from the RFC. Indeed in order to optimize the
 number of calls to \texttt{CSWAP} the RFC uses an additional variable to decide
-whether a conditionnal swap is required or not. Our description of the ladder
+whether a conditional swap is required or not. Our description of the ladder
 follows strictly the shape of the exponent as described in \aref{alg:montgomery-ladder}.
 This divergence is allowed by the RFC:
 \emph{``Note that these formulas are slightly different from Montgomery's

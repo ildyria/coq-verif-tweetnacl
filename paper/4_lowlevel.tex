@@ -16,11 +16,11 @@ Theorem body_crypto_scalarmult:
   semax_body
     (* Clight translation of TweetNaCl. *)
     Vprog
-    (* Hoare tripples for fct calls. *)
+    (* Hoare triples for fct calls. *)
     Gprog
     (* fct we verify. *)
     f_crypto_scalarmult_curve25519_tweet
-    (* Our Hoare tripple, see below. *)
+    (* Our Hoare triple, see below. *)
     crypto_scalarmult_spec.
 \end{lstlisting}
 
@@ -186,7 +186,7 @@ As Post-condition we have:
   \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (RFC n p)}\\
   In the memory share \texttt{sh}, the address \VSTe{v_q} points
   to a list of integer values \VSTe{mVI (RFC n p)} where \VSTe{RFC n p} is the
-  result of the \VSTe{crypto_scalarmult} of \VSTe{n} and \VSTe{p}.
+  result of the \TNaCle{crypto_scalarmult} of \VSTe{n} and \VSTe{p}.
   \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (RFC n p)}\\
   \VSTe{PROP}: \VSTe{Zlength (RFC n p) = 32}\\
   We show that the computation for \VSTe{RFC} fits in  \TNaCle{u8[32]}.
@@ -195,6 +195,9 @@ As Post-condition we have:
 This specification (proven with VST) shows that \TNaCle{crypto_scalarmult} in C
 computes the same result as \VSTe{RFC} in Coq provided that inputs are within
 their respective bounds: arrays of 32 bytes.
+
+The correctness of this specification is formally proven in Coq with
+\coqe{Theorem body_crypto_scalarmult}.
 
 % \begin{theorem}
 % \label{thm:crypto-vst}
@@ -312,8 +315,8 @@ To facilitate working in $\Zfield$, we define the \coqe{:GF} notation.
 \begin{lstlisting}[language=Coq]
 Notation "A :GF" := (A mod (2^255-19)).
 \end{lstlisting}
-Later in \sref{sec:maths}, we formally define $\Ffield$.
-Equivalence between operations under \coqe{:GF} and in $\Ffield$ are easily proven.
+Later in \sref{subsec:Zmodp}, we formally define $\Ffield$.
+Equivalence between operations in $\Zfield$ (\ie under \coqe{:GF}) and in $\Ffield$ are easily proven.
 
 Using these two definitions, we prove intermediate lemmas such as the correctness of the
 multiplication \Coqe{Low.M} where \Coqe{Low.M} replicate the computations and steps done in C.
@@ -641,31 +644,22 @@ Lemma Pack25519_mod_25519 :
   (Z16.lst l) mod (2^255-19).
 \end{lstlisting}
 
-\todo{FINALIZE CONCLUSION HERE}
+By using each functions \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
+\coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519}; \coqe{montgomery_rec},
+we defined a Coq definition \coqe{Crypto_Scalarmult} mimicking the exact behavior of X25519 in TweetNaCl.
 
 By proving that each functions \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
-\coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{car25519} are behaving over \coqe{list Z}
-as their equivalent over \coqe{Z} in \coqe{:GF} (in \Zfield), we prove the
-correctness of
-
-% \begin{theorem}
-%   \label{thm:crypto-rfc}
-% \coqe{Crypto_Scalarmult} matches the specification of RFC~7748.
-% \end{theorem}
-
+\coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519} are behaving over \coqe{list Z}
+as their equivalent over \coqe{Z} in \coqe{:GF} (in \Zfield), we prove that given the same inputs \coqe{Crypto_Scalarmult} applies the same computation as \coqe{RFC}.
 % This is formalized as follows in Coq:
-% \begin{lstlisting}[language=Coq]
-% Theorem Crypto_Scalarmult_Eq :
-%   forall (n p:list Z),
-%   Zlength n = 32 ->
-%   Zlength p = 32 ->
-%   Forall (fun x : Z, 0 <= x /\ x < 2 ^ 8) n ->
-%   Forall (fun x : Z, 0 <= x /\ x < 2 ^ 8) p ->
-%   ZofList 8 (Crypto_Scalarmult n p) =
-%   ZCrypto_Scalarmult (ZofList 8 n) (ZofList 8 p).
-% \end{lstlisting}
+\begin{lstlisting}[language=Coq]
+Lemma Crypto_Scalarmult_RFC_eq :
+  forall (n: list Z) (p: list Z),
+  Zlength n = 32 ->
+  Zlength p = 32 ->
+  Forall (fun x => 0 <= x /\ x < 2 ^ 8) n ->
+  Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
+  Crypto_Scalarmult n p = RFC n p.
+\end{lstlisting}
 
-We prove that \coqe{Crypto_Scalarmult} matches the specification of RFC~7748 (\tref{thm:crypto-rfc}).
-With the VST we also prove that \coqe{Crypto_Scalarmult} matches the Clight translation of Tweetnacl (\tref{thm:crypto-vst}).
-We infer that the implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
-the specifications of RFC~7748 (\tref{thm:VST-RFC}).
+This proves that TweetNaCl's X25519 implementation respect RFC~7748.
