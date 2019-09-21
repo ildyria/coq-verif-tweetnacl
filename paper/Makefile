@@ -39,6 +39,7 @@ clean:
 	@rm *.log 2> /dev/null || true
 	@rm *.out 2> /dev/null || true
 	@rm *.bck 2> /dev/null || true
+	@rm *.bak 2> /dev/null || true
 	@rm */*.aux 2> /dev/null || true
 	@rm tweetverif.tex 2> /dev/null || true
 
