@@ -5,7 +5,7 @@ In this section we prove the following informal theorem:
 
 \begin{informaltheorem}
 The implementation of X25519 in TweetNaCl computes the
-$\F{p}$-restricted $x$-coordinate scalar multiplication on $E(\F{p^2})$ where $p$ is $\p$
+$\F{p}$-restricted \xcoord scalar multiplication on $E(\F{p^2})$ where $p$ is $\p$
 and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 \end{informaltheorem}
 
@@ -217,7 +217,7 @@ $a^2-4$ is not a square in \K.
 Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 \end{lstlisting}
 
-We define $\chi$ and $\chi_0$ to return the $x$-coordinate of points on a curve.
+We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
 \begin{dfn}Let $\chi$ and $\chi_0$:\\
 -- $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$\\
   such that $\chi(\Oinf) = \infty$ and $\chi((x,y)) = x$.\\
@@ -270,7 +270,8 @@ we can define a ladder similar to the one used in TweetNaCl (See \aref{alg:montg
 \begin{algorithmic}
 \REQUIRE{$x \in \K\backslash \{0\}$, scalars $n$ and $m$, $n < 2^m$}
 \ENSURE{$a/c = \chi_0(n \cdot P)$ for any $P$ such that $\chi_0(P) = x$}
-\STATE $(a,b,c,d) \leftarrow (1,x,0,1)$
+\STATE $(a,c) \leftarrow (1,0)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(\Oinf) = (1:0)$}}
+\STATE $(b,d) \leftarrow (x,1)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(P) = (x:1)$}}
 \FOR{$k$ := $m$ downto $1$}
   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
     \STATE $(a,b) \leftarrow (b,a)$
@@ -426,7 +427,7 @@ we can find a $y$ such that $(x,y)$ is either on the curve or on the quadratic t
 \begin{lemma}
   \label{lemma:curve-or-twist}
   For all $x \in \F{p}$, there exists a point $P$ over $M_{486662,1}(\F{p})$ or
-  over $M_{486662,2}(\F{p})$ such that the $x$-coordinate of $P$ is $x$.
+  over $M_{486662,2}(\F{p})$ such that the \xcoord of $P$ is $x$.
 \end{lemma}
 \begin{lstlisting}[language=Coq]
 Theorem x_is_on_curve_or_twist:
@@ -478,6 +479,9 @@ Similarly as in $\F{p}$, we define $0^{-1} = 0$ and prove \lref{lemma:Zmodp2_rin
   \label{lemma:Zmodp2_ring}
   $\F{p^2}$ is a commutative ring.
 \end{lemma}
+
+%% TOO LONG
+%% If need remove this paragraph
 We can then specialize the basic operations in order to speed up the verification
 of formulas by using rewrite rules:
 \begin{align*}
@@ -489,6 +493,10 @@ of formulas by using rewrite rules:
 (0, a)\cdot (0,b) &= (2\cdot a\cdot b, 0)\\
 (0,a)^{-1} &= ((2\cdot a)^{-1},0)
 \end{align*}
+
+
+
+
 The injection $a \mapsto (a,0)$ from $\F{p}$ to $\F{p^2}$ preserves
 $0, 1, +, -, \times$. Thus $(a,0)$ can be abbreviated as $a$ without confusions.
 
@@ -561,6 +569,6 @@ Theorem curve25519_Fp2_ladder_ok:
 
 We then prove the equivalence between of operations in $\Ffield$ and $\Zfield$,
 in other words between \coqe{Zmodp} and \coqe{:GF}.
-This allows us to show that given a clamped value $n$ and normalized $x$-coordinate of $P$,
+This allows us to show that given a clamped value $n$ and normalized \xcoord of $P$,
 \coqe{RFC} gives the same results as $Curve25519\_Fp$.
 This proves the correctness of TweetNaCl's X25519 and RFC~7748.

@@ -16,13 +16,13 @@ One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519~\
 This protocol is being used by a wide variety of applications~\cite{things-that-use-curve25519}
 such as SSH, Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
 an insecure channel.
-The X25519 key exchange protocol is a an $x$-coordinate only
+The X25519 key exchange protocol is a an \xcoord only
 elliptic-curve Diffie-Hellman key-exchange using the Montgomery
 curve $E: y^2 = x^3 + 486662 x^2 + x$ over the field $\F{\p}$.
 Note that originally, the name ``Curve25519'' referred to the key exchange protocol,
 but Bernstein suggested to rename the scheme to X25519 and to use the name
 X25519 for the protocol and Curve25519 for the underlying elliptic curve~\cite{Ber14}.
-We make use of this updated terminology in this paper.
+We use this updated terminology in this paper.
 
 \subheading{Contribution of this paper}
 We provide a mechanized formal proof of the correctness of the X25519
@@ -50,8 +50,8 @@ This extension may be of independent interest.
 
 \subheading{Related work.}
 Two methodologies exist to get formal guarantees that software meets its specification.
-This can be done either by synthesizing a formal specification and then generating
-machine code by refinement, or by writing a specification and verifying that the
+This can be done either by writing a formal specification and then synthesis
+machine code by refinement, or by formalizing a specification and verifying that the
 implementation satisfies it.
 
 % One of the earliest example of this first approach is the
@@ -74,9 +74,9 @@ that work our approach makes a complete link between the C implementation and
 the formal mathematical definition of the group theory behind elliptic curves.
 
 Synthesis approaches force the user to depend on generated code which may not
-be optimal (speed, compactness...) and they require compiler tweaks in order
+be optimal (speed, compactness) and they require compiler tweaks in order
 to achieve the desired properties. On the other hand, carefully handcrafted
-optimized code will force the verifier to consider all the possible special cases
+optimized code forces the verifier to consider all the possible special cases
 and write a low level specification of the details of the code in order to prove
 the correctness of the algorithm.
 

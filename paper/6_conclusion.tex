@@ -11,7 +11,7 @@ proving an inconsistency.
 
 In our case we rely on:
 \begin{itemize}
-  \item \textbf{Calculus of Inductive Construction}. The intuitionistic logic
+  \item \textbf{Calculus of Inductive Constructions}. The intuitionistic logic
   used by Coq must be consistent in order to trust the proofs. As an axiom,
   we assumed that the functional extensionality, which is also consistent with that logic.
   $$\forall x, f(x) = g(x) \implies f = g$$
@@ -82,5 +82,5 @@ We first formalized X25519 from RFC~7748~\cite{rfc7748} in Coq. Then we proved
 that TweetNaCl's implementation of X25519 matches our formalization.
 In a second step we extended the Coq library for elliptic curves \cite{BartziaS14}
 by Bartzia and Strub to support Montgomery curves. Using this extension we
-proved that the X25519 from the RFC and its implementation in TweetNaCl matches
+proved that the X25519 from the RFC and therefore its implementation in TweetNaCl matches
 the mathematical definitions as given in~\cite[Sec.~2]{Ber06}.
