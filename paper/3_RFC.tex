@@ -7,7 +7,7 @@ In this section we present our formalization of RFC~7748~\cite{rfc7748}.
 The specification of X25519 in RFC~7748 is formalized by \Coqe{RFC} in Coq.
 \end{informaltheorem}
 
-More precisely, we formalized X25519 with the following definition.
+More specifically, we formalized X25519 with the following definition:
 \begin{lstlisting}[language=Coq]
 Definition RFC (n: list Z) (p: list Z) : list Z :=
   let k := decodeScalar25519 n in
@@ -78,17 +78,16 @@ match m with
 end.
 \end{lstlisting}
 
-The functions encoding and decoding of the byte array are detailed in
-\ref{subsec:integer-bytes}.
+The definitions of the encoding and decoding functions are detailed in
+\sref{subsec:integer-bytes}.
 
-RFC~7748 states \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}
-Operations used in the Montgomery ladder of \coqe{RFC} are intentiated over
-integers $Z$ (See Appendix~\ref{subsubsec:RFC-Coq}). The modulo reduction by $\p$
-is deferred at the end with the \coqe{ZPack25519} operation.
-We define $\Zfield$ as integers in which the modulo reduction by $\p$ is
-deferred at the end to the computations.
-We use this notation to emphasis its difference with $\Ffield$ where the
-modulo by $\p$ is applied in each operations.
+RFC~7748 states that \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}
+Operations used in the Montgomery ladder of \coqe{RFC} are performed on
+integers (See Appendix~\ref{subsubsec:RFC-Coq}). 
+The reduction modulo $\p$ is deferred to the very end as part of the \coqe{ZPack25519} operation.
+%We use this notation to emphasis its difference with $\Ffield$ where the
+%modulo by $\p$ is applied in each operations.
+%XXX-Peter: What notation exactly?
 
 We briefly introduce our generic description of the Montgomery ladder (\ref{subsec:spec-ladder}).
 Then we describe our mapping between little-endian representations and integers
@@ -107,7 +106,7 @@ RFC~7748 defines X25519 over field elements. We show the equivalence between
 the different number representations. To simplify our proof, we define operations
 used in the ladder over generic types \coqe{T} and \coqe{T'}.
 Those types are later instantiated as list of integers, integers, natural
-numbers, field elements.
+numbers, or field elements.
 
 % The generic definition of the ladder (\coqe{montgomery_rec}) and its parallel with
 % the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
@@ -118,7 +117,7 @@ whether a conditional swap is required or not. Our description of the ladder
 follows strictly the shape of the exponent as described in \aref{alg:montgomery-ladder}.
 This divergence is allowed by the RFC:
 \emph{``Note that these formulas are slightly different from Montgomery's
-original paper.  Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
+original paper. Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
 We later prove our ladder correct in that respect (\sref{sec:maths}).
 
 
@@ -133,15 +132,18 @@ perform the following procedure, which is taken from [curve25519] and
 based on formulas from [montgomery].  All calculations are performed
 in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
 
-In TweetNaCl, as described in \sref{subsec:Number-TweetNaCl}, numbers in
-\TNaCle{gf} are represented in base $2^{16}$ and we use a direct mapping to
-represent that array as a list of integers in Coq.
+In TweetNaCl, as described in \sref{subsec:Number-TweetNaCl}, 
+elements of $\F{p}$ are represented as big integers using radix $2^{16}$. 
+We use a direct mapping to represent such an array of limbs 
+as a list of integers in Coq.
 
 We define the little-endian projection to integers as follows.
 \begin{dfn}
 Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
 a parameterized map by $n$ between a list $l$ and its little endian representation
 with a radix $2^n$.
+%XXX-Peter: The sentence before is not clear to me. What exactly is mapped where?
+%and what is the "little endian representation with a radix $2^n$ of a list"?
 \end{dfn}
 We define it in Coq as:
 \begin{lstlisting}[language=Coq]
@@ -152,13 +154,14 @@ Fixpoint ZofList {n:Z} (a:list Z) : Z :=
   end.
 \end{lstlisting}
 
-\Coqe{ZofList} is used in the decoding of the bytes array and also as a
+\Coqe{ZofList} is used in the decoding of byte arrays and also as a
 base to verify operations over lists in TweetNaCl (See~\ref{subsec:num-repr-rfc}).
-Similarly the encoding from integers to bytes is defined:
+The encoding from integers to bytes is defined in a similar way:
 \begin{dfn}
 Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
 $n$ and $a$ returns $a$'s little-endian representation
 as a list with radix $2^n$.
+%XXX-Peter: Again I'm confused... why are there two \rightarrows? 
 \end{dfn}
 We define it in Coq as:
 \begin{lstlisting}[language=Coq]
@@ -197,4 +200,4 @@ Definition encodeUCoordinate (x: Z) : list Z :=
 \end{lstlisting}
 
 In this definition, \coqe{clamp} is taking care of setting and unsetting the
-selected bits as per stated in the RFC.
+selected bits as stated in the RFC and described in~\sref{subsec:X25519-key-exchange}.

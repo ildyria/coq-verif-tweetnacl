@@ -341,19 +341,15 @@ int crypto_scalarmult(u8 *q,
 % the pseudocode description
 
 
-\subsection{Coq and VST}
+\subsection{Coq, separation logic, and VST}
 \label{subsec:Coq-VST}
 
 Coq~\cite{coq-faq} is an interactive theorem prover based on type theory. It
 provides an expressive formal language to write mathematical definitions,
-algorithms and theorems together with their proofs. It has been used in the proof
-of the four-color theorem~\cite{gonthier2008formal}.
-The CompCert C compiler~\cite{Leroy-backend} was implemented with it.
-The Compcert C semantics is almost identical to C17~\cite{ISO:C17}, giving us the
-guarantee that the intended behavior is preserved through compilation to the
-machine code.
-
-As opposed to other systems such as F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
+algorithms, and theorems together with their proofs. It has been used in the proof
+of the four-color theorem~\cite{gonthier2008formal} and it is also the system
+underlying the CompCert formally verified C compiler~\cite{Leroy-backend}.
+Unlike systems like F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
 Coq does not rely on an SMT solver in its trusted code base.
 It uses its type system to verify the applications of hypotheses,
 lemmas, and theorems~\cite{Howard1995-HOWTFN}.
@@ -378,12 +374,13 @@ Separation logic is an extension of Hoare logic which allows reasoning about
 pointers and memory manipulation. This logic enforces strict conditions on the
 memory shared such as being disjoint.
 We discuss this limitation further in \sref{subsec:with-VST}.
+
 The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework
 which uses Separation logic proven correct with respect to CompCert semantics
 to prove the functional correctness of C programs.
 The first step consists of translating the source code into Clight,
 an intermediate representation used by CompCert.
-For such purpose one uses the parser of CompCert: \texttt{clightgen}.
+For such purpose one uses the parser of CompCert called \texttt{clightgen}.
 In a second step one defines the Hoare triple representing the specification of
 the piece of software one wants to prove. Then using VST, one uses a strongest
 postcondition approach to prove the correctness of the triple.
