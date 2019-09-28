@@ -6,52 +6,49 @@ on elliptic curves. We then describe X25519 and its implementation in TweetNaCl.
 Finally, we provide a brief description of the formal tools we use in our proofs.
 
 
-
-
-
 \subsection{Arithmetic on Montgomery curves}
 \label{subsec:arithmetic-montgomery}
 
 \begin{dfn}
   Given a field \K, let $a,b \in \K$ such that $a^2 \neq 4$ and $b \neq 0$,
-  $M_{a,b}$ is the Montgomery curve defined over $\K$ with equation:
-  $$M_{a,b}: by^2 = x^3 + ax^2 + x$$
+  $M_{a,b}$ is the Montgomery curve defined over $\K$ with equation
+  $$M_{a,b}: by^2 = x^3 + ax^2 + x.$$
 \end{dfn}
 
 \begin{dfn}
-  For any algebraic extension $\L$ of $\K$, $\K \subseteq	\L$,
-  $M_{a,b}(\L)$ is the set of $\L$-rational points which satisfy the equation with
-  addition to the point at infinity $\Oinf$.
-  % "with addition of" is a mistake in English
-  $$M_{a,b}(\L) = \{\Oinf\} \cup \{(x,y) \in \L \times \L~|~by^2 = x^3 + ax^2 + x\}$$
+  For any algebraic extension $\L \supseteq	\K$, we call
+  $M_{a,b}(\L)$ the set of $\L$-rational points defined as
+  $$M_{a,b}(\L) = \{\Oinf\} \cup \{(x,y) \in \L \times \L~|~by^2 = x^3 + ax^2 + x\}.$$
+  Here, the additional element $\Oinf$ denotes the point at infinity.
 \end{dfn}
 Details of the formalization can be found in \sref{subsec:ECC-Montgomery}.
 
 
-For $M_{a,b}$ over $\F{p}$, the parameter $b$ is known as the ``twisting factor''.
+For $M_{a,b}$ over a finite field $\F{p}$, the parameter $b$ is known as the ``twisting factor''.
 For $b'\in \F{p}\backslash\{0\}$ and $b' \neq b$, the curves $M_{a,b}$ and $M_{a,b'}$
 are isomorphic via $(x,y) \mapsto (x, \sqrt{b'/b} \cdot y)$.
 
 \begin{dfn}
-  When $b'/b$ is not a square in \F{p}, $M_{a,b'}$ is a \emph{quadratic twist} of $M_{a,b}$:
-  isomorphic over $\F{p^2}$~\cite{cryptoeprint:2017:212}.
+  When $b'/b$ is not a square in \F{p}, $M_{a,b'}$ is a \emph{quadratic twist} of $M_{a,b}$, i.e.,
+  a curve that is isomorphic over $\F{p^2}$~\cite{cryptoeprint:2017:212}.
 \end{dfn}
 
-Points over $M_{a,b}(\K)$ can be equipped with a structure of an abelian group
+Points in $M_{a,b}(\K)$ can be equipped with a structure of an abelian group
 with the addition operation $+$ and with neutral element the point at infinity $\Oinf$.
-Using this law, we have the scalar multiplication over $M_{a,b}(\K)$ defined by:
-  $$n\cdot P = \underbrace{P + \cdots + P}_{n\text{ times}}$$
+For a point $P \in M_{a,b}(\K)$ and a positive integer $n$ we obtain the scalar product
+  $$n\cdot P = \underbrace{P + \cdots + P}_{n\text{ times}}.$$
 
 In order to efficiently compute the scalar multiplication we use an algorithm
 similar to square-and-multiply: the Montgomery ladder where the basic operations
-are addition and doubling.
+are differential addition and doubling~\cite{MontgomerySpeeding}.
 
-We consider \xcoord-only operations. In order to simplify computations,
-such coordinates are represented as $X/Z$ fractions and use the $(X : Z)$ notation.
-$(X : 1)$ is abbreviated as $X$. See \sref{subsec:ECC-projective} for more details.
+We consider \xcoord-only operations. Throughout the computation, 
+these $x$-coordinates are kept in projective representation
+$(X : Z)$, with $x = X/Z$; the point at infinity is represented as $(1:0)$.
+See \sref{subsec:ECC-projective} for more details.
 We define two operations:
 \begin{align*}
-\texttt{xADD} &: ((X_P:Z_P), (X_Q:Z_Q), (X_{P - Q}:Z_{P - Q})) \mapsto \\
+  \texttt{xADD} &: (x_{Q-P}, (X_P:Z_P), (X_Q:Z_Q)) \mapsto \\
 &(X_{P + Q}:Z_{P + Q})\\
 \texttt{xDBL} &: (X_P:Z_P) \mapsto (X_{2 \cdot P}:Z_{2 \cdot P})
 \end{align*}
@@ -60,8 +57,8 @@ the arguments of \texttt{xADD} and \texttt{xDBL}
 are swapped depending of the value of the $k^{th}$ bit. We use a conditional
 swap \texttt{CSWAP} to change the arguments of the above function while keeping
 the same body of the loop.
-Given a pair $(X_0, X_1)$ and a Boolean $b$, \texttt{CSWAP} returns the pair
-$(X_b, X_{1-b})$.
+Given a pair $(P_0, P_1)$ and a bit $b$, \texttt{CSWAP} returns the pair
+$(P_b, P_{1-b})$.
 
 By using the differential addition and doubling operations we define the Montgomery ladder
 computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}).
@@ -69,62 +66,57 @@ computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}
 \caption{Montgomery ladder for scalar mult.}
 \label{alg:montgomery-ladder}
 \begin{algorithmic}
-\REQUIRE{\xcoord of $P$ : $(X_P:Z_P)$, scalars $n$ and $m$, $n < 2^m$}
-\ENSURE{\xcoord of $Q$ : $(X_Q:Z_Q)$ where $Q = n \cdot P$}
-\STATE $Q \leftarrow \Oinf$
-\STATE $R \leftarrow (X_P:Z_P)$
-\FOR{$k$ := $m$ down to $1$}
-  \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
-  \STATE $Q \leftarrow \texttt{xDBL}(Q)$
-  \STATE $R \leftarrow \texttt{xADD}(Q,R,(X_P:Z_P))$
-  \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
-\ENDFOR
-\RETURN $Q$
+  \REQUIRE{\xcoord $x_P$ of a point $P$, scalar $n$ with $n < 2^m$}
+  \ENSURE{\xcoord $x_Q$ of $Q = n \cdot P$}
+  \STATE $Q = (X_Q:Z_Q) \leftarrow (1:0)$
+  \STATE $R = (X_R:Z_R) \leftarrow (x_P:1)$
+  \FOR{$k$ := $m$ down to $1$}
+    \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
+    \STATE $Q \leftarrow \texttt{xDBL}(Q)$
+    \STATE $R \leftarrow \texttt{xADD}(x_P,Q,R)$
+    \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
+  \ENDFOR
+  \RETURN $X_Q/Z_Q$
 \end{algorithmic}
 \end{algorithm}
-
-Finally given $(X_Q : Z_Q)$, we compute the fraction representing the \xcoord of $n \cdot P$.
 
 
 
 \subsection{The X25519 key exchange}
 \label{subsec:X25519-key-exchange}
 
-For any value $x \in \F{p}$, for the elliptic curve $E$ over $\F{p^2}$
-defined by $y^2 = x^3 + 486662 x^2 + x$, there exist a point $P$ over $E(\F{p^2})$
+From now on let $\F{p}$ be the field with $p=2^{255}-19$ elements.
+We consider the elliptic curve $E$ over $\F{p}$ defined by the
+equation $y^2 = x^3 + 486662 x^2 + x$. 
+For every $x \in \F{p}$ there exist a point $P$ in $E(\F{p^2})$
 such that $x$ is the \xcoord of $P$.
 
-Given $n \in \N$ and $x \in \Ffield$, such that $x$ is the \xcoord of
-a point $P$ of $E(\F{p^2})$, X25519 returns the \xcoord of $n \cdot P$, the
-scalar multiplication of $P$ by $n$.
-% Note that the result is the same with $n \cdot (-P) = -(n \cdot P)$.
+The core of the X25519 key-exchange protocol is a scalar-multiplication
+function, which we will also refer to as X25519. 
+This function receives as input two arrays of $32$ bytes each.
+One of them is interpreted as the little-endian encoding of a 
+non-negative integer $n$ (see \ref{subsec:integer-bytes}). 
+The other is interpreted as the little-endian encoding of
+the \xcoord $x_P \in \F{p}$ of a point in $E(\F{p^2})$,
+using the standard mapping of integers modulo $p$ to elements in $\F{p}$.
 
-X25519 makes use of the little endian encoding (see \ref{subsec:integer-bytes})
-for its arguments of 32-bytes:
-\texttt{n} the secret key and \texttt{p} the public key.
-% Curve25519 has a cofactor of 8.
-In order to avoid attacks where an attacker could discover some bits of the
-private key, values of $n$ are forced into the shape of
-$2^{254} + 8\{0,1,\ldots,2^{251}-1\}$. This is done by setting bit 255
-to \texttt{0}; bit 254 to \texttt{1} and the lower 3 bits to \texttt{0},
-making $n$ effectively a multiple of 8. This operation is known as the clamping.
+The X25519 function first computes a scalar $n'$ by setting bit 255 of $n$
+to \texttt{0}; setting bit 254 to \texttt{1} and setting the lower 3 bits to \texttt{0}.
+This operation is often called ``clamping'' of the scalar $n$.
+Note that $n' \in 2^{254} + 8\{0,1,\ldots,2^{251}-1\}$.
+X25519 then computes the \xcoord of $n'\cdot P$.
 
 RFC~7748~\cite{rfc7748} standardized the X25519 Diffie–Hellman key-exchange algorithm.
 Given the base point $B$ where $X_B=9$, each party generate a secret random number
 $s_a$ (respectively $s_b$), and computes $X_{P_a}$ (respectively $X_{P_b}$), the
 \xcoord of $P_A = s_a \cdot B$ (respectively $P_B = s_b \cdot B$).
-% , the scalar multiplication of $B$ by $s_a$ (respectively $s_b$).
-The party exchanges $X_{P_a}$ and $X_{P_b}$ and computes their shared secret with X25519
-over $s_a$ and $X_{P_b}$ (respectively $s_b$ and $X_{P_a}$).
-
-
-
-
+The parties exchange $X_{P_a}$ and $X_{P_b}$ and compute their shared secret with 
+X25519 on $s_a$ and $X_{P_b}$ (respectively $s_b$ and $X_{P_a}$).
 
 \subsection{TweetNaCl specifics}
 \label{subsec:Number-TweetNaCl}
 
-As its name suggests, TweetNaCl aims for code compactness (in 100 tweets).
+As its name suggests, TweetNaCl aims for code compactness (\emph{``a crypto library in 100 tweets''}).
 As a result it uses a few defines and typedefs to gain precious bytes while
 still remaining readable.
 \begin{lstlisting}[language=Ctweetnacl]
@@ -144,9 +136,6 @@ original code. A complete diff of our modifications to TweetNaCl can be found in
 Appendix~\ref{verified-C-and-diff}.
 
 
-
-
-
 \subsection{X25519 in TweetNaCl}
 \label{subsec:X25519-TweetNaCl}
 
@@ -156,7 +145,7 @@ We now describe the implementation of X25519 in TweetNaCl.
 In X25519, all computations are performed in $\F{p}$.
 Throughout the computation, elements of that field
 are represented in radix $2^{16}$,
-i.e., an element $A$ is represented as $(a_0,\dots,a_{15}$,
+i.e., an element $A$ is represented as $(a_0,\dots,a_{15})$,
 with $A = \sum_{i=0}^{15}a_i2^{16i}$.
 The individual ``limbs'' $a_i$ are represented as
 64-bit \TNaCle{long long} variables:
@@ -224,8 +213,9 @@ In order to simplify the verification of this function,
 we treat the last iteration of the loop $i = 15$ as a separate step.
 
 Inverses in $\Zfield$ are computed with \TNaCle{inv25519}.
-It uses exponentiation by $2^{255}-21$, computed with the square-and-multiply
-algorithm. Fermat's little theorem gives the correctness.
+This function uses exponentiation by $2^{255}-21$, 
+computed with the square-and-multiply algorithm. 
+Fermat's little theorem gives the correctness.
 Notice that in this case the inverse of $0$ is defined as $0$.
 \begin{lstlisting}[language=Ctweetnacl]
 sv inv25519(gf o,const gf i)
@@ -258,7 +248,8 @@ sv sel25519(gf p,gf q,i64 b)
 
 Finally, we need the \TNaCle{pack25519} function,
 which converts from the internal redundant radix-$2^{16}$
-representation to a unique byte array.
+representation to a unique byte array representing an
+integer in $\{0,\dots,p-1\}$ in little-endian format.
 \begin{lstlisting}[language=Ctweetnacl]
 sv pack25519(u8 *o,const gf n)
 {
@@ -288,24 +279,15 @@ sv pack25519(u8 *o,const gf n)
 \end{lstlisting}
 As we can see, this function is considerably more complex than the
 unpacking function. The reason is that it needs to convert
-to a \emph{unique} representation before packing into the output
-byte array.
+to a \emph{unique} representation, i.e., also fully reduce modulo
+$p$ and remove the redundancy of the radix-$2^{16}$ representation.
 
 \subheading{The Montgomery ladder.}
-With these low-level arithmetic and helper functions at hand, we can now
-% at hand is valid English: readily accessible when needed.
-turn our attention to the core of the X25519 computation:
-the \TNaCle{crypto_scalarmult} API function of TweetNaCl.
-In order to compute the scalar multiplication,
-X25519 uses the Montgomery ladder~\cite{Mon85}.
+With these low-level arithmetic and helper functions defined, 
+we can now turn our attention to the core of the X25519 computation:
+the \TNaCle{crypto_scalarmult} API function of TweetNaCl,
+which is implemented through the Montgomery ladder.
 
-\xcoords are represented as not-evaluated fractions, the computation of
-the quotient is deferred to the end of the ladder with \TNaCle{inv25519}.
-
-First extract and clamp the value of $n$. Then unpack the value of $p$.
-As per RFC~7748~\cite{rfc7748}, set its most significant bit to 0.
-Finally compute the Montgomery ladder over the clamped $n$ and $p$,
-and pack the result into $q$.
 \begin{lstlisting}[language=Ctweetnacl]
 int crypto_scalarmult(u8 *q,
                       const u8 *n,
@@ -355,9 +337,8 @@ int crypto_scalarmult(u8 *q,
   return 0;
 }
 \end{lstlisting}
-
-
-
+%XXX: I really want line numbers here to link lines in this code to
+% the pseudocode description
 
 
 \subsection{Coq and VST}
