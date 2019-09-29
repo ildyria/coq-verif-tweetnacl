@@ -30,14 +30,17 @@ triple before proving its correctness with VST (\ref{subsec:with-VST}).
 We provide an example of equivalence of operations over different number
 representations (\ref{subsec:num-repr-rfc}). Then, we describe efficient techniques
 used to in some of our more complex proofs (\ref{subsec:inversions-reflections}).
+%XXX-Peter: "used to" what? Incomplete sentence
 
 
 
 
-
+%XXX-Peter: Does this subsection really belong here? My understanding is that it describes
+%the full picture (Sections 4 and 5) and not just what is happening in this section.
 \subsection{Structure of our proof}
 \label{subsec:proof-structure}
 
+% XXX-Peter: This whole paragraph can go away; we already said this before.
 In order to prove the correctness of X25519 in TweetNaCl code \TNaCle{crypto_scalarmult},
 we use VST to prove that the code matches our functional Coq specification of \Coqe{RFC}.
 Then, we prove that our specification of the scalar multiplication matches the mathematical definition
@@ -48,7 +51,7 @@ subsequently called: \TNaCle{unpack25519}; \TNaCle{A}; \TNaCle{Z}; \TNaCle{M};
 \TNaCle{S}; \TNaCle{car25519}; \TNaCle{inv25519}; \TNaCle{set25519}; \TNaCle{sel25519};
 \TNaCle{pack25519}.
 
-We prove the implementation of X25519 is \textbf{sound}, \ie:
+We prove that the implementation of X25519 is \textbf{sound}, \ie:
 \begin{itemize}
 \item absence of access out-of-bounds of arrays (memory safety).
 \item absence of overflows/underflow in the arithmetic.
@@ -59,19 +62,19 @@ We also prove that TweetNaCl's code is \textbf{correct}:
 \item Operations on \TNaCle{gf} (\TNaCle{A}, \TNaCle{Z}, \TNaCle{M}, \TNaCle{S})
 are equivalent to operations ($+,-,\times,x^2$) in $\Zfield$.
 \item The Montgomery ladder computes the multiple of a point.
-% \item The Montgomery ladder computes a scalar multiplication between a natural
-% number and a point.
+  %XXX-Peter: We don't prove this last statement in this section
 \end{itemize}
 
 In order to prove the soundness and correctness of \TNaCle{crypto_scalarmult},
 we reuse the generic Montgomery ladder defined in \sref{sec:Coq-RFC}.
 
-We define a High-level specification by instantiating the ladder with a generic
+We define a high-level specification by instantiating the ladder with a generic
 field $\K$, this allows us to prove the correctness of the ladder with respect
-to the theory of elliptic curves.
+to the theory of elliptic curves. 
 This high-level specification does not rely on the parameters of Curve25519.
 We later specialize $\K$ with $\Ffield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
 to derive the correctness of \coqe{RFC} (\sref{sec:maths}).
+%XXX-Peter: not in this section, correct?
 
 We define a mid-level specification by instantiating the ladder over $\Zfield$.
 Additionally we also provide a low-level specification close to the \texttt{C} code
@@ -157,7 +160,7 @@ SEP  (sh [{ v_q }] <<(uch32)-- mVI (RFC n p);
       Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665
 \end{lstlisting}
 
-In this specification we state as preconditions:
+In this specification we state the following preconditions:
 \begin{itemize}
   \item[] \VSTe{PRE}: \VSTe{_p OF (tptr tuchar)}\\
   The function \TNaCle{crypto_scalarmult} takes as input three pointers to
@@ -177,7 +180,7 @@ In this specification we state as preconditions:
   complete representation of \TNaCle{u8[32]}.
 \end{itemize}
 
-As Post-condition we have:
+As postcondition we have:
 \begin{itemize}
   \item[] \VSTe{POST}: \VSTe{tint}\\
   The function \TNaCle{crypto_scalarmult} returns an integer.
@@ -229,8 +232,9 @@ The correctness of this specification is formally proven in Coq with
 % For the sake of completeness we proved all intermediate functions.
 
 \subheading{Memory aliasing.}
-In the VST, a simple specification of \texttt{M(o,a,b)} will assume three
-distinct memory share. When called with three memory shares (\texttt{o, a, b}),
+In the VST, a simple specification of \texttt{M(o,a,b)} will assume that the pointer arguments
+point to non-overlapping space in memory. % XXX-Peter: "memory share" is unclear; please fix in the next sentence.
+When called with three memory shares (\texttt{o, a, b}),
 the three of them will be consumed. However assuming this naive specification
 when \texttt{M(o,a,a)} is called (squaring), the first two memory shares (\texttt{o, a})
 are consumed and VST will expect a third memory share (\texttt{a}) which does not \emph{exist} anymore.
@@ -257,11 +261,13 @@ In the proof of our specification, we do a case analysis over $k$ when needed.
 This solution does not cover all cases (e.g. all arguments are aliased) but it
 is enough for our needs.
 
+%XXX-Peter: shouldn't verifying fixed-length for loops be rather standard?
+% Can we shorten the next paragraph?
 \subheading{Verifying \texttt{for} loops.}
 Final states of \texttt{for} loops are usually computed by simple recursive functions.
 However we must define invariants which are true for each iteration step.
 
-Assume we want to prove a decreasing loop where indexes go from 3 to 0.
+Assume that we want to prove a decreasing loop where indexes go from 3 to 0.
 Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as
 input an integer for the index and a state, then returns a state.
 It simulates the body of the \texttt{for} loop.
@@ -455,7 +461,8 @@ apply the unrolling and exponentiation formulas 255 times. This could be automat
 in Coq with tacticals such as \Coqe{repeat}, but it generates a proof object which
 will take a long time to verify.
 
-\subheading{Reflections.} In order to speed up the verification we use a
+\subheading{Reflections.} 
+In order to speed up the verification we use a
 technique called ``Reflection''. It provides us with flexibility, \eg we don't
 need to know the number of times nor the order in which the lemmas needs to be
 applied (chapter 15 in \cite{CpdtJFR}).
@@ -473,7 +480,7 @@ With this technique we prove the functional correctness of the inversion over \Z
 \label{cor:inv_comput_field}
 \Coqe{Inv25519} computes an inverse in \Zfield.
 \end{lemma}
-Which is formalized as:
+This statement is formalized as
 \begin{lstlisting}[language=Coq]
 Corollary Inv25519_Zpow_GF :
   forall (g:list Z),
