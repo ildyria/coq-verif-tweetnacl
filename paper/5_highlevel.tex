@@ -78,7 +78,7 @@ Inductive ec : Type := EC p of oncurve p.
 Points of an elliptic curve are equipped with a structure of an abelian group.
 \begin{itemize}
   \item The negation of a point $P = (x,y)$ by taking the symmetric with respect to the x axis $-P = (x, -y)$.
-  \item The addition of two points $P$ and $Q$ is defined by the negation of third intersection
+  \item The addition of two points $P$ and $Q$ is defined by the negation of the third intersection
   of the line passing by $P$ and $Q$ or tangent to $P$ if $P = Q$.
   \item $\Oinf$ is the neutral element under this law: if 3 points are collinear, their sum is equal to $\Oinf$.
 \end{itemize}
@@ -120,7 +120,7 @@ than the Weierstra{\ss} form. We consider the Montgomery form \cite{MontgomerySp
   along with an additional formal point $\Oinf$, ``at infinity''.
 \end{dfn}
 Using a similar representation, we defined the parametric type \texttt{mc} which
-represent the points on a specific Montgomery curve. It is parameterized by
+represents the points on a specific Montgomery curve. It is parameterized by
 a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
 and \texttt{M : mcuType} -- a record that packs the curve parameters $a$ and $b$
 along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
