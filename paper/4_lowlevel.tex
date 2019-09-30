@@ -382,10 +382,10 @@ applied (chapter 15 in \cite{CpdtJFR}).
 The idea is to \emph{reflect} the goal into a decidable environment.
 We show that for a property $P$, we can define a decidable Boolean property
 $P_{bool}$ such that if $P_{bool}$ is \Coqe{true} then $P$ holds.
-$$reify\_P : P_{bool} = true \implies P$$
-By applying $reify\_P$ on $P$ our goal become $P_{bool} = true$.
+$$\text{\textit{reify\_P}} : P_{bool} = \text{\textit{true}} \implies P$$
+By applying \textit{reify\_P} on $P$ our goal become $P_{bool} = true$.
 We then compute the result of $P_{bool}$. If the decision goes well we are
-left with the tautology $true = true$.
+left with the tautology $\text{\textit{true}} = \text{\textit{true}}$.
 
 With this technique we prove the functional correctness of the inversion over \Zfield.
 \begin{lemma}

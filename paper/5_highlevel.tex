@@ -187,6 +187,8 @@ Definition ec_of_mc p :=
 Lemma ec_of_mc_bij : bijective ec_of_mc.
 \end{lstlisting}
 
+% We use this isomorphism to derive that $(M_{a,b}(\K), + )$ is a group.
+
 \subsubsection{Projective coordinates}
 \label{subsec:ECC-projective}
 
@@ -272,7 +274,7 @@ we can define a ladder similar to the one used in TweetNaCl (See \aref{alg:montg
 \ENSURE{$a/c = \chi_0(n \cdot P)$ for any $P$ such that $\chi_0(P) = x$}
 \STATE $(a,c) \leftarrow (1,0)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(\Oinf) = (1:0)$}}
 \STATE $(b,d) \leftarrow (x,1)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(P) = (x:1)$}}
-\FOR{$k$ := $m$ downto $1$}
+\FOR{$k$ := $m$ \textbf{downto} $1$}
   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
     \STATE $(a,b) \leftarrow (b,a)$
     \STATE $(c,d) \leftarrow (d,c)$
@@ -493,7 +495,7 @@ of formulas by using rewrite rules:
 \qquad
 \begin{split}
 (a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
-(0,a)^{-1} &= ((2\cdot a)^{-1},0)\\
+(0,a)^{-1} &= (0,(2\cdot a)^{-1})\\
 % (0, a)\cdot (0,b) &= (2\cdot a\cdot b, 0)\\
 ~\\
 \end{split}
