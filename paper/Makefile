@@ -16,16 +16,15 @@ BOLD = "\033[1m"
 
 
 tweetverif.pdf: FORCE tweetverif.tex
-	@echo $(BOLD)$(GREEN)"Building tweetverif.pdf"$(NO_COLOR)$(DARKGRAY)
+	@echo $(BOLD)$(LIGHTPURPLE)"Building tweetverif.pdf"$(NO_COLOR)$(DARKGRAY)
 	python3 latexrun.py tweetverif.tex
 
 tweetverif.tex: FORCE $(FILES) collection.bib
 	@echo $(BOLD)$(YELLOW)"Generating tweetverif.tex"$(NO_COLOR)$(DARKGRAY)
 	python3 gen.py tweetverif.tex
-	@echo $(BOLD)$(GREEN)"Done."$(NO_COLOR)
 
 specs_map.pdf: FORCE _files.tex
-	@echo $(BOLD)$(GREEN)"Building specs_map.pdf"$(NO_COLOR)$(DARKGRAY)
+	@echo $(BOLD)$(LIGHTPURPLE)"Building specs_map.pdf"$(NO_COLOR)$(DARKGRAY)
 	python3 latexrun.py _files.tex
 	@echo $(BOLD)$(ORANGE)"Moving specs_map.pdf to ../"$(NO_COLOR)$(DARKGRAY)
 	@mv _files.pdf ../specs_map.pdf

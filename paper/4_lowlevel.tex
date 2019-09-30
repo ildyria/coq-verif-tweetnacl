@@ -24,91 +24,12 @@ Theorem body_crypto_scalarmult:
     crypto_scalarmult_spec.
 \end{lstlisting}
 
-We first describe the global structure of our proof (\ref{subsec:proof-structure}).
+% We first describe the global structure of our proof (\ref{subsec:proof-structure}).
 Using our formalization of RFC~7748 (\sref{sec:Coq-RFC}) we specify the Hoare
 triple before proving its correctness with VST (\ref{subsec:with-VST}).
 We provide an example of equivalence of operations over different number
 representations (\ref{subsec:num-repr-rfc}). Then, we describe efficient techniques
-used to in some of our more complex proofs (\ref{subsec:inversions-reflections}).
-%XXX-Peter: "used to" what? Incomplete sentence
-
-
-
-
-%XXX-Peter: Does this subsection really belong here? My understanding is that it describes
-%the full picture (Sections 4 and 5) and not just what is happening in this section.
-\subsection{Structure of our proof}
-\label{subsec:proof-structure}
-
-% XXX-Peter: This whole paragraph can go away; we already said this before.
-In order to prove the correctness of X25519 in TweetNaCl code \TNaCle{crypto_scalarmult},
-we use VST to prove that the code matches our functional Coq specification of \Coqe{RFC}.
-Then, we prove that our specification of the scalar multiplication matches the mathematical definition
-of elliptic curves and Theorem 2.1 by Bernstein~\cite{Ber06} (\sref{sec:maths}).
-
-Verifying \TNaCle{crypto_scalarmult} also implies verifying all the functions
-subsequently called: \TNaCle{unpack25519}; \TNaCle{A}; \TNaCle{Z}; \TNaCle{M};
-\TNaCle{S}; \TNaCle{car25519}; \TNaCle{inv25519}; \TNaCle{set25519}; \TNaCle{sel25519};
-\TNaCle{pack25519}.
-
-We prove that the implementation of X25519 is \textbf{sound}, \ie:
-\begin{itemize}
-\item absence of access out-of-bounds of arrays (memory safety).
-\item absence of overflows/underflow in the arithmetic.
-\end{itemize}
-We also prove that TweetNaCl's code is \textbf{correct}:
-\begin{itemize}
-\item X25519 is correctly implemented (we get what we expect) .
-\item Operations on \TNaCle{gf} (\TNaCle{A}, \TNaCle{Z}, \TNaCle{M}, \TNaCle{S})
-are equivalent to operations ($+,-,\times,x^2$) in $\Zfield$.
-\item The Montgomery ladder computes the multiple of a point.
-  %XXX-Peter: We don't prove this last statement in this section
-\end{itemize}
-
-In order to prove the soundness and correctness of \TNaCle{crypto_scalarmult},
-we reuse the generic Montgomery ladder defined in \sref{sec:Coq-RFC}.
-
-We define a high-level specification by instantiating the ladder with a generic
-field $\K$, this allows us to prove the correctness of the ladder with respect
-to the theory of elliptic curves. 
-This high-level specification does not rely on the parameters of Curve25519.
-We later specialize $\K$ with $\Ffield$, and the parameters of Curve25519 ($a = 486662, b = 1$),
-to derive the correctness of \coqe{RFC} (\sref{sec:maths}).
-%XXX-Peter: not in this section, correct?
-
-We define a mid-level specification by instantiating the ladder over $\Zfield$.
-Additionally we also provide a low-level specification close to the \texttt{C} code
-(over lists of $\Z$). We show this specification to be equivalent to the
-\emph{semantic version} of C (Clight) using the VST.
-This low level specification gives us the soundness assurance.
-
-RFC~7748's X25519 formalization (\sref{sec:Coq-RFC}) takes as input list of $\Z$.
-However the inner Montgomery ladder operates on $\Zfield$. We show its equivalence
-with our mid-level and low-level specifications.
-
-By showing that operations over instances ($\K = \Ffield$, $\Zfield$, list of $\Z$) are
-equivalent, we bridge the gap between the different level of specification
-with Curve25519 parameters.
-As such, we prove all specifications to equivalent (\fref{tikz:ProofStructure}).
-This guarantees us the correctness of the implementation.
-
-\begin{figure}[h]
-  \centering
-  \include{tikz/specifications}
-  \caption{Structural construction of the proof}
-  \label{tikz:ProofStructure}
-\end{figure}
-
-
-
-
-
-
-% The location of the definitions are listed in Appendix~\ref{appendix:proof-files}.
-
-
-
-
+used in some of our more complex proofs (\ref{subsec:inversions-reflections}).
 
 
 \subsection{Applying the Verifiable Software Toolchain}
@@ -202,18 +123,6 @@ their respective bounds: arrays of 32 bytes.
 The correctness of this specification is formally proven in Coq with
 \coqe{Theorem body_crypto_scalarmult}.
 
-% \begin{theorem}
-% \label{thm:crypto-vst}
-% \TNaCle{crypto_scalarmult} in TweetNaCl has the same behavior as \coqe{RFC} in Coq.
-% \end{theorem}
-
-
-
-% % this does not exists anymore
-% The location of the proof of this Hoare triple can be found in Appendix~\ref{appendix:proof-files}.
-
-% We now bring the attention of the reader to details of verifications using the VST.
-
 %% BLABLA about VST. Does not belong here.
 
 % The Verifiable Software Toolchain uses a strongest postcondition strategy.
@@ -233,7 +142,8 @@ The correctness of this specification is formally proven in Coq with
 
 \subheading{Memory aliasing.}
 In the VST, a simple specification of \texttt{M(o,a,b)} will assume that the pointer arguments
-point to non-overlapping space in memory. % XXX-Peter: "memory share" is unclear; please fix in the next sentence.
+point to non-overlapping space in memory, also named memory share.
+% XXX-Peter: "memory share" is unclear; please fix in the next sentence.
 When called with three memory shares (\texttt{o, a, b}),
 the three of them will be consumed. However assuming this naive specification
 when \texttt{M(o,a,a)} is called (squaring), the first two memory shares (\texttt{o, a})
@@ -262,6 +172,10 @@ This solution does not cover all cases (e.g. all arguments are aliased) but it
 is enough for our needs.
 
 %XXX-Peter: shouldn't verifying fixed-length for loops be rather standard?
+%XXX Benoit: it is simple if the argument is increasing or if the "recursive call"
+% is made before the computations.
+% This is not the case here: you compute idx 255 before 254...
+
 % Can we shorten the next paragraph?
 \subheading{Verifying \texttt{for} loops.}
 Final states of \texttt{for} loops are usually computed by simple recursive functions.
@@ -283,8 +197,6 @@ iteratively applies $g$ with decreasing index:
 Then we have :
 \begin{align*}
   f(4,s) &= g(0,g(1,g(2,g(3,s))))
-  % \\
-  % f(3,s) &= g(0,g(1,g(2,s)))
 \end{align*}
 To prove the correctness of $f(4,s)$, we need to prove that intermediate steps
 $g(3,s)$; $g(2,g(3,s))$; $g(1,g(2,g(3,s)))$; $g(0,g(1,g(2,g(3,s))))$ are correct.
@@ -304,7 +216,7 @@ in C provide the same computations as in \coqe{RFC}.
 
 
 
-\subsection{Number Representation and C Implementation}
+\subsection{Number representation and C implementation}
 \label{subsec:num-repr-rfc}
 
 As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are represented
@@ -364,7 +276,7 @@ Lemma M_bound_Zlength :
 
 
 
-\subsection{Inversions, Reflections and Packing}
+\subsection{Inversions, reflections and packing}
 \label{subsec:inversions-reflections}
 
 We now turn our attention to the multiplicative inverse in $\Zfield$ and techniques
@@ -461,7 +373,7 @@ apply the unrolling and exponentiation formulas 255 times. This could be automat
 in Coq with tacticals such as \Coqe{repeat}, but it generates a proof object which
 will take a long time to verify.
 
-\subheading{Reflections.} 
+\subheading{Reflections.}
 In order to speed up the verification we use a
 technique called ``Reflection''. It provides us with flexibility, \eg we don't
 need to know the number of times nor the order in which the lemmas needs to be
@@ -482,11 +394,10 @@ With this technique we prove the functional correctness of the inversion over \Z
 \end{lemma}
 This statement is formalized as
 \begin{lstlisting}[language=Coq]
-Corollary Inv25519_Zpow_GF :
-  forall (g:list Z),
+Corollary Inv25519_Zpow_GF : forall (g:list Z),
   length g = 16 ->
   Z16.lst (Inv25519 g) :GF  =
-  (pow (Z16.lst g) (2^255-21)) :GF.
+    (pow (Z16.lst g) (2^255-21)) :GF.
 \end{lstlisting}
 
 This reflection technique is also used where proofs requires some computing
@@ -513,10 +424,9 @@ for(i=1;i<15;i++) {
 \end{lstlisting}
 
 This loop separation allows simpler proofs. The first loop is seen as the
-subtraction of a number in \Zfield. We then prove that with the iteration of the
-second loop, the number represented in $\Zfield$ stays the same. This leads to
-the proof that \TNaCle{pack25519} is effectively reducing modulo $\p$ and
-returning a number in base $2^8$.
+subtraction of \p. The resulting number represented in $\Zfield$ is invariant with
+the iteration of the second loop. This result in the proof that \TNaCle{pack25519}
+reduces modulo $\p$ and returns a number in base $2^8$.
 \begin{lstlisting}[language=Coq]
 Lemma Pack25519_mod_25519 :
   forall (l:list Z),
@@ -532,7 +442,7 @@ we defined a Coq definition \coqe{Crypto_Scalarmult} mimicking the exact behavio
 
 By proving that each functions \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
 \coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519} are behaving over \coqe{list Z}
-as their equivalent over \coqe{Z} in \coqe{:GF} (in \Zfield), we prove that given the same inputs \coqe{Crypto_Scalarmult} applies the same computation as \coqe{RFC}.
+as their equivalent over \coqe{Z} with \coqe{:GF} (in \Zfield), we prove that given the same inputs \coqe{Crypto_Scalarmult} applies the same computation as \coqe{RFC}.
 % This is formalized as follows in Coq:
 \begin{lstlisting}[language=Coq]
 Lemma Crypto_Scalarmult_RFC_eq :

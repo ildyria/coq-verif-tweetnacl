@@ -83,7 +83,7 @@ The definitions of the encoding and decoding functions are detailed in
 
 RFC~7748 states that \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}
 Operations used in the Montgomery ladder of \coqe{RFC} are performed on
-integers (See Appendix~\ref{subsubsec:RFC-Coq}). 
+integers (See Appendix~\ref{subsubsec:RFC-Coq}).
 The reduction modulo $\p$ is deferred to the very end as part of the \coqe{ZPack25519} operation.
 %We use this notation to emphasis its difference with $\Ffield$ where the
 %modulo by $\p$ is applied in each operations.
@@ -123,7 +123,7 @@ We later prove our ladder correct in that respect (\sref{sec:maths}).
 
 
 
-\subsection{Integers and Bytes}
+\subsection{Integers and bytes}
 \label{subsec:integer-bytes}
 
 \emph{``To implement the X25519(k, u) [...] functions (where k is
@@ -132,18 +132,15 @@ perform the following procedure, which is taken from [curve25519] and
 based on formulas from [montgomery].  All calculations are performed
 in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
 
-In TweetNaCl, as described in \sref{subsec:Number-TweetNaCl}, 
-elements of $\F{p}$ are represented as big integers using radix $2^{16}$. 
-We use a direct mapping to represent such an array of limbs 
+In TweetNaCl, as described in \sref{subsec:Number-TweetNaCl},
+elements of $\F{p}$ are represented as big integers using radix $2^{16}$.
+We use a direct mapping to represent such an array of limbs
 as a list of integers in Coq.
 
 We define the little-endian projection to integers as follows.
 \begin{dfn}
 Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
-a parameterized map by $n$ between a list $l$ and its little endian representation
-with a radix $2^n$.
-%XXX-Peter: The sentence before is not clear to me. What exactly is mapped where?
-%and what is the "little endian representation with a radix $2^n$ of a list"?
+a function given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
 \end{dfn}
 We define it in Coq as:
 \begin{lstlisting}[language=Coq]
@@ -159,9 +156,9 @@ base to verify operations over lists in TweetNaCl (See~\ref{subsec:num-repr-rfc}
 The encoding from integers to bytes is defined in a similar way:
 \begin{dfn}
 Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
-$n$ and $a$ returns $a$'s little-endian representation
-as a list with radix $2^n$.
-%XXX-Peter: Again I'm confused... why are there two \rightarrows? 
+$n$ and $a$ returns $a$'s little-endian encoding as a list with radix $2^n$.
+%XXX-Peter: Again I'm confused... why are there two \rightarrows?
+%XXX-Benoit it is the functional view of arguments and partial functions. It is called Currying.
 \end{dfn}
 We define it in Coq as:
 \begin{lstlisting}[language=Coq]

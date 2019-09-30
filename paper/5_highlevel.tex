@@ -28,7 +28,7 @@ We extend it to support Montgomery curves (\ref{subsec:ECC-Montgomery})
 with homogeneous coordinates (\ref{subsec:ECC-projective}) and prove the
 correctness of the ladder (\ref{subsec:ECC-ladder}).
 
-\subsection{Formalization of Elliptic Curves}
+\subsection{Formalization of elliptic Curves}
 \label{subsec:ECC}
 
 We consider elliptic curves over a field $\K$. We assume that the
@@ -44,7 +44,7 @@ solutions $(x,y)$ of $E$ augmented by a distinguished point $\Oinf$ (called poin
 $$E(\K) = \{(x,y) \in \K \times \K | E(x,y)\} \cup \{\Oinf\}$$
 \end{dfn}
 
-\subsubsection{Weierstra{\ss} Curves}
+\subsubsection{Weierstra{\ss} curves}
 \label{subsec:ECC-Weierstrass}
 
 This equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
@@ -106,7 +106,7 @@ Definition addec (p1 p2 : ec) : ec :=
   EC p1 p2 (addO p1 p2)
 \end{lstlisting}
 
-\subsubsection{Montgomery Curves}
+\subsubsection{Montgomery curves}
 \label{subsec:ECC-Montgomery}
 
 Speedups can be obtained by switching to homogeneous coordinates and other forms
@@ -187,7 +187,7 @@ Definition ec_of_mc p :=
 Lemma ec_of_mc_bij : bijective ec_of_mc.
 \end{lstlisting}
 
-\subsubsection{Projective Coordinates}
+\subsubsection{Projective coordinates}
 \label{subsec:ECC-projective}
 
 On a projective plane, points are represented with a triple $(X:Y:Z)$.
@@ -257,7 +257,7 @@ we have $X_3/Z_3 = \chi(2P_1)$.
 With \lref{lemma:xADD} and \lref{lemma:xDBL}, we are able to compute efficiently
 differential additions and point doubling on projective coordinates.
 
-\subsubsection{Scalar Multiplication Algorithms}
+\subsubsection{Scalar multiplication algorithms}
 \label{subsec:ECC-ladder}
 
 By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL} and \texttt{xADD}
@@ -341,7 +341,7 @@ Theorem opt_montgomery_ok (n m: nat) (x : K) :
   opt_montgomery n m x = (p *+ n)#x0.
 \end{lstlisting}
 
-\subsection{Curves, Twists and Extension Fields}
+\subsection{Curves, twists and extension fields}
 
 To be able to use the above theorem we need to satisfy hypothesis
 \ref{hyp:a_minus_4_not_square}: $a^2-4$ is not a square in \K:
@@ -353,7 +353,7 @@ with $\K = \F{p^2}$.
 We first study Curve25519 and one of the quadratic twist Twist25519, both defined
 over \F{p}.
 
-\subsubsection{Curves and Twists}
+\subsubsection{Curves and twists}
 \label{subsec:Zmodp}
 
 We define $\F{p}$ as the numbers between $0$ and $p = \p$.
@@ -372,7 +372,6 @@ Definition pi (x : Z) : type :=
   Zmodp (Z_mod_betweenb x Hp_gt0).
 Coercion repr (x : type) : Z :=
   let: @Zmodp x _ := x in x.
-End Zmodp.
 \end{lstlisting}
 
 We define the basic operations ($+, -, \times$) with their respective neutral
@@ -451,21 +450,21 @@ Definition pi (x: Zmodp.type * Zmodp.type) : type :=
   Zmodp2 x.1 x.2.
 Coercion repr (x: type) : Zmodp.type*Zmodp.type :=
   let: Zmodp2 u v := x in (u, v).
-
-Definition zero : type :=
-  pi ( 0%:R, 0%:R ).
-Definition one : type :=
-  pi ( 1, 0%:R ).
-Definition opp (x: type) : type :=
-  pi (- x.1 , - x.2).
-Definition add (x y: type) : type :=
-  pi (x.1 + y.1, x.2 + y.2).
-Definition sub (x y: type) : type :=
-  pi (x.1 - y.1, x.2 - y.2).
 Definition mul (x y: type) : type :=
   pi ((x.1 * y.1) + (2%:R * (x.2 * y.2)),
       (x.1 * y.2) + (x.2 * y.1)).
 \end{lstlisting}
+% Definition zero : type :=
+%   pi ( 0%:R, 0%:R ).
+% Definition one : type :=
+%   pi ( 1, 0%:R ).
+% Definition opp (x: type) : type :=
+%   pi (- x.1 , - x.2).
+% Definition add (x y: type) : type :=
+%   pi (x.1 + y.1, x.2 + y.2).
+% Definition sub (x y: type) : type :=
+%   pi (x.1 - y.1, x.2 - y.2).
+
 We define the basic operations ($+, -, \times$) with their respective neutral
 elements $0$ and $1$. Additionally we verify that for each element of in
 $\F{p^2}\backslash\{0\}$, there exists a multiplicative inverse.
@@ -484,15 +483,21 @@ Similarly as in $\F{p}$, we define $0^{-1} = 0$ and prove \lref{lemma:Zmodp2_rin
 %% If need remove this paragraph
 We can then specialize the basic operations in order to speed up the verification
 of formulas by using rewrite rules:
-\begin{align*}
+\begin{equation*}
+\begin{split}
 (a,0) + (b,0) &= (a+b, 0)\\
-(a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
-(a, 0)^n &= (a^n, 0)\\
 (a, 0)^{-1} &= (a^{-1}, 0)\\
-(a, 0)\cdot (0,b) &= (0, a\cdot b)\\
-(0, a)\cdot (0,b) &= (2\cdot a\cdot b, 0)\\
-(0,a)^{-1} &= ((2\cdot a)^{-1},0)
-\end{align*}
+% (a, 0)\cdot (0,b) &= (0, a\cdot b)\\
+(a, 0)^n &= (a^n, 0)\\
+\end{split}
+\qquad
+\begin{split}
+(a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
+(0,a)^{-1} &= ((2\cdot a)^{-1},0)\\
+% (0, a)\cdot (0,b) &= (2\cdot a\cdot b, 0)\\
+~\\
+\end{split}
+\end{equation*}
 
 
 
@@ -544,9 +549,9 @@ Notice that:
 In summary for all $n \in \N,\ n < 2^{255}$, for any given point $P\in\F{p}\times\F{p}$
 on $M_{486662,1}(\F{p})$ or $M_{486662,2}(\F{p})$, $Curve25519\_Fp$
 computes the $\chi_0(n \cdot P)$.
-We have proved that for all $P \in \F{p^2}\times\F{p^2}$ such that $\chi_0(P) \in \F{p}$
+We proved that for all $P \in \F{p^2}\times\F{p^2}$ such that $\chi_0(P) \in \F{p}$
 there exists a corresponding point on the curve or the twist over $\F{p}$.
-We have proved that for any point, on the curve or the twist we can compute the
+We proved that for any point, on the curve or the twist we can compute the
 scalar multiplication by $n$ and yield to the same result as if we did the
 computation in $\F{p^2}$.
 % As a result we have proved theorem 2.1 of \cite{Ber06}:
@@ -557,7 +562,7 @@ computation in $\F{p^2}$.
   for all $x \in \F{p}$ and $P \in M_{486662,1}(\F{p^2})$ such that $\chi_0(P) = x$,
   $Curve25519\_Fp(n,x)$ computes $\chi_0(n \cdot P)$.
 \end{theorem}
-which can be formalized in Coq as:
+which is formalized in Coq as:
 \begin{lstlisting}[language=Coq]
 Theorem curve25519_Fp2_ladder_ok:
   forall (n : nat) (x:Zmodp.type),

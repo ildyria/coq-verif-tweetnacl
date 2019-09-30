@@ -42,7 +42,7 @@ In order to efficiently compute the scalar multiplication we use an algorithm
 similar to square-and-multiply: the Montgomery ladder where the basic operations
 are differential addition and doubling~\cite{MontgomerySpeeding}.
 
-We consider \xcoord-only operations. Throughout the computation, 
+We consider \xcoord-only operations. Throughout the computation,
 these $x$-coordinates are kept in projective representation
 $(X : Z)$, with $x = X/Z$; the point at infinity is represented as $(1:0)$.
 See \sref{subsec:ECC-projective} for more details.
@@ -87,15 +87,15 @@ computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}
 
 From now on let $\F{p}$ be the field with $p=2^{255}-19$ elements.
 We consider the elliptic curve $E$ over $\F{p}$ defined by the
-equation $y^2 = x^3 + 486662 x^2 + x$. 
+equation $y^2 = x^3 + 486662 x^2 + x$.
 For every $x \in \F{p}$ there exist a point $P$ in $E(\F{p^2})$
 such that $x$ is the \xcoord of $P$.
 
 The core of the X25519 key-exchange protocol is a scalar-multiplication
-function, which we will also refer to as X25519. 
+function, which we will also refer to as X25519.
 This function receives as input two arrays of $32$ bytes each.
-One of them is interpreted as the little-endian encoding of a 
-non-negative integer $n$ (see \ref{subsec:integer-bytes}). 
+One of them is interpreted as the little-endian encoding of a
+non-negative integer $n$ (see \ref{subsec:integer-bytes}).
 The other is interpreted as the little-endian encoding of
 the \xcoord $x_P \in \F{p}$ of a point in $E(\F{p^2})$,
 using the standard mapping of integers modulo $p$ to elements in $\F{p}$.
@@ -110,7 +110,7 @@ RFC~7748~\cite{rfc7748} standardized the X25519 Diffie–Hellman key-exchange al
 Given the base point $B$ where $X_B=9$, each party generate a secret random number
 $s_a$ (respectively $s_b$), and computes $X_{P_a}$ (respectively $X_{P_b}$), the
 \xcoord of $P_A = s_a \cdot B$ (respectively $P_B = s_b \cdot B$).
-The parties exchange $X_{P_a}$ and $X_{P_b}$ and compute their shared secret with 
+The parties exchange $X_{P_a}$ and $X_{P_b}$ and compute their shared secret with
 X25519 on $s_a$ and $X_{P_b}$ (respectively $s_b$ and $X_{P_a}$).
 
 \subsection{TweetNaCl specifics}
@@ -212,9 +212,9 @@ sv car25519(gf o)
 In order to simplify the verification of this function,
 we treat the last iteration of the loop $i = 15$ as a separate step.
 
-Inverses in $\Zfield$ are computed with \TNaCle{inv25519}.
-This function uses exponentiation by $2^{255}-21$, 
-computed with the square-and-multiply algorithm. 
+Inverses in $\Ffield$ are computed with \TNaCle{inv25519}.
+This function uses exponentiation by $2^{255}-21$,
+computed with the square-and-multiply algorithm.
 Fermat's little theorem gives the correctness.
 Notice that in this case the inverse of $0$ is defined as $0$.
 \begin{lstlisting}[language=Ctweetnacl]
@@ -283,7 +283,7 @@ to a \emph{unique} representation, i.e., also fully reduce modulo
 $p$ and remove the redundancy of the radix-$2^{16}$ representation.
 
 \subheading{The Montgomery ladder.}
-With these low-level arithmetic and helper functions defined, 
+With these low-level arithmetic and helper functions defined,
 we can now turn our attention to the core of the X25519 computation:
 the \TNaCle{crypto_scalarmult} API function of TweetNaCl,
 which is implemented through the Montgomery ladder.
