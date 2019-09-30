@@ -12,7 +12,7 @@ The original paper presenting TweetNaCl describes some effort to support
 this claim, for example, formal verification of memory safety, but does not actually
 prove correctness of any of the primitives implemented by the library.
 
-One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519 presented 
+One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519 presented
 by Bernstein in~\cite{rfc7748}.
 This protocol is standardized in RFC-7748 and used by a wide variety of applications~\cite{things-that-use-curve25519}
 such as SSH, Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
@@ -52,7 +52,7 @@ This extension may be of independent interest.
 \subheading{Related work.}
 Two methodologies exist to get formal guarantees that software meets its specification.
 The first is to write a formal specification and then synthesize
-machine code by refinement; the second is to formalize 
+machine code by refinement; the second is to formalize
 a specification and then verify that some
 implementation satisfies it.
 
@@ -70,7 +70,7 @@ to synthesize certified elliptic-curve crypto software~\cite{Philipoom2018Correc
 This software suite is now being used in BoringSSL~\cite{fiat-crypto}.
 
 The verification approach has been used to prove the correctness of OpenSSL's
-implementations of HMAC~\cite{Beringer2015VerifiedCA} and SHA-256~\cite{2015-Appel}. 
+implementations of HMAC~\cite{Beringer2015VerifiedCA} and SHA-256~\cite{2015-Appel}.
 In terms of languages and tooling, this work is closest to what we present here,
 but our work considers an asymmetric primitive and provides computer-verified
 proofs up to the mathematical definition of the group theory behind elliptic curves.
@@ -78,8 +78,8 @@ proofs up to the mathematical definition of the group theory behind elliptic cur
 When considering the target of the verification effort, the closest work
 to this paper is presented in~\cite{Chen2014VerifyingCS}, which presents
 a mechanized proof of two assembly-level implementations of the core function of X25519.
-The proof in~\cite{Chen2014VerifyingCS} takes a different approach from ours. 
-It uses heavy annotation of code together with SAT solvers; 
+The proof in~\cite{Chen2014VerifyingCS} takes a different approach from ours.
+It uses heavy annotation of code together with SAT solvers;
 also, it does not cover the full X25519 functionality and does
 not make the link to the mathematical definition from~\cite{Ber06}.
 
@@ -97,13 +97,8 @@ not make the link to the mathematical definition from~\cite{Ber06}.
 \subheading{Reproducing the proofs.}
 To maximize reusability of our results we placed the code of our formal proof
 presented in this paper into the public domain.
-\ifpublic
-They are available at XXXXXXX
+They are available at \url{https://anonfile.com/6fp8ta70n9/coq-verif-tweetnacl.tar_gz}
 with instructions of how to compile and verify our proof.
-\else
-They are available in the associated materials with this submission 
-and include instructions of how to compile and verify our proof.
-\fi
 A description of the content of the archive is provided in
 Appendix~\ref{appendix:proof-folders}.
 
