@@ -32,6 +32,8 @@
 \renewcommand{\algorithmicrequire}{\textbf{Input:\ }}
 \renewcommand{\algorithmicensure}{\textbf{Output:\ }}
 
+\setlength{\abovecaptionskip}{-10pt}
+
 \newcommand{\todo}[1]{
 {\color{red} \bf TODO: #1}
 }
@@ -110,6 +112,7 @@
 }
 \def\VSTe{\lstinline[language=CoqVST, basicstyle=\ttfamily\normalsize]}
 \def\VSTes{\lstinline[language=CoqVST, basicstyle=\scriptsize]}
+\def\VSTess{\lstinline[language=CoqVST, basicstyle=\ttfamily\footnotesize]}
 
 \lstnewenvironment{CoqVST}{
 % \mdframed[backgroundcolor=doc@lstbackground]%

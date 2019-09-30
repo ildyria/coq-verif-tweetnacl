@@ -50,12 +50,12 @@
     \draw (0.3,-0.05) node[textstyle] {Specification};
     \draw (1.375,-1) node[textstyle, anchor=center, align=left] {
       {\color{doc@lstnumbers}\textbf{Pre}}:\\
-      ~~\texttt{s}$[\!\!\{$\texttt{n}$\}\!\!]= n \in \N$,\\
+      ~~\texttt{s}$[\!\!\{$\texttt{n}$\}\!\!]\leftarrow n \in \N$,\\
       % ~~$n \in$ \TNaCles{u8[32]},\\
-      ~~\texttt{s}$[\!\!\{$\texttt{p}$\}\!\!]= P \in E(\F{p^2})$\\
+      ~~\texttt{s}$[\!\!\{$\texttt{p}$\}\!\!]\leftarrow P \in E(\F{p^2})$\\
       % ~~$P \in$ \TNaCles{u8[32]}\\
       {\color{doc@lstdirective}\textbf{Post}}:\\
-      ~~\texttt{s}$[\!\!\{$\texttt{q}$\}\!\!]=$~\texttt{RFC}$(n,P)$};
+      ~~\texttt{s}$[\!\!\{$\texttt{q}$\}\!\!]\leftarrow$~\texttt{RFC}$(n,P)$};
   \end{scope}
 
   % VST Theorem

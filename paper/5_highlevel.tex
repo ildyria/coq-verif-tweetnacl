@@ -264,53 +264,61 @@ differential additions and point doubling on projective coordinates.
 
 By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL} and \texttt{xADD}
 with their respective formula (\lref{lemma:xADD} and \lref{lemma:xDBL}),
-we can define a ladder similar to the one used in TweetNaCl (See \aref{alg:montgomery-double-add}).
+we define a generic ladder \coqe{opt_montgomery} similar to the one used in
+TweetNaCl. We prove its correctness for any points which \xcoord is not 0.
 
-\begin{algorithm}
-\caption{Montgomery ladder for scalar multiplication on $M_{a,b}(\K)$ with optimizations}
-\label{alg:montgomery-double-add}
-\begin{algorithmic}
-\REQUIRE{$x \in \K\backslash \{0\}$, scalars $n$ and $m$, $n < 2^m$}
-\ENSURE{$a/c = \chi_0(n \cdot P)$ for any $P$ such that $\chi_0(P) = x$}
-\STATE $(a,c) \leftarrow (1,0)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(\Oinf) = (1:0)$}}
-\STATE $(b,d) \leftarrow (x,1)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(P) = (x:1)$}}
-\FOR{$k$ := $m$ \textbf{downto} $1$}
-  \IF{$k^{\text{th}}$ bit of $n$ is $1$}
-    \STATE $(a,b) \leftarrow (b,a)$
-    \STATE $(c,d) \leftarrow (d,c)$
-  \ENDIF
-  \STATE $e \leftarrow a + c$
-  \STATE $a \leftarrow a - c$
-  \STATE $c \leftarrow b + d$
-  \STATE $b \leftarrow b - d$
-  \STATE $d \leftarrow e^2$
-  \STATE $f \leftarrow a^2$
-  \STATE $a \leftarrow c \times a$
-  \STATE $c \leftarrow b \times e$
-  \STATE $e \leftarrow a + c$
-  \STATE $a \leftarrow a - c$
-  \STATE $b \leftarrow a^2$
-  \STATE $c \leftarrow d-f$
-  \STATE $a \leftarrow c\times\frac{A - 2}{4}$
-  \STATE $a \leftarrow a + d$
-  \STATE $c \leftarrow c \times a$
-  \STATE $a \leftarrow d \times f$
-  \STATE $d \leftarrow b \times x$
-  \STATE $b \leftarrow e^2$
-  \IF{$k^{\text{th}}$ bit of $n$ is $1$}
-    \STATE $(a,b) \leftarrow (b,a)$
-    \STATE $(c,d) \leftarrow (d,c)$
-  \ENDIF
-\ENDFOR
-\end{algorithmic}
-\end{algorithm}
 
-\begin{lemma}
-\label{lemma:montgomery-double-add}
-\aref{alg:montgomery-double-add} is correct, \ie it respects its output
-conditions given the input conditions.
-\end{lemma}
-We formalized \lref{lemma:montgomery-double-add} as follows:
+% By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL} and \texttt{xADD}
+% with their respective formula (\lref{lemma:xADD} and \lref{lemma:xDBL}),
+% we can define a ladder similar to the one used in TweetNaCl (See \aref{alg:montgomery-double-add}).
+%
+% \begin{algorithm}
+% \caption{Montgomery ladder for scalar multiplication on $M_{a,b}(\K)$ with optimizations}
+% \label{alg:montgomery-double-add}
+% \begin{algorithmic}
+% \REQUIRE{$x \in \K\backslash \{0\}$, scalars $n$ and $m$, $n < 2^m$}
+% \ENSURE{$a/c = \chi_0(n \cdot P)$ for any $P$ such that $\chi_0(P) = x$}
+% \STATE $(a,c) \leftarrow (1,0)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(\Oinf) = (1:0)$}}
+% \STATE $(b,d) \leftarrow (x,1)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(P) = (x:1)$}}
+% \FOR{$k$ := $m$ \textbf{downto} $1$}
+%   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
+%     \STATE $(a,b) \leftarrow (b,a)$
+%     \STATE $(c,d) \leftarrow (d,c)$
+%   \ENDIF
+%   \STATE $e \leftarrow a + c$
+%   \STATE $a \leftarrow a - c$
+%   \STATE $c \leftarrow b + d$
+%   \STATE $b \leftarrow b - d$
+%   \STATE $d \leftarrow e^2$
+%   \STATE $f \leftarrow a^2$
+%   \STATE $a \leftarrow c \times a$
+%   \STATE $c \leftarrow b \times e$
+%   \STATE $e \leftarrow a + c$
+%   \STATE $a \leftarrow a - c$
+%   \STATE $b \leftarrow a^2$
+%   \STATE $c \leftarrow d-f$
+%   \STATE $a \leftarrow c\times\frac{A - 2}{4}$
+%   \STATE $a \leftarrow a + d$
+%   \STATE $c \leftarrow c \times a$
+%   \STATE $a \leftarrow d \times f$
+%   \STATE $d \leftarrow b \times x$
+%   \STATE $b \leftarrow e^2$
+%   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
+%     \STATE $(a,b) \leftarrow (b,a)$
+%     \STATE $(c,d) \leftarrow (d,c)$
+%   \ENDIF
+% \ENDFOR
+% \end{algorithmic}
+% \end{algorithm}
+%
+% \begin{lemma}
+% \label{lemma:montgomery-double-add}
+% \aref{alg:montgomery-double-add} is correct, \ie it respects its output
+% conditions given the input conditions.
+% \end{lemma}
+
+% We formalized \lref{lemma:montgomery-double-add} as follows:
+
 \begin{lstlisting}[language=Coq]
 Lemma opt_montgomery_x :
   forall (n m : nat) (x : K),
@@ -334,7 +342,8 @@ And thus the theorem of the correctness of the Montgomery ladder.
 \begin{theorem}
 \label{thm:montgomery-ladder-correct}
 For all $n, m \in \N$, $x \in \K$, $P \in M_{a,b}(\K)$,
-if $\chi_0(P) = x$ then \aref{alg:montgomery-double-add} returns $\chi_0(n \cdot P)$
+% if $\chi_0(P) = x$ then \aref{alg:montgomery-double-add} returns $\chi_0(n \cdot P)$
+if $\chi_0(P) = x$ then \coqe{opt_montgomery} returns $\chi_0(n \cdot P)$
 \end{theorem}
 \begin{lstlisting}[language=Coq]
 Theorem opt_montgomery_ok (n m: nat) (x : K) :
@@ -393,7 +402,8 @@ Fact two_not_square : forall x: Zmodp.type,
   x^+2 != 2%:R.
 \end{lstlisting}
 We consider $M_{486662,1}(\F{p})$ and $M_{486662,2}(\F{p})$, one of its quadratic twist.
-\begin{dfn}Let the following instantiations of \aref{alg:montgomery-double-add}:\\
+% \begin{dfn}Let the following instantiations of \aref{alg:montgomery-double-add}:\\
+\begin{dfn}Let the following instantiations of \aref{alg:montgomery-ladder}:\\
 -- $Curve25519\_Fp(n,x)$ for $M_{486662,1}(\F{p})$.\\
 -- $Twist25519\_Fp(n,x)$ for $M_{486662,2}(\F{p})$.
 \end{dfn}

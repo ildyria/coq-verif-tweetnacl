@@ -141,19 +141,19 @@ The correctness of this specification is formally proven in Coq with
 % For the sake of completeness we proved all intermediate functions.
 
 \subheading{Memory aliasing.}
+
 In the VST, a simple specification of \texttt{M(o,a,b)} will assume that the pointer arguments
-point to non-overlapping space in memory, also named memory share.
-% XXX-Peter: "memory share" is unclear; please fix in the next sentence.
-When called with three memory shares (\texttt{o, a, b}),
+point to non-overlapping space in memory.
+When called with three memory fragments (\texttt{o, a, b}),
 the three of them will be consumed. However assuming this naive specification
-when \texttt{M(o,a,a)} is called (squaring), the first two memory shares (\texttt{o, a})
-are consumed and VST will expect a third memory share (\texttt{a}) which does not \emph{exist} anymore.
+when \texttt{M(o,a,a)} is called (squaring), the first two memory areas (\texttt{o, a})
+are consumed and VST will expect a third memory section (\texttt{a}) which does not \emph{exist} anymore.
 Examples of such cases are illustrated in \fref{tikz:MemSame}.
-\begin{figure}[h]
-  \centering
-  \include{tikz/memory_same_sh}
-  \caption{Aliasing and Separation Logic}
-  \label{tikz:MemSame}
+\begin{figure}[h]%
+  \centering%
+  \include{tikz/memory_same_sh}%
+  \caption{Aliasing and Separation Logic}%
+  \label{tikz:MemSame}%
 \end{figure}
 
 As a result, a function must either have multiple specifications or specify which
@@ -170,6 +170,9 @@ we define an additional parameter $k$ with values in $\{0,1,2,3\}$:
 In the proof of our specification, we do a case analysis over $k$ when needed.
 This solution does not cover all cases (e.g. all arguments are aliased) but it
 is enough for our needs.
+
+
+
 
 %XXX-Peter: shouldn't verifying fixed-length for loops be rather standard?
 %XXX Benoit: it is simple if the argument is increasing or if the "recursive call"
@@ -276,7 +279,7 @@ Lemma M_bound_Zlength :
 
 
 
-\subsection{Inversions, reflections and packing}
+\subsection{Reflections, inversions and packing}
 \label{subsec:inversions-reflections}
 
 We now turn our attention to the multiplicative inverse in $\Zfield$ and techniques
