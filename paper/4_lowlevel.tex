@@ -26,7 +26,7 @@ Theorem body_crypto_scalarmult:
 
 % We first describe the global structure of our proof (\ref{subsec:proof-structure}).
 Using our formalization of RFC~7748 (\sref{sec:Coq-RFC}) we specify the Hoare
-triple before proving its correctness with VST (\ref{subsec:with-VST}).
+triple before proving its correctness with the VST (\ref{subsec:with-VST}).
 We provide an example of equivalence of operations over different number
 representations (\ref{subsec:num-repr-rfc}). Then, we describe efficient techniques
 used in some of our more complex proofs (\ref{subsec:inversions-reflections}).
@@ -153,7 +153,7 @@ point to non-overlapping space in memory.
 When called with three memory fragments (\texttt{o, a, b}),
 the three of them will be consumed. However assuming this naive specification
 when \texttt{M(o,a,a)} is called (squaring), the first two memory areas (\texttt{o, a})
-are consumed and VST will expect a third memory section (\texttt{a}) which does not \emph{exist} anymore.
+are consumed and the VST will expect a third memory section (\texttt{a}) which does not \emph{exist} anymore.
 Examples of such cases are illustrated in \fref{tikz:MemSame}.
 \begin{figure}[h]%
   \centering%
@@ -246,7 +246,7 @@ Later in \sref{subsec:Zmodp}, we formally define $\Ffield$.
 Equivalence between operations in $\Zfield$ (\ie under \coqe{:GF}) and in $\Ffield$ are easily proven.
 
 Using these two definitions, we prove intermediate lemmas such as the correctness of the
-multiplication \Coqe{Low.M} where \Coqe{Low.M} replicate the computations and steps done in C.
+multiplication \Coqe{Low.M} where \Coqe{Low.M} replicates the computations and steps done in C.
 \begin{lemma}
   \label{lemma:mult_correct}
   \Coqe{Low.M} correctly implements the multiplication over $\Zfield$.
@@ -392,7 +392,7 @@ The idea is to \emph{reflect} the goal into a decidable environment.
 We show that for a property $P$, we can define a decidable Boolean property
 $P_{bool}$ such that if $P_{bool}$ is \Coqe{true} then $P$ holds.
 $$\text{\textit{reify\_P}} : P_{bool} = \text{\textit{true}} \implies P$$
-By applying \textit{reify\_P} on $P$ our goal become $P_{bool} = true$.
+By applying \textit{reify\_P} on $P$ our goal becomes $P_{bool} = true$.
 We then compute the result of $P_{bool}$. If the decision goes well we are
 left with the tautology $\text{\textit{true}} = \text{\textit{true}}$.
 
