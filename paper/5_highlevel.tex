@@ -402,7 +402,7 @@ We define the basic operations ($+, -, \times$) with their respective neutral
 elements ($0, 1$) and prove \lref{lemma:Zmodp_field}.
 \begin{lemma}
   \label{lemma:Zmodp_field}
-  $\F{p}$ is a commutative field.
+  $\F{p}$ is a field.
 \end{lemma}
 For $a = 486662$, by using the Legendre symbol we prove that
 $a^2 - 4$ and $2$ are not squares in $\F{p}$.
@@ -452,8 +452,8 @@ For all $x \in \F{p}$, we can compute $x^3 + ax^2 + x$. Using \lref{lemma:square
 we can find a $y$ such that $(x,y)$ is either on the curve or on the quadratic twist:
 \begin{lemma}
   \label{lemma:curve-or-twist}
-  For all $x \in \F{p}$, there exists a point $P$ over $M_{486662,1}(\F{p})$ or
-  over $M_{486662,2}(\F{p})$ such that the \xcoord of $P$ is $x$.
+  For all $x \in \F{p}$, there exists a point $P$ in $M_{486662,1}(\F{p})$ or
+  in $M_{486662,2}(\F{p})$ such that the \xcoord of $P$ is $x$.
 \end{lemma}
 \begin{lstlisting}[language=Coq]
 Theorem x_is_on_curve_or_twist:
