@@ -1,13 +1,13 @@
 % \subsection*{Abstract}
 \begin{abstract}
 
-  We present a formal definition of the X25519 key exchange protocol
-  from Bernstein's 2006 paper, as standardized in RFC-7748.
-  Based on this, we formally prove that the C implementation of
+  Based on a formal definition of the X25519 key exchange protocol
+  from Bernstein's 2006 paper, as standardized in RFC-7748,
+  we formally prove that the C implementation of
   this protocol in the TweetNaCl library is
   correct and free from all undefined behaviors, like arithmetic overflows
   and array out of bound errors.
-  We finally formally prove, based on the work of Bartzia and Strub,
+  We also formally prove, based on the work of Bartzia and Strub,
   that X25519 is mathematically correct
   in that it correctly computes multiplication in the elliptic curve 
   Curve25519.
