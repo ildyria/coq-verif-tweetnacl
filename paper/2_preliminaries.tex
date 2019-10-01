@@ -10,14 +10,14 @@ Finally, we provide a brief description of the formal tools we use in our proofs
 \label{subsec:arithmetic-montgomery}
 
 \begin{dfn}
-  Given a field \K, let $a,b \in \K$ such that $a^2 \neq 4$ and $b \neq 0$,
+  Given a field \K, and $a,b \in \K$ such that $a^2 \neq 4$ and $b \neq 0$,
   $M_{a,b}$ is the Montgomery curve defined over $\K$ with equation
   $$M_{a,b}: by^2 = x^3 + ax^2 + x.$$
 \end{dfn}
 
 \begin{dfn}
   For any algebraic extension $\L \supseteq	\K$, we call
-  $M_{a,b}(\L)$ the set of $\L$-rational points defined as
+  $M_{a,b}(\L)$ the set of $\L$-rational points, defined as
   $$M_{a,b}(\L) = \{\Oinf\} \cup \{(x,y) \in \L \times \L~|~by^2 = x^3 + ax^2 + x\}.$$
   Here, the additional element $\Oinf$ denotes the point at infinity.
 \end{dfn}
@@ -54,7 +54,7 @@ We define two operations:
 \end{align*}
 In the Montgomery ladder, % notice that
 the arguments of \texttt{xADD} and \texttt{xDBL}
-are swapped depending of the value of the $k^{th}$ bit. We use a conditional
+are swapped depending of the value of the $k^{\text{th}}$ bit. We use a conditional
 swap \texttt{CSWAP} to change the arguments of the above function while keeping
 the same body of the loop.
 Given a pair $(P_0, P_1)$ and a bit $b$, \texttt{CSWAP} returns the pair
@@ -88,7 +88,7 @@ computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}
 From now on let $\F{p}$ be the field with $p=2^{255}-19$ elements.
 We consider the elliptic curve $E$ over $\F{p}$ defined by the
 equation $y^2 = x^3 + 486662 x^2 + x$.
-For every $x \in \F{p}$ there exist a point $P$ in $E(\F{p^2})$
+For every $x \in \F{p}$ there exists a point $P$ in $E(\F{p^2})$
 such that $x$ is the \xcoord of $P$.
 
 The core of the X25519 key-exchange protocol is a scalar-multiplication
@@ -101,7 +101,7 @@ the \xcoord $x_P \in \F{p}$ of a point in $E(\F{p^2})$,
 using the standard mapping of integers modulo $p$ to elements in $\F{p}$.
 
 The X25519 function first computes a scalar $n'$ by setting bit 255 of $n$
-to \texttt{0}; setting bit 254 to \texttt{1} and setting the lower 3 bits to \texttt{0}.
+to \texttt{0}, setting bit 254 to \texttt{1}, and setting the lower 3 bits to \texttt{0}.
 This operation is often called ``clamping'' of the scalar $n$.
 Note that $n' \in 2^{254} + 8\{0,1,\ldots,2^{251}-1\}$.
 X25519 then computes the \xcoord of $n'\cdot P$.

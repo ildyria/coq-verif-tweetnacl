@@ -20,7 +20,7 @@ an insecure channel.
 The X25519 key-exchange protocol is an \xcoord-only
 elliptic-curve Diffie--Hellman key exchange using the Montgomery
 curve $E: y^2 = x^3 + 486662 x^2 + x$ over the field $\F{\p}$.
-Note that originally, the name ``Curve25519'' referred to the key exchange protocol,
+Note that originally, the name ``Curve25519'' referred to the key-exchange protocol,
 but Bernstein suggested to rename the protocol to X25519 and to use the name
 Curve25519 for the underlying elliptic curve~\cite{Ber14}.
 We use this updated terminology in this paper.
@@ -29,10 +29,11 @@ We use this updated terminology in this paper.
 We provide a mechanized formal proof of the correctness of the X25519
 implementation in TweetNaCl.
 This proof is done in three steps:
-we first formalize RFC~7748~\cite{rfc7748} in Coq~\cite{coq-faq}.
+
+We first formalize RFC~7748~\cite{rfc7748} in Coq~\cite{coq-faq}.
 % This part uses generic techniques to facilitate later proofs.
 
-In a second step, we prove equivalence of the C implementation of X25519
+In the second step we prove equivalence of the C implementation of X25519
 to our RFC formalization.
 This part of the proof uses the Verifiable Software Toolchain (VST)~\cite{2012-Appel}
 to establish a link between C and Coq.
@@ -42,9 +43,9 @@ To the best of our knowledge, this is the first time that
 VST is used in the formal proof of correctness of an implementation
 of an asymmetric cryptographic primitive.
 
-In a last step, we prove that the Coq implementation matches
+In the last step we prove that the Coq implementation matches
 the mathematical definition of X25519 as given in~\cite[Sec.~2]{Ber06}.
-We do this step of the proof by extending the Coq library
+We do this by extending the Coq library
 for elliptic curves~\cite{BartziaS14} by Bartzia and Strub to
 support Montgomery curves, and in particular Curve25519.
 This extension may be of independent interest.
