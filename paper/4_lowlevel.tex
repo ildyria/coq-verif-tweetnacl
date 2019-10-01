@@ -186,40 +186,40 @@ is enough for our needs.
 % This is not the case here: you compute idx 255 before 254...
 
 % Can we shorten the next paragraph?
-% \subheading{Verifying \texttt{for} loops.}
-% Final states of \texttt{for} loops are usually computed by simple recursive functions.
-% However, we must define invariants which are true for each iteration step.
-%
-% Assume that we want to prove a decreasing loop where indexes go from 3 to 0.
-% Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as
-% input an integer for the index and a state, then returns a state.
-% It simulates the body of the \texttt{for} loop.
-% Define the recursion: $f : \N \rightarrow State \rightarrow State $ which
-% iteratively applies $g$ with decreasing index:
-% \begin{equation*}
-%   f ( i , s ) =
-%   \begin{cases}
-%   s & \text{if } s = 0 \\
-%   f( i - 1 , g ( i - 1  , s )) & \text{otherwise}
-%   \end{cases}
-% \end{equation*}
-% Then we have:
-% \begin{align*}
-%   f(4,s) &= g(0,g(1,g(2,g(3,s))))
-% \end{align*}
-% To prove the correctness of $f(4,s)$, we need to prove that intermediate steps
-% $g(3,s)$; $g(2,g(3,s))$; $g(1,g(2,g(3,s)))$; $g(0,g(1,g(2,g(3,s))))$ are correct.
-% Due to the computation order of recursive function, our loop invariant for
-% $i\in\{0,1,2,3,4\}$ cannot use $f(i)$.
-% To solve this, we define an auxiliary function with an accumulator such that
-% given $i\in\{0,1,2,3,4\}$, it will compute the first $i$ steps of the loop.
-%
-% We then prove for the complete number of steps, the function with the accumulator
-% and without returns the same result.
-% We formalized this result in a generic way in Appendix~\ref{subsubsec:for}.
-%
-% Using this formalization, we prove that the 255 steps of the Montgomery ladder
-% in C provide the same computations as in \coqe{RFC}.
+\subheading{Verifying \texttt{for} loops.}
+Final states of \texttt{for} loops are usually computed by simple recursive functions.
+However, we must define invariants which are true for each iteration step.
+
+Assume that we want to prove a decreasing loop where indexes go from 3 to 0.
+Define a function $g : \N \rightarrow State  \rightarrow State $ which takes as
+input an integer for the index and a state, then returns a state.
+It simulates the body of the \texttt{for} loop.
+Define the recursion: $f : \N \rightarrow State \rightarrow State $ which
+iteratively applies $g$ with decreasing index:
+\begin{equation*}
+  f ( i , s ) =
+  \begin{cases}
+  s & \text{if } s = 0 \\
+  f( i - 1 , g ( i - 1  , s )) & \text{otherwise}
+  \end{cases}
+\end{equation*}
+Then we have:
+\begin{align*}
+  f(4,s) &= g(0,g(1,g(2,g(3,s))))
+\end{align*}
+To prove the correctness of $f(4,s)$, we need to prove that intermediate steps
+$g(3,s)$; $g(2,g(3,s))$; $g(1,g(2,g(3,s)))$; $g(0,g(1,g(2,g(3,s))))$ are correct.
+Due to the computation order of recursive function, our loop invariant for
+$i\in\{0,1,2,3,4\}$ cannot use $f(i)$.
+To solve this, we define an auxiliary function with an accumulator such that
+given $i\in\{0,1,2,3,4\}$, it will compute the first $i$ steps of the loop.
+
+We then prove for the complete number of steps, the function with the accumulator
+and without returns the same result.
+We formalized this result in a generic way in Appendix~\ref{subsubsec:for}.
+
+Using this formalization, we prove that the 255 steps of the Montgomery ladder
+in C provide the same computations as in \coqe{RFC}.
 % %
 
 

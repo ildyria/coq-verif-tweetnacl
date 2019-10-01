@@ -29,7 +29,7 @@ Lemma f_ext: forall (A B:Type),
 % The formally proven compiler.
 % We trust that the CompCert Clight semantics in Coq
 % correctly captures the C17 standard.
-  When compiling with CompCert we only need to trust CompCert's {assembly} semantics, because CompCert has been formally proven correct.
+  When compiling with CompCert we only need to trust CompCert's {assembly} semantics, because it has been formally proven correct.
   However, when compiling with other C compilers like Clang or GCC, we need to trust that the CompCert's Clight semantics matches the C17 standard.
 % as well as
 % that the compiler will compile the TweetNaCl code according to that standard.
@@ -52,7 +52,9 @@ o[i] = aux1 + aux2;
   factors out function calls and assignments from inside subexpressions.
   The changes required for C code to make it verifiable are now minimal.
 
-  \item Last but not the least, we must trust the \textbf{Coq kernel} and its
+  \item Finally,
+  % Last but not the least,
+  we must trust the \textbf{Coq kernel} and its
   associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
   the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
   done with this architecture \cite{2015-Appel,coq-faq}.
