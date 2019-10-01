@@ -195,8 +195,10 @@ sv M(gf o,const gf a,const gf b) {
 }
 \end{lstlisting}
 
-After the actual multiplication, the limbs of the result \texttt{o} are
-too large to be used again as input, which is why the two calls to
+After the multiplication, the limbs of the result \texttt{o} are
+too large to be used again as input.
+ % which is why 
+The two calls to
 \TNaCle{car25519} at the end of \TNaCle{M} propagate the carries through the limbs:
 \begin{lstlisting}[language=Ctweetnacl]
 sv car25519(gf o)
