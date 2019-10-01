@@ -391,7 +391,6 @@ Inductive type := Zmodp x of betweenb 0 p x.
 
 Lemma Z_mod_betweenb (x y : Z) :
   y > 0 -> betweenb 0 y (x mod y).
-
 Definition pi (x : Z) : type :=
   Zmodp (Z_mod_betweenb x Hp_gt0).
 Coercion repr (x : type) : Z :=
