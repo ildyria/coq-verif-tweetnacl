@@ -35,8 +35,10 @@ We consider elliptic curves over a field $\K$. We assume that the
 characteristic of $\K$ is neither 2 or 3.
 
 \begin{dfn}
-Let a field $\K$, using an appropriate choice of coordinates, an elliptic curve $E$
-is a plane cubic algebraic curve $E(x,y)$ defined by an equation of the form:
+Given a field $\K$,
+using an appropriate choice of coordinates,
+an elliptic curve $E$
+is a plane cubic algebraic curve defined by an equation $E(x,y)$ of the form:
 $$E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
 where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
 or self-intersections). The set of points, written $E(\K)$, is formed by the
@@ -53,7 +55,7 @@ This equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
 Let $a \in \K$, and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$
 The \textit{elliptic curve} $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
 $$y^2 = x^3 + ax + b,$$
-along with an additional formal point $\Oinf$, ``at infinity''. Such a curve does not present any singularity.
+along with an additional formal point $\Oinf$, ``at infinity''. Such a curve does not have any singularity.
 \end{dfn}
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
@@ -75,14 +77,14 @@ Definition oncurve (p : point) :=
 Inductive ec : Type := EC p of oncurve p.
 \end{lstlisting}
 
-Points of an elliptic curve are equipped with a structure of an abelian group.
+Points of an elliptic curve are equipped with the structure of an abelian group.
 \begin{itemize}
-  \item The negation of a point $P = (x,y)$ by taking the symmetric with respect to the x axis $-P = (x, -y)$.
-  \item The addition of two points $P$ and $Q$ is defined by the negation of the third intersection
-  of the line passing by $P$ and $Q$ or tangent to $P$ if $P = Q$.
+  \item The negation of a point $P = (x,y)$ is defined by reflecting in the $x$ axis $-P = (x, -y)$.
+  \item The addition of two points $P$ and $Q$ is defined as the negation of the third intersection point
+  of the line passing through $P$ and $Q$ or tangent to $P$ if $P = Q$.
   \item $\Oinf$ is the neutral element under this law: if 3 points are collinear, their sum is equal to $\Oinf$.
 \end{itemize}
-These operations are defined in Coq as follow:
+These operations are defined in Coq as follows (where we omit the code for the tangent case):
 \begin{lstlisting}[language=Coq]
 Definition neg (p : point) :=
   if p is (| x, y |) then (| x, -y |) else EC_Inf.
@@ -98,7 +100,7 @@ Definition add (p1 p2 : point) :=
           (| xs, - s * (xs - x1 ) - y1 |)
   end.
 \end{lstlisting}
-And are proven internal to the curve (with coercion):
+The value of \texttt{add} is proven to be on the curve (with coercion):
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : ec): oncurve (add p q).
 
@@ -119,8 +121,9 @@ than the Weierstra{\ss} form. We consider the Montgomery form \cite{MontgomerySp
   $$by^2 = x^3 + ax^2 + x,$$
   along with an additional formal point $\Oinf$, ``at infinity''.
 \end{dfn}
-Using a similar representation, we defined the parametric type \texttt{mc} which
-represents the points on a specific Montgomery curve. It is parameterized by
+Similar to the definition of \texttt{ec}, we defined the parametric type \texttt{mc} which
+represents the points on a specific Montgomery curve.
+It is parameterized by
 a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
 and \texttt{M : mcuType} -- a record that packs the curve parameters $a$ and $b$
 along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
@@ -135,8 +138,8 @@ Inductive mc : Type := MC p of oncurve p.
 
 Lemma oncurve_mc: forall p : mc, oncurve p.
 \end{lstlisting}
-We define the addition on Montgomery curves the same way as it is in the Weierstra{\ss} form,
-however the actual computations will be slightly different.
+We define the addition on Montgomery curves in the similar way as in the Weierstra{\ss} form.
+%, however the actual computations will be slightly different.
 \begin{lstlisting}[language=Coq]
 Definition add (p1 p2 : point K) :=
   match p1, p2 with
@@ -152,14 +155,16 @@ Definition add (p1 p2 : point K) :=
           (| xs, - s * (xs - x1) - y1 |)
     end.
 \end{lstlisting}
-But we prove it is internal to the curve (again with coercion):
+And again we prove the result is on the curve (again with coercion):
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : mc) : oncurve (add p q).
 Definition addmc (p1 p2 : mc) : mc :=
   MC p1 p2 (addO p1 p2)
 \end{lstlisting}
 
-We then prove a bijection between a Montgomery curve and its Weierstra{\ss} equation.
+We then define a bijection between a Montgomery curve and its Weierstra{\ss} form.
+In this way we get associativity of addition on Montgomery curves from the
+corresponding property for Weierstra{\ss} curves.
 \begin{lemma}
   Let $M_{a,b}(\K)$ be a Montgomery curve, define
   $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
@@ -193,12 +198,12 @@ Lemma ec_of_mc_bij : bijective ec_of_mc.
 \label{subsec:ECC-projective}
 
 On a projective plane, points are represented with a triple $(X:Y:Z)$.
-With the exception of $(0:0:0)$, any points can be projected.
+With the exception of $(0:0:0)$, any point can be projected.
 Scalar multiples are representing the same point, \ie
-for all $\lambda \neq 0$, $(X:Y:Z)$ are $(\lambda X:\lambda Y:\lambda Z)$ defining
+for all $\lambda \neq 0$, the triples $(X:Y:Z)$ and $(\lambda X:\lambda Y:\lambda Z)$ represent
 the same point.
 For $Z\neq 0$, the projective point $(X:Y:Z)$ corresponds to the
-point $(X/Z,Y/Z)$ on the Euclidean plane, likewise the point $(X,Y)$ on the
+point $(X/Z,Y/Z)$ on the Euclidean plane. Likewise the point $(X,Y)$ on the
 Euclidean plane corresponds to $(X:Y:1)$ on the projective plane.
 
 Using fractions as coordinates, the equation for a Montgomery curve $M_{a,b}(\K)$
