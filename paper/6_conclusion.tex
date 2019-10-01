@@ -25,11 +25,14 @@ Lemma f_ext: forall (A B:Type),
   Princeton allows a user to prove that a Clight code matches pure Coq
   specification.
 
-  \item \textbf{CompCert}. The formally proven compiler. We trust that the CompCert Clight semantics in Coq
-  correctly captures the C17 standard.
-  When compiling with CompCert we actually only need to trust CompCert's \emph{assembly} semantics, because CompCert compilation has been proved correct.
-  But when compiling with a generic C compiler like Clang or GCC, we need to trust the Clight semantics to match the C17 standard, as well as
-  that the compiler will compile the TweetNaCl code according to that standard.
+  \item \textbf{CompCert}.
+% The formally proven compiler.
+% We trust that the CompCert Clight semantics in Coq
+% correctly captures the C17 standard.
+  When compiling with CompCert we only need to trust CompCert's {assembly} semantics, because CompCert has been formally proven correct.
+  However, when compiling with other C compilers like Clang or GCC, we need to trust that the CompCert's Clight semantics matches the C17 standard.
+% as well as
+% that the compiler will compile the TweetNaCl code according to that standard.
   % Our proof also assumes that the TweetNaCl code will behave as expected if
   % compiled under CompCert.
   % We do not provide guarantees for other C compilers such as Clang or GCC.

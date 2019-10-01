@@ -273,9 +273,9 @@ with their respective formula (\lref{lemma:xADD} and \lref{lemma:xDBL}),
 we define a ladder \coqe{opt_montgomery} (in which $\K$ has not been fixed yet),
 similar to the one used in
 TweetNaCl.
-(This definition is closely related to \coqe{montgomery_rec} that was used
+This definition is closely related to \coqe{montgomery_rec} that was used
 in the definition of \coqe{RFC}, and is easily proved to correspond to it.
-In Coq this correspondence proof is hidden in the proof of \coqe{RFC_Correct} shown above.)
+In Coq this correspondence proof is hidden in the proof of \coqe{RFC_Correct} shown above.
 %\ref to the def of montgomery_rec? relevant lemma(s) that show(s) these are "the same"?
 
 We prove its correctness for any point whose \xcoord is not 0.
@@ -465,7 +465,7 @@ Theorem x_is_on_curve_or_twist:
 \subsubsection{Curve25519 over \F{p^2}}
 
 The quadratic extension $\F{p^2}$ is defined as $\F{p}[\sqrt{2}]$ by~\cite{Ber06}.
-The theory of finite fields already had been formalized in the Mathematical Components
+The theory of finite fields already has been formalized in the Mathematical Components
 library,
 %ref?
 but this formalization is rather abstract, and we need concrete representations of field
