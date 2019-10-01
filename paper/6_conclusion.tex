@@ -25,14 +25,17 @@ Lemma f_ext: forall (A B:Type),
   Princeton allows a user to prove that a Clight code matches pure Coq
   specification.
 
-  \item \textbf{CompCert}. The formally proven compiler. We trust that the Clight
-  model captures correctly the C17 standard.
-  Our proof also assumes that the TweetNaCl code will behave as expected if
-  compiled under CompCert.
+  \item \textbf{CompCert}. The formally proven compiler. We trust that the CompCert Clight semantics in Coq
+  correctly captures the C17 standard.
+  When compiling with CompCert we actually only need to trust CompCert's \emph{assembly} semantics, because CompCert compilation has been proved correct.
+  But when compiling with a generic C compiler like Clang or GCC, we need to trust the Clight semantics to match the C17 standard, as well as
+  that the compiler will compile the TweetNaCl code according to that standard.
+  % Our proof also assumes that the TweetNaCl code will behave as expected if
+  % compiled under CompCert.
   % We do not provide guarantees for other C compilers such as Clang or GCC.
 
-  \item \textbf{\texttt{clightgen}}. The tool making the translation from \textbf{C} to
-  \textbf{Clight}. It is the first step of the compilation.
+  \item \textbf{\texttt{clightgen}}. The tool making the translation from {C} to
+  {Clight}. It is the first step of the compilation.
   VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
   This required us to rewrite the lines into:
 \begin{lstlisting}[language=C]
