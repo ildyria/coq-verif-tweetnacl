@@ -40,8 +40,8 @@ We use our definition of X25519 from the RFC in the Hoare triple and prove
 its correctness.
 
 \subheading{Specifications.}
-We show the soundness of TweetNaCl by proving the following specification matches
-a pure Coq function.
+We show the soundness of TweetNaCl by proving a correspondence between
+the C version of TweetNaCl and the same code as a pure Coq function.
 % why "pure" ?
 % A pure function is a function where the return value is only determined by its
 % input values, without observable side effects (Side effect are e.g. printing)
@@ -81,7 +81,7 @@ SEP  (sh [{ v_q }] <<(uch32)-- mVI (RFC n p);
       Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665
 \end{lstlisting}
 
-In this specification we state the following preconditions:
+In this specification we state preconditions like:
 \begin{itemize}
   \item[] \VSTe{PRE}: \VSTe{_p OF (tptr tuchar)}\\
   The function \TNaCle{crypto_scalarmult} takes as input three pointers to
@@ -101,7 +101,7 @@ In this specification we state the following preconditions:
   complete representation of \TNaCle{u8[32]}.
 \end{itemize}
 
-As postcondition we have:
+As postcondition we have conditions like:
 \begin{itemize}
   \item[] \VSTe{POST}: \VSTe{tint}\\
   The function \TNaCle{crypto_scalarmult} returns an integer.
@@ -116,13 +116,13 @@ As postcondition we have:
   We show that the computation for \VSTe{RFC} fits in  \TNaCle{u8[32]}.
 \end{itemize}
 
-This specification (proven with VST) shows that \TNaCle{crypto_scalarmult} in C
 computes the same result as \VSTe{RFC} in Coq provided that inputs are within
 their respective bounds: arrays of 32 bytes.
 
 The correctness of this specification is formally proven in Coq with
 \coqe{Theorem body_crypto_scalarmult}.
 
+This specification (proven with VST) shows that \TNaCle{crypto_scalarmult} in C
 %% BLABLA about VST. Does not belong here.
 
 % The Verifiable Software Toolchain uses a strongest postcondition strategy.
@@ -142,7 +142,13 @@ The correctness of this specification is formally proven in Coq with
 
 \subheading{Memory aliasing.}
 
-In the VST, a simple specification of \texttt{M(o,a,b)} will assume that the pointer arguments
+The semicolon in the \VSTe{SEP} parts of the Hoare triples represents the \emph{separating conjunction} (often written as a star), which means that
+the memory shares of \texttt{q}, \texttt{n} and \texttt{p} do not overlap.
+In other words,
+we only prove correctness of \TNaCle{crypto_scalarmult} when it is called without aliasing.
+But for other TweetNaCl functions, like the multiplication function \texttt{M(o,a,b)}, we cannot ignore aliasing, as it is called in the ladder in an aliased manner.
+
+In the VST, a simple specification of this function will assume that the pointer arguments
 point to non-overlapping space in memory.
 When called with three memory fragments (\texttt{o, a, b}),
 the three of them will be consumed. However assuming this naive specification
