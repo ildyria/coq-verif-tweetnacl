@@ -45,6 +45,8 @@ of an asymmetric cryptographic primitive.
 
 In the last step we prove that the Coq implementation matches
 the mathematical definition of X25519 as given in~\cite[Sec.~2]{Ber06}.
+This is important as a check that there are no transcription errors
+in our formal version of the X25519 definition.
 We do this by extending the Coq library
 for elliptic curves~\cite{BartziaS14} by Bartzia and Strub to
 support Montgomery curves, and in particular Curve25519.
