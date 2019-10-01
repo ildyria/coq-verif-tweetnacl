@@ -41,27 +41,28 @@ an elliptic curve $E$
 is a plane cubic algebraic curve defined by an equation $E(x,y)$ of the form:
 $$E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
 where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
-or self-intersections). The set of points, written $E(\K)$, is formed by the
-solutions $(x,y)$ of $E$ augmented by a distinguished point $\Oinf$ (called point at infinity):
-$$E(\K) = \{(x,y) \in \K \times \K | E(x,y)\} \cup \{\Oinf\}$$
+or self-intersections). The set of points defined over \K, written $E(\K)$, is formed by the
+solutions $(x,y)$ of $E$ together with a distinguished point $\Oinf$ called point at infinity:
+$$E(\K) = \{ E(x,y)~|~(x,y) \in \K \times \K\} \cup \{\Oinf\}$$
 \end{dfn}
 
-\subsubsection{Weierstra{\ss} curves}
+\subsubsection{Short Weierstra{\ss} curves}
 \label{subsec:ECC-Weierstrass}
 
 This equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
 
 \begin{dfn}
-Let $a \in \K$, and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$
-The \textit{elliptic curve} $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the equation:
-$$y^2 = x^3 + ax + b,$$
+Let $a \in \K$ and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$
+The \textit{elliptic curve} $E_{a,b}$ is defined by the equation:
+$$y^2 = x^3 + ax + b.$$
+$E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the $E_{a,b}$
 along with an additional formal point $\Oinf$, ``at infinity''. Such a curve does not have any singularity.
 \end{dfn}
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
 represent the points on a specific curve. It is parameterized by
-a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
-and \texttt{E : ecuType} -- a record that packs the curve parameters $a$ and $b$
+a \texttt{K : ecuFieldType} --- the type of fields which characteristic is not 2 or 3 ---
+and \texttt{E : ecuType} --- a record that packs the curve parameters $a$ and $b$
 along with the proof that $\Delta(a,b) \neq 0$.
 \begin{lstlisting}[language=Coq]
 Inductive point := EC_Inf | EC_In of K * K.
@@ -77,11 +78,11 @@ Definition oncurve (p : point) :=
 Inductive ec : Type := EC p of oncurve p.
 \end{lstlisting}
 
-Points of an elliptic curve are equipped with the structure of an abelian group.
+Points on an elliptic curve are equipped with the structure of an abelian group.
 \begin{itemize}
-  \item The negation of a point $P = (x,y)$ is defined by reflecting in the $x$ axis $-P = (x, -y)$.
+  \item The negation of a point $P = (x,y)$ is defined by reflection over the $x$ axis $-P = (x, -y)$.
   \item The addition of two points $P$ and $Q$ is defined as the negation of the third intersection point
-  of the line passing through $P$ and $Q$ or tangent to $P$ if $P = Q$.
+  of the line passing through $P$ and $Q$, or tangent to $P$ if $P = Q$.
   \item $\Oinf$ is the neutral element under this law: if 3 points are collinear, their sum is equal to $\Oinf$.
 \end{itemize}
 These operations are defined in Coq as follows (where we omit the code for the tangent case):
@@ -124,9 +125,9 @@ than the Weierstra{\ss} form. We consider the Montgomery form \cite{MontgomerySp
 Similar to the definition of \texttt{ec}, we defined the parametric type \texttt{mc} which
 represents the points on a specific Montgomery curve.
 It is parameterized by
-a \texttt{K : ecuFieldType} -- the type of fields which characteristic is not 2 or 3 --
-and \texttt{M : mcuType} -- a record that packs the curve parameters $a$ and $b$
-along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
+a \texttt{K : ecuFieldType} --- the type of fields which characteristic is not
+2 or 3 --- and \texttt{M : mcuType} --- a record that packs the curve
+parameters $a$ and $b$ along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
 \begin{lstlisting}[language=Coq]
 Record mcuType :=
   { cA : K; cB : K; _ : cB != 0; _ : cA^2 != 4}.
@@ -139,7 +140,6 @@ Inductive mc : Type := MC p of oncurve p.
 Lemma oncurve_mc: forall p : mc, oncurve p.
 \end{lstlisting}
 We define the addition on Montgomery curves in the similar way as in the Weierstra{\ss} form.
-%, however the actual computations will be slightly different.
 \begin{lstlisting}[language=Coq]
 Definition add (p1 p2 : point K) :=
   match p1, p2 with
@@ -162,7 +162,7 @@ Definition addmc (p1 p2 : mc) : mc :=
   MC p1 p2 (addO p1 p2)
 \end{lstlisting}
 
-We then define a bijection between a Montgomery curve and its Weierstra{\ss} form.
+We then define a bijection between a Montgomery curve and its short Weierstra{\ss} form.
 In this way we get associativity of addition on Montgomery curves from the
 corresponding property for Weierstra{\ss} curves.
 \begin{lemma}
@@ -172,9 +172,9 @@ corresponding property for Weierstra{\ss} curves.
   $\varphi : M_{a,b}(\K) \mapsto E_{a',b'}(\K)$ defined as:
   \begin{align*}
     \varphi(\Oinf_M) &= \Oinf_E\\
-    \varphi( (x , y) ) &= ( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} )
+    \varphi( (x , y) ) &= \left( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} \right)
   \end{align*}
-  is an isomorphism between groups.
+  is an isomorphism between elliptic curves.
 \end{lemma}
 \begin{lstlisting}[language=Coq]
 Definition ec_of_mc_point p :=
@@ -192,8 +192,6 @@ Definition ec_of_mc p :=
 Lemma ec_of_mc_bij : bijective ec_of_mc.
 \end{lstlisting}
 
-% We use this isomorphism to derive that $(M_{a,b}(\K), + )$ is a group.
-
 \subsubsection{Projective coordinates}
 \label{subsec:ECC-projective}
 
@@ -203,8 +201,8 @@ Scalar multiples are representing the same point, \ie
 for all $\lambda \neq 0$, the triples $(X:Y:Z)$ and $(\lambda X:\lambda Y:\lambda Z)$ represent
 the same point.
 For $Z\neq 0$, the projective point $(X:Y:Z)$ corresponds to the
-point $(X/Z,Y/Z)$ on the Euclidean plane. Likewise the point $(X,Y)$ on the
-Euclidean plane corresponds to $(X:Y:1)$ on the projective plane.
+point $(X/Z,Y/Z)$ on the affine plane. Likewise the point $(X,Y)$ on the
+affine plane corresponds to $(X:Y:1)$ on the projective plane.
 
 Using fractions as coordinates, the equation for a Montgomery curve $M_{a,b}(\K)$
 becomes:
@@ -212,7 +210,7 @@ $$b \bigg(\frac{Y}{Z}\bigg)^2 = \bigg(\frac{X}{Z}\bigg)^3 + a \bigg(\frac{X}{Z}\
 Multiplying both sides by $Z^3$ yields:
 $$b Y^2Z = X^3 + a X^2Z + XZ^2$$
 With this equation we can additionally represent the ``point at infinity''. By
-setting $Z=0$, we derive $X=0$, giving us the ``infinite points'' $(0:Y:0)$ with $Y\neq 0$.
+setting $Z=0$, we derive $X=0$, giving us the ``infinite point'' $(0:1:0)$.
 
 By restricting the parameter $a$ of $M_{a,b}(\K)$ such that $a^2-4$ is not a
 square in \K, we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
@@ -280,7 +278,7 @@ in the definition of \coqe{RFC}, and is easily proved to correspond to it.
 In Coq this correspondence proof is hidden in the proof of \coqe{RFC_Correct} shown above.)
 %\ref to the def of montgomery_rec? relevant lemma(s) that show(s) these are "the same"?
 
-We prove its correctness for any points which \xcoord is not 0.
+We prove its correctness for any point whose \xcoord is not 0.
 
 
 % By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL} and \texttt{xADD}
@@ -371,7 +369,7 @@ Theorem opt_montgomery_ok (n m: nat) (x : K) :
 
 To be able to use the above theorem we need to satisfy hypothesis
 \ref{hyp:a_minus_4_not_square}: $a^2-4$ is not a square in \K:
-$$\forall x \in \K,\ x^2 \neq a^2-4$$
+$$\forall x \in \K,\ x^2 \neq a^2-4.$$
 If we consider the quadratic extension field $\F{p^2}$,
 there exists $x$ such that $x^2 = a^2-4$, preventing use \tref{thm:montgomery-ladder-correct}
 with $\K = \F{p^2}$.

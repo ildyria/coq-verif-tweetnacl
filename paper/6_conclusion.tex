@@ -59,7 +59,7 @@ Indeed indexes 17 to 79 of the \TNaCle{i64 x[80]} intermediate variable of
 we removed them.
 
 Peter Wu and Jason A. Donenfeld brought to our attention that the original
-\TNaCle{car25519} function presented risk of undefined behavior if \texttt{c}
+\TNaCle{car25519} function carried a risk of undefined behavior if \texttt{c}
 is a negative number.
 \begin{lstlisting}[language=Ctweetnacl]
 c=o[i]>>16;

@@ -107,7 +107,7 @@ Note that $n' \in 2^{254} + 8\{0,1,\ldots,2^{251}-1\}$.
 X25519 then computes the \xcoord of $n'\cdot P$.
 
 RFC~7748~\cite{rfc7748} standardized the X25519 Diffie–Hellman key-exchange algorithm.
-Given the base point $B$ where $X_B=9$, each party generate a secret random number
+Given the base point $B$ where $X_B=9$, each party generates a secret random number
 $s_a$ (respectively $s_b$), and computes $X_{P_a}$ (respectively $X_{P_b}$), the
 \xcoord of $P_A = s_a \cdot B$ (respectively $P_B = s_b \cdot B$).
 The parties exchange $X_{P_a}$ and $X_{P_b}$ and compute their shared secret with
@@ -118,7 +118,7 @@ X25519 on $s_a$ and $X_{P_b}$ (respectively $s_b$ and $X_{P_a}$).
 
 As its name suggests, TweetNaCl aims for code compactness (\emph{``a crypto library in 100 tweets''}).
 As a result it uses a few defines and typedefs to gain precious bytes while
-still remaining readable.
+still remaining human-readable.
 \begin{lstlisting}[language=Ctweetnacl]
 #define FOR(i,n) for (i = 0;i < n;++i)
 #define sv static void
@@ -129,7 +129,7 @@ typedef long long i64;
 TweetNaCl functions take pointers as arguments. By convention the first one
 points to the output array. It is then followed by the input arguments.
 
-Due to some limitations of VST, indexes used in \TNaCle{for} loops have to be
+Due to some limitations of the VST, indexes used in \TNaCle{for} loops have to be
 of type \TNaCle{int} instead of \TNaCle{i64}. We change the code to allow our
 proofs to carry through. We believe this does not affect the correctness of the
 original code. A complete diff of our modifications to TweetNaCl can be found in
@@ -341,7 +341,7 @@ int crypto_scalarmult(u8 *q,
 % the pseudocode description
 
 
-\subsection{Coq, separation logic, and VST}
+\subsection{Coq, separation logic, and the VST}
 \label{subsec:Coq-VST}
 
 Coq~\cite{coq-faq} is an interactive theorem prover based on type theory. It
@@ -382,6 +382,6 @@ The first step consists of translating the source code into Clight,
 an intermediate representation used by CompCert.
 For such purpose one uses the parser of CompCert called \texttt{clightgen}.
 In a second step one defines the Hoare triple representing the specification of
-the piece of software one wants to prove. Then using VST, one uses a strongest
+the piece of software one wants to prove. Then using the VST, one uses a strongest
 postcondition approach to prove the correctness of the triple.
 This approach can be seen as a forward symbolic execution of the program.
