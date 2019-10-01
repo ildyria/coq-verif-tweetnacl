@@ -14,11 +14,11 @@ prove correctness of any of the primitives implemented by the library.
 
 One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519 presented
 by Bernstein in~\cite{rfc7748}.
-This protocol is standardized in RFC-7748 and used by a wide variety of applications~\cite{things-that-use-curve25519}
+This protocol is standardized in RFC~7748 and used by a wide variety of applications~\cite{things-that-use-curve25519}
 such as SSH, Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
 an insecure channel.
-The X25519 key-exchange protocol is a an \xcoord only
-elliptic-curve Diffie-Hellman key-exchange using the Montgomery
+The X25519 key-exchange protocol is an \xcoord-only
+elliptic-curve Diffie--Hellman key exchange using the Montgomery
 curve $E: y^2 = x^3 + 486662 x^2 + x$ over the field $\F{\p}$.
 Note that originally, the name ``Curve25519'' referred to the key exchange protocol,
 but Bernstein suggested to rename the protocol to X25519 and to use the name
@@ -32,7 +32,7 @@ This proof is done in three steps:
 we first formalize RFC~7748~\cite{rfc7748} in Coq~\cite{coq-faq}.
 % This part uses generic techniques to facilitate later proofs.
 
-In a second step we prove equivalence of the C implementation of X25519
+In a second step, we prove equivalence of the C implementation of X25519
 to our RFC formalization.
 This part of the proof uses the Verifiable Software Toolchain (VST)~\cite{2012-Appel}
 to establish a link between C and Coq.
@@ -42,11 +42,11 @@ To the best of our knowledge, this is the first time that
 VST is used in the formal proof of correctness of an implementation
 of an asymmetric cryptographic primitive.
 
-In a last step we prove that the Coq implementation matches
+In a last step, we prove that the Coq implementation matches
 the mathematical definition of X25519 as given in~\cite[Sec.~2]{Ber06}.
-We accomplish this step of the proof by extending the Coq library
+We do this step of the proof by extending the Coq library
 for elliptic curves~\cite{BartziaS14} by Bartzia and Strub to
-support Montgomery curves (and in particular Curve25519).
+support Montgomery curves, and in particular Curve25519.
 This extension may be of independent interest.
 
 \subheading{Related work.}
