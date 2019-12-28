@@ -1,0 +1,546 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{url}
+
+\renewcommand{\>}{\quad\nobreak$\longrightarrow$\quad}
+
+\def\`#1'{`#1' (\texttt{#1})}
+\def\L#1 #2 #3\par{\item[Line #1:] (\textit{#2}) #3\par}
+\def\LL#1-#2 #3 #4\par{\item[Lines #1--#2:] (\textit{#3}) #4\par}
+\def\D#1 #2 #3\par{\item[Definition #1:] (\textit{#2}) #3\par}
+\def\A#1 #2 #3\par{\item[Algorithm #1:] (\textit{#2}) #3\par}
+\def\Lem#1 #2 #3\par{\item[Lemma #1:] (\textit{#2}) #3\par}
+
+\newcommand{\F}{\mathbb F}
+\newcommand{\K}{\mathbb K}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+
+\makeatletter
+\def\newlatin#1#2{\def#1{\@latin{#2}}}
+\def\@latin#1{\@ifnextchar.{\@latinfinal{#1}}{\@latinmedial{#1}}}
+\def\@latinfinal#1{\emph{#1}\@}
+\def\@latinmedial#1{\emph{#1.}}
+\makeatother
+\newlatin\eg{e.g}
+\newlatin\etc{etc}
+\newlatin\etseq{et seq}
+\newlatin\ie{i.e}
+\newlatin\vs{vs}
+
+\begin{document}
+
+\begin{tabular}{rl}
+url:&\url{https://viguier.nl/tweetverif.pdf}\\
+date:&2019--09--30T20:27:26+0200\\
+sha256:&\texttt{\small 5a59b0d06357b20bdba25a4c4c101c2da7fcb387f2f254e79d510388ec4270cb}
+\end{tabular}
+
+\begin{description}\let\endgraf=\par
+
+\L21    consistency `RFC-7748' \> `RFC~7748'
+
+\L24    grammar `protocol is a an' \> `protocol is an'
+
+\L25    grammar `$x$-coordinate only' \> `$x$-coordinate-only'
+
+\L25    nit \`Diffie-Hellman' \> \`Diffie--Hellman'
+
+\L28    consistency `key exchange' \> `key-exchange'
+        \\
+        (or otherwise be consistent about hyphen \vs no hyphen)
+
+\LL34-35 style
+        `This proof is done in three steps: we first formalize
+         RFC~7748 in Coq.' \endgraf
+        The post-colon clause should be a separate sentence (and maybe
+         separate paragraph) like the other parts; otherwise this looks
+         like you're saying all three parts are to formalize RFC~7748
+         in Coq.
+
+\L36    style `a second step' \> `the second step,'
+
+\setbox0=\hbox{\verb!\cite{...}, \cite{...}!}
+\setbox2=\hbox{\verb!\cite{..., ...}!}
+\L40    style
+        `logic [8], [9] to show'
+        (\texttt{logic \box0\ to show})
+        \>
+        `logic [8, 9] to show'
+        (\texttt{logic \box2\ to show})
+        \endgraf (Maybe this is just the IEEE bibliography style?)
+
+\L45    style `a last step' \> `the last step,'
+
+\L47    style `accomplish this step of the proof' \> `do this'
+
+\L49    style
+        `Montgomery curves (and in particular Curve25519).'
+        \>
+        `Montgomery curves, and in particular Curve25519.'
+
+\LL83-84 misc
+        This URL goes to an HTML page with a link to the real file.
+        Might be helpful if \texttt{curl} and \texttt{wget} worked on
+         the URL\@.
+        Or maybe this should be a link to a Git repository instead,
+         with a tag for the publication?
+
+\item[Lines 105 \etseq:]
+        Line numbering stops here for definitions~II.1 and~II.2, but
+         applies to definition~II.3.
+        Weird!
+
+\D II.1 grammar
+        \textit{`Given a field $\K$\textbf{, let} $a,b \in \K$ such that
+         $a^2 \ne 4$ and $b \ne 0$, $M_{a,b}$ is the Montgomery curve
+         defined over~$\K$ with equation $\dots$.}
+        \>
+        \textit{`Given a field $\K$\textbf{ and} $a,b \in \K$ such that
+         $a^2 \ne 4$ and $b \ne 0$, $M_{a,b}$ is the Montgomery curve
+         defined over~$\K$ with equation $\dots$.}
+
+\D II.2 style
+        \textit{`we call $M_{a,b}(\mathbb L)$ the set of
+          $\mathbb L$-rational points defined as'}
+        \>
+        \textit{`we call $M_{a,b}(\mathbb L)$ the set of
+          $\mathbb L$-rational points\textbf, defined as'}
+        \\
+        (add comma)
+
+\setbox0=\hbox{\verb!$k^{\mathrm{th}}$!}
+\setbox2=\hbox{\verb!$k^{\mathit{th}}$!}
+\A 1    consistency
+        `$k^{\mathrm{th}}$' \> `$k^{\mathit{th}}$'
+        \\
+        (or change line~119 the other way)
+
+\L130   grammar
+        `there exist a point' \> `there exists a point'
+
+\LL140-142 grammar
+        `by setting bit $255$ of $n$ to \texttt 0; setting bit $254$
+         to \texttt 1 and setting the lower $3$ bits to \texttt 0.'
+        \\\>\\
+        `by setting bit $255$ of $n$ to \texttt 0; setting bit $254$
+         to \texttt 1\textbf; and setting the lower $3$ bits to
+         \texttt 0.'
+        \\
+        (missing semicolon; alternatively, use commas instead of
+         semicolons)
+
+\L209   style
+        `Also multiplication (\texttt M) is heavily exploiting the redundancy'
+        \>
+        `Also multiplication (\texttt M) heavily exploits the redundancy'
+        \\
+        (or `makes heavy use of the redundancy')
+
+\L222   style
+        `the limbs of the result \texttt o are'
+         is confusing---in that typeface, it looks like `the limbs of
+         the result $\circ$ are' (\ie,
+         \texttt{\$\string\circ\$})---but I guess there's no other
+         way\dots
+
+\L517   grammar
+        `(See IV-B)' \> `(see IV-B)'
+
+\L679   grammar
+        `(e.g. all' \> `(e.g., all'
+
+\L682   grammar
+        `However we must' \> `However\textbf, we must'
+
+\L683   grammar
+        (missing line numbers in the next paragraph)
+        \endgraf
+        `Assume its recursive call:
+         $f : \N \to \mathit{State} \to \mathit{State}$
+         which iteratively applies $g$ with decreasing index:'
+        \\\>\\
+        `Define the recursion
+         $f\colon \N \to \mathit{State} \to \mathit{State}$
+         which iteratively applies $g$ with decreasing index:'
+        \endgraf
+        `Then we have :' \> `Then we have:' (extra space)
+
+\LL688-690 style
+        `\{0;1;2;3;4\}' \> `\{0,1,2,3,4\}'
+        \\
+        (unless you mean something other than the standard set
+         notation for `the set of integers having the elements $0$,
+         $1$, $2$, $3$, and $4$')
+
+\L700   grammar
+        `However in order to show' \> `However\textbf, in order to show'
+
+\L713   consistency
+        `(\emph{i.e.}\ under \texttt{:GF})'
+        \>
+        `(i.e., under \texttt{:GF})'
+        \\
+        (or otherwise be consistent about italic \vs roman face for
+         Latin phrases, which are in roman face elsewhere; consider
+         defining macros \texttt{\string\ie} \etc---subsequent cases
+         not listed here since you can search \& replace)
+
+\Lem IV.1 grammar
+        `\textit{\texttt{Low.M} implements correctly the
+         multiplication over $\Z_{2^{255}-19}$.}'
+        \\\>
+        `\textit{\texttt{Low.M} correctly implements
+         multiplication over $\Z_{2^{255}-19}$.}'
+
+\L720   grammar
+        `And specified in Coq as follows:'
+        \>
+        `We specify $\Z_{2^{255}-19}$ multiplication in Coq as follows:'
+
+\L729   grammar
+        `However for our purpose'
+        \>
+        `However\textbf, for our purpose'
+
+\L733   grammar
+        `if all the values'
+        \>
+        `If all the values'
+        \endgraf
+        It is unclear from the text of the lemma whether the
+         constraint is inclusive or exclusive, and the Coq code below
+         has one way for $-2^{26}$ to $2^{26}$ and another way for
+         $-38$ to $2^{16} + 38$.
+
+\L814   style
+        `By using Lemma~IV.1' \> `Using Lemma~IV.1'
+
+\LL826-829 style
+        `It uses Fermat's little theorem by doing an exponentiation to
+         $2^{255} - 21$.
+        This is done by applying a square-and-multiply algorithm.
+        The binary representation of $p - 2$ implies to always do
+         multiplications except for bits $2$ and $4$.'
+        \\\>\\
+        `It uses Fermat's little theorem by raising its input to the
+         power of $2^{255} - 21$ with a square-and-multiply
+         algorithm.
+        The binary representation of $p - 2$ implies that every step
+         does a multiplication except for bits $2$ and $4$.'
+
+\LL830-831 style
+        `we can use multiple strategies such as:'
+        \>
+        `we could use one of several strategies:'
+        \\
+        (`multiple strategies' suggests \emph{both}, not \emph{either})
+
+\L837   style
+        `for the benefits of simplicity'
+        \>
+        `because it is simpler'
+
+\L838   grammar
+        `However it requires to apply'
+        \>
+        `However, it requires us to apply'
+
+\L840   terminology
+        `tacticals' \> `tactics'
+
+\LL870-871 grammar
+        `The first loop is computing the subtraction while the second
+         is applying the carries.'
+        \\\>\\
+        `The first loop computes the subtraction, and the second
+         applies the carries.'
+
+\LL895-898 style
+        `By using each functions \dots, we defined a Coq definition
+         \texttt{Crypto\_Scalarmult} mimicking the exact behavior of
+         X25519 in TweetNaCl.'
+        \\\>\\
+        `Using the functions \dots, we have defined
+         \texttt{Crypto\_Scalarmult} in Coq to mimic the exact
+         behavior of X25519 in TweetNacl.'
+
+\LL900-903 style
+        `By proving that each functions \dots are behaving over
+         \texttt{list Z} as their equivalent over \texttt Z with'
+        \\\>\\
+        `By proving that the functions \dots behave over
+         \texttt{list Z} as their equivalent over \texttt Z with'
+
+\LL904-905 nit
+        `given the same inputs \texttt{Crypto\_Scalarmult}
+         applies the same computation as \texttt{RFC}'
+        \\\>\\
+        `given the same inputs \texttt{Crypto\_Scalarmult}
+         performs the same computation as \texttt{RFC}'
+
+\LL915-916 grammar
+        `that TweetNaCl's X25519 implementation respect RFC~7748'
+        \\\>\\
+        `that TweetNaCl's X25519 implementation respect\textbf s RFC~7748'
+
+\D V.1  grammar
+        `\textit{Let a field $\K$, using an appropriate choice of
+         coordinates, an elliptic curve $E$ is}'
+        \>
+        `\textit{Fix a field $\K$.  With an appropriate choice of
+         coordinates, an elliptic curve $E$ is}'
+        \endgraf
+        `\textit{(i.e. no cusps}'
+        \>
+        `\textit{(i.e., no cusps}'
+        \endgraf
+        `the solutions $(x, y)$ of $E$ augmented by a distinguished point'
+        \>
+        `the solutions $(x, y)$ of $E$ together with a distinguished point'
+        \endgraf
+        `distinguished point $\mathcal O$ (called point at infinity)'
+        \>
+        `distinguished point $\mathcal O$ called the point at infinity'
+
+\D V.2  grammar
+        `\textit{Let $a \in \K$\textbf, and $b \in K$ such that}'
+        \>
+        `\textit{Let $a \in \K$ and $b \in K$ satisfy}'
+
+\LL951-953 dashes
+        `-- the type of fields \dots \texttt{E : ecuType} -- a record'
+        \>
+        `--- the type of fields \dots \texttt{E : ecuType} --- a record'
+        \\
+        (em dash with \texttt{---}, not en dash with \texttt{--})
+
+\L968   style
+        `Points of an elliptic curve'
+        \>
+        `Points on an elliptic curve'
+
+\LL970-971 grammar
+        `The negation of a point $P = (x, y)$ by taking the symmetric
+         with respect to the x axis $-P = (x, -y)$.'
+        \>
+        `The negation of a point $P = (x, y)$ is defined by reflection
+         over the $x$ axis: $-P = (x, -y)$.'
+
+\LL972-974 grammar
+        `negation of third intersection of the line passing by $P$ and
+         $Q$ or'
+        \>
+        `negation of the third intersection of the line passing
+         through $P$ and $Q$, or'
+
+\L977   grammar
+        `defined in Coq as follow:'
+        \>
+        `defined in Coq as follows:'
+
+\L993   unclear
+        `And are proven internal to the curve (with coercion):'
+        \\
+        Not sure what this means.  Maybe you meant `We prove the curve
+         is closed under negation and addition', or `We prove negation
+         and addition preserve the curve equation', and a note about
+         coercion in Coq?
+
+\L1004  tense
+        `we defined the parametric type'
+        \>
+        `we define the parametric type'
+        \\
+        (or be consistent about present \vs past tense)
+
+\L1006-1008 dashes
+        `a \texttt{K : ecuFieldType} -- the type \dots $2$ or $3$ -- and'
+        \>
+        `a \texttt{K : ecuFieldType} --- the type \dots $2$ or $3$ --- and'
+        \\
+        (em dash, not en dash)
+
+\L1021  grammar
+        `We define the addition on'
+        \>
+        `We define addition on'
+
+\L1022  grammar
+        `however the actual'
+        \>
+        `however\textbf, the actual'
+
+\L1039  unclear
+        as on line~993
+
+\LL1063-1065 style
+        `represented with a triple $(X : Y : Z)$.  With the exception
+         of $(0 : 0 : 0)$, any points can be projected.'
+        \\
+        I think it would be clearer to say `represented as a triple
+         $(X : Y : Z)$ where $X$, $Y$, and $Z$ are not all zero.'
+        In particular, writing the invalid notation $(0 : 0 : 0)$ is a
+         little confusing.
+
+\LL1065-1066
+        `Scalar multiples are representing the same point'
+        \>
+        `Scalar multiples represent the same point'
+
+\LL1066-1067 grammar
+        `$(X : Y : Z)$ are $(\lambda X : \lambda Y : \lambda Z)$ defining'
+        \>
+        `$(X : Y : Z)$ and $(\lambda X : \lambda Y : \lambda Z)$ define'
+
+\L1069  grammar
+        `on the Euclidean plane, likewise the point $(X, Y)$'
+        \>
+        `on the Euclidean plane; likewise, the point $(X, Y)$'
+
+\D V.6  style
+        This definition looks a bit funny to me.
+        Here's how I'd typeset it:
+        \endgraf
+
+        \begin{quotation}
+          \noindent
+          \textbf{Definition~V.6}\;\it
+            Define $\chi\colon M_{a,b}(\K) \to \K \cup \{\infty\}$
+             and $\chi_0\colon M_{a,b}(\K) \to \K$ by:
+            \begin{equation*}\begin{aligned}
+              \chi(\mathcal O) &= \infty, & \chi\bigl((x, y)\bigr) &= x; \\
+              \chi_0(\mathcal O) &= 0, & \chi_0\bigl((x, y)\bigr) &= x. \\
+            \end{aligned}\end{equation*}
+        \end{quotation}
+
+        (Using \texttt{\string\begin\string{aligned\string}} inside
+         the display saves a tiny bit of vertical space if the
+         preceding line is short!)
+
+\L1091 grammar
+        `then for any point $P_1$'
+        \>
+        `Then for any point $P_1$'
+        \\
+        (and change `,' to `.' at end of preceding display)
+
+\L1098 grammar
+        `then for any point $P_1$'
+        \>
+        `Then for any point $P_1$'
+        \\
+        (and change `,' to `.' at end of preceding display)
+
+\L1116  style
+        `We can remark that'
+        \>
+        `We remark that'
+        \\
+        (That said, it looks like you're saying you can \emph{prove}
+         that the ladder returns $0$ for $x = 0$, not merely
+         \emph{remark} it.)
+
+\L1120  style
+        `Also $\mathcal O$ is the neutral element'
+        \>
+        `As $\mathcal O$ is the neutral element'
+
+\L1121  grammar
+        `thus we derive the following lemma'
+        \>
+        `Thus we derive the following lemma'
+        \\
+        (or put a semicolon after the preceding display)
+
+\LL1173-1174 grammar
+        `one of its quadratic twist.'
+        \>
+        `one of its quadratic twists.'
+
+\L1177  \textsc{kerning}
+        `$Curve25519\_Fp$' (\texttt{\$Curve25519\string\_Fp\$})
+        \\\>\\
+        `$\mathit{Curve25519\_Fp}$'
+        (\texttt{\$\string\mathit\string{Curve25519\string\_Fp\string}\$})
+        \\or\\
+        `$\operatorname{Curve25519\_Fp}$'
+        (\texttt{\$\string\operatorname\string{Curve25519\string\_Fp\string}\$})
+
+\L1178  \textsc{kerning}
+        same but with Twist25519\_Fp
+
+\L1209  unclear
+        `We can represent [$\F_p[\sqrt2]$] as the set $\F_p\times\F_p$
+         with $\delta = 2$\textbf, in other words, the polynomial with
+         coefficients in $\F_p$ modulo $X^2 - 2$.'
+        \\
+        This sentence isn't clear to me.
+        The letter $\delta$ doesn't seem to appear elsewhere in the paper.
+        It seems to mean the degree of a polynomial here---that is,
+         you're discussing representing $\F_{p^2}$ by the quotient
+         $\F_p[X]/(X^2 - 2)$, and in turn representing that quotient
+         by the set of degree-2 polynomials.
+        Maybe instead: `We can represent it by pairs
+         $(a, b) \in \F_p\times\F_p$ representing the coset of
+         $a + b X$ in the quotient $\F_p[X]/(X^2 - 2)$.'
+
+\LL1210-1211 grammar
+        `In a similar way as for $\F_p$ we use Module in Coq.'
+        \>
+        `As we did for $\F_p$, we use a module in Coq.'
+
+\L1229  style
+        `Similarly as in $\F_p$'
+        \>
+        `As in $\F_p$'
+
+\LL1232-1233 grammar
+        `abbreviated as $a$ without confusions.'
+        \>
+        `abbreviated as $a$ without confusion.'
+
+\D V.18 style
+        I'd typeset this as:
+
+        \begin{quotation}
+          Define the following functions:
+%
+          \begin{align*}
+            \phi_c&\colon M_{486662,1}(\F_p) \to M_{486662,1}(\F_{p^2}),
+            & (x, y) &\mapsto \bigl((x,0), (y,0)\bigr); \\
+            \phi_t&\colon M_{486662,2}(\F_p) \to M_{486662,1}(\F_{p^2}),
+            & (x, y) &\mapsto \bigl((x,0), (0,y)\bigr); \\
+            \psi&\colon \F_{p^2} \to \F_p,
+            & (x, y) &\mapsto x.
+          \end{align*}
+        \end{quotation}
+%
+        or
+%
+        \begin{quotation}
+          Define the functions
+           $\phi_c\colon M_{486662,1}(\F_p) \to M_{486662,1}(\F_{p^2})$,
+           $\phi_t\colon M_{486662,2}(\F_p) \to M_{486662,1}(\F_{p^2})$,
+           and
+           $\psi\colon \F_{p^2} \to \F_p$
+           by
+%
+          \begin{align*}
+            \phi_c\bigl((x, y)\bigr) &= \bigl((x,0), (y,0)\bigr) \\
+            \phi_t\bigl((x, y)\bigr) &= \bigl((x,0), (0,y)\bigr) \\
+            \psi\bigl((x, y)\bigr) &= x.
+          \end{align*}
+        \end{quotation}
+
+        That said, the use of tuples here $(x, y)$ to sometimes mean
+         a point on the curve and sometimes mean an element of the
+         quadratic field extension is a little confusing.
+        Maybe you could use a tag like $(x, y)_{p^2}$ \vs $(x, y)_M$,
+         or a different delimiter, or different letters?
+
+\end{description}
+
+\end{document}

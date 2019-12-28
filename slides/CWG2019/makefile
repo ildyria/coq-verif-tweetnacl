@@ -1,7 +1,7 @@
 LATEXMK = ./latexrun.py
 READ = evince
 SOURCES := BenoitTweetNaCl.tex
-DEPS := $(wildcard *.sty) ECC101/frame.tex
+DEPS := $(wildcard *.sty) ECC101/frame.tex $(wildcard tikz/*.tex)
 PDFS := $(notdir $(SOURCES:.tex=.pdf))
 
 NO_COLOR="\033[0m"

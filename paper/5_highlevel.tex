@@ -355,7 +355,6 @@ This gives us the theorem of the correctness of the Montgomery ladder.
 \begin{theorem}
 \label{thm:montgomery-ladder-correct}
 For all $n, m \in \N$, $x \in \K$, $P \in M_{a,b}(\K)$,
-% if $\chi_0(P) = x$ then \aref{alg:montgomery-double-add} returns $\chi_0(n \cdot P)$
 if $\chi_0(P) = x$ then \coqe{opt_montgomery} returns $\chi_0(n \cdot P)$
 \end{theorem}
 \begin{lstlisting}[language=Coq]

@@ -42,6 +42,11 @@
 \RequirePackage{float}
 \RequirePackage{algorithm}
 \RequirePackage{algorithmic}
+\RequirePackage{adjustbox} % Shrink stuff
+\RequirePackage{transparent}
+
+
+\newenvironment{informaltheorem}{\medskip\itshape\noindent}{\medskip}
 
 %* --[ Listings --------------------------------------------------------------
 
@@ -74,7 +79,7 @@
 \newcommand{\lstsize}{\fontsize{8.5pt}{8.5pt}\selectfont}
 \RequirePackage{xspace}
 \RequirePackage{multirow}
-% \RequirePackage{bussproofs}
+\RequirePackage{bussproofs}
 \RequirePackage{soul}\let\strikethrough\st\let\st\undefined
 
 
@@ -105,19 +110,23 @@
 }
 
 \RequirePackage{xcolor}
-\definecolor{doc@lstidentifier}{HTML}{000000} % black
-\definecolor{doc@lstcomment}{HTML}{008200} % green
-\definecolor{doc@lststring}{HTML}{FF5500} % orange
-\definecolor{doc@lstkeyword}{HTML}{0000FF} % blue
-\definecolor{doc@lstbackground}{HTML}{FFFFEE} % light yellow
-\definecolor{doc@lstframe}{HTML}{FFEE88} % dark yellow
-\definecolor{doc@repeat}{HTML}{FF69B4} % hotpink
-
+\definecolor{doc@lstidentifier}{HTML}{000000}   % black
+\definecolor{doc@lstcomment}{HTML}{CC3300}      % dark orange
 \definecolor{doc@lstfunctions}{HTML}{006600}    % dark green
+\definecolor{doc@lststring}{HTML}{FF5500} % orange
+\definecolor{doc@lststring}{HTML}{FF5500}       % orange
+\definecolor{doc@lstkeyword}{HTML}{0000CC}      % deep blue
+\definecolor{doc@lstkeyword2}{rgb}{0.127,0.427,0.514}
+\definecolor{doc@lstbackground}{HTML}{FFFFEE} % light yellow
 \definecolor{doc@lstdirective}{HTML}{881000}    % dark red
 \definecolor{doc@lstconstants}{HTML}{0033AA}    % dark blue
 \definecolor{doc@lstidentifiers2}{HTML}{FF0033} % purple-red
 \definecolor{doc@lstnumbers}{HTML}{AA00AA}      % purple
+\definecolor{doc@lstbackground}{HTML}{FFF8DC}   % white
+\definecolor{doc@lstframe}{HTML}{FFFFFF}        % white
+% \definecolor{doc@lstframe}{HTML}{FFEE88} % dark yellow
+\definecolor{doc@repeat}{HTML}{FF69B4} % hotpink
+
 
 \definecolor{rured}{RGB}{190,49,26}
 \definecolor{ms}{RGB}{190,49,26}
@@ -160,50 +169,21 @@
 
 \lstalias{shell}{sh}
 
-\lstdefinelanguage{cnacl}{%
-  morekeywords=[1]{for, FOR, M, Z, A, S, car25519, sel25519, pack25519, inv25519, unpack25519},
-  morekeywords=[2]{gf, sv, i64, int, long, u8},
-  morekeywords=[3]{const, typedef},
-  sensitive=true,
-%  otherkeywords={[, ], (, ), \\=,.},
-  %
-  morestring=[b]",
-  %
-  morecomment=[l]{\#},
-  %
-  identifierstyle=\color[rgb]{0,0,0},
-  commentstyle=\color[rgb]{0,0.5,0},
-  stringstyle=\color[rgb]{0.133,0.545,0.133},
-  keywordstyle=\color[rgb]{1.0,0,0},
-  keywordstyle=[1]\color[rgb]{0.5,0,0.5},
-  keywordstyle=[2]\color[rgb]{0,0,0.75},
-  keywordstyle=[3]\color[rgb]{0.127,0.427,0.514},
-  %  keywordstyle=[4]\color[rgb]{0.4,0.4,0.4},
-  alsoletter={?},
-  keywordsprefix=?,
-  delim=[s][\color{magenta}]{:}{(},
-  moredelim=[s][\color{magenta}]{:}{.},
-  moredelim=[s][\color{magenta}]{:}{,},
-  moredelim=[s][\color{magenta}]{:}{^^J},
-  moredelim=[s][\color{magenta}]{:}{\ },
-  moredelim=[l][\color{black}]{:}{/},
-}
-
 \newcommand{\crd}[1]{\textcolor{red}{#1}}
 \newcommand{\cbl}[1]{\textcolor{blue}{#1}}
 
-\definecolor{doc@lstidentifier}{HTML}{000000}   % black
-\definecolor{doc@lstcomment}{HTML}{CC3300}      % dark orange
-\definecolor{doc@lstfunctions}{HTML}{006600}    % dark green
-\definecolor{doc@lststring}{HTML}{FF5500}       % orange
-\definecolor{doc@lstkeyword}{HTML}{0000CC}      % deep blue
-\definecolor{doc@lstkeyword2}{HTML}{206c83}
-\definecolor{doc@lstdirective}{HTML}{881000}    % dark red
-\definecolor{doc@lstconstants}{HTML}{0033AA}    % dark blue
-\definecolor{doc@lstidentifiers2}{HTML}{FF0033} % purple-red
-\definecolor{doc@lstnumbers}{HTML}{AA00AA}      % purple
-\definecolor{doc@lstbackground}{HTML}{FFF8DC}   % white
-\definecolor{doc@lstframe}{HTML}{FFFFFF}        % white
+% \definecolor{doc@lstidentifier}{HTML}{000000}   % black
+% \definecolor{doc@lstcomment}{HTML}{CC3300}      % dark orange
+% \definecolor{doc@lstfunctions}{HTML}{006600}    % dark green
+% \definecolor{doc@lststring}{HTML}{FF5500}       % orange
+% \definecolor{doc@lstkeyword}{HTML}{0000CC}      % deep blue
+% \definecolor{doc@lstkeyword2}{HTML}{206c83}
+% \definecolor{doc@lstdirective}{HTML}{881000}    % dark red
+% \definecolor{doc@lstconstants}{HTML}{0033AA}    % dark blue
+% \definecolor{doc@lstidentifiers2}{HTML}{FF0033} % purple-red
+% \definecolor{doc@lstnumbers}{HTML}{AA00AA}      % purple
+% \definecolor{doc@lstbackground}{HTML}{FFF8DC}   % white
+% \definecolor{doc@lstframe}{HTML}{FFFFFF}        % white
 
 \lstloadlanguages{% check documentation for other languages...
   C
@@ -395,7 +375,7 @@ morekeywords=[1]{Section, Module, End, Require, Import, Export,
   Variable, Variables, Parameter, Parameters, Axiom, Hypothesis,
   Hypotheses, Notation, Local, Tactic, Reserved, Scope, Open, Close,
   Bind, Delimit, Definition, Let, Ltac, Fixpoint, CoFixpoint, Add,
-  Morphism, Relation, Implicit, Arguments, Unset, Contextual,
+  Morphism, Relation, Implicit, Arguments, Unset, Contextual, Function,
   Strict, Prenex, Implicits, Inductive, CoInductive, Record,
   Structure, Canonical, Coercion, Context, Class, Global, Instance,
   Program, Infix, Theorem, Lemma, Corollary, Proposition, Fact,
@@ -406,10 +386,10 @@ morekeywords=[1]{Section, Module, End, Require, Import, Export,
 % Gallina
 morekeywords=[2]{forall, exists, exists2, fun, fix, cofix, struct,
   match, with, end, as, in, return, let, if, is, then, else, for, of,
-  nosimpl, when},
+  nosimpl, when, measure},
 %
 % Sorts
-morekeywords=[3]{Type, Prop, Set, true, false, option, bool, list, Z, positive},
+morekeywords=[3]{Type, Prop, Set, true, false, option, bool, list, Z, nat, T, T', positive},
 %
 % Various tactics, some are std Coq subsumed by ssr, for the manual purpose
 morekeywords=[4]{pose, set, move, case, elim, apply, clear, hnf,
@@ -428,7 +408,7 @@ morekeywords=[5]{by, done, exact, reflexivity, tauto, romega, omega,
 morekeywords=[6]{do, last, first, try, idtac, repeat},
 %
 % Control
-morekeywords=[7]{Forall, ZofList, Zlength, length},
+morekeywords=[7]{Forall, ZofList, Zlength, length, ListofZ32},
 %
 % Comments delimiters, we do turn this off for the manual
 morecomment=[s]{(*}{*)},
@@ -492,7 +472,7 @@ literate=
     {<->}{{$\leftrightarrow\;$}}1
     {<=}{{$\leq\;$}}1
     {==}{{\texttt{==}\;}}1
-    {\#}{{$^\star$}}1
+    % {\#}{{$^\star$}}1
     {\\o}{{$\circ\;$}}1
     % {\@}{{$\cdot$}}1
     {\/\\}{{$\wedge\;$}}1
@@ -504,10 +484,15 @@ literate=
     {~}{{\ }}1
     % {\@\@}{{$@$}}1
     {:GF}{{\color{doc@lstfunctions}{:$GF$}}}1
+    % {0}{{\color{doc@lstnumbers}{$0$}}}1
+    % {32}{{\color{doc@lstnumbers}{$32$}}}1
     {2^8}{{\color{doc@lstnumbers}{$2^8$}}}1
-    {2^16}{{\color{doc@lstnumbers}{$2^{16}$}}}1
-    {2^26}{{\color{doc@lstnumbers}{$2^{26}$}}}1
-    {2^62}{{\color{doc@lstnumbers}{$2^{62}$}}}1
+    % {2^16}{{\color{doc@lstnumbers}{$2^{16}$}}}1
+    {2^16}{{$2^{16}$}}1
+    % {2^26}{{\color{doc@lstnumbers}{$2^{26}$}}}1
+    {2^26}{{$2^{26}$}}1
+    % {2^62}{{\color{doc@lstnumbers}{$2^{62}$}}}1
+    {2^62}{{$2^{62}$}}1
     {2^256}{{\color{doc@lstnumbers}{$2^{256}$}}}1
     {2^255-19}{{\color{doc@lstnumbers}{$2^{255}-19$}}}1
     {2^255-21}{{\color{doc@lstnumbers}{$2^{255}-21$}}}1
@@ -518,50 +503,77 @@ literate=
     {\\Z}{{$\mathbb{Z}$}}1
     {\\K}{{$\mathbb{K}$}}1
     {^n}{{$^n$}}1
+    {^+n}{{$^n$}}1
     {^m}{{$^m$}}1
     {^2}{{$^2$}}1
+    {^+2}{{$^2$}}1
     {^3}{{$^3$}}1
+    {^+3}{{$^3$}}1
     {^nd}{{$^{nd}$}}1
     {^rd}{{$^{rd}$}}1
     {^th}{{$^{th}$}}1
     {^255}{{$^{255}$}}1
+    {^-1}{{$^{-1}$}}1
+    {\%:R}{{}}1
     {p1}{{p$_1$}}1
     {p2}{{p$_2$}}1
     {x1}{{x$_1$}}1
     {x2}{{x$_2$}}1
+    {x3}{{x$_3$}}1
+    {x_1}{{x$_1$}}1
+    {x_2}{{x$_2$}}1
+    {x_3}{{x$_3$}}1
+    {x4}{{x$_4$}}1
     {y1}{{y$_1$}}1
     {y2}{{y$_2$}}1
+    {y3}{{y$_3$}}1
+    {y4}{{y$_4$}}1
+    {z1}{{z$_1$}}1
+    {z2}{{z$_2$}}1
+    {z3}{{z$_3$}}1
+    {z4}{{z$_4$}}1
+    {z_2}{{z$_2$}}1
+    {z_3}{{z$_3$}}1
     {xs}{{x$_s$}}1
+    {\\-}{{$-$}}1
+    {\\+}{{$+$}}1
     {\\boxplus}{{$\boxplus$}}1
     {\\circ}{{$\circ$}}1
     {\\GF}{{$\mathbb{F}_{2^{255}-19}$}}1
+    {Zmodp.type}{{$\mathbb{F}_{2^{255}-19}$}}1
+    {Zmodp2.type}{{$\mathbb{F}_{2^{255}-19}$}}1
     {\\infty}{{$\infty$}}1
+    {\\cdot}{{$\cdot$}}1
+    {\\xcoord}{{$x$-coordinate}}1
+    {(M\#a)}{{$a$}}1
+    {(M\#b)}{{$b$}}1
+    {---}{{\textemdash}}1
+    {fct}{{function}}1
 %
 }[keywords,comments,strings]
 
 \lstnewenvironment{coq}{\lstset{language=Coq}}{}
+\lstnewenvironment{Coq}{\lstset{language=Coq}}{}
 
-% pour inliner dans le texte
+% inline in text
 \def\coqe{\lstinline[language=Coq, basicstyle=\ttfamily\normalsize]}
-% pour inliner dans les tableaux / displaymath...
+\def\Coqe{\lstinline[language=Coq, basicstyle=\ttfamily\normalsize]}
+% inline in table / displaymath...
 \def\coqes{\lstinline[language=Coq, basicstyle=\scriptsize]}
-
-
-
-
+\def\Coqes{\lstinline[language=Coq, basicstyle=\scriptsize]}
 
 
 
 \lstdefinelanguage{Ctweetnacl}{%
   morekeywords=[1]{FOR,for, return},
-  morekeywords=[2]{sv, int, i64, gf, long, u8},
+  morekeywords=[2]{sv, int, i64, gf, unsigned, char, long, u8},
   morekeywords=[3]{const, typedef},
   morekeywords=[4]{A, Z, M, S, car25519, pack25519, inv25519,
   crypto_scalarmult, unpack25519, sel25519, set25519},
   morekeywords=[5]{ 0, 1, 1LL, 2, 3, 4, 7, 8, 14, 15, 16, 31, 32, 37, 38, 127, 64,
   248, 253, 254, _121665, 0x7fff, 0xffed, 0xffff, 0xff },
   sensitive=true,
-  alsoletter   = {0123456789^} ,
+  alsoletter   = {0123456789^'} ,
   % morekeywords = [1]{1,2,3,40} ,
   % otherkeywords={<, >, \\=, |, &, ^},
   %
@@ -572,11 +584,9 @@ literate=
   identifierstyle=\color[rgb]{0,0,0},
   delim=[l][\color{doc@lstdirective}]{\#},
   literate=
-  {^th}{{$^{th}$}}1
 }
 
 \def\TNaCle{\lstinline[language=Ctweetnacl, basicstyle=\ttfamily\normalsize]}
-% pour inliner dans les tableaux / displaymath...
 \def\TNaCles{\lstinline[language=Ctweetnacl, basicstyle=\scriptsize]}
 
 \lstset{%
@@ -594,7 +604,7 @@ literate=
   keywordstyle=[3]\color{doc@lstkeyword2},
   keywordstyle=[4]\color{doc@lstfunctions},
   keywordstyle=[5]\color{doc@lstnumbers},
-  keywordstyle=[7]\color{doc@lstfunctions},
+  % keywordstyle=[7]\color{doc@lstfunctions},
   %
   extendedchars=true,
   inputencoding=utf8,
@@ -618,7 +628,9 @@ literate=
   frame=none, % add a frame around the code
   framexleftmargin=0pt, % frame back to the left
   framexrightmargin=0pt, % frame back to the right
-  backgroundcolor=\color{black!2}, % set the background color
+  % backgroundcolor=\color{black!2}, % set the background color
+  backgroundcolor=\transparent{0}, % set the background color
+  % backgroundcolor=\color{white!100}, % set the background color
   rulecolor=\color{doc@lstframe}, % frame color
   %
   columns=flexible, % try not to ruin the spacing intended by the font designer
