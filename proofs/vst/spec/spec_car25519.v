@@ -29,6 +29,6 @@ Definition car25519_Inv sh v_o o :=
           Zlength o = 16;
           i >= 0)
    LOCAL (temp _o v_o)
-   SEP   (sh [{ v_o }] <<(lg16)-- mVI64 (Carrying_n 16 (nat_of_Z i) 0 o)).
+   SEP   (sh [{ v_o }] <<(lg16)-- mVI64 (if Z.ltb i 16 then (Carrying_n 16 (nat_of_Z i) 0 o) else car25519 o)).
 
 Close Scope Z.

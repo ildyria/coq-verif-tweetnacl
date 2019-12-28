@@ -19,10 +19,14 @@ Lemma body_car25519: semax_body Vprog Gprog f_car25519 car25519_spec.
 Proof.
 start_function.
 unfold Sfor.
-forward_for_simple_bound 15 (car25519_Inv sh v_o o).
+forward_for_simple_bound 16 (car25519_Inv sh v_o o).
 - entailer!.
   flatten ; entailer!.
-- assert(0 <= i < Zlength (Carrying_n 16 (nat_of_Z i) 0 o)).
+- assert(0 <= i < 15 \/ i = 15) by omega.
+  destruct H2.
+  (* normal iteration: 0 -> 14 *)
+  clear H1.
+  assert(0 <= i < Zlength (Carrying_n 16 (nat_of_Z i) 0 o)).
   {
     rewrite Carrying_n_Zlength.
     go.
@@ -32,6 +36,7 @@ forward_for_simple_bound 15 (car25519_Inv sh v_o o).
   assert(0 <= i + 1 < Zlength (Carrying_n 16 (nat_of_Z i) 0 o)).
   {
     rewrite Carrying_n_Zlength.
+    rewrite H0.
     go.
     rewrite -Zlength_correct.
     rewrite /nat_of_Z Z2Nat.id ; omega.
@@ -58,7 +63,22 @@ forward_for_simple_bound 15 (car25519_Inv sh v_o o).
   assert(Hcb:= Zcarry_n_bounds_length o Hlengtho H i Him).
   assert(Hi1m: 0 <= i + 1 < 16) by omega.
   assert(Hdb:= Zcarry_n_bounds_length o Hlengtho H (i + 1) Hi1m).
-  forward ; rewrite <- Hd.
+  forward_if (PROP ( )
+   LOCAL (temp _i (Vint (Int.repr i)); temp _t'1 (Vint (Int.repr 1)); temp _o v_o)
+   SEP (sh [{v_o}]<<( lg16 )-- mVI64 (if i <? 16 then Carrying_n 16 (nat_of_Z i) 0 o else car25519 o))).
+  forward.
+  entailer!.
+  omega. (* i >= 15 & 0 <= i < 15 *)
+  replace (i <? 16) with true by (symmetry; apply Z.ltb_lt; omega).
+  assert(Hi1: (Int.unsigned (Int.mods (Int.repr (i + 1)) (Int.repr 16))) = i + 1).
+  {
+  rewrite /Int.mods ?Int.signed_repr ?Z.rem_small ?Int.unsigned_repr;  solve_bounds_by_values.
+  }
+  assert(Htrue: is_true (negb (Int.eq (Int.repr (i + 1)) (Int.repr Int.min_signed) && Int.eq (Int.repr 16) Int.mone))).
+  {
+  rewrite /Int.eq => /=; rewrite andb_false_r; done.
+  }
+  forward ; rewrite Hi1 -Hd.
   entailer!.
   forward ; rewrite <- Hc.
   entailer!.
@@ -67,12 +87,12 @@ forward_for_simple_bound 15 (car25519_Inv sh v_o o).
   2: omega.
   inversion Hd.
   clear Hd.
-  rename H6 into Hd.
+  rename H5 into Hd.
   rewrite map_map (Znth_map 0) in Hc.
   2: omega.
   inversion Hc.
   clear Hc.
-  rename H6 into Hc.
+  rename H5 into Hc.
   assert(- 2 ^ 62 < (Znth (i + 1) (Carrying_n 16 (nat_of_Z i) 0 o) 0) < 2 ^ 62).
   rewrite Znth_nth /nat_of_Z; try omega.
   rewrite Carrying_n_1 ; try omega.
@@ -85,8 +105,8 @@ forward_for_simple_bound 15 (car25519_Inv sh v_o o).
   apply div_interval_mono.
   compute ; reflexivity.
   omega.
-  change (-9223372036854775807 / 65536) with (-140737488355328) in H8.
-  change (9223372036854775807 / 65536) with (140737488355327) in H8.
+  change (-9223372036854775807 / 65536) with (-140737488355328) in H7.
+  change (9223372036854775807 / 65536) with (140737488355327) in H7.
   forward.
   entailer!.
   {
@@ -94,6 +114,8 @@ forward_for_simple_bound 15 (car25519_Inv sh v_o o).
   rewrite Int64.shr_div_two_p.
   change (two_p 16) with 65536.
   rewrite (Int64.signed_repr (Znth i (Carrying_n 16 (nat_of_Z i) 0 o) 0)).
+  change (Int64.repr 1) with Int64.one.
+  rewrite Int64.mul_commut Int64.mul_one.
   rewrite Int64.unsigned_repr.
   rewrite Int64.signed_repr.
   all: solve_bounds_by_values.
@@ -105,11 +127,14 @@ forward_for_simple_bound 15 (car25519_Inv sh v_o o).
   rewrite upd_Znth_diff;
   rewrite ?(Znth_map Int64.zero); rewrite ?Zlength_map ; go.
   }
+  rewrite Int64.mul_commut Int64.mul_one.
+  rewrite Hi1.
   forward.
   entailer!.
   {
   replace_cancel.
   clean_context_from_VST.
+  replace (i + 1 <? 16) with true by (symmetry; apply Z.ltb_lt; omega).
   apply car_low_level; try assumption.
   rewrite Zlength_map ; assumption.
   }
@@ -135,11 +160,27 @@ forward_for_simple_bound 15 (car25519_Inv sh v_o o).
     rewrite Zlength_correct in H0 ; omega.
   assert(Hcb:= Zcarry_n_bounds_length o Hlengtho H 15 Him).
   destruct Hd as [d Hd].
-  forward ; rewrite <- Hd.
+  forward_if (PROP ( )
+  LOCAL (temp _i (Vint (Int.repr i)); temp _t'1 (Vint (Int.repr 38)); temp _o v_o)
+  SEP (sh [{v_o}]<<( lg16 )-- mVI64 (if i <? 16 then Carrying_n 16 (nat_of_Z i) 0 o else car25519 o))).
+  omega. (* i < 15 & i = 15 *)
+  forward.
+  entailer!.
+  replace (i <? 16) with true by (symmetry; apply Z.ltb_lt; omega).
+  assert(Hi0: (Int.unsigned (Int.mods (Int.repr (15 + 1)) (Int.repr 16))) = 0).
+  {
+  change (15 + 1) with 16.
+  rewrite /Int.mods ?Int.signed_repr ?Z.rem_same ?Int.unsigned_repr;  solve_bounds_by_values.
+  }
+  assert(Htrue: is_true (negb (Int.eq (Int.repr (i + 1)) (Int.repr Int.min_signed) && Int.eq (Int.repr 16) Int.mone))).
+  {
+  rewrite /Int.eq => /=; rewrite andb_false_r; done.
+  }
+  subst i.
+  forward ; rewrite Hi0 -Hd.
   entailer!.
   forward ; rewrite <- Hc.
   entailer!.
-  change (Pos.to_nat 15) with (15%nat) in *.
   change (nat_of_Z 15) with (15%nat) in *.
   change (Z.to_nat 15) with (15%nat) in *.
   rewrite map_map in Hc.
@@ -186,19 +227,22 @@ forward_for_simple_bound 15 (car25519_Inv sh v_o o).
   change (38 * 140737488355327) with 5348024557502426 in H9.
   all: solve_bounds_by_values.
   }
+  (* Last step of the loop *)
+  rewrite Hi0.
   forward.
   rewrite upd_Znth_map.
   rewrite (Znth_map Int64.zero).
   2: rewrite upd_Znth_Zlength Zlength_map ; omega.
   entailer!.
   forward.
-  forward.
+  replace (15 + 1 <? 16) with false by (symmetry ; apply Z.ltb_ge => //=).
   entailer!.
-  apply Zcar25519_bounds_length_1.
-  rewrite Zlength_correct in H0; omega.
-  auto.
   replace_cancel.
   apply car25519low_level ; trivial.
+  forward.
+  entailer!.
+  apply Zcar25519_bounds_length_1 => //=.
+  rewrite Zlength_correct in H0 ; omega.
 Qed.
 
 

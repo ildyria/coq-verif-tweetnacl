@@ -273,13 +273,10 @@ sv set25519(gf r, const gf a)
 sv car25519(gf o)
 {
   int i;
-  i64 c;
-  FOR(i,15) {
-    o[(i+1)]+=o[i]>>16;
+  FOR(i,16) {
+    o[(i+1)%16]+=(i<15?1:38)*(o[i]>>16);
     o[i]&=0xffff;
   }
-  o[0]+=38*(o[15]>>16);
-  o[15]&=0xffff;
 }
 
 sv sel25519(gf p,gf q,i64 b)
