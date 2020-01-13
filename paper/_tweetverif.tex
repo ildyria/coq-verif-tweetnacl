@@ -1,5 +1,5 @@
 % \documentclass[conference]{IEEEtran}
-\documentclass[format=sigconf, screen=true, review=false, authordraft=true]{acmart}
+\documentclass[format=sigconf, anonymous=false, authordraft=true, screen=true, review=true]{acmart}
 
 \usepackage{setup}
 
@@ -8,24 +8,13 @@
 \fancyfoot[C]{\thepage}
 
 \setcopyright{none} % No copyright notice required for submissions
-\acmConference[Anonymous Submission to ACM CCS 2020]{ACM Conference on Computer and Communications Security}{Due 20 January 2020}{Orlando, TBD}
+  \acmConference[Anonymous Submission to ACM CCS 2020]{ACM Conference on Computer and Communications Security}{Due 20 January 2020}{Orlando, USA}
 \acmYear{2019}
 
 
 \settopmatter{printacmref=false, printccs=true, printfolios=true} % We want page numbers on submissions
 
 %%\ccsPaper{9999} % TODO: replace with your paper number once obtained
-
-\newif\ifpublic
-\publicfalse
-
-% to display line numbers and page numbers
-% \newif\ifwip
-% \wipfalse
-
-% what is iffull used for ??? O.o
-\newif\iffull
-\fulltrue
 
 \input{_macros}
 
@@ -48,18 +37,13 @@
 \keywords{Formal Verification, Cryptographic Implementations, Elliptic Curves} % TODO: replace with your keywords
 
 
-% \ifwip
-%   \linenumbers
-% \fi
-
 %don't want date printed
-\date{}
+\date{January 20th, 2020}
 
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
 \title{\Large \bf A Coq proof of the correctness of X25519 in TweetNaCl}
 
 %for single author (just remove % characters)
-% \ifpublic
 \author{Peter Schwabe}
 \affiliation{Radboud University,\\
 The Netherlands}
@@ -72,34 +56,20 @@ The Netherlands}
 \author{Freek Wiedijk}
 \affiliation{Radboud University,\\
 The Netherlands}
-% \else
-% % just to remove complains from compilation
-% \author{}
-% \fi
 
 \input{_abstract}
 
 \maketitle
 
-% \ifwip
-% % add page numbers : https://tex.stackexchange.com/questions/52729/forcing-page-numbers-with-ieeetran/52785
-% \thispagestyle{plain}
-% \pagestyle{plain}
-% \fi
-
-%XXX: Figure out how to put this somewhere nice
-%\thanks{
-%XXX:
-%This work would not have been possible without the assistance of multiple people.
-%Andrew Appel and Lennart Beringer for having us in Princeton and teaching us the use of VST.
-%John Wiegley for introducing us to proofs by reflection at the DeepSpec Summer School 2017.
-%}
-
-%\thispagestyle{empty}
+% \begin{acks}
+% This work would not have been possible without the assistance of multiple people.
+% Andrew Appel and Lennart Beringer for having us in Princeton and teaching us the use of VST.
+% John Wiegley for introducing us to proofs by reflection at the DeepSpec Summer School 2017.
+% \end{acks}
 
 \intput{main}
 
-\vspace*{1cm}
+% \vspace*{1cm}
 {\bibliographystyle{ACM-Reference-Format}
 \bibliography{collection}}
 
