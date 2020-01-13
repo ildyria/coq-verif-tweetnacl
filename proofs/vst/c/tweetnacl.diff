@@ -1,85 +1,148 @@
-8c8
-< typedef long long i64;
----
-> typedef long long i64 __attribute__((aligned(8)));
-277,281c277,279
-<   FOR(i,16) {
-<     o[i]+=(1LL<<16);
-<     c=o[i]>>16;
-<     o[(i+1)*(i<15)]+=c-1+37*(c-1)*(i==15);
-<     o[i]-=c<<16;
----
->   FOR(i,15) {
->     o[(i+1)]+=o[i]>>16;
->     o[i]&=0xffff;
-282a281,282
->   o[0]+=38*(o[15]>>16);
->   o[15]&=0xffff;
-285c285
-< sv sel25519(gf p,gf q,int b)
----
-> sv sel25519(gf p,gf q,i64 b)
-287c287,288
-<   i64 t,i,c=~(b-1);
----
->   int i;
->   i64 t,c=~(b-1);
-297,299c298,301
-<   int i,j,b;
-<   gf m,t;
-<   FOR(i,16) t[i]=n[i];
----
->   int i,j;
->   i64 b;
->   gf t,m={0};
->   set25519(t,n);
-310d311
-<     b=(m[15]>>16)&1;
-312c313,314
-<     sel25519(t,m,1-b);
----
->     b=1-(m[15]>>16)&1;
->     sel25519(t,m,b);
-332c334
-<   return d[0]&1;
----
->   return d[0]&(u8)1;
-356,359c358,365
-<   i64 i,j,t[31];
-<   FOR(i,31) t[i]=0;
-<   FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
-<   FOR(i,15) t[i]+=38*t[i+16];
----
->   int i,j;
->   i64 t[31], aux;
->   FOR(i,31) t[i]= 0;
->   FOR(i,16) {
->     aux = a[i];
->     FOR(j,16) t[i+j]+=aux*b[j];
->   }
->   FOR(i,15) t[i]+=(i64)38*t[i+16];
-374c380
-<   FOR(a,16) c[a]=i[a];
----
->   set25519(c,i);
-397,398c403,405
-<   i64 x[80],r,i;
-<   gf a,b,c,d,e,f;
----
->   i64 r;
->   int i;
->   gf x,a,b,c,d,e,f;
-433,441c440,442
-<   FOR(i,16) {
-<     x[i+16]=a[i];
-<     x[i+32]=c[i];
-<     x[i+48]=b[i];
-<     x[i+64]=d[i];
-<   }
-<   inv25519(x+32,x+32);
-<   M(x+16,x+16,x+32);
-<   pack25519(q,x+16);
----
->   inv25519(c,c);
->   M(a,a,c);
->   pack25519(q,a);
+--- tweetnacl.c	2019-07-31 14:05:27.916394829 +0200
++++ tweetnaclVerifiableC.c	2019-12-28 16:31:25.596762941 +0100
+@@ -5,7 +5,7 @@
+ typedef unsigned char u8;
+ typedef unsigned long u32;
+ typedef unsigned long long u64;
+@@ We tell VST that long long
+@@ are aligned on 8 bytes.
+-typedef long long i64;
++typedef long long i64 __attribute__((aligned(8)));
+ typedef i64 gf[16];
+ extern void randombytes(u8 *,u64);
+ 
+@@ -273,18 +273,16 @@
+@@ We remove the undefined behavior and
+@@ simplify the carry propagation.
+ sv car25519(gf o)
+ {
+   int i;
+-  i64 c;
+   FOR(i,16) {
+-    o[i]+=(1LL<<16);
+-    c=o[i]>>16;
+-    o[(i+1)*(i<15)]+=c-1+37*(c-1)*(i==15);
+-    o[i]-=c<<16;
++    o[(i+1)%16]+=(i<15?1:38)*(o[i]>>16);
++    o[i]&=0xffff;
+   }
+ }
+ 
+@@ b is a mask of 64 bits.
+-sv sel25519(gf p,gf q,int b)
++sv sel25519(gf p,gf q,i64 b)
+ {
+@@ For-loop indexes have to be int.
+-  i64 t,i,c=~(b-1);
++  int i;
++  i64 t,c=~(b-1);
+   FOR(i,16) {
+     t= c&(p[i]^q[i]);
+     p[i]^=t;
+@@ -294,9 +292,10 @@
+ 
+ sv pack25519(u8 *o,const gf n)
+ {
+@@ For-loop indexes have to be int.
+@@ b is a 64 bit mask.
+@@ Initialize m to simplify verification.
+-  int i,j,b;
+-  gf m,t;
+-  FOR(i,16) t[i]=n[i];
++  int i,j;
++  i64 b;
++  gf t,m={0};
++  set25519(t,n);
+   car25519(t);
+   car25519(t);
+   car25519(t);
+@@ -307,9 +306,9 @@
+       m[i-1]&=0xffff;
+     }
+     m[15]=t[15]-0x7fff-((m[14]>>16)&1);
+-    b=(m[15]>>16)&1;
+     m[14]&=0xffff;
+@@ Computations in arguments
+@@ are not allowed in VST.
+-    sel25519(t,m,1-b);
++    b=1-((m[15]>>16)&1);
++    sel25519(t,m,b);
+   }
+   FOR(i,16) {
+     o[2*i]=t[i]&0xff;
+@@ -329,7 +328,7 @@
+ {
+   u8 d[32];
+   pack25519(d,a);
+@@ Force the casting.
+-  return d[0]&1;
++  return d[0]&(u8)1;
+ }
+ 
+ sv unpack25519(gf o, const u8 *n)
+@@ -353,10 +352,14 @@
+ 
+ sv M(gf o,const gf a,const gf b)
+ {
+@@ For-loop indexes have to be int.
+@@ introduce an auxiliary variable to
+@@ simplify verification (loop invariants).
+-  i64 i,j,t[31];
+-  FOR(i,31) t[i]=0;
+-  FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
+-  FOR(i,15) t[i]+=38*t[i+16];
++  int i,j;
++  i64 t[31], aux;
++  FOR(i,31) t[i]= 0;
++  FOR(i,16) {
++    aux = a[i];
++    FOR(j,16) t[i+j]+=aux*b[j];
++  }
++  FOR(i,15) t[i]+=(i64)38*t[i+16];
+   FOR(i,16) o[i]=t[i];
+   car25519(o);
+   car25519(o);
+@@ -371,7 +374,7 @@
+ {
+   gf c;
+   int a;
+-  FOR(a,16) c[a]=i[a];
+@@ gain 5 bytes.
++  set25519(c,i);
+   for(a=253;a>=0;a--) {
+     S(c,c);
+     if(a!=2&&a!=4) M(c,c,i);
+@@ -394,8 +397,9 @@
+ int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
+ {
+   u8 z[32];
+@@ x only needs gf.
+@@ For-loop indexes have to be int.
+-  i64 x[80],r,i;
+-  gf a,b,c,d,e,f;
++  i64 r;
++  int i;
++  gf x,a,b,c,d,e,f;
+   FOR(i,31) z[i]=n[i];
+   z[31]=(n[31]&127)|64;
+   z[0]&=248;
+@@ -430,15 +434,9 @@
+     sel25519(a,b,r);
+     sel25519(c,d,r);
+   }
+@@ simplify
+-  FOR(i,16) {
+-    x[i+16]=a[i];
+-    x[i+32]=c[i];
+-    x[i+48]=b[i];
+-    x[i+64]=d[i];
+-  }
+-  inv25519(x+32,x+32);
+-  M(x+16,x+16,x+32);
+-  pack25519(q,x+16);
++  inv25519(c,c);
++  M(a,a,c);
++  pack25519(q,a);
+   return 0;
+ }
+ 

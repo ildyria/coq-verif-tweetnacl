@@ -1,33 +1,33 @@
-\usepackage{epsfig}
+\usepackage{epsfig}   % NOT WHITELISTED
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[switch]{lineno}
 
-\usepackage[pdf]{pstricks}
+\usepackage[pdf]{pstricks} % NOT WHITELISTED
 
-\usepackage{amsfonts,amsmath,amscd,amscd,amssymb,array}
-\usepackage{type1cm}
+\usepackage{amsfonts,amsmath,amscd,amssymb,array}
+\usepackage{type1cm}  % NOT WHITELISTED
 \newcommand{\lstsize}{\fontsize{8.5pt}{8.5pt}\selectfont}
 \usepackage{algorithm, algorithmic}
-\usepackage{xspace}
+\usepackage{xspace}  % NOT WHITELISTED
 \usepackage{listings}
 \usepackage{booktabs}
 \usepackage{multirow}
-\usepackage{ntheorem}
 \usepackage{textcomp}
-\usepackage{bussproofs}
-\usepackage{xcolor}
-\usepackage{cite}
-\usepackage{dsfont}
+\usepackage{bussproofs}  % NOT WHITELISTED
+\usepackage{xcolor}  % NOT WHITELISTED
+% \usepackage{cite} % NOT WHITELISTED
+\usepackage{dsfont} % NOT WHITELISTED
 \usepackage{float}
 \usepackage{soul}\let\strikethrough\st\let\st\undefined
 
-\definecolor{linkcolor}{rgb}{0.65,0,0}
-\definecolor{citecolor}{rgb}{0,0.45,0}
-\definecolor{urlcolor}{rgb}{0,0,0.65}
-\usepackage[colorlinks=true, backref=page, linkcolor=linkcolor, urlcolor=urlcolor, citecolor=citecolor]{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{arrows}
+% \usepackage[amsthm, hyperref]{ntheorem}  % NOT WHITELISTED
+
+% \definecolor{linkcolor}{rgb}{0.65,0,0}
+% \definecolor{citecolor}{rgb}{0,0.45,0}
+% \definecolor{urlcolor}{rgb}{0,0,0.65}
+% \usepackage[colorlinks=true, backref=page, linkcolor=linkcolor, urlcolor=urlcolor, citecolor=citecolor]{hyperref}
 
 \renewcommand{\algorithmicrequire}{\textbf{Input:\ }}
 \renewcommand{\algorithmicensure}{\textbf{Output:\ }}
@@ -52,7 +52,7 @@
 \newcounter{subListing@save}
 \renewcommand{\thesubListing}{\alph{subListing}}
 
-\usepackage[framemethod=tikz]{mdframed}
+\usepackage[framemethod=tikz]{mdframed}   % NOT WHITELISTED
 \mdfsetup{leftmargin=0cm,skipabove=0.1cm,hidealllines=true,%
   innerleftmargin=0.05cm,innerrightmargin=0.05cm,
   innertopmargin=-0.10cm,innerbottommargin=-0.20cm,
@@ -357,8 +357,8 @@ literate=
   basicstyle=\ttfamily\small,
   % morecomment=[f][\lstbg{red!20}]<,
   % morecomment=[f][\lstbg{green!20}]>,
-  morecomment=[f][\color{doc@lstidentifiers2}]<,
-  morecomment=[f][\color{doc@lstfunctions}]>,
+  morecomment=[f][\color{doc@lstidentifiers2}]-,
+  morecomment=[f][\color{doc@lstfunctions}]+,
   morecomment=[f][\color{gray}\textit]{@@},
   %morecomment=[f][\textit]{---},
   %morecomment=[f][\textit]{+++},
