@@ -1,0 +1,263 @@
+\section{Prior reviews}
+\label{appendix:past-reviews}
+
+This paper has been submitted to IEEE Symposium on Security and Privacy 2020.
+
+\subsection{S\&P 2020 Review \#582A}
+
+Overall merit: 3. Weak reject - The paper has flaws, but I will not argue against it.
+
+
+\begin{center}
+  \subheading{===== Brief paper summary (2-3 sentences) =====}
+\end{center}
+
+This paper presents a verification of the C implementation of the X25519
+key-exchange protocol in the TweetNaCl library.  Correctness properties
+including the C code implements the algorithm correctly are verified in Coq,
+using the Verified Software Toolchain (VST).
+
+
+\begin{center}
+  \subheading{===== Strengths =====}
+\end{center}
+
++ This paper produces a fully formally verified crypto library.
+
++ This paper presents solid technical work.
+
+
+\begin{center}
+  \subheading{===== Weaknesses =====}
+\end{center}
+
+- The novelty of this paper is not well explained. It's unclear whether this
+paper has pushed the boundary in terms of what can be formally verified.
+
+
+\begin{center}
+  \subheading{===== Detailed comments for the author(s) =====}
+\end{center}
+
+I appreciate work on producing fully verified software. This paper presents
+another instance: X25519 protocol. The result here is very strong: it verified
+both safety properties and the correctness of the C implementation.
+
+One main weakness of this paper is that it is hard to extract from the writing,
+what are the new discoveries in this exercise. Are there new proof techniques
+developed for this verification? Is there anything new about the way that loops
+are handled? Is the application of reflection challenging? Are there bugs found,
+in particular, in the mathematical operations?
+
+A related comment is that it is unclear from the paper whether now we can re-use
+proofs in this paper to verify  mathematical operations of other protocols that
+use elliptic curve.
+
+In the Corrections in TweetNaCl paragraph, two things were discussed. It's
+unclear how and whether either one of them directly relate to the verification
+effort. It would be nice if they are. Then the story for the usefulness of the
+verification become stronger.
+
+It would be nice if the authors comment on the verification effort: person month
+etc. Also, did the verified version replace the version in use in production
+software? If not, why not?
+
+Section V is extremely dry. What are the high-level insights? Perhaps a picture
+representation of how the theorems and lemmas fit together would be a better way
+to represent this section.
+
+In summary, this paper is in need of significant improvements in the writing and
+providing detailed discussions of high-level intellectual contributions in this
+verification effort.
+
+Minor
+
+On page 6: "each elements" => no s
+
+On page 7, the beginning of the page, a half sentence is
+dangling there.
+
+On page 9: "each functions" => no s
+
+\subsection{S\&P 2020 Review \#582B}
+
+Overall merit: 4. Weak accept - While flawed, the paper has merit and we should
+consider accepting it.
+
+
+\begin{center}
+  \subheading{===== Brief paper summary (2-3 sentences) =====}
+\end{center}
+
+In this paper, the authors verify the C implementation of the X25519 elliptic
+curve key exchange in the TweetNaCl library, a short implementation of the NaCl
+library. The X25519 key exchange method is used in TLS 1.3, Signal, Tor, Zcash
+and SSH. Within TLS 1.3 (and probably also in other protocols), any implementation
+of X25519 may be used in an implementation of the standard. Thus, the present
+work contributes to a fully verified code-base for TLS 1.3 (and other crucial
+protocols)
+
+The verification itself is practically significant. The paper makes a good
+effort to describe the approach, but I was, at times, a little disappointed at
+the description. Performing this type of verification yields substantial human
+understanding and enables the authors to carry out a similar approach for other
+primitives much more easily. I wish that the authors would extract their conceptual
+insights on the technique and communicate those to the readers. Regardless, I
+would very much like to see this work at S\&P, but I would like to encourage the
+authors to de-emphasize technical details (even more) and spend more space of
+the body on conceptual insights (see comments below).
+
+
+\begin{center}
+  \subheading{===== Detailed comments for the author(s) =====}
+\end{center}
+
+I was confused that you did not seem have found any errors in an implementation.
+I can believe that the implementers of [2] are proficient implementers, but I
+would have expected some minor bugs/parsing issues to be found anyway. What is
+your explanation that you haven't found any issues?
+
+p.1: You discuss [10] as using heavy annotation of code, differently from your
+own code. However, as far as I understand, your Coq implementation must also be
+type-annotated. Thus, I imagine that the difference lies in whether SAT-solvers
+are used or not? This did not become very clear, because you mostly describe
+names of tool while leaving out the details of what these tools carry out
+conceptually.
+
+p.2: Fig 1 is very nice. However, at this point, none of the notation has been
+explained to the reader, and I imagine that V stands for VST? It wasn't clear to
+me. Maybe, the caption of the figure could explain what the details inside the
+figures represent. In particular, the Figure seems to used a nice abstraction of
+properties that is not used elsewhere in the paper. I.e., elsewhere in the paper,
+there is usually a lot of code details.
+
+p.2-4: Subsection A took some mathematical background. Obviously, not all of it
+could be covered, but the motivation for why certain content was presented and
+not others was not clear to me as a reader, which was quite frustrating. In
+Section B, it was even less clear why particular details were presented, e.g.,
+the discussion of the computation of n' was completely unclear to me.
+Subsection D seemed a good idea, but was very tough to follow, too much content
+in short time. Subsection D seems to jump between implementation levels and
+discussing high-level arguments such as Fermat's little theorem.
+
+p.3: I very much liked the discussion of the Diff between TweetNaCl and your
+modifications! I imagine that many of them are conceptually interesting in that
+they make verification easier. I would have enjoyed reading a conceptual
+discussion of the differences. Instead, Appendix A just contains a Diff, and as
+a reader, I would need to perform the extraction of insights myself.
+
+p.5: CSWAP: Maybe use a backward reference to p.3 where CSWAP was defined, since
+in between, there was a lot of content, and relying on the reader's memory does
+not really work here (or at least, it did not work for me).
+
+p.7: I enjoyed the discussion on aliasing! This was the type of conceptual
+discussion I find interesting. I was confused about the mentioning that the case
+distinction k=0,1,2 does not cover "all cases" - all cases of what? And why is
+this distinction sufficient for the task at hand?
+
+Most of the rest of the paper felt hard to read, because it read like a
+chronological enumeration of all steps. I think that it would be much more
+interesting if the paper highlights the interesting aspects of the verification.
+
+Related work:
+
+In reference [13], the order of authors is different than in the original
+publication. I think that you might want to discuss [13] in the Related work
+section, since it seems quite close. I was wondering whether you consider the
+approach in [13] as synthesis or verification, because to me, it seemed a
+mix/neither.
+
+Clarification in intro:
+
+The intro states that this is, to the authors knowledge, the first use of
+Verifiable Software Toolchain (VST) in software verification of an implementation
+of an assymmetric cryptographic primitives. Does this mean that VST has been
+used for symmetric cryptographic primitives before? From the text, I wasn't sure
+whether this is careful quantification or not.
+
+\subsection{S\&P 2020 Review \#582C}
+
+Overall merit: 3. Weak reject - The paper has flaws, but I will not argue against it.
+
+
+\begin{center}
+  \subheading{===== Brief paper summary (2-3 sentences) =====}
+\end{center}
+
+This paper presents a formalization of the X25519 (Curve25519) elliptic curve
+Diffie-Hellman  (ECDH) construction in Coq, and uses this formalization to
+verify the functional correctness of a C implementation of this construction
+taken from the TweetNaCl library. Going further than prior work, the authors
+also link their Coq specification to a mathematical theory of elliptic curves
+in Coq.
+
+
+\begin{center}
+  \subheading{===== Strengths =====}
+\end{center}
+
+Proofs of cryptographic algorithms like X25519 tend to mean different things in
+different communities: (a) one may prove that X25519 implements a group based on
+the mathematical theory of elliptic curves, (b) one may prove that an X25519
+implementation meets its mathematical spec, or (c) one may prove that a protocol
+that uses X25519 is provably secure, based on some cryptographic assumption on
+the ECDH construction. It is rare to find papers that combine more than one of
+these proof levels, and this paper does a creditable job of linking (a) with (b),
+relying on the Coq framework to soundly glue these proofs together. Although a
+similar goal was considered in [12], this paper provides a more satisfying
+solution by not leaving any gaps between the formalizations, and by relying on a
+smaller trusted computing base.
+
+
+\begin{center}
+  \subheading{===== Weaknesses =====}
+\end{center}
+
+X25519 implementations have now been verifying in multiple papers using multiple
+verification frameworks, and [18] even uses Coq to verify a large portion of a C
+implementation of X25519 fully automatically. So, the main contribution here is
+that that the authors verify an existing popular implementation (TweetNaCl)
+without making many changes to the source code. Still, TweetNaCl is not necessarily
+the most complex (and certainly not the most efficient) implementation of X25519
+that has been verified, which makes the novelty of this work hard to justify.
+
+
+\begin{center}
+  \subheading{===== Detailed comments for the author(s) =====}
+\end{center}
+
+I like the approach taken in this paper and I think this work has value and
+should be published.
+However, I am not sure the current presentation of the work works well.
+
+The paper can be essentially divided into two components: the proof of TweetNaCl
+using VST, and the proof of equivalence between the Coq spec of RFC7748 and the
+mathematical theory of Curve25519.  The details of both are interesting to
+formalists but the Coq details are quite hard to parse and distracting when
+trying to understand the text. This is a well-known problem for formal
+verification papers, and I don't have great advice except to suggest that the
+authors separate out the code fragments into figures and let the text focus
+on the high-level ideas of the code.
+
+At the end of Section IV, I would have loved to see some high-level lessons on
+what the proof taught you, and what part of this proof would be reusable if you
+decided to verify Ed25519 or X448 or P-256, for example. This is particularly
+important for this work, since prior papers have shown how to share proof effort
+across multiple curves.
+
+It also appears that the authors do not verify the constant-time guarantees of
+the TweetNaCl code. Could this be done in their framework?
+
+Section V presents the proof of mathematical equivalence. It appears to me that
+this proof is completely independent of the TweetNaCl proof. Is that the case?
+Is there any lemma from the first part that is needed in the second? More
+importantly, could you claim that your proof of equivalence also provides a
+justification for the implementations of Fiat Crypto or HACL*, hence adding
+value to those other projects in addition to your own?
+
+I was hoping to see where the "clamping" used in X25519 would appear in the
+formalization of Section V but was unable to spot it. Does clamping affect the
+proofs in any way? Is there a stronger property you could prove because of the
+clamping (e.g. membership in the prime-order group)?
+Do you already prove such a property?  More generally, what about the proof of
+Section V is specific to X25519 and what is generic?
