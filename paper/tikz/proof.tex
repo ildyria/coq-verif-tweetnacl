@@ -56,6 +56,7 @@
       % ~~$P \in$ \TNaCles{u8[32]}\\
       {\color{doc@lstdirective}\textbf{Post}}:\\
       ~~\texttt{s}$[\!\!\{$\texttt{q}$\}\!\!]\leftarrow$~\texttt{RFC}$(n,P)$};
+      \draw (2.75,-2) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{.V}};
   \end{scope}
 
   % VST Theorem
@@ -64,7 +65,8 @@
     \draw (0,0) -- (2.5,0) -- (2.5,-1.25) -- (0, -1.25) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Proof};
     \draw (1.25,-0.5) node[textstyle, anchor=center] {\{{\color{doc@lstnumbers}\textbf{Pre}}\} \texttt{Prog} \{{\color{doc@lstdirective}\textbf{Post}}\}};
-    \draw (2.5,-1.25) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
+    \draw (2.5,0) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
+    \draw (2.5,-1.25) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{.V}};
   \end{scope}
 
   \path [thick, double] (5.625,-1.5) edge [out=-90, in=90] (5.625, -2.5);
@@ -81,6 +83,7 @@
     \draw (0,0) -- (1.75,0) -- (1.75,-1) -- (0, -1) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Definition};
     \draw (0.875,-0.5) node[textstyle, anchor=center] {$n \cdot P$};
+    \draw (1.75,-1) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{.V}};
   \end{scope}
 
   % Correctness Theorem
@@ -88,8 +91,9 @@
     \draw (0,0) -- (0.4, 0.4) -- (2.5,0.4) -- (2.5,0) -- cycle;
     \draw (0,0) -- (2.5,0) -- (2.5,-1.5) -- (0, -1.5) -- cycle;
     \draw (0.3,-0.05) node[textstyle] {Proof};
-    \draw (2.5,-1.5) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
     \draw (1.25,-0.75) node[textstyle, anchor=center] {{\color{doc@lstnumbers}\textbf{Pre}} $\implies$\\$\text{\texttt{RFC}}(n,P) = n \cdot P$};
+    \draw (2.5,0) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
+    \draw (2.5,-1.5) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{.V}};
   \end{scope}
 
   \path [thick, double, ->] (1.75,-3.5) edge  [out=0, in=-180] (2.75, -3.5);

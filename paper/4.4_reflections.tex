@@ -1,0 +1,179 @@
+\subsection{Reflections, inversions and packing}
+\label{subsec:inversions-reflections}
+
+We now turn our attention to the multiplicative inverse in $\Zfield$ and techniques
+to improve the verification speed of complex formulas.
+
+\subheading{Inversion in \Zfield.}
+We define a Coq version of the inversion mimicking
+the behavior of \TNaCle{inv25519} (see below) over \Coqe{list Z}.
+\begin{lstlisting}[language=Ctweetnacl]
+sv inv25519(gf o,const gf i)
+{
+  gf c;
+  int a;
+  set25519(c,i);
+  for(a=253;a>=0;a--) {
+    S(c,c);
+    if(a!=2&&a!=4) M(c,c,i);
+  }
+  FOR(a,16) o[a]=c[a];
+}
+\end{lstlisting}
+We specify this with 2 functions: a recursive \Coqe{pow_fn_rev}
+to simulate the \texttt{for} loop and a simple \Coqe{step_pow} containing the body.
+\begin{lstlisting}[language=Coq]
+Definition step_pow (a:Z)
+  (c:list Z) (g:list Z) : list Z :=
+  let c := Sq c in
+    if a <>? 2 && a <>? 4
+    then M c g
+    else c.
+
+Function pow_fn_rev (a:Z) (b:Z)
+  (c: list Z) (g: list Z)
+  {measure Z.to_nat a} : (list Z) :=
+  if a <=? 0
+    then c
+    else
+      let prev := pow_fn_rev (a - 1) b c g in
+        step_pow (b - a) prev g.
+\end{lstlisting}
+This \Coqe{Function} requires a proof of termination. It is done by proving the
+well-foundedness of the decreasing argument: \Coqe{measure Z.to_nat a}. Calling
+\Coqe{pow_fn_rev} 254 times allows us to reproduce the same behavior as the Clight definition.
+\begin{lstlisting}[language=Coq]
+Definition Inv25519 (x:list Z) : list Z :=
+  pow_fn_rev 254 254 x x.
+\end{lstlisting}
+Similarly we define the same function over $\Z$.
+\begin{lstlisting}[language=Coq]
+Definition step_pow_Z (a:Z) (c:Z) (g:Z) : Z :=
+  let c := c * c in
+  if a <>? 2 && a <>? 4
+    then c * g
+    else c.
+
+Function pow_fn_rev_Z (a:Z) (b:Z) (c:Z) (g: Z)
+  {measure Z.to_nat a} : Z :=
+  if (a <=? 0)
+    then c
+    else
+      let prev := pow_fn_rev_Z (a - 1) b c g in
+        step_pow_Z (b - a) prev g.
+
+Definition Inv25519_Z (x:Z) : Z :=
+  pow_fn_rev_Z 254 254 x x.
+\end{lstlisting}
+By using \lref{lemma:mult_correct}, we prove their equivalence in $\Zfield$.
+\begin{lemma}
+\label{lemma:Inv_equivalence}
+The function \coqe{Inv25519} over list of integers computes the same
+result at \coqe{Inv25519_Z} over integers in \Zfield.
+\end{lemma}
+This is formalized in Coq as follows:
+\begin{lstlisting}[language=Coq]
+Lemma Inv25519_Z_GF : forall (g:list Z),
+  length g = 16 ->
+  (Z16.lst (Inv25519 g)) :GF =
+  (Inv25519_Z (Z16.lst g)) :GF.
+\end{lstlisting}
+
+In TweetNaCl, \TNaCle{inv25519} computes an inverse in $\Zfield$.
+It uses Fermat's little theorem by raising to the power of $2^{255}-21$ with a
+square-and-multiply algorithm. The binary representation
+of $p-2$ implies that every step does a multiplications except for bits 2 and 4.
+To prove the correctness of the result we could use multiple strategies such as:
+\begin{itemize}
+  \item Proving it is a special case of square-and-multiply algorithm applied to $2^{255}-21$.
+  \item Unrolling the for loop step-by-step and applying the equalities
+  $x^a \times x^b = x^{(a+b)}$ and $(x^a)^2 = x^{(2 \times a)}$. We prove that
+  the resulting exponent is $2^{255}-21$.
+\end{itemize}
+We use the second method because it is simpler. However, it requires us to
+apply the unrolling and exponentiation formulas 255 times. This could be automated
+in Coq with tacticals such as \Coqe{repeat}, but it generates a proof object which
+will take a long time to verify.
+
+\subheading{Reflections.}
+In order to speed up the verification we use a
+technique called ``Reflection''. It provides us with flexibility, \eg we don't
+need to know the number of times nor the order in which the lemmas needs to be
+applied (chapter 15 in \cite{CpdtJFR}).
+
+The idea is to \emph{reflect} the goal into a decidable environment.
+We show that for a property $P$, we can define a decidable Boolean property
+$P_{bool}$ such that if $P_{bool}$ is \Coqe{true} then $P$ holds.
+$$\text{\textit{reify\_P}} : P_{bool} = \text{\textit{true}} \implies P$$
+By applying \textit{reify\_P} on $P$ our goal becomes $P_{bool} = true$.
+We then compute the result of $P_{bool}$. If the decision goes well we are
+left with the tautology $\text{\textit{true}} = \text{\textit{true}}$.
+
+With this technique we prove the functional correctness of the inversion over \Zfield.
+\begin{lemma}
+\label{cor:inv_comput_field}
+\Coqe{Inv25519} computes an inverse in \Zfield.
+\end{lemma}
+This statement is formalized as
+\begin{lstlisting}[language=Coq]
+Corollary Inv25519_Zpow_GF : forall (g:list Z),
+  length g = 16 ->
+  Z16.lst (Inv25519 g) :GF  =
+    (pow (Z16.lst g) (2^255-21)) :GF.
+\end{lstlisting}
+
+This reflection technique is also used where proofs requires some computing
+over a small and finite domain of variables to test e.g. for all $i$ such that
+$0 \le i < 16$.
+Using reflection we prove that we can split the for loop in \TNaCle{pack25519}
+into two parts.
+\begin{lstlisting}[language=Ctweetnacl]
+for(i=1;i<15;i++) {
+  m[i]=t[i]-0xffff-((m[i-1]>>16)&1);
+  m[i-1]&=0xffff;
+}
+\end{lstlisting}
+The first loop computes the subtraction, and the second applies the carries.
+\begin{lstlisting}[language=Ctweetnacl]
+for(i=1;i<15;i++) {
+  m[i]=t[i]-0xffff
+}
+
+for(i=1;i<15;i++) {
+  m[i]=m[i]-((m[i-1]>>16)&1);
+  m[i-1]&=0xffff;
+}
+\end{lstlisting}
+
+This loop separation allows simpler proofs. The first loop is seen as the
+subtraction of \p. The resulting number represented in $\Zfield$ is invariant with
+the iteration of the second loop. This result in the proof that \TNaCle{pack25519}
+reduces modulo $\p$ and returns a number in base $2^8$.
+\begin{lstlisting}[language=Coq]
+Lemma Pack25519_mod_25519 :
+  forall (l:list Z),
+  Zlength l = 16 ->
+  Forall (fun x => -2^62 < x < 2^62) l ->
+  ZofList 8 (Pack25519 l) =
+  (Z16.lst l) mod (2^255-19).
+\end{lstlisting}
+
+By using each function \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
+\coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519}; \coqe{montgomery_rec},
+we defined a Coq definition \coqe{Crypto_Scalarmult} mimicking the exact behavior of X25519 in TweetNaCl.
+
+By proving that each function \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
+\coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519} behave over \coqe{list Z}
+as their equivalent over \coqe{Z} with \coqe{:GF} (in \Zfield), we prove that given the same inputs \coqe{Crypto_Scalarmult} performs the same computation as \coqe{RFC}.
+% This is formalized as follows in Coq:
+\begin{lstlisting}[language=Coq]
+Lemma Crypto_Scalarmult_RFC_eq :
+  forall (n: list Z) (p: list Z),
+  Zlength n = 32 ->
+  Zlength p = 32 ->
+  Forall (fun x => 0 <= x /\ x < 2 ^ 8) n ->
+  Forall (fun x => 0 <= x /\ x < 2 ^ 8) p ->
+  Crypto_Scalarmult n p = RFC n p.
+\end{lstlisting}
+
+This proves that TweetNaCl's X25519 implementation respect RFC~7748.

@@ -1,0 +1,55 @@
+\subsection{Number representation and C implementation}
+\label{subsec:num-repr-rfc}
+
+As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are represented
+in base $2^{16}$ and we use a direct mapping to represent that array as a list
+integers in Coq. However, in order to show the correctness of the basic operations,
+we need to convert this number to a full integer.
+We reuse the mapping
+$\text{\coqe{ZofList}} : \Z \rightarrow \texttt{list}~\Z \rightarrow \Z$ from \sref{subsec:integer-bytes}
+and define a notation where $n$ is $16$, placing us with a radix of $2^{16}$.
+\begin{lstlisting}[language=Coq]
+Notation "Z16.lst A" := (ZofList 16 A).
+\end{lstlisting}
+To facilitate working in $\Zfield$, we define the \coqe{:GF} notation.
+\begin{lstlisting}[language=Coq]
+Notation "A :GF" := (A mod (2^255-19)).
+\end{lstlisting}
+Later in \sref{subsec:Zmodp}, we formally define $\Ffield$.
+Equivalence between operations in $\Zfield$ (\ie under \coqe{:GF}) and in $\Ffield$ are easily proven.
+
+Using these two definitions, we prove intermediate lemmas such as the correctness of the
+multiplication \Coqe{Low.M} where \Coqe{Low.M} replicates the computations and steps done in C.
+\begin{lemma}
+  \label{lemma:mult_correct}
+  \Coqe{Low.M} correctly implements the multiplication over $\Zfield$.
+\end{lemma}
+And specified in Coq as follows:
+\begin{lstlisting}[language=Coq]
+Lemma mult_GF_Zlength :
+  forall (a:list Z) (b:list Z),
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+   (Z16.lst (Low.M a b)) :GF =
+   (Z16.lst a * Z16.lst b) :GF.
+\end{lstlisting}
+
+However for our purpose, simple functional correctness is not enough.
+We also need to define the bounds under which the operation is correct,
+allowing us to chain them, guaranteeing us the absence of overflow.
+
+\begin{lemma}
+  \label{lemma:mult_bounded}
+  if all the values of the input arrays are constrained between $-2^{26}$ and $2^{26}$,
+  then the output of \coqe{Low.M} will be constrained between $-38$ and $2^{16} + 38$.
+\end{lemma}
+And seen in Coq as follows:
+\begin{lstlisting}[language=Coq]
+Lemma M_bound_Zlength :
+  forall (a:list Z) (b:list Z),
+  Zlength a = 16 ->
+  Zlength b = 16 ->
+  Forall (fun x => -2^26 < x < 2^26) a ->
+  Forall (fun x => -2^26 < x < 2^26) b ->
+    Forall (fun x => -38 <= x < 2^16 + 38) (Low.M a b).
+\end{lstlisting}
