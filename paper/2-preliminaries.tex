@@ -91,7 +91,7 @@ equation $y^2 = x^3 + 486662 x^2 + x$.
 For every $x \in \F{p}$ there exists a point $P$ in $E(\F{p^2})$
 such that $x$ is the \xcoord of $P$.
 
-The core of the X25519 key-exchange protocol is a scalar-multiplication
+The core of the X25519 key-exchange protocol is a scalar\hyp{}multiplication
 function, which we will also refer to as X25519.
 This function receives as input two arrays of $32$ bytes each.
 One of them is interpreted as the little-endian encoding of a
@@ -197,7 +197,7 @@ sv M(gf o,const gf a,const gf b) {
 
 After the multiplication, the limbs of the result \texttt{o} are
 too large to be used again as input.
- % which is why 
+ % which is why
 The two calls to
 \TNaCle{car25519} at the end of \TNaCle{M} propagate the carries through the limbs:
 \begin{lstlisting}[language=Ctweetnacl]
