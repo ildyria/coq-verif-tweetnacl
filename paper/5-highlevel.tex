@@ -276,61 +276,8 @@ TweetNaCl.
 This definition is closely related to \coqe{montgomery_rec} that was used
 in the definition of \coqe{RFC}, and is easily proved to correspond to it.
 In Coq this correspondence proof is hidden in the proof of \coqe{RFC_Correct} shown above.
-%\ref to the def of montgomery_rec? relevant lemma(s) that show(s) these are "the same"?
 
 We prove its correctness for any point whose \xcoord is not 0.
-
-
-% By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL} and \texttt{xADD}
-% with their respective formula (\lref{lemma:xADD} and \lref{lemma:xDBL}),
-% we can define a ladder similar to the one used in TweetNaCl (See \aref{alg:montgomery-double-add}).
-%
-% \begin{algorithm}
-% \caption{Montgomery ladder for scalar multiplication on $M_{a,b}(\K)$ with optimizations}
-% \label{alg:montgomery-double-add}
-% \begin{algorithmic}
-% \REQUIRE{$x \in \K\backslash \{0\}$, scalars $n$ and $m$, $n < 2^m$}
-% \ENSURE{$a/c = \chi_0(n \cdot P)$ for any $P$ such that $\chi_0(P) = x$}
-% \STATE $(a,c) \leftarrow (1,0)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(\Oinf) = (1:0)$}}
-% \STATE $(b,d) \leftarrow (x,1)$  ~~~~~~~~~~~~~~~{\color{gray}\textit{$\chi_0(P) = (x:1)$}}
-% \FOR{$k$ := $m$ \textbf{downto} $1$}
-%   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
-%     \STATE $(a,b) \leftarrow (b,a)$
-%     \STATE $(c,d) \leftarrow (d,c)$
-%   \ENDIF
-%   \STATE $e \leftarrow a + c$
-%   \STATE $a \leftarrow a - c$
-%   \STATE $c \leftarrow b + d$
-%   \STATE $b \leftarrow b - d$
-%   \STATE $d \leftarrow e^2$
-%   \STATE $f \leftarrow a^2$
-%   \STATE $a \leftarrow c \times a$
-%   \STATE $c \leftarrow b \times e$
-%   \STATE $e \leftarrow a + c$
-%   \STATE $a \leftarrow a - c$
-%   \STATE $b \leftarrow a^2$
-%   \STATE $c \leftarrow d-f$
-%   \STATE $a \leftarrow c\times\frac{A - 2}{4}$
-%   \STATE $a \leftarrow a + d$
-%   \STATE $c \leftarrow c \times a$
-%   \STATE $a \leftarrow d \times f$
-%   \STATE $d \leftarrow b \times x$
-%   \STATE $b \leftarrow e^2$
-%   \IF{$k^{\text{th}}$ bit of $n$ is $1$}
-%     \STATE $(a,b) \leftarrow (b,a)$
-%     \STATE $(c,d) \leftarrow (d,c)$
-%   \ENDIF
-% \ENDFOR
-% \end{algorithmic}
-% \end{algorithm}
-%
-% \begin{lemma}
-% \label{lemma:montgomery-double-add}
-% \aref{alg:montgomery-double-add} is correct, \ie it respects its output
-% conditions given the input conditions.
-% \end{lemma}
-
-% We formalized \lref{lemma:montgomery-double-add} as follows:
 
 \begin{lstlisting}[language=Coq]
 Lemma opt_montgomery_x :
@@ -345,8 +292,6 @@ Lemma opt_montgomery_0:
   forall (n m : nat), opt_montgomery n m 0 = 0.
 \end{lstlisting}
 Also \Oinf\ is the neutral element of $M_{a,b}(\K)$.
-%$$\forall P, P + \Oinf\ = P$$
-%thus we derive the following lemma.
 \begin{lstlisting}[language=Coq]
 Lemma p_x0_0_eq_0 : forall (n : nat) (p : mc M),
   p #x0 = 0%:R -> (p *+ n) #x0 = 0%R.
@@ -373,8 +318,10 @@ There always exists $x \in \F{p^2}$ such that $x^2 = a^2-4$,
 preventing the use \tref{thm:montgomery-ladder-correct}
 with $\K = \F{p^2}$.
 
-We first study Curve25519 and one of its quadratic twists Twist25519, both defined
-over \F{p}.
+\todo{Fix bleeding}
+
+We first study Curve25519 and one of its quadratic twists Twist25519,
+both defined over \F{p}.
 
 \subsubsection{Curves and twists}
 \label{subsec:Zmodp}

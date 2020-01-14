@@ -28,12 +28,15 @@ Theorem body_crypto_scalarmult:
 Using our formalization of RFC~7748 (\sref{sec:Coq-RFC}) we specify the Hoare
 triple before proving its correctness with the VST (\ref{subsec:with-VST}).
 We provide an example of equivalence of operations over different number
-representations (\ref{subsec:num-repr-rfc}). Then, we describe efficient techniques
+representations (\ref{subsec:num-repr-rfc}).
+Then, we describe efficient techniques
 used in some of our more complex proofs (\ref{subsec:inversions-reflections}).
 
 
 \subsection{Applying the Verifiable Software Toolchain}
 \label{subsec:with-VST}
+
+\todo{Fix bleeding}
 
 We now turn our focus to the formal specification of \TNaCle{crypto_scalarmult}.
 We use our definition of X25519 from the RFC in the Hoare triple and prove
@@ -121,6 +124,8 @@ their respective bounds: arrays of 32 bytes.
 
 The correctness of this specification is formally proven in Coq with
 \coqe{Theorem body_crypto_scalarmult}.
+
+\todo{Fix bleeding}
 
 This specification (proven with VST) shows that \TNaCle{crypto_scalarmult} in C
 
