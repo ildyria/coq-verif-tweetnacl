@@ -318,10 +318,10 @@ There always exists $x \in \F{p^2}$ such that $x^2 = a^2-4$,
 preventing the use \tref{thm:montgomery-ladder-correct}
 with $\K = \F{p^2}$.
 
-\todo{Fix bleeding}
-
+\begin{sloppypar}
 We first study Curve25519 and one of its quadratic twists Twist25519,
 both defined over \F{p}.
+\end{sloppypar}
 
 \subsubsection{Curves and twists}
 \label{subsec:Zmodp}
@@ -368,16 +368,19 @@ We instantiate \coqe{opt_montgomery} in two specific ways:\\
 -- $Twist25519\_Fp(n,x)$ for $M_{486662,2}(\F{p})$.
 \end{dfn}
 
+\todoln{use \$...\$ or \$\$...\$\$ ?}
 With \tref{thm:montgomery-ladder-correct} we derive the following two lemmas:
 \begin{lemma}
 For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$,\\
-such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.
-Given $n$ and $x$, $Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$.
+such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.\\
+% Given $n$ and $x$,
+$$Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$$
 \end{lemma}
 \begin{lemma}
 For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$\\
-such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.
-Given $n$ and $x$, $Twist25519\_Fp(n,x) = \chi_0(n \cdot P)$.
+such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.\\
+% Given $n$ and $x$,
+$$Twist25519\_Fp(n,x) = \chi_0(n \cdot P)$$
 \end{lemma}
 As the Montgomery ladder does not depend on $b$, it is trivial to
 see that the computations done for points in $M_{486662,1}(\F{p})$ and in
