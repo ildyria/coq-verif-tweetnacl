@@ -40,87 +40,30 @@ Definition M_Tinit_Inv F L t :=
 
 Definition M1_outer_Inv sho sha shb L v_o v_a v_b v_t o a b t k := 
   EX i : Z,
-   PROP  (
-(*           Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_a;
-          Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_b;
-          Zlength contents_a = 16;
-          Zlength contents_b = 16;
-          Zlength contents_o = 16;
-          Zlength contents_t = 31; *)
-(*           i >= 0 *)
-          )
+   PROP  ()
    (LOCALx L
    SEP   (Tsh [{ v_t }] <<(tarray tlg 31)-- mVI64 (outer_M_fix i 0 a b t);
           nm_overlap_array_sep_3 sho sha shb o a b v_o v_a v_b k)).
 
-Definition M1_inner_Inv sho sha shb v_o v_a v_b v_t i aux1 o a b t k :=
+Definition M1_inner_Inv sho sha shb v_o v_a v_b v_t i o a b t k :=
   EX j : Z,
-   PROP  (
-(*           writable_share sho; writable_share sha; writable_share shb;
-          Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_a;
-          Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_b;
-          Zlength contents_a = 16;
-          Zlength contents_b = 16;
-          Zlength contents_o = 16;
-          Zlength contents_t = 31; *)
-(*           j >= 0 *)
-          )
-   LOCAL (temp _i (Vint (Int.repr i)); temp _aux aux1; lvar _t (tarray tlg 31) v_t;
+   PROP  ()
+   LOCAL (temp _i (Vint (Int.repr i)); lvar _t (tarray tlg 31) v_t;
     temp _a v_a; temp _b v_b; temp _o v_o)
    SEP   (
           Tsh [{ v_t }] <<(tarray tlg 31)-- mVI64 (outer_M_fix i j a b t);
           nm_overlap_array_sep_3 sho sha shb o a b v_o v_a v_b k).
 
-(* Definition M2_Inv sho sha shb o a b t contents_o contents_a contents_b contents_t k :=
-  EX i : Z,
-   PROP  (
-(*           writable_share sho; writable_share sha; writable_share shb;
-          Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_a;
-          Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_b;
-          Zlength contents_a = 16;
-          Zlength contents_b = 16;
-          Zlength contents_o = 16;
-          Zlength contents_t = 31;
-          i >= 0
- *)
-          )
-   LOCAL (lvar _t (tarray tlg 31) t; temp _a a; temp _b b; temp _o o)
-   SEP   (
-          Tsh [{ t }] <<(tarray tlg 31)-- mVI64 (M2_fix i contents_t);
-          nm_overlap_array_sep_3s sho sha shb contents_o contents_a contents_b o a b). *)
 
 Definition M2_Inv F L v_t t :=
   EX i : Z,
-   PROP  (
-(*           writable_share sho; writable_share sha; writable_share shb;
-          Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_a;
-          Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_b;
-          Zlength contents_a = 16;
-          Zlength contents_b = 16;
-          Zlength contents_o = 16;
-          Zlength contents_t = 31;
-          i >= 0
- *)
-          )
+   PROP  ()
    (LOCALx L
-   SEP   (FRZL F ;
-(*    LOCAL (lvar _t (tarray tlg 31) t; temp _a a; temp _b b; temp _o o)
-   SEP   (F
- *)
-           Tsh [{ v_t }] <<(tarray tlg 31)-- mVI64 (M2_fix i t))).
+   SEP   (FRZL F ; Tsh [{ v_t }] <<(tarray tlg 31)-- mVI64 (M2_fix i t))).
 
 Definition M3_Inv sho sha shb o a b t contents_o contents_a contents_b contents_t k :=
   EX i : Z,
-   PROP  (
-(*           writable_share sho; writable_share sha; writable_share shb; *)
-(*           Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_a; *)
-(*           Forall (fun x => -Z.pow 2 26 < x < Z.pow 2 26) contents_b; *)
-(*           Zlength contents_a = 16; *)
-(*           Zlength contents_b = 16; *)
-(*           Zlength contents_o = 16; *)
-(*           Zlength contents_t = 31; *)
-(*           i >= 0 *)
-          )
+   PROP  ()
    LOCAL (lvar _t (tarray tlg 31) t; temp _a a; temp _b b; temp _o o)
    SEP   (
           Tsh [{ t }] <<(tarray tlg 31)-- mVI64 contents_t;

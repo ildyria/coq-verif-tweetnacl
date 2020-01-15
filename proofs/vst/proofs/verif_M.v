@@ -45,16 +45,19 @@ thaw_local.
     by (intros ; erewrite (Znth_map Int64.zero); [eexists; reflexivity|rewrite Zlength_map outer_M_fix_Zlength] ; omega).
   assert(Haux2: forall j, 0 <= j < 16 -> exists aux2, Vlong aux2 = Znth j (map Vlong (map Int64.repr b)) Vundef)
     by (intros; erewrite (Znth_map Int64.zero); [eexists; reflexivity | rewrite Zlength_map]; omega).
-
   rewrite /nm_overlap_array_sep_3 ; flatten; Intros.
   all: destruct Haux1 as [aux1 Haux1].
   1: subst o v_o.
   2: subst o v_o.
   3: subst b v_b.
   4: subst o a v_o v_a.
-  all: forward ; rewrite -Haux1.
+
+
+
+(*   all: forward ; rewrite -Haux1.
   1,3,5,7,9: entailer!.
-  Ltac solve_first_loop_last i :=   rewrite /nm_overlap_array_sep_3 /nm_overlap_array_sep_3'; repeat match goal with 
+ *)
+   Ltac solve_first_loop_last i :=   rewrite /nm_overlap_array_sep_3 /nm_overlap_array_sep_3'; repeat match goal with 
   | [ H : (_ =? _ ) = true |- _ ] => rewrite H
   | [ H : (_ =? _ ) = false |- _ ] => rewrite H
   end;
@@ -62,21 +65,23 @@ thaw_local.
   destruct ( i + 1 <=? 0) eqn:Heq0; try apply Zle_bool_imp_le in Heq0 ; try omega;
   replace (i + 1 - 1) with i by omega;
   rewrite inner_M_fix_equation; entailer!.
-  1: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_a v_a v_b v_t i (Vlong aux1) (mVI64 a) a b t 0);
+  1: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_a v_a v_b v_t i (mVI64 a) a b t 0); 
   [unfold nm_overlap_array_sep_3 ; entailer! | | solve_first_loop_last i].
-  2: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_b v_a v_b v_t i (Vlong aux1) (mVI64 b) a b t 1);
+  2: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_b v_a v_b v_t i (mVI64 b) a b t 1);
   [unfold nm_overlap_array_sep_3 ; entailer! | | solve_first_loop_last i].
-  3: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_o v_a v_a v_t i (Vlong aux1) o a a t 2);
+  3: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_o v_a v_a v_t i o a a t 2);
   [unfold nm_overlap_array_sep_3 ; entailer! | | solve_first_loop_last i].
-  4: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_b v_b v_b v_t i (Vlong aux1) (mVI64 b) b b t 3);
+  4: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_b v_b v_b v_t i (mVI64 b) b b t 3);
   [unfold nm_overlap_array_sep_3 ; entailer! | | solve_first_loop_last i].
-  5: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_o v_a v_b v_t i (Vlong aux1) o a b t 4);
+  5: forward_for_simple_bound 16 (M1_inner_Inv sho sha shb v_o v_a v_b v_t i o a b t 4);
   [unfold nm_overlap_array_sep_3 ; entailer! | | solve_first_loop_last i].
   all: rewrite /nm_overlap_array_sep_3 ; simpl; Intros.
   all: rename i0 into j ; rename H6 into Hj.
   all: destruct (Haux j Hj) as [aux HHaux].
   all: destruct (Haux2 j Hj) as [aux2 HHaux2].
   all: forward ; rewrite -HHaux.
+  1,3,5,7,9: entailer!.
+  all: forward ; rewrite -Haux1.
   1,3,5,7,9: entailer!.
   all: forward ; rewrite -HHaux2.
   1,3,5,7,9: entailer!.
