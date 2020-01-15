@@ -90,9 +90,9 @@ their respective bounds: arrays of 32 bytes.
 The correctness of this specification is formally proven in Coq with
 \coqe{Theorem body_crypto_scalarmult}.
 
-\begin{sloppypar}
-This specification (proven with VST) shows that \TNaCle{crypto_scalarmult} in C
-\end{sloppypar}
+% \begin{sloppypar}
+% This specification (proven with VST) shows that \TNaCle{crypto_scalarmult} in C.
+% \end{sloppypar}
 
 % The Verifiable Software Toolchain uses a strongest postcondition strategy.
 % The user must first write a formal specification of the function he wants to verify in Coq.
@@ -143,5 +143,5 @@ we define an additional parameter $k$ with values in $\{0,1,2,3\}$:
   \item else there is no aliasing.
 \end{itemize}
 In the proof of our specification, we do a case analysis over $k$ when needed.
-This solution does not cover all cases (\eg all arguments are aliased) but it
-is enough for our needs.
+This solution does not generate all the possible cases of aliasing over 3 pointers
+(\eg \texttt{o} = \texttt{a} = \texttt{b}) but it is enough to cover our needs.

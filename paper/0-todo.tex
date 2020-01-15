@@ -7,7 +7,7 @@ well-marked appendices, and supplementary material."
 + the added confidence between in X25519 Correctness\\
 + proof of real world software\\
 
-- Add section to describe what would need to be done to adapt the code for e.g.
+- Add section in conclusion to describe what would need to be done to adapt the code for e.g.
 curve448 (give reference) and X448.\\
 + we can reuse the code of the elliptic abstraction.\\
 + the ladder would need few adaptation with respect to the bound propagations.\\
@@ -18,14 +18,10 @@ curve448 (give reference) and X448.\\
 + Squaring can be easily ported.\\
 + Inversion is easily ported with the use of reflections, idem for the packing.\\
 
-- Remove reflection section.\\
-+ simplify writting.\\
-+ Still mention reflection but don't describe more than that.\\
-
 - Changed made to TweetNaCl:\\
 + we contacted the authors.\\
 + only change made are the one required by VST\\
-+ Should have a look at the Multiplication}
+}
 
 With respect to the reviews:
 
@@ -48,24 +44,15 @@ usually a lot of code details."\\
 - "the discussion of the computation of n’ was completely unclear to me."\\
 + describe the process of clamping better.
 
-- "Instead, Appendix A just contains a Diff, and as a reader, I
-would need to perform the extraction of insights myself."\\
-+ => changed the Appendix A format to diff -u to give more context
-
 - "Maybe use a backward reference to p.3 where
 CSWAP was defined, since in between, there was a lot of content,
 and relying on the reader’s memory does not really work here (or
-at least, it did not work for me)"
+at least, it did not work for me)"\\
++ @PETER ?
 
-- "all cases of what? And why is this distinction sufficient for
-the task at hand?"\\
-+ remove the sentence or show by example which aliasing case is not needed?
-
-- "[13], the order of authors is different than in the original publication."\\
 - "I was wondering whether you consider the approach in [13] as synthesis or
 verification, because to me, it seemed a mix/neither."\\
 + [13] is "Verified Low-Level Programming Embedded in F*",\\
-+ \strikethrough{fixed authors order}.\\
 + reread [13] and answer in the "our answer part"
 
 - "[18] even uses Coq to verify a large portion of a C implementation of X25519
@@ -84,7 +71,7 @@ mostly from the big number computations.\\
 verification papers, and I don’t have great advice except to suggest
 that the authors separate out the code fragments into figures and
 let the text focus on the high-level ideas of the code."\\
-+ How to address that ?
++ @PETER: How to address that ?
 
 - "At the end of Section IV, I would have loved to see some high-
 level lessons on what the proof taught you, and what part of this
