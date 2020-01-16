@@ -52,6 +52,13 @@ o[i] = aux1 + aux2;
   done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
+\todo{NEW}
+
+\subheading{Limitations of our proof}
+
+Our proof focuses on the correctness, we do not verify the constant-timeness of
+the TweetNaCl code nor do we prove  
+
 \subheading{Corrections in TweetNaCl.}
 As a result of this verification, we removed superfluous code.
 Indeed indexes 17 to 79 of the \TNaCle{i64 x[80]} intermediate variable of
@@ -74,6 +81,7 @@ o[i]&=0xffff;
 We believe that type changes of loop indexes (\TNaCle{int} instead of \TNaCle{i64})
 do not impact the trust of our proof.
 
+\todoln{NEW}
 We contacted the authors of TweetNaCl and believe that the changes above
 mentionned will soon be integrated in a new version of the library.
 

@@ -1,0 +1,44 @@
+\subsection{Coq, separation logic, and the VST}
+\label{subsec:Coq-VST}
+
+Coq~\cite{coq-faq} is an interactive theorem prover based on type theory. It
+provides an expressive formal language to write mathematical definitions,
+algorithms, and theorems together with their proofs. It has been used in the proof
+of the four-color theorem~\cite{gonthier2008formal} and it is also the system
+underlying the CompCert formally verified C compiler~\cite{Leroy-backend}.
+Unlike systems like F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17},
+Coq does not rely on an SMT solver in its trusted code base.
+It uses its type system to verify the applications of hypotheses,
+lemmas, and theorems~\cite{Howard1995-HOWTFN}.
+
+Hoare logic is a formal system which allows reasoning about programs.
+It uses triples such as
+$$\{{\color{doc@lstnumbers}\textbf{Pre}}\}\texttt{~Prog~}\{{\color{doc@lstdirective}\textbf{Post}}\}$$
+where ${\color{doc@lstnumbers}\textbf{Pre}}$ and ${\color{doc@lstdirective}\textbf{Post}}$
+are assertions and \texttt{Prog} is a fragment of code.
+It is read as
+``when the precondition  ${\color{doc@lstnumbers}\textbf{Pre}}$ is met,
+executing \texttt{Prog} will yield postcondition ${\color{doc@lstdirective}\textbf{Post}}$''.
+We use compositional rules to prove the truth value of a Hoare triple.
+For example, here is the rule for sequential composition:
+\begin{prooftree}
+  \AxiomC{$\{P\}C_1\{Q\}$}
+  \AxiomC{$\{Q\}C_2\{R\}$}
+  \LeftLabel{Hoare-Seq}
+  \BinaryInfC{$\{P\}C_1;C_2\{R\}$}
+\end{prooftree}
+Separation logic is an extension of Hoare logic which allows reasoning about
+pointers and memory manipulation. This logic enforces strict conditions on the
+memory shared such as being disjoint.
+We discuss this limitation further in \sref{subsec:with-VST}.
+
+The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework
+which uses Separation logic proven correct with respect to CompCert semantics
+to prove the functional correctness of C programs.
+The first step consists of translating the source code into Clight,
+an intermediate representation used by CompCert.
+For such purpose one uses the parser of CompCert called \texttt{clightgen}.
+In a second step one defines the Hoare triple representing the specification of
+the piece of software one wants to prove. Then using the VST, one uses a strongest
+postcondition approach to prove the correctness of the triple.
+This approach can be seen as a forward symbolic execution of the program.

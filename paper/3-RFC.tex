@@ -111,8 +111,11 @@ numbers, or field elements.
 % The generic definition of the ladder (\coqe{montgomery_rec}) and its parallel with
 % the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
 
+\todo{Do we keep the pointer to \sref{cswap} for CSWAP?}
+
 Our formalization differs slightly from the RFC. Indeed in order to optimize the
-number of calls to \texttt{CSWAP} the RFC uses an additional variable to decide
+number of calls to \texttt{CSWAP} (defined in \sref{cswap})
+the RFC uses an additional variable to decide
 whether a conditional swap is required or not. Our description of the ladder
 follows strictly the shape of the exponent as described in \aref{alg:montgomery-ladder}.
 This divergence is allowed by the RFC:

@@ -1,0 +1,228 @@
+\subsection{TweetNaCl specifics}
+\label{subsec:Number-TweetNaCl}
+
+As its name suggests, TweetNaCl aims for code compactness (\emph{``a crypto library in 100 tweets''}).
+As a result it uses a few defines and typedefs to gain precious bytes while
+still remaining human-readable.
+\begin{lstlisting}[language=Ctweetnacl]
+#define FOR(i,n) for (i = 0;i < n;++i)
+#define sv static void
+typedef unsigned char u8;
+typedef long long i64;
+\end{lstlisting}
+
+TweetNaCl functions take pointers as arguments. By convention the first one
+points to the output array. It is then followed by the input arguments.
+
+Due to some limitations of the VST, indexes used in \TNaCle{for} loops have to be
+of type \TNaCle{int} instead of \TNaCle{i64}. We change the code to allow our
+proofs to carry through. We believe this does not affect the correctness of the
+original code. A complete diff of our modifications to TweetNaCl can be found in
+Appendix~\ref{verified-C-and-diff}.
+
+
+\subsection{X25519 in TweetNaCl}
+\label{subsec:X25519-TweetNaCl}
+
+We now describe the implementation of X25519 in TweetNaCl.
+
+\subheading{Arithmetic in \Ffield.}
+In X25519, all computations are performed in $\F{p}$.
+Throughout the computation, elements of that field
+are represented in radix $2^{16}$,
+i.e., an element $A$ is represented as $(a_0,\dots,a_{15})$,
+with $A = \sum_{i=0}^{15}a_i2^{16i}$.
+The individual ``limbs'' $a_i$ are represented as
+64-bit \TNaCle{long long} variables:
+\begin{lstlisting}[language=Ctweetnacl]
+typedef i64 gf[16];
+\end{lstlisting}
+
+Conversion from the input byte array to this representation in radix $2^{16}$ is
+done as follows:
+\begin{lstlisting}[language=Ctweetnacl]
+sv unpack25519(gf o, const u8 *n)
+{
+  int i;
+  FOR(i,16) o[i]=n[2*i]+((i64)n[2*i+1]<<8);
+  o[15]&=0x7fff;
+}
+\end{lstlisting}
+
+The radix-$2^{16}$ representation in limbs of $64$ bits is
+highly redundant; for any element $A \in \Ffield$ there are
+multiple ways to represent $A$ as $(a_0,\dots,a_{15})$.
+This is used to avoid carry handling in the implementations of addition
+(\TNaCle{A}) and subtraction (\TNaCle{Z}) in $\Ffield$:
+\begin{lstlisting}[language=Ctweetnacl]
+sv A(gf o,const gf a,const gf b) {
+  int i;
+  FOR(i,16) o[i]=a[i]+b[i];
+}
+
+sv Z(gf o,const gf a,const gf b) {
+  int i;
+  FOR(i,16) o[i]=a[i]-b[i];
+}
+\end{lstlisting}
+
+Multiplications (\TNaCle{M}) also heavily exploit the redundancy
+of the representation to delay carry handling.
+\begin{lstlisting}[language=Ctweetnacl]
+sv M(gf o,const gf a,const gf b) {
+  i64 i,j,t[31];
+  FOR(i,31) t[i]=0;
+  FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
+  FOR(i,15) t[i]+=38*t[i+16];
+  FOR(i,16) o[i]=t[i];
+  car25519(o);
+  car25519(o);
+}
+\end{lstlisting}
+
+After the multiplication, the limbs of the result \texttt{o} are
+too large to be used again as input.
+ % which is why
+The two calls to
+\TNaCle{car25519} at the end of \TNaCle{M} propagate the carries through the limbs:
+\begin{lstlisting}[language=Ctweetnacl]
+sv car25519(gf o)
+{
+  int i;
+  FOR(i,16) {
+    o[(i+1)%16]+=(i<15?1:38)*(o[i]>>16);
+    o[i]&=0xffff;
+  }
+}
+\end{lstlisting}
+
+In order to simplify the verification of this function,
+we treat the last iteration of the loop $i = 15$ as a separate step.
+
+Inverses in $\Ffield$ are computed with \TNaCle{inv25519}.
+This function uses exponentiation by $2^{255}-21$,
+computed with the square-and-multiply algorithm.
+Fermat's little theorem gives the correctness.
+Notice that in this case the inverse of $0$ is defined as $0$.
+\begin{lstlisting}[language=Ctweetnacl]
+sv inv25519(gf o,const gf i)
+{
+  gf c;
+  int a;
+  set25519(c,i);
+  for(a=253;a>=0;a--) {
+    S(c,c);
+    if(a!=2&&a!=4) M(c,c,i);
+  }
+  FOR(a,16) o[a]=c[a];
+}
+\end{lstlisting}
+
+\TNaCle{sel25519} implements a constant-time conditional swap (\texttt{CSWAP}) by
+applying a mask between two fields elements.
+\begin{lstlisting}[language=Ctweetnacl]
+sv sel25519(gf p,gf q,i64 b)
+{
+  int i;
+  i64 t,c=~(b-1);
+  FOR(i,16) {
+    t= c&(p[i]^q[i]);
+    p[i]^=t;
+    q[i]^=t;
+  }
+}
+\end{lstlisting}
+
+Finally, we need the \TNaCle{pack25519} function,
+which converts from the internal redundant radix-$2^{16}$
+representation to a unique byte array representing an
+integer in $\{0,\dots,p-1\}$ in little-endian format.
+\begin{lstlisting}[language=Ctweetnacl]
+sv pack25519(u8 *o,const gf n)
+{
+  int i,j;
+  i64 b;
+  gf t,m={0};
+  set25519(t,n);
+  car25519(t);
+  car25519(t);
+  car25519(t);
+  FOR(j,2) {
+    m[0]=t[0]- 0xffed;
+    for(i=1;i<15;i++) {
+      m[i]=t[i]-0xffff-((m[i-1]>>16)&1);
+      m[i-1]&=0xffff;
+    }
+    m[15]=t[15]-0x7fff-((m[14]>>16)&1);
+    m[14]&=0xffff;
+    b=1-((m[15]>>16)&1);
+    sel25519(t,m,b);
+  }
+  FOR(i,16) {
+    o[2*i]=t[i]&0xff;
+    o[2*i+1]=t[i]>>8;
+  }
+}
+\end{lstlisting}
+As we can see, this function is considerably more complex than the
+unpacking function. The reason is that it needs to convert
+to a \emph{unique} representation, i.e., also fully reduce modulo
+$p$ and remove the redundancy of the radix-$2^{16}$ representation.
+
+\subheading{The Montgomery ladder.}
+With these low-level arithmetic and helper functions defined,
+we can now turn our attention to the core of the X25519 computation:
+the \TNaCle{crypto_scalarmult} API function of TweetNaCl,
+which is implemented through the Montgomery ladder.
+
+\begin{lstlisting}[language=Ctweetnacl]
+int crypto_scalarmult(u8 *q,
+                      const u8 *n,
+                      const u8 *p)
+{
+  u8 z[32];
+  i64 r;
+  int i;
+  gf x,a,b,c,d,e,f;
+  FOR(i,31) z[i]=n[i];
+  z[31]=(n[31]&127)|64;
+  z[0]&=248;
+  unpack25519(x,p);
+  FOR(i,16) {
+    b[i]=x[i];
+    d[i]=a[i]=c[i]=0;
+  }
+  a[0]=d[0]=1;
+  for(i=254;i>=0;--i) {
+    r=(z[i>>3]>>(i&7))&1;
+    sel25519(a,b,r);
+    sel25519(c,d,r);
+    A(e,a,c);
+    Z(a,a,c);
+    A(c,b,d);
+    Z(b,b,d);
+    S(d,e);
+    S(f,a);
+    M(a,c,a);
+    M(c,b,e);
+    A(e,a,c);
+    Z(a,a,c);
+    S(b,a);
+    Z(c,d,f);
+    M(a,c,_121665);
+    A(a,a,d);
+    M(c,c,a);
+    M(a,d,f);
+    M(d,b,x);
+    S(b,e);
+    sel25519(a,b,r);
+    sel25519(c,d,r);
+  }
+  inv25519(c,c);
+  M(a,a,c);
+  pack25519(q,a);
+  return 0;
+}
+\end{lstlisting}
+%XXX: I really want line numbers here to link lines in this code to
+% the pseudocode description
