@@ -7,17 +7,6 @@ well-marked appendices, and supplementary material."
 + the added confidence between in X25519 Correctness\\
 + proof of real world software\\
 
-- Add section in conclusion to describe what would need to be done to adapt the code for e.g.
-curve448 (give reference) and X448.\\
-+ we can reuse the code of the elliptic abstraction.\\
-+ the ladder would need few adaptation with respect to the bound propagations.\\
-+ the ladder is generic so can be easily instanciated over \F{2^{448} - 2^{224}
-   - 1}.\\
-+ the Addition and subtraction are simple and bounds carries easily.\\
-+ Multiplication needs to be redefined.\\
-+ Squaring can be easily ported.\\
-+ Inversion is easily ported with the use of reflections, idem for the packing.\\
-
 - Changed made to TweetNaCl:\\
 + we contacted the authors.\\
 + only change made are the one required by VST\\

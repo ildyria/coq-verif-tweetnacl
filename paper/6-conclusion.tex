@@ -26,16 +26,10 @@ Lemma f_ext: forall (A B:Type),
   specification.
 
   \item \textbf{CompCert}.
-% The formally proven compiler.
-% We trust that the CompCert Clight semantics in Coq
-% correctly captures the C17 standard.
-  When compiling with CompCert we only need to trust CompCert's {assembly} semantics, because it has been formally proven correct.
-  However, when compiling with other C compilers like Clang or GCC, we need to trust that the CompCert's Clight semantics matches the C17 standard.
-% as well as
-% that the compiler will compile the TweetNaCl code according to that standard.
-  % Our proof also assumes that the TweetNaCl code will behave as expected if
-  % compiled under CompCert.
-  % We do not provide guarantees for other C compilers such as Clang or GCC.
+  When compiling with CompCert we only need to trust CompCert's {assembly}
+  semantics, because it has been formally proven correct.
+  However, when compiling with other C compilers like Clang or GCC, we need to
+  trust that the CompCert's Clight semantics matches the C17 standard.
 
   \item \textbf{\texttt{clightgen}}. The tool making the translation from {C} to
   {Clight}. It is the first step of the compilation.
@@ -52,9 +46,7 @@ o[i] = aux1 + aux2;
   factors out function calls and assignments from inside subexpressions.
   The changes required for C code to make it verifiable are now minimal.
 
-  \item Finally,
-  % Last but not the least,
-  we must trust the \textbf{Coq kernel} and its
+  \item Finally, we must trust the \textbf{Coq kernel} and its
   associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
   the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
   done with this architecture \cite{2015-Appel,coq-faq}.
@@ -79,8 +71,25 @@ and thus solved this problem.
 o[i]&=0xffff;
 \end{lstlisting}
 
-We believe that the type change of the loop index (\TNaCle{int} instead of \TNaCle{i64})
-does not impact the trust of our proof.
+We believe that type changes of loop indexes (\TNaCle{int} instead of \TNaCle{i64})
+do not impact the trust of our proof.
+
+We contacted the authors of TweetNaCl and believe that the changes above
+mentionned will soon be integrated in a new version of the library.
+
+\subheading{Extending our work.}
+The high-level definition (\sref{sec:maths}) can easily be ported to any
+other Montgomery curves and with it the proof of the ladder's correctness
+assuming the same forumlas are used.
+In addition to the curve equation, the field \F{p} would need to be redefined
+as $p=2^{255}-19$ is hard-coded in order to speed up some proofs.
+
+With respect to the C code verification (\sref{sec:C-Coq}),
+\eg X448~\cite{cryptoeprint:2015:625,rfc7748} would require the adaptation most of the
+low level arithmetic (mainly the multiplication, carry propagations and reductions).
+Once the correctness and bounds of the basic operations are established,
+reproving the full ladder would make use of our generic definition and lower
+the workload.
 
 \subheading{A complete proof.}
 We provide a mechanized formal proof of the correctness of the X25519
