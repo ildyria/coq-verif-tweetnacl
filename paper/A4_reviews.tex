@@ -96,6 +96,8 @@ description of how verification of for loops are handled and the details of the
 proof by reflections.
 We described in the Conclusion (\sref{sec:Conclusion}) how our results can be
 extended or reused in future works.
+We added figures to provide a broader overview of how the proof are linked in
+Section V, making it hopefully easier to follow.
 
 
 \subsection{S\&P 2020 Review \#582B}
@@ -198,12 +200,30 @@ whether this is careful quantification or not.
 \subheading{Our answer}
 
 Clarification in intro: VST has already been used to verify symmetric Cryptographic
-primities, as mentioned later by \cite{Beringer2015VerifiedCA} and \cite{2015-Appel}.
+primities (\eg SHA), as mentioned later by \cite{Beringer2015VerifiedCA}
+and \cite{2015-Appel}.
 
-We have not found errors in the implementation but we removed an undefined
+We did not find errors in the implementation but we removed an undefined
 behavior by the C standard.
 
+p.1: SMT solvers are need of annotation, often written as parsable comment
+in the middle of the C code~\cite{acsl} in order to ``guide'' the proof.
+In our case we only need to anotate the beginning of the function and loop
+invariants which allows us to get tighter bounds.
 
+p.3: for IEEE we were limited to 18 pages including appendices.
+We changed the format to a ``diff -u'' to provide the context of the applied changes.
+
+p.5: We added the requested backward reference.
+
+p.7: We added a clarification of what would be an unnecessary alliasing case.
+Such case do not happen in TweetNaCl, it is therefore not required to write a
+specification for it.
+
+We removed some sections and added figures in section V to help the reader get a
+better picture of the proof.
+
+\todo{Verifiable Low F*}
 
 \subsection{S\&P 2020 Review \#582C}
 
@@ -294,3 +314,9 @@ Do you already prove such a property?  More generally, what about the proof of
 Section V is specific to X25519 and what is generic?
 
 \subheading{Our answer}
+
+In order to improve the reading experience, we removed the section of Reflections
+which contained heavy proofs in Coq code. We also added figures in section V to
+give a broader view of the High-level proof.
+
+\todo{Reply constant time ? or in Conclusion ? Reply the clamping - reduction}
