@@ -1,0 +1,46 @@
+\begin{tikzpicture}[textstyle/.style={black, anchor= south west, align=center, minimum height=0.45cm, text centered, font=\scriptsize}]
+
+
+% Bartzia & Strub
+  \draw[dashed, fill=doc@lstbackground] (2.75,0.5) -- (2.75,2) -- (6,2) -- (6, 0.5) -- cycle;
+  \draw (6,2) node[textstyle, anchor=north east] {Library from Bartzia \& Strub};
+
+% Mab
+  \begin{scope}[yshift=0 cm,xshift=0 cm]
+   \draw (0,0) -- (1.5,0) -- (1.5,-0.75) -- (0, -0.75) -- cycle;
+   \draw (0.75,-0.375) node[textstyle, anchor=center] {$M_{a,b}(\K)$};
+  \end{scope}
+
+% Eab
+  \begin{scope}[yshift=1.5 cm,xshift=3 cm]
+   \draw[fill=white] (0,0) -- (1.5,0) -- (1.5,-0.75) -- (0, -0.75) -- cycle;
+   \draw (0.75,-0.375) node[textstyle, anchor=center] {$E_{a',b'}(\K)$};
+  \end{scope}
+
+% M is a finite assoc group
+  \begin{scope}[yshift=0 cm,xshift=3 cm]
+   \draw [fill=green!20] (0,0) -- (3.25,0) -- (3.25,-0.75) -- (0, -0.75) -- cycle;
+   \draw (1.675,-0.375) node[textstyle, anchor=center] {$M_{a,b}(\K)$ is an Assoc. Fin. Grp};
+  \end{scope}
+
+% Hypothesis x square is not 2
+  \begin{scope}[yshift=-1.5 cm,xshift=0 cm]
+   \draw [fill=orange!20] (0,0) -- (1.5,0) -- (1.5,-1.25) -- (0, -1.25) -- cycle;
+   \draw (0,0) node[textstyle, anchor=north west] {\textbf{Hyp:}};
+   \draw (0.75,-0.375) node[textstyle, anchor=north] {$\forall x \in \K,$\\$x^2 \neq 2$};
+  \end{scope}
+
+% Final theorem
+  \begin{scope}[yshift=-1.5 cm,xshift=3 cm]
+   \draw [fill=green!20] (0,0) -- (3.25,0) -- (3.25,-1.375) -- (0, -1.375) -- cycle;
+   \draw (0,0) node[textstyle, anchor=north west] {\textbf{Thm:}};
+   \draw (1.675,-0.375) node[textstyle, anchor=north] {$\forall x \in \K, n \in \N, P \in M_{a,b}(\K),$\\$x = \chi(P) \implies$\\ladder $n$ $x$ = $\chi(n \cdot P)$};
+  \end{scope}
+
+  \path [thick, double, ->] (1.5,-0.375) edge  [out=0, in=-180] (3,-0.375);
+  \path [thick, double, ->] (3.75,0.75) edge  [out=-90, in=90] (3.75,0);
+  \path [thick, double, ->] (3.75,-0.75) edge  [out=-90, in=90] (3.75,-1.5);
+  \path [thick, double, ->] (1.5,-2.125) edge  [out=0, in=-180] (3,-2.125);
+
+
+\end{tikzpicture}

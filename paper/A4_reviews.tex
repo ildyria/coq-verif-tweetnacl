@@ -3,6 +3,9 @@
 
 This paper has been submitted to IEEE Symposium on Security and Privacy 2020.
 
+We thank and really appreciate the reviewers who took time to provide us with
+such detailed feedback.
+
 \subsection{S\&P 2020 Review \#582A}
 
 Overall merit: 3. Weak reject - The paper has flaws, but I will not argue against it.
@@ -81,10 +84,17 @@ On page 9: "each functions" => no s
 
 \subheading{Our answer}
 
-\todoln{New stuff}
-We corrected the typos. There are no new proof techniques in the case of this
-verification. We used reflections techniques to generically solve some of our
-goals such as the proof of inversion.
+We corrected the typos.
+The novelty of this work is not in the proof techniques.
+It lies in the assurance gained by the formalization of the X25519 from RFC~7748,
+and its correctness with respect to the theory of elliptic curves.
+It is the first time, we have a link from the C code up to the mathematical
+definitions of Curve25519.
+We removed the description of how verification of for loops are handled and the
+details of the proof by reflections.
+We described in the Conclusion (\sref{sec:Conclusion}) how our results can be
+extended or reused in future works.
+
 
 \subsection{S\&P 2020 Review \#582B}
 
@@ -184,9 +194,14 @@ whether this is careful quantification or not.
 
 \subheading{Our answer}
 
-\todoln{New stuff}
 Clarification in intro: VST has already been used to verify symmetric Cryptographic
 primities, as mentioned later by \cite{Beringer2015VerifiedCA} and \cite{2015-Appel}.
+
+We have not found errors in the implementation but we removed an
+undefined behavior by the C standard.
+\todo{Can I say that?}
+Compilers were smart enough to prevent problems in that instance.
+
 
 
 \subsection{S\&P 2020 Review \#582C}
@@ -277,5 +292,3 @@ Do you already prove such a property?  More generally, what about the proof of
 Section V is specific to X25519 and what is generic?
 
 \subheading{Our answer}
-
-\todoln{New stuff}
