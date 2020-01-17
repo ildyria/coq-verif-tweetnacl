@@ -1,72 +1,66 @@
-\todo{
-
-- Get down to 12 pages: "no more than 12 pages long, excluding the bibliography,
-well-marked appendices, and supplementary material."
-
-- Emphasize:\\
-+ the added confidence between in X25519 Correctness\\
-+ proof of real world software\\
-}
-
-With respect to the reviews:
-
-\todo{
-
-- Give number of person-hours
-
-- "This did not become very clear, because you mostly describe names
-of tool while leaving out the details of what these tools carry out
-conceptually."\\
-+ anotation have to be carried out through the proof to help the smt-solver,
-not in our case as we direct the proof.
-
-- "In particular,
-the Figure seems to used a nice abstraction of properties that is not
-used elsewhere in the paper. I.e., elsewhere in the paper, there is
-usually a lot of code details."\\
-+ I don't know what to do on that one.
-
-- "I was wondering whether you consider the approach in [13] as synthesis or
-verification, because to me, it seemed a mix/neither."\\
-+ [13] is "Verified Low-Level Programming Embedded in F*",\\
-+ reread [13] and answer in the "our answer part"
-
-- "[18] even uses Coq to verify a large portion of a C implementation of X25519
-fully automatically."\\
-+ This is not verification, this is synthesis. The approach is completely different.
-
-- "Still, TweetNaCl is not necessarily the most complex (and certainly not the most
-efficient) implementation of X25519 that has been verified, which makes the
-novelty of this work hard to justify."\\
-+ True, but all the other works have been from a spec and generate correct code
-approach, here we go the opposite way. While the code of other libraries are
-different, the montgomery ladder are often similar and the optimizations comes
-mostly from the big number computations.\\
-
-- "This is a well-known problem for formal
-verification papers, and I don’t have great advice except to suggest
-that the authors separate out the code fragments into figures and
-let the text focus on the high-level ideas of the code."\\
-+ @PETER: How to address that ?
-
-- "At the end of Section IV, I would have loved to see some high-
-level lessons on what the proof taught you, and what part of this
-proof would be reusable if you decided to verify Ed25519 or X448
-or P-256, for example."\\
-+ see second Todo
-
-- "It also appears that the authors do not verify the constant-time
-guarantees of the TweetNaCl code. Could this be done in their
-framework?"
-+ Nope => mention in limitation at the end of the paper?
-
-- Clamping and section V.\\
-+ The clamping allows to reduce the group to prime elements, we do not provide
-such proofs.\\
-- We prove that for all n the computations on the ladder holds.
-
-- "More importantly, could you claim that your proof of equivalence also provides
-a justification for the implementations of Fiat Crypto or HACL*, hence adding
-value to those other projects in addition to your own?"
-+ Peter ?
-}
+% \todo{
+%
+% - Get down to 12 pages: "no more than 12 pages long, excluding the bibliography,
+% well-marked appendices, and supplementary material."
+%
+% - Emphasize:\\
+% + the added confidence between in X25519 Correctness\\
+% + proof of real world software\\
+% }
+%
+% With respect to the reviews:
+%
+% \todo{
+%
+% - Give number of person-hours
+%
+% - "This did not become very clear, because you mostly describe names
+% of tool while leaving out the details of what these tools carry out
+% conceptually."\\
+% + anotation have to be carried out through the proof to help the smt-solver,
+% not in our case as we direct the proof.
+%
+% - "I was wondering whether you consider the approach in [13] as synthesis or
+% verification, because to me, it seemed a mix/neither."\\
+% + [13] is "Verified Low-Level Programming Embedded in F*",\\
+% + reread [13] and answer in the "our answer part"
+%
+% - "[18] even uses Coq to verify a large portion of a C implementation of X25519
+% fully automatically."\\
+% + This is not verification, this is synthesis. The approach is completely different.
+%
+% - "Still, TweetNaCl is not necessarily the most complex (and certainly not the most
+% efficient) implementation of X25519 that has been verified, which makes the
+% novelty of this work hard to justify."\\
+% + True, but all the other works have been from a spec and generate correct code
+% approach, here we go the opposite way. While the code of other libraries are
+% different, the montgomery ladder are often similar and the optimizations comes
+% mostly from the big number computations.\\
+%
+% - "This is a well-known problem for formal
+% verification papers, and I don’t have great advice except to suggest
+% that the authors separate out the code fragments into figures and
+% let the text focus on the high-level ideas of the code."\\
+% + @PETER: How to address that ?
+%
+% - "At the end of Section IV, I would have loved to see some high-
+% level lessons on what the proof taught you, and what part of this
+% proof would be reusable if you decided to verify Ed25519 or X448
+% or P-256, for example."\\
+% + see second Todo
+%
+% - "It also appears that the authors do not verify the constant-time
+% guarantees of the TweetNaCl code. Could this be done in their
+% framework?"
+% + Nope => mention in limitation at the end of the paper?
+%
+% - Clamping and section V.\\
+% + The clamping allows to reduce the group to prime elements, we do not provide
+% such proofs.\\
+% - We prove that for all n the computations on the ladder holds.
+%
+% - "More importantly, could you claim that your proof of equivalence also provides
+% a justification for the implementations of Fiat Crypto or HACL*, hence adding
+% value to those other projects in addition to your own?"
+% + Peter ?
+% }

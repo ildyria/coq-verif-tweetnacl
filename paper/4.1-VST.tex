@@ -110,7 +110,6 @@ The correctness of this specification is formally proven in Coq with
 % For the sake of completeness we proved all intermediate functions.
 
 \subheading{Memory aliasing.}
-%
 The semicolon in the \VSTe{SEP} parts of the Hoare triples represents the \emph{separating conjunction} (often written as a star), which means that
 the memory shares of \texttt{q}, \texttt{n} and \texttt{p} do not overlap.
 In other words,
@@ -130,7 +129,6 @@ Examples of such cases are illustrated in \fref{tikz:MemSame}.
   \caption{Aliasing and Separation Logic}%
   \label{tikz:MemSame}%
 \end{figure}
-
 As a result, a function must either have multiple specifications or specify which
 aliasing case is being used.
 The first option would require us to do very similar proofs multiple times for a same function.
@@ -145,3 +143,16 @@ we define an additional parameter $k$ with values in $\{0,1,2,3\}$:
 In the proof of our specification, we do a case analysis over $k$ when needed.
 This solution does not generate all the possible cases of aliasing over 3 pointers
 (\eg \texttt{o} = \texttt{a} = \texttt{b}) but it is enough to cover our needs.
+
+\subheading{Improving speed.}
+To make the verification the smoothest, the Coq formal definition of the function
+should be as close as possible to the C implementation behavior.
+Optimizations of such definitions are often counter-productive as they increase the
+amount of proofs required for \eg bounds checking, loops invariants\ldots.
+
+In order to further speed-up the verification process, to prove the specification
+\TNaCle{crypto_scalarmult}, we only need the specification of the subsequently
+called functions (\eg \TNaCle{M}).
+This provide with multiple advantages: the verification by the Coq kernel can be
+done in parallel and multiple users can work on proving different functions at
+the same time. For the sake of completeness we proved all intermediate functions.

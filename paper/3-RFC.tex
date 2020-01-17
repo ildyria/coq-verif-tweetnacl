@@ -94,8 +94,6 @@ Then we describe our mapping between little-endian representations and integers
 (\ref{subsec:integer-bytes}) which we use to formalize the encoding and decoding.
 
 
-
-% subsection or subheading ?
 \subsection{A generic ladder}
 \label{subsec:spec-ladder}
 
@@ -107,11 +105,6 @@ the different number representations. To simplify our proof, we define operation
 used in the ladder over generic types \coqe{T} and \coqe{T'}.
 Those types are later instantiated as list of integers, integers, natural
 numbers, or field elements.
-
-% The generic definition of the ladder (\coqe{montgomery_rec}) and its parallel with
-% the definition of RFC~7748 are provided in Appendix~\ref{subsubsec:coq-ladder}.
-
-\todo{Do we keep the pointer to \sref{cswap} for CSWAP?}
 
 Our formalization differs slightly from the RFC. Indeed in order to optimize the
 number of calls to \texttt{CSWAP} (defined in \sref{cswap})
@@ -199,5 +192,5 @@ Definition encodeUCoordinate (x: Z) : list Z :=
   ListofZ32 8 x.
 \end{lstlisting}
 
-In this definition, \coqe{clamp} is taking care of setting and unsetting the
+In this definition, \coqe{clamp} is taking care of setting and clearing the
 selected bits as stated in the RFC and described in~\sref{subsec:X25519-key-exchange}.

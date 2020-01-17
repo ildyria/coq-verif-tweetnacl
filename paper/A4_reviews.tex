@@ -1,3 +1,4 @@
+\newpage
 \section{Prior reviews}
 \label{appendix:past-reviews}
 
@@ -90,8 +91,9 @@ It lies in the assurance gained by the formalization of the X25519 from RFC~7748
 and its correctness with respect to the theory of elliptic curves.
 It is the first time, we have a link from the C code up to the mathematical
 definitions of Curve25519.
-We removed the description of how verification of for loops are handled and the
-details of the proof by reflections.
+While they are part of the main proof but not novel techniques we removed the
+description of how verification of for loops are handled and the details of the
+proof by reflections.
 We described in the Conclusion (\sref{sec:Conclusion}) how our results can be
 extended or reused in future works.
 
@@ -130,11 +132,11 @@ the body on conceptual insights (see comments below).
 \end{center}
 
 I was confused that you did not seem have found any errors in an implementation.
-I can believe that the implementers of [2] are proficient implementers, but I
-would have expected some minor bugs/parsing issues to be found anyway. What is
-your explanation that you haven't found any issues?
+I can believe that the implementers of \cite{BGJ+15} are proficient implementers,
+but I would have expected some minor bugs/parsing issues to be found anyway.
+What is your explanation that you haven't found any issues?
 
-p.1: You discuss [10] as using heavy annotation of code, differently from your
+p.1: You discuss \cite{Ber06} as using heavy annotation of code, differently from your
 own code. However, as far as I understand, your Coq implementation must also be
 type-annotated. Thus, I imagine that the difference lies in whether SAT-solvers
 are used or not? This did not become very clear, because you mostly describe
@@ -178,11 +180,12 @@ interesting if the paper highlights the interesting aspects of the verification.
 
 Related work:
 
-In reference [13], the order of authors is different than in the original
-publication. I think that you might want to discuss [13] in the Related work
+In reference \cite{DBLP:journals/corr/BhargavanDFHPRR17}, the order of authors
+is different than in the original publication. I think that you might want to
+discuss \cite{DBLP:journals/corr/BhargavanDFHPRR17} in the Related work
 section, since it seems quite close. I was wondering whether you consider the
-approach in [13] as synthesis or verification, because to me, it seemed a
-mix/neither.
+approach in \cite{DBLP:journals/corr/BhargavanDFHPRR17} as synthesis or
+verification, because to me, it seemed a mix/neither.
 
 Clarification in intro:
 
@@ -197,10 +200,8 @@ whether this is careful quantification or not.
 Clarification in intro: VST has already been used to verify symmetric Cryptographic
 primities, as mentioned later by \cite{Beringer2015VerifiedCA} and \cite{2015-Appel}.
 
-We have not found errors in the implementation but we removed an
-undefined behavior by the C standard.
-\todo{Can I say that?}
-Compilers were smart enough to prevent problems in that instance.
+We have not found errors in the implementation but we removed an undefined
+behavior by the C standard.
 
 
 
@@ -233,9 +234,9 @@ that uses X25519 is provably secure, based on some cryptographic assumption on
 the ECDH construction. It is rare to find papers that combine more than one of
 these proof levels, and this paper does a creditable job of linking (a) with (b),
 relying on the Coq framework to soundly glue these proofs together. Although a
-similar goal was considered in [12], this paper provides a more satisfying
-solution by not leaving any gaps between the formalizations, and by relying on a
-smaller trusted computing base.
+similar goal was considered in \cite{Zinzindohoue2016AVE}, this paper provides
+a more satisfying solution by not leaving any gaps between the formalizations,
+and by relying on a smaller trusted computing base.
 
 
 \begin{center}
@@ -243,12 +244,13 @@ smaller trusted computing base.
 \end{center}
 
 X25519 implementations have now been verifying in multiple papers using multiple
-verification frameworks, and [18] even uses Coq to verify a large portion of a C
-implementation of X25519 fully automatically. So, the main contribution here is
-that that the authors verify an existing popular implementation (TweetNaCl)
-without making many changes to the source code. Still, TweetNaCl is not necessarily
-the most complex (and certainly not the most efficient) implementation of X25519
-that has been verified, which makes the novelty of this work hard to justify.
+verification frameworks, and \cite{Erbsen2016SystematicSO} even uses Coq to
+verify a large portion of a C implementation of X25519 fully automatically.
+So, the main contribution here is that that the authors verify an existing
+popular implementation (TweetNaCl) without making many changes to the source
+code. Still, TweetNaCl is not necessarily the most complex (and certainly not
+the most efficient) implementation of X25519 that has been verified, which
+makes the novelty of this work hard to justify.
 
 
 \begin{center}

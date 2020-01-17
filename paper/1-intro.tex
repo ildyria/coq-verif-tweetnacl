@@ -113,7 +113,10 @@ proof techniques used to show the correctness with respect to RFC~7748~\cite{rfc
 and Strub and the correctness of X25519 implementation with respect to Bernstein's
 specifications~\cite{Ber14}.
 Finally in \sref{sec:Conclusion} we discuss the trusted code base of our proofs.
+
 \fref{tikz:ProofOverview} shows a graph of dependencies of the proofs.
+C source files are represented by {\color{doc@lstfunctions}.C} while
+{\color{doc@lstfunctions}.V} corresponds to Coq files.
 
 \begin{figure}[h]
   \centering
@@ -121,9 +124,6 @@ Finally in \sref{sec:Conclusion} we discuss the trusted code base of our proofs.
   \caption{Structure of the proof.}
   \label{tikz:ProofOverview}
 \end{figure}
-
-\todoln{NEW}
-In this figure, {\color{doc@lstfunctions}.V} represent Coq files.
 
 % Five years ago:
 % \url{https://www.imperialviolet.org/2014/09/11/moveprovers.html}

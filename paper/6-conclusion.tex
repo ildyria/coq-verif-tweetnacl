@@ -52,8 +52,6 @@ o[i] = aux1 + aux2;
   done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
-\todo{NEW}
-
 \subheading{Corrections in TweetNaCl.}
 As a result of this verification, we removed superfluous code.
 Indeed indexes 17 to 79 of the \TNaCle{i64 x[80]} intermediate variable of
@@ -73,20 +71,18 @@ and thus solved this problem.
 o[i]&=0xffff;
 \end{lstlisting}
 
-\todo{NEW}
-
-Aside from the modications above mentionned, all subsequent alteration
+Aside from the modifications above mentioned, all subsequent alteration
 ---such as the type change of loop indexes (\TNaCle{int} instead of \TNaCle{i64})---
 were required for VST to parse properly the code. We believe those
 adjustments do not impact the trust of our proof.
 
 We contacted the authors of TweetNaCl and expect that the changes above
-mentionned will soon be integrated in a new version of the library.
+mentioned will soon be integrated in a new version of the library.
 
 \subheading{Extending our work.}
 The high-level definition (\sref{sec:maths}) can easily be ported to any
 other Montgomery curves and with it the proof of the ladder's correctness
-assuming the same forumlas are used.
+assuming the same formulas are used.
 In addition to the curve equation, the field \F{p} would need to be redefined
 as $p=2^{255}-19$ is hard-coded in order to speed up some proofs.
 
@@ -97,7 +93,7 @@ level verification similar to \tref{thm:montgomery-ladder-correct}.
 
 The verification \eg X448~\cite{cryptoeprint:2015:625,rfc7748} in C would
 require the adaptation of most of the low level arithmetic (mainly the
-multiplication, carry propagations and reductions).
+multiplication, carry propagation and reductions).
 Once the correctness and bounds of the basic operations are established,
 reproving the full ladder would make use of our generic definition and lower
 the workload.

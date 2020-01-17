@@ -32,15 +32,13 @@ We discuss the plot twist (\ref{subsec:Zmodp}) of Curve25519 and solve it (\ref{
 \subsection{Formalization of elliptic Curves}
 \label{subsec:ECC}
 
-\todo{Beter here of after the final theorem of the subsection?}
-
+\fref{tikz:ProofHighLevel1} presents a intuition of the proof.
 \begin{figure}[h]
   \centering
   \include{tikz/highlevel1}
   \caption{Overview of the proof of Montgomery ladder's correctness}
   \label{tikz:ProofHighLevel1}
 \end{figure}
-
 
 We consider elliptic curves over a field $\K$. We assume that the
 characteristic of $\K$ is neither 2 or 3.
@@ -322,15 +320,14 @@ Theorem opt_montgomery_ok (n m: nat) (x : K) :
 
 \subsection{Curves, twists and extension fields}
 
-\todo{Beter here of after the final theorem of the subsection?}
+\fref{tikz:ProofHighLevel2} gives a high-level view of the proofs presented here.
 
 \begin{figure}[h]
   \centering
   \include{tikz/highlevel2}
-  \caption{Instanciations and proof dependencies for the correctness of X25519}
+  \caption{Instantiation and proof dependencies for the correctness of X25519}
   \label{tikz:ProofHighLevel2}
 \end{figure}
-
 
 To be able to use the above theorem we need to satisfy hypothesis
 \ref{hyp:a_minus_4_not_square}: $a^2-4$ is not a square in \K:
@@ -392,14 +389,12 @@ We instantiate \coqe{opt_montgomery} in two specific ways:\\
 With \tref{thm:montgomery-ladder-correct} we derive the following two lemmas:
 \begin{lemma}
 For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$,\\
-such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.\\
-% Given $n$ and $x$,
+such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.
 $$Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$$
 \end{lemma}
 \begin{lemma}
 For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$\\
-such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.\\
-% Given $n$ and $x$,
+such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.
 $$Twist25519\_Fp(n,x) = \chi_0(n \cdot P)$$
 \end{lemma}
 As the Montgomery ladder does not depend on $b$, it is trivial to
@@ -504,9 +499,6 @@ of formulas by using rewrite rules:
 ~\\
 \end{split}
 \end{equation*}
-
-
-
 
 The injection $a \mapsto (a,0)$ from $\F{p}$ to $\F{p^2}$ preserves
 $0, 1, +, -, \times$. Thus $(a,0)$ can be abbreviated as $a$ without confusions.
