@@ -375,6 +375,13 @@ eexists ; reflexivity.
 rewrite Zlength_map upd_Znth_Zlength Hlengthm''' ; omega.
 }
 destruct Hmi3 as [mi3 Hmi3].
+forward.
+entailer!.
+rewrite (Znth_map Int64.zero).
+eexists ; reflexivity.
+rewrite Zlength_map.
+rewrite upd_Znth_Zlength ; omega.
+forward.
 forward ; rewrite -Hmi3.
 entailer!.
 rewrite (Znth_map Int64.zero) in Hmi3.
@@ -392,6 +399,11 @@ rewrite ?Int.signed_repr.
 subst mi1.
 rewrite and64_repr.
 rewrite ?upd_Znth_map.
+rewrite (Znth_map Int64.zero).
+2: rewrite Zlength_map upd_Znth_Zlength ; omega.
+rewrite (Znth_map 0).
+2: rewrite upd_Znth_Zlength ; omega.
+
 remember (upd_Znth 14 (upd_Znth 15 m''' (Znth 15 t' 0 - 32767 - Z.land (Znth 14 m''' 0 / two_p 16) 1))
            (Z.land (Znth 14 m''' 0) 65535)) as msub.
 assert(Hmi2 : exists mi2, Vlong mi2 = Znth 15 (mVI64 msub) Vundef).
@@ -403,8 +415,6 @@ rewrite Zlength_map.
 rewrite upd_Znth_Zlength upd_Znth_Zlength ; omega.
 }
 destruct Hmi2 as [mi2 Hmi2].
-forward; rewrite -Hmi2.
-entailer!.
 assert(Zlength msub = 16).
 {
 subst msub.
@@ -414,13 +424,28 @@ rewrite (Znth_map Int64.zero) in Hmi2.
 2: rewrite Zlength_map ; omega.
 rewrite (Znth_map 0) in Hmi2.
 2: omega.
+replace (Vlong
+                 (Int64.repr
+                    (Znth 15 (upd_Znth 15 m''' (Znth 15 t' 0 - 32767 - Z.land (Znth 14 m''' 0 / two_p 16) 1)) 0))) with (Vlong mi2).
+2:{
 rewrite Hmi2.
+subst msub.
+f_equal.
+f_equal.
+rewrite upd_Znth_diff ?upd_Znth_Zlength => // ; omega.
+}
+rewrite /sem_binary_operation' /sem_and.
+simpl.
+rewrite Hmi2.
+assert (Hmi2_simpl: mi2 = (Int64.repr (Znth 15 msub 0))).
+inv Hmi2 => //.
 forward.
+rewrite Hmi2_simpl.
+assert(Htmp:= verif_pack25519_10 (Znth 15 msub 0)).
 entailer!.
-clean_context_from_VST.
 
-apply verif_pack25519_10.
 simpl cast_int_long.
+rewrite Hmi2_simpl.
 rewrite ?Int.signed_repr.
 2: solve_bounds_by_values.
 rewrite ?Int.unsigned_repr.

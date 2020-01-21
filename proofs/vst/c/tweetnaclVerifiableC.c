@@ -306,8 +306,9 @@ sv pack25519(u8 *o,const gf n)
       m[i-1]&=0xffff;
     }
     m[15]=t[15]-0x7fff-((m[14]>>16)&1);
+    b=(m[15]>>16)&1;
     m[14]&=0xffff;
-    b=1-((m[15]>>16)&1);
+    b=1-b;
     sel25519(t,m,b);
   }
   FOR(i,16) {
@@ -328,7 +329,7 @@ static u8 par25519(const gf a)
 {
   u8 d[32];
   pack25519(d,a);
-  return d[0]&(u8)1;
+  return d[0]&1;
 }
 
 sv unpack25519(gf o, const u8 *n)
@@ -356,7 +357,7 @@ sv M(gf o,const gf a,const gf b)
   i64 t[31];
   FOR(i,31) t[i]=0;
   FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
-  FOR(i,15) t[i]+=(i64)38*t[i+16];
+  FOR(i,15) t[i]+=38*t[i+16];
   FOR(i,16) o[i]=t[i];
   car25519(o);
   car25519(o);
