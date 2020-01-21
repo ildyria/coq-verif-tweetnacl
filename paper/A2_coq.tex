@@ -212,29 +212,29 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
 % Pack25519 (Low.M a (Inv25519 c)).
 % \end{lstlisting}
 
-\subsection{Equivalence between For Loops}
-\label{subsubsec:for}
-~
-\begin{lstlisting}[language=Coq]
-Variable T: Type.
-Variable g: nat -> T -> T.
-
-Fixpoint rec_fn (n:nat) (s:T) :=
-  match n with
-  | 0 => s
-  | S n => rec_fn n (g n s)
-  end.
-
-Fixpoint rec_fn_rev_acc (n:nat) (m:nat) (s:T) :=
-  match n with
-  | 0 => s
-  | S n => g (m - n - 1) (rec_fn_rev_acc n m s)
-  end.
-
-Definition rec_fn_rev (n:nat) (s:T) :=
-  rec_fn_rev_acc n n s.
-
-Lemma Tail_Head_equiv :
-  forall (n:nat) (s:T),
-  rec_fn n s = rec_fn_rev n s.
-\end{lstlisting}
+% \subsection{Equivalence between For Loops}
+% \label{subsubsec:for}
+% ~
+% \begin{lstlisting}[language=Coq]
+% Variable T: Type.
+% Variable g: nat -> T -> T.
+%
+% Fixpoint rec_fn (n:nat) (s:T) :=
+%   match n with
+%   | 0 => s
+%   | S n => rec_fn n (g n s)
+%   end.
+%
+% Fixpoint rec_fn_rev_acc (n:nat) (m:nat) (s:T) :=
+%   match n with
+%   | 0 => s
+%   | S n => g (m - n - 1) (rec_fn_rev_acc n m s)
+%   end.
+%
+% Definition rec_fn_rev (n:nat) (s:T) :=
+%   rec_fn_rev_acc n n s.
+%
+% Lemma Tail_Head_equiv :
+%   forall (n:nat) (s:T),
+%   rec_fn n s = rec_fn_rev n s.
+% \end{lstlisting}

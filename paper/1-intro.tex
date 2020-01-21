@@ -78,11 +78,13 @@ proofs up to the mathematical definition of the group theory behind elliptic cur
 
 When considering the target of the verification effort, the closest work
 to this paper is presented in~\cite{Chen2014VerifyingCS}, which presents
-a mechanized proof of two assembly-level implementations of the core function of X25519.
+a mechanized proof of two assembly-level implementations of the core function
+of X25519.
 The proof in~\cite{Chen2014VerifyingCS} takes a different approach from ours.
-It uses heavy annotation of code together with SAT solvers;
+It uses heavy annotation of code in order to ``guide'' a SAT solver,
 also, it does not cover the full X25519 functionality and does
 not make the link to the mathematical definition from~\cite{Ber06}.
+We only need to anotate the specifications and loop invariants.
 
 %Synthesis approaches force the user to depend on generated code which may not
 %be optimal (speed, compactness) and they require compiler tweaks in order

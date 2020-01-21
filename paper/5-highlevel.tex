@@ -32,7 +32,8 @@ We discuss the plot twist (\ref{subsec:Zmodp}) of Curve25519 and solve it (\ref{
 \subsection{Formalization of elliptic Curves}
 \label{subsec:ECC}
 
-\fref{tikz:ProofHighLevel1} presents an intuition of the proof.
+\fref{tikz:ProofHighLevel1} presents an intuition of the proof of the ladder's
+correctness.
 \begin{figure}[h]
   \centering
   \include{tikz/highlevel1}
@@ -329,10 +330,11 @@ Theorem opt_montgomery_ok (n m: nat) (x : K) :
   \label{tikz:ProofHighLevel2}
 \end{figure}
 
-To be able to use the above theorem we need to satisfy hypothesis
-\ref{hyp:a_minus_4_not_square}: $a^2-4$ is not a square in \K:
+To be able to use the \tref{thm:montgomery-ladder-correct} we need to satisfy
+hypothesis~\ref{hyp:a_minus_4_not_square}:%
+% $a^2-4$ is not a square in \K:
 $$\forall x \in \K,\ x^2 \neq a^2-4.$$
-There always exists $x \in \F{p^2}$ such that $x^2 = a^2-4$,
+However there always exists $x \in \F{p^2}$ such that $x^2 = a^2-4$,
 preventing the use \tref{thm:montgomery-ladder-correct}
 with $\K = \F{p^2}$.
 
