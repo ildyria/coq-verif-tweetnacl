@@ -354,7 +354,7 @@ sv M(gf o,const gf a,const gf b)
 {
   int i,j;
   i64 t[31];
-  FOR(i,31) t[i]= 0;
+  FOR(i,31) t[i]=0;
   FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
   FOR(i,15) t[i]+=(i64)38*t[i+16];
   FOR(i,16) o[i]=t[i];

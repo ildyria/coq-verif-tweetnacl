@@ -91,7 +91,7 @@ Proof.
   by rewrite Z.mul_comm.
 Qed.
 
-Fixpoint decide_expr_inv_eq (l1 l2:expr_inv) :=
+Definition decide_expr_inv_eq (l1 l2:expr_inv) :=
   Z.eqb (compute_pow_expr_inv l1) (compute_pow_expr_inv l2).
 
 Lemma decide_expr_inv_eq_refl_impl : forall l1 l2, 
