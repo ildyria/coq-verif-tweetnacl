@@ -56,58 +56,40 @@
    car25519(t);
    car25519(t);
    car25519(t);
-@@ -307,9 +306,9 @@
-       m[i-1]&=0xffff;
-     }
+@@ -309,7 +308,8 @@
      m[15]=t[15]-0x7fff-((m[14]>>16)&1);
--    b=(m[15]>>16)&1;
+     b=(m[15]>>16)&1;
      m[14]&=0xffff;
 @@ Computations in arguments
 @@ are not allowed in VST.
 -    sel25519(t,m,1-b);
-+    b=1-((m[15]>>16)&1);
++    b=1-b;
 +    sel25519(t,m,b);
    }
    FOR(i,16) {
      o[2*i]=t[i]&0xff;
-@@ -329,7 +328,7 @@
- {
-   u8 d[32];
-   pack25519(d,a);
-@@ Force the casting.
--  return d[0]&1;
-+  return d[0]&(u8)1;
- }
- 
- sv unpack25519(gf o, const u8 *n)
-@@ -353,10 +352,14 @@
+@@ -353,7 +353,8 @@
  
  sv M(gf o,const gf a,const gf b)
  {
 @@ For-loop indexes have to be int.
 -  i64 i,j,t[31];
--  FOR(i,31) t[i]=0;
 +  int i,j;
 +  i64 t[31];
-+  FOR(i,31) t[i]= 0;
+   FOR(i,31) t[i]=0;
    FOR(i,16) FOR(j,16) t[i+j]+=a[i]*b[j];
-@@ Force the casting.
--  FOR(i,15) t[i]+=38*t[i+16];
-+  FOR(i,15) t[i]+=(i64)38*t[i+16];
-   FOR(i,16) o[i]=t[i];
-   car25519(o);
-   car25519(o);
-@@ -371,7 +374,7 @@
+   FOR(i,15) t[i]+=38*t[i+16];
+@@ -371,7 +372,7 @@
  {
    gf c;
    int a;
--  FOR(a,16) c[a]=i[a];
 @@ gain 5 bytes.
+-  FOR(a,16) c[a]=i[a];
 +  set25519(c,i);
    for(a=253;a>=0;a--) {
      S(c,c);
      if(a!=2&&a!=4) M(c,c,i);
-@@ -394,8 +397,9 @@
+@@ -394,8 +395,9 @@
  int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
  {
    u8 z[32];
@@ -121,7 +103,7 @@
    FOR(i,31) z[i]=n[i];
    z[31]=(n[31]&127)|64;
    z[0]&=248;
-@@ -430,15 +434,9 @@
+@@ -430,15 +432,9 @@
      sel25519(a,b,r);
      sel25519(c,d,r);
    }
