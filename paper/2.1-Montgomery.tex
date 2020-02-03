@@ -38,11 +38,10 @@ We consider \xcoord-only operations. Throughout the computation,
 these $x$-coordinates are kept in projective representation
 $(X : Z)$, with $x = X/Z$; the point at infinity is represented as $(1:0)$.
 See \sref{subsec:ECC-projective} for more details.
-We define two operations:
+We define the opperation:
 \begin{align*}
-  \texttt{xADD} &: (x_{Q-P}, (X_P:Z_P), (X_Q:Z_Q)) \mapsto \\
-&(X_{P + Q}:Z_{P + Q})\\
-\texttt{xDBL} &: (X_P:Z_P) \mapsto (X_{2 \cdot P}:Z_{2 \cdot P})
+  \texttt{xladderstep} &: (x_{Q-P}, (X_P:Z_P), (X_Q:Z_Q)) \mapsto \\
+&((X_{2 \cdot P}:Z_{2 \cdot P}), (X_{P + Q}:Z_{P + Q}))
 \end{align*}
 In the Montgomery ladder, % notice that
 the arguments of \texttt{xADD} and \texttt{xDBL}
@@ -64,8 +63,9 @@ computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}
   \STATE $R = (X_R:Z_R) \leftarrow (x_P:1)$
   \FOR{$k$ := $m$ down to $1$}
     \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
-    \STATE $Q \leftarrow \texttt{xDBL}(Q)$
-    \STATE $R \leftarrow \texttt{xADD}(x_P,Q,R)$
+    % \STATE $Q \leftarrow \texttt{xDBL}(Q)$
+    % \STATE $R \leftarrow \texttt{xADD}(x_P,Q,R)$
+    \STATE $(Q,R) \leftarrow \texttt{xladderstep}(x_P,Q,R)$
     \STATE $(Q,R) \leftarrow \texttt{CSWAP}((Q,R), k^{\text{th}}\text{ bit of }n)$
   \ENDFOR
   \RETURN $X_Q/Z_Q$
