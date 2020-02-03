@@ -37,9 +37,9 @@ In the second step we prove equivalence of the C implementation of X25519
 to our RFC formalization.
 This part of the proof uses the Verifiable Software Toolchain (VST)~\cite{2012-Appel}
 to establish a link between C and Coq.
-VST uses Separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
+The VST uses separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
 to show that the semantics of the program satisfy a functional specification in Coq.
-To the best of our knowledge, this is the first time that
+To the best of our knowledge, this is the first time that the
 VST is used in the formal proof of correctness of an implementation
 of an asymmetric cryptographic primitive.
 
@@ -100,7 +100,7 @@ We only need to anotate the specifications and loop invariants.
 \subheading{Reproducing the proofs.}
 To maximize reusability of our results we placed the code of our formal proof
 presented in this paper into the public domain.
-It is available at \url{https://cdn-09.anonfile.com/6fp8ta70n9/014c4f8c-1569921449/coq-verif-tweetnacl.tar.gz}
+It is available at \todo{FIX ME: https://cdn-09.anonfile.com/6fp8ta70n9/014c4f8c-1569921449/coq-verif-tweetnacl.tar.gz}
 with instructions of how to compile and verify our proof.
 A description of the content of the code archive is provided in
 Appendix~\ref{appendix:proof-folders}.

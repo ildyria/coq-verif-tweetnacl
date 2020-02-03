@@ -1,5 +1,14 @@
-% \input{_acmccs}
+\newif\ifusenix
+\newif\ifpublic
+
+\usenixtrue
+\publicfalse
+
+\ifusenix
 \input{_usenix}
+\else
+\input{_acmccs}
+\fi
 
 % \begin{acks}
 % This work would not have been possible without the assistance of multiple people.

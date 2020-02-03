@@ -31,6 +31,7 @@ Lemma f_ext: forall (A B:Type),
   However, when compiling with other C compilers like Clang or GCC, we need to
   trust that the CompCert's Clight semantics matches the C17 standard.
 
+\todo{FIXME}
   \item \textbf{\texttt{clightgen}}. The tool making the translation from {C} to
   {Clight}. It is the first step of the compilation.
   VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
@@ -73,7 +74,7 @@ o[i]&=0xffff;
 
 Aside from the modifications above mentioned, all subsequent alteration
 ---such as the type change of loop indexes (\TNaCle{int} instead of \TNaCle{i64})---
-were required for VST to parse properly the code. We believe those
+were required for VST to parse the code properly. We believe those
 adjustments do not impact the trust of our proof.
 
 We contacted the authors of TweetNaCl and expect that the changes above
@@ -87,7 +88,7 @@ In addition to the curve equation, the field \F{p} would need to be redefined
 as $p=2^{255}-19$ is hard-coded in order to speed up some proofs.
 
 With respect to the C code verification (\sref{sec:C-Coq}), the extension of
-the verification effort to Ed25519 would makes directly use of the low level
+the verification effort to Ed25519 would make directly use of the low level
 arithmetic. The ladder steps formula being different this would require a high
 level verification similar to \tref{thm:montgomery-ladder-correct}.
 

@@ -278,8 +278,9 @@ differential additions and point doublings using projective coordinates.
 \subsubsection{Scalar multiplication algorithms}
 \label{subsec:ECC-ladder}
 
+
 By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL} and \texttt{xADD}
-with their respective formula (\lref{lemma:xADD} and \lref{lemma:xDBL}),
+with their respective formulae (\lref{lemma:xADD} and \lref{lemma:xDBL}),
 we define a ladder \coqe{opt_montgomery} (in which $\K$ has not been fixed yet),
 similar to the one used in
 TweetNaCl.
