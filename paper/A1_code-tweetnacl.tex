@@ -8,3 +8,36 @@
 \subheading{Diff from TweetNaCl} We provide below the diff between the original code of TweetNaCl and the code we verified.
 
 \lstinputlisting[language=diff]{tweetnacl.diff}
+
+Below we provide the reasons of the diff.
+
+\begin{itemize}
+  \item line 6-7: We tell VST that \TNaCle{long long} are aligned on 8 bytes.
+
+  \item line 13-20: This is change correspond to \TNaCle{car25519}.
+  We remove the unused variable \TNaCle{i64 c}, we remove the undefined behavior as explained in \sref{sec:Conclusion}.
+
+  \item line 24-29: The signature of 
+\end{itemize}
+
+@@ We remove the undefined behavior and
+@@ simplify the carry propagation.
+
+@@ b is a mask of 64 bits.
+@@ For-loop indexes have to be int.
+
+@@ For-loop indexes have to be int.
+@@ b is a 64 bit mask.
+@@ Initialize m to simplify verification.
+
+@@ Computations in arguments
+@@ are not allowed in VST.
+
+@@ For-loop indexes have to be int.
+
+@@ gain 5 bytes.
+
+@@ x only needs gf.
+@@ For-loop indexes have to be int.
+
+@@ simplify

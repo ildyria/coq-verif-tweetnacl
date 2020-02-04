@@ -350,6 +350,10 @@ literate=
   %
   identifierstyle=\color[rgb]{0,0,0},
   delim=[l][\color{doc@lstdirective}]{\#},
+  numbers=left, % where to put the line numbers
+  stepnumber=1, % step between two line numbers
+  numberstyle=\tiny, % line number font size
+  xleftmargin=5.0ex,
   literate=
 }
 
@@ -361,13 +365,16 @@ literate=
 % \newcommand{\lstbg}[3][0pt]{{\fboxsep#1\colorbox{#2}{\strut #3}}}
 \lstdefinelanguage{diff}{
   basicstyle=\ttfamily\small,
-  % morecomment=[f][\lstbg{red!20}]<,
-  % morecomment=[f][\lstbg{green!20}]>,
   morecomment=[f][\color{doc@lstidentifiers2}]-,
   morecomment=[f][\color{doc@lstfunctions}]+,
   morecomment=[f][\color{gray}\textit]{@@},
-  %morecomment=[f][\textit]{---},
-  %morecomment=[f][\textit]{+++},
+  numbers=left, % where to put the line numbers
+  stepnumber=1, % step between two line numbers
+  numberstyle=\tiny, % line number font size
+  xleftmargin=5.0ex,
+  % numbers=left,
+  % numberstyle={\tiny \color{black}},% size of the numbers
+  % numbersep=9pt, % this defines how far the numbers are from the text
 }
 % \lstset{}
 
@@ -398,9 +405,6 @@ literate=
   showspaces=false, % show spaces adding particular underscores
   showstringspaces=false, % underline spaces within strings
   %
-  numbers=left, % where to put the line numbers
-  stepnumber=0, % step between two line numbers
-  numberstyle=\small, % line number font size
   %
   captionpos=b, % set the caption position to `bottom'
   %
