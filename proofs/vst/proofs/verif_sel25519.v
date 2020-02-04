@@ -23,20 +23,31 @@ assert(Hqqq: (Datatypes.length contents_q = 16)%nat).
 move: H H0 ; rewrite ?Zlength_correct => H H0; omega.
 assert(Hppp: (Datatypes.length contents_p = 16)%nat).
 move: H H0 ; rewrite ?Zlength_correct => H H0; omega.
+rewrite Int.sub_signed.
+rewrite Int.signed_repr.
 rewrite Int.signed_repr.
 2: solve_bounds_by_values.
-rewrite Int64.sub_signed.
-rewrite ?Int64.signed_repr.
-2: solve_bounds_by_values.
 2: destruct H1 ; subst b ; solve_bounds_by_values.
-assert(Hc: exists c, c = (Int64.not (Int64.repr (b - 1)))) by (eexists; reflexivity).
+rewrite /Int.not.
+
+rewrite /Int.mone.
+replace (Int.xor (Int.repr (b - 1)) (Int.repr (-1))) with 
+(Int.repr (Z.lxor (b - 1) (-1))).
+2:{
+move: H1 => [] -> //= ; change (Int.repr 0) with Int.zero ; rewrite Int.xor_zero_l //.
+}
+assert(Hbb: (Z.lxor (b - 1) (-1)) = 0 \/ (Z.lxor (b - 1) (-1)) = -1).
+{
+move: H1 => [] -> /= ; auto.
+}
+rewrite Int.signed_repr.
+2: move: Hbb => [] -> ; solve_bounds_by_values.
+assert(Hc: exists c, c = (Int64.repr (Z.lxor (b - 1) (-1)))) by (eexists; reflexivity).
 destruct Hc as [c Hc] ; rewrite <- Hc.
 assert(c = Int64.repr (set_xor b)).
-assert(Int64.repr (-1) = Int64.mone) by reflexivity.
-assert(Int64.repr 0 = Int64.zero) by reflexivity.
-destruct H1 ; subst ; rewrite ?set_xor_0 ?set_xor_1 ?H2 ?H3; simpl.
-apply Int64.not_mone.
-apply Int64.not_zero.
+{
+destruct H1 ; subst ; rewrite ?set_xor_0 ?set_xor_1 ?H2 ?H3 => //=.
+}
 assert(Hd: exists d, d = set_xor b) by (eexists; reflexivity).
 destruct Hd as [d Hd].
 forward_for_simple_bound 16 (sel25519_Inv sh p q b d contents_p contents_q).

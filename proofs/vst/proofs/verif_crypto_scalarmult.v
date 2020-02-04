@@ -389,17 +389,16 @@ forward.
 entailer!.
 rewrite HintluTrue ; simpl; trivial.
 replace (force_val
-               (sem_cast tint tlg
-                  (eval_binop Oand tint tint
-                     (eval_binop Oshr tuchar tint (Vint (Int.repr (Znth (i / two_p 3) z 0)))
-                        (eval_binop Oand tint tint (Vint (Int.repr i)) (Vint (Int.repr 7)))) 
-                     (Vint (Int.repr 1))))) with
-  (Vlong (Int64.repr (Low.getbit i z))).
+               (sem_binary_operation' Oand tint tint
+                  (eval_binop Oshr tuchar tint (Vint (Int.repr (Znth (i / two_p 3) z 0)))
+                     (eval_binop Oand tint tint (Vint (Int.repr i)) (Vint (Int.repr 7)))) 
+                  (Vint (Int.repr 1)))) with
+  (Vint (Int.repr (Low.getbit i z))).
 
 2:{
   clean_context_from_VST. clears v_a v_b v_c v_d v_e v_f.
   simpl.
-  rewrite and_repr /tuchar /tint /sem_shift ; simpl.
+  rewrite and_repr /tuchar /sem_shift ; simpl.
   rewrite HintluTrue ; simpl.
   rewrite Int.shr_div_two_p.
   rewrite Int.unsigned_repr.
@@ -407,32 +406,8 @@ replace (force_val
   rewrite Int.signed_repr.
   2: solve_bounds_by_values_Znth.
   rewrite and_repr.
-  assert(H0landdiv8: 0 <= Z.land (Znth (i / two_p 3) z 0 / two_p (Z.land i 7)) 1).
-  {
-  apply Z.land_nonneg ; right ; omega.
-  }
-  assert(Hlanddiv81: Z.land (Znth (i / two_p 3) z 0 / two_p (Z.land i 7)) 1 <= 1).
-  {
-  apply Z.log2_null.
-  assert(Hlanddiv8min: Z.log2 (Z.land (Znth (i / two_p 3) z 0 / two_p (Z.land i 7)) 1) <=
-        Z.min (Z.log2 (Znth (i / two_p 3) z 0 / two_p (Z.land i 7))) (Z.log2 1)).
-  apply Z.log2_land.
-  solve_bounds_by_values_Znth.
-  apply Z_div_pos.
-  apply two_p_gt_ZERO.
-  apply Z.land_nonneg; right; omega.
-  omega.
-  omega.
-  replace (Z.min (Z.log2 (Znth (i / two_p 3) z 0 / two_p (Z.land i 7))) (Z.log2 1)) with 0 in Hlanddiv8min.
-  assert(Htemp := Z.log2_nonneg (Z.land (Znth (i / two_p 3) z 0 / two_p (Z.land i 7)) 1)).
-  omega.
-  simpl.
-  rewrite Z.min_r.
-  omega.
-  apply Z.log2_nonneg.
-  }
-  rewrite Int.signed_repr.
-  2: solve_bounds_by_values.
+  assert(0 <= Z.land (Znth (i / two_p 3) z 0 / two_p (Z.land i 7)) 1 <= 1).
+  apply and_0_or_1.
   rewrite /Low.getbit ?Z.shiftr_div_pow2 ?Znth_nth /nat_of_Z ?Z2Nat.id ?two_p_correct; try omega.
   reflexivity.
   apply Z_div_pos.

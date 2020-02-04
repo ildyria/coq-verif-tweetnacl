@@ -279,7 +279,7 @@ sv car25519(gf o)
   }
 }
 
-sv sel25519(gf p,gf q,i64 b)
+sv sel25519(gf p,gf q,int b)
 {
   int i;
   i64 t,c=~(b-1);
@@ -292,8 +292,7 @@ sv sel25519(gf p,gf q,i64 b)
 
 sv pack25519(u8 *o,const gf n)
 {
-  int i,j;
-  i64 b;
+  int i,j,b;
   gf t,m={0};
   set25519(t,n);
   car25519(t);
@@ -395,8 +394,7 @@ sv pow2523(gf o,const gf i)
 int crypto_scalarmult(u8 *q,const u8 *n,const u8 *p)
 {
   u8 z[32];
-  i64 r;
-  int i;
+  int r,i;
   gf x,a,b,c,d,e,f;
   FOR(i,31) z[i]=n[i];
   z[31]=(n[31]&127)|64;

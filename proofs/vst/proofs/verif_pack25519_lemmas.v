@@ -64,30 +64,6 @@ repeat match goal with
 end.
 Qed.
 
-(* 
-Lemma verif_pack25519_3:
-forall F,
-OracleKind ->
-forall (v_o v_n : val) (tsh : share) (contents_o : list val) (n : list ℤ) (v_t v_m : val),
-writable_share tsh ->
-Zlength n = 16 ->
-writable_share Tsh ->
-forall t : list ℤ,
-Zlength t = 16 ->
-ENTAIL initialized_list [] (func_tycontext f_pack25519 Vprog Gprog []),
-PROP ( )
-LOCAL (lvar _m lg16 v_m; lvar _t lg16 v_t; temp _o v_o)
-SEP (FRZL F ; Tsh [{v_t}]<<( lg16 )-- mVI64 t;
-Tsh [{v_m}]<<( lg16 )-- mVI64 nil16)
-|-- PROP (writable_share Tsh; Zlength nil16 = 16; Zlength t = 16; 0 >= 0)
-    LOCAL (lvar _m lg16 v_m; lvar _t lg16 v_t; temp _o v_o)
-    SEP (FRZL F;
-    Tsh [{v_t}]<<( lg16 )-- mVI64 (get_t (nil16, t)); Tsh [{v_m}]<<( lg16 )-- mVI64 (get_m (nil16, t))).
-Proof.
-intros.
-entailer.
-Qed.
- *)
 Lemma verif_pack25519_4:
 forall t',
 Zlength t' = 16 ->
@@ -128,7 +104,7 @@ all: rewrite ?Int64.signed_repr.
 all: solve_bounds_by_values.
 Qed.
 
-Lemma verif_pack25519_6:
+(* Lemma verif_pack25519_6:
 forall t' : list ℤ,
 forall m' : list ℤ,
 Zlength t' = 16 ->
@@ -165,9 +141,9 @@ apply sub_fn_rev_f_bound_nth ; try assumption.
 omega.
 match goal with | [ |- _ <= ?a <= _ ] => remember a as blabla end.
 solve_bounds_by_values.
-Qed.
+Qed. *)
 
-Lemma verif_pack25519_7:
+(* Lemma verif_pack25519_7:
 forall t' : list ℤ,
 forall m'' : list ℤ,
 Zlength m'' = 16 ->
@@ -191,7 +167,7 @@ rewrite /sub_step /subst_0xffffc.
 rewrite Reduce.Zshiftr_div_pow2_16.
 change (two_p 16) with (2^16).
 reflexivity.
-Qed.
+Qed. *)
 
 Lemma verif_pack25519_8:
 forall t' : list ℤ,
@@ -219,60 +195,7 @@ intros x Hx ; simpl in Hx ; solve_bounds_by_values].
 all: solve_bounds_by_values.
 Qed.
 
-(* Lemma verif_pack25519_9:
-forall j : ℤ,
-0 <= j < 2 ->
-forall t' : list ℤ,
-forall m' : list ℤ,
-Zlength t' = 16 ->
-Forall (fun x : ℤ => 0 <= x < 2 ^ 16) t' ->
-Zlength m' = 16 ->
-forall m'' : list ℤ,
-m'' = upd_Znth 0 m' (Znth 0 t' 0 - 65517) ->
-forall m''' : list ℤ,
-m''' = sub_fn_rev 1 sub_step 15 m'' t' ->
-Zlength m''' = 16
--> Int64.min_signed <= Znth 14 m''' 0 <= Int64.max_signed.
-Proof.
-intros.
-repeat match goal with
-  | [ H: context[Znth] |- _ ]=> rewrite Znth_nth in H
-  | [ |- context[Znth] ]=> rewrite Znth_nth
-  | _ => omega
-end.
-match goal with | [ |- context[nth ?a ?b ?c]] => replace (nth a b c) with (nth a b 0) end.
-match goal with | [ H: context[nth ?a ?b ?c] |- _ ] => replace (nth a b c) with (nth a b 0) in H end.
-2,3: apply nth_indep.
-2,3: match goal with | [ |- (_ < ?A)%nat ] => rewrite -(Nat2Z.id A) end.
-2,3: rewrite /nat_of_Z ; apply Z2Nat.inj_lt ; rewrite -?Zlength_correct ; omega.
-subst m''' m''.
-rewrite ?Znth_nth ?upd_Znth_upd_nth ; try omega.
-assert(Hbt: - 2 ^ 16 <= nth (Z.to_nat (15 - 1)) (sub_fn_rev 1 sub_step 15 (upd_nth 0 m' (subst_0xffed (nth 0 t' 0))) t') 0 <
-   2 ^ 16).
-apply sub_fn_rev_f_bound_nth ; try assumption ; omega.
-move: Hbt.
-Grind_add_Z ; rewrite /nat_of_Z /subst_0xffed; repeat change_Z_to_nat.
-intros Hbt.
-match goal with | [ |- _ <= ?a <= _ ] => remember a as blabla end.
-solve_bounds_by_values.
-Qed. *)
-
-Lemma verif_pack25519_10:
-forall msub15,
-Int64.min_signed <=
-1 - Int64.signed (Int64.and (Int64.shr (Int64.repr msub15) (Int64.repr 16)) (Int64.repr 1)) <= Int64.max_signed.
-Proof.
-intros.
-rewrite and64_repr.
-remember (Z.shiftr (Int64.signed (Int64.repr msub15)) (Int64.unsigned (Int64.repr 16))) as mi2.
-assert(0 <= Z.land mi2 1 <= 1).
-apply and_0_or_1.
-assert(HZland: Z.land mi2 1 = 0 \/ Z.land mi2 1 = 1) by omega.
-destruct HZland as [HZland | HZland]; rewrite HZland.
-1,2: rewrite Int64.signed_repr ; solve_bounds_by_values.
-Qed.
-
-Lemma verif_pack25519_11:
+(* Lemma verif_pack25519_11:
 forall t' : list ℤ,
 Zlength t' = 16 ->
 Forall (fun x : ℤ => 0 <= x < 2 ^ 16) t' ->
@@ -304,7 +227,7 @@ reflexivity.
 all: destruct HZland as [HZland | HZland]; rewrite ?HZland.
 all: solve_bounds_by_values.
 Qed.
-
+ *)
 (* Lemma verif_pack25519_12:
 forall t : list ℤ,
 Forall (fun x : ℤ => 0 <= x < 2 ^ 16) t ->
