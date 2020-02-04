@@ -37,6 +37,15 @@ depend:
 
 .PHONY: clean FORCE
 
+tweetnacl.diff:
+	@echo $(BOLD)$(YELLOW)"Generating tweetnacl.diff"$(NO_COLOR)$(DARKGRAY)
+	diff -u ../proofs/vst/c/tweetnacl.c ../proofs/vst/c/tweetnaclVerifiableC.c > tweetnacl.diff.tmp; [ $$? -eq 1 ]
+	sed -i -e 1,2d tweetnacl.diff.tmp
+	echo '--- tweetnacl.c' >> tweetnacl.diff
+	echo '+++ tweetnaclVerifiableC.c' >> tweetnacl.diff
+	cat tweetnacl.diff.tmp >> tweetnacl.diff
+	rm tweetnacl.diff.tmp
+
 clean:
 	@echo $(BOLD)$(RED)"cleaning..."$(NO_COLOR)
 	@rm -fr latex.out 2> /dev/null || true
@@ -54,6 +63,7 @@ clean:
 	@rm *.bak 2> /dev/null || true
 	@rm */*.aux 2> /dev/null || true
 	@rm tweetverif.tex 2> /dev/null || true
+	@rm tweetnacl.diff 2> /dev/null || true
 
 spell:
 	@for f in $(TEX) ; do \
