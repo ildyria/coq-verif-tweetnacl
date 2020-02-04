@@ -35,7 +35,7 @@
 \renewcommand{\algorithmicrequire}{\textbf{Input:\ }}
 \renewcommand{\algorithmicensure}{\textbf{Output:\ }}
 
-\setlength{\abovecaptionskip}{-10pt}
+\setlength{\abovecaptionskip}{-9pt}
 
 \newcommand{\todo}[1]{
 {\color{red} \bf TODO: #1}
@@ -233,11 +233,11 @@ columns=[l]flexible,
 literate=
     % {\\forall}{{\color{dkgreen}{$\forall\;$}}}1
     % {\\exists}{{$\exists\;$}}1
-    {<-}{{$\leftarrow\;$}}1
+    {<-}{{\makebox[8pt][l]{$\leftarrow\;$}}}1
     {=>}{{$\Rightarrow\;$}}1
     {==>}{{\texttt{==>}\;}}1
 %    {:>}{{\texttt{:>}\;}}1
-    {->}{{$\rightarrow\;$}}1
+    {->}{{\makebox[8pt][l]{$\rightarrow\;$}}}1
     {<->}{{$\leftrightarrow\;$}}1
     {<=}{{$\leq\;$}}1
     {==}{{\texttt{==}\;}}1
@@ -274,38 +274,39 @@ literate=
     {^n}{{$^n$}}1
     {^+n}{{$^n$}}1
     {^m}{{$^m$}}1
-    {^2}{{$^2$}}1
-    {^+2}{{$^2$}}1
-    {^3}{{$^3$}}1
-    {^+3}{{$^3$}}1
+    {^2}{{\makebox[8pt][l]{$^2$}}}1
+    {^+2}{{\makebox[8pt][l]{$^2$}}}1
+    {^3}{{\makebox[8pt][l]{$^3$}}}1
+    {^+3}{{\makebox[8pt][l]{$^3$}}}1
     {^nd}{{$^{nd}$}}1
     {^rd}{{$^{rd}$}}1
     {^th}{{$^{th}$}}1
     {^255}{{$^{255}$}}1
     {^-1}{{$^{-1}$}}1
     {\%:R}{{}}1
-    {p1}{{p$_1$}}1
-    {p2}{{p$_2$}}1
-    {x1}{{x$_1$}}1
-    {x2}{{x$_2$}}1
-    {x3}{{x$_3$}}1
-    {x_1}{{x$_1$}}1
-    {x_2}{{x$_2$}}1
-    {x_3}{{x$_3$}}1
-    {x4}{{x$_4$}}1
-    {y1}{{y$_1$}}1
-    {y2}{{y$_2$}}1
-    {y3}{{y$_3$}}1
-    {y4}{{y$_4$}}1
-    {z1}{{z$_1$}}1
-    {z2}{{z$_2$}}1
-    {z3}{{z$_3$}}1
-    {z4}{{z$_4$}}1
-    {z_2}{{z$_2$}}1
-    {z_3}{{z$_3$}}1
-    {xs}{{x$_s$}}1
-    {\\-}{{$-$}}1
-    {\\+}{{$+$}}1
+    {p1}{{p\makebox[8pt][l]{$_1$}}}1
+    {p2}{{p\makebox[8pt][l]{$_2$}}}1
+    {x1}{{x\makebox[8pt][l]{$_1$}}}1
+    {x2}{{x\makebox[8pt][l]{$_2$}}}1
+    {x3}{{x\makebox[8pt][l]{$_3$}}}1
+    {x_1}{{x\makebox[8pt][l]{$_1$}}}1
+    {x_2}{{x\makebox[8pt][l]{$_2$}}}1
+    {x_3}{{x\makebox[8pt][l]{$_3$}}}1
+    {x4}{{x\makebox[8pt][l]{$_4$}}}1
+    {y1}{{y\makebox[8pt][l]{$_1$}}}1
+    {y2}{{y\makebox[8pt][l]{$_2$}}}1
+    {y3}{{y\makebox[8pt][l]{$_3$}}}1
+    {y4}{{y\makebox[8pt][l]{$_4$}}}1
+    {z1}{{z\makebox[8pt][l]{$_1$}}}1
+    {z2}{{z\makebox[8pt][l]{$_2$}}}1
+    {z3}{{z\makebox[8pt][l]{$_3$}}}1
+    {z4}{{z\makebox[8pt][l]{$_4$}}}1
+    {z_2}{{z\makebox[8pt][l]{$_2$}}}1
+    {z_3}{{z\makebox[8pt][l]{$_3$}}}1
+    {xs}{{x\makebox[8pt][l]{$_s$}}}1
+    {\\-}{{\makebox[9pt][c]{$-$}}}1
+    {\\+}{{\makebox[9pt][c]{$+$}}}1
+    {\\*}{{\makebox[9pt][c]{$*$}}}1
     {\\boxplus}{{$\boxplus$}}1
     {\\circ}{{$\circ$}}1
     {\\GF}{{$\mathbb{F}_{2^{255}-19}$}}1
@@ -385,7 +386,8 @@ literate=
   % basicstyle=\ttfamily\small, % font that is used for the code
   basicstyle=\ttfamily\footnotesize, % font that is used for the code
   identifierstyle=\color{doc@lstidentifier},
-  commentstyle=\color{doc@lstcomment}\itshape,
+  commentstyle=\color{doc@lstcomment}\footnotesize,
+  % \itshape,
   stringstyle=\color{doc@lststring},
   keywordstyle=\color{doc@lstkeyword},
   keywordstyle=[1]\color{doc@lstidentifiers2},

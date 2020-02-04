@@ -13,14 +13,14 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
   let k := decodeScalar25519 n in
   let u := decodeUCoordinate p in
   let t := montgomery_rec
-    255  (* iterate 255 times *)
-    k    (* clamped n         *)
+    255  (* iterate 255 times  *)
+    k    (* clamped n          *)
     1    (* x_2                *)
     u    (* x_3                *)
     0    (* z_2                *)
     1    (* z_3                *)
-    0    (* dummy             *)
-    0    (* dummy             *)
+    0    (* dummy              *)
+    0    (* dummy              *)
     u    (* x_1                *) in
   let a := get_a t in
   let c := get_c t in
@@ -38,43 +38,43 @@ Fixpoint montgomery_rec (m : nat) (z : T')
 (* b: x3              *)
 (* c: z2              *)
 (* d: z3              *)
-(* e: temporary  var  *)
-(* f: temporary  var  *)
+(* e: temporary  var   *)
+(* f: temporary  var   *)
 (* x: x1              *)
 (T * T * T * T * T * T) :=
 match m with
 | 0%nat => (a,b,c,d,e,f)
 | S n =>
   let r := Getbit (Z.of_nat n) z in
-    (* k_t = (k >> t) & 1                       *)
-    (* swap <- k_t                              *)
+    (* k_t = (k >> t) & 1                         *)
+    (* swap <- k_t                                *)
   let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
-    (* (x_2, x_3) = cswap(swap, x_2, x_3)            *)
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)         *)
   let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
-    (* (z_2, z_3) = cswap(swap, z_2, z_3)            *)
-  let e := a + c in  (* A = x_2 + z_2              *)
-  let a := a - c in  (* B = x_2 - z_2              *)
-  let c := b + d in  (* C = x_3 + z_3              *)
-  let b := b - d in  (* D = x_3 - z_3              *)
-  let d := e ^2 in    (* AA = A^2                  *)
-  let f := a ^2 in    (* BB = B^2                  *)
-  let a := c * a in  (* CB = C * B               *)
-  let c := b * e in  (* DA = D * A               *)
-  let e := a + c in  (* x_3 = (DA + CB)^2          *)
-  let a := a - c in  (* z_3 = x_1 * (DA - CB)^2     *)
-  let b := a ^2 in    (* z_3 = x_1 * (DA - CB)^2     *)
-  let c := d - f in  (* E = AA - BB             *)
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)         *)
+  let e := a + c in (* A  = x_2+ z_2              *)
+  let a := a - c in (* B  = x_2- z_2              *)
+  let c := b + d in (* C  = x_3+ z_3              *)
+  let b := b - d in (* D  = x_3- z_3              *)
+  let d := e^2   in (* AA = A^2                   *)
+  let f := a^2   in (* BB = B^2                   *)
+  let a := c * a in (* CB = C * B                 *)
+  let c := b * e in (* DA = D * A                 *)
+  let e := a + c in (* x_3= (DA + CB)^2           *)
+  let a := a - c in (* z_3= x_1* (DA - CB)^2      *)
+  let b := a^2   in (* z_3= x_1* (DA - CB)^2      *)
+  let c := d - f in (* E  = AA - BB               *)
   let a := c * C_121665 in
-                     (* z_2 = E * (AA + a24 * E) *)
-  let a := a + d in  (* z_2 = E * (AA + a24 * E) *)
-  let c := c * a in  (* z_2 = E * (AA + a24 * E) *)
-  let a := d * f in  (* x_2 = AA * BB            *)
-  let d := b * x in  (* z_3 = x_1 * (DA - CB)^2    *)
-  let b := e ^2 in    (* x_3 = (DA + CB)^2         *)
+                    (* z_2 = E * (AA + a24 * E)   *)
+  let a := a + d in (* z_2 = E * (AA + a24 * E)   *)
+  let c := c * a in (* z_2 = E * (AA + a24 * E)   *)
+  let a := d * f in (* x_2 = AA * BB              *)
+  let d := b * x in (* z_3 = x_1* (DA - CB)^2     *)
+  let b := e ^2 in  (* x_3 = (DA + CB)^2          *)
   let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
-    (* (x_2, x_3) = cswap(swap, x_2, x_3)           *)
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)         *)
   let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
-    (* (z_2, z_3) = cswap(swap, z_2, z_3)           *)
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)         *)
   montgomery_rec n z a b c d e f x
 end.
 \end{lstlisting}
