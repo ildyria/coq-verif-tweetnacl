@@ -15,7 +15,7 @@ BRIGHTRED = "\033[91m"
 BOLD = "\033[1m"
 
 
-tweetverif.pdf: FORCE tweetverif.tex
+tweetverif.pdf: FORCE tweetverif.tex tweetnacl.diff
 	@echo $(BOLD)$(LIGHTPURPLE)"Building tweetverif.pdf"$(NO_COLOR)$(DARKGRAY)
 	python3 latexrun.py tweetverif.tex
 
