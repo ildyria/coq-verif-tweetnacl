@@ -15,7 +15,7 @@ In our case we rely on:
   used by Coq must be consistent in order to trust the proofs. As an axiom,
   we assume that the functional extensionality is also consistent with that logic.
   $$\forall x, f(x) = g(x) \implies f = g$$
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Lemma f_ext: forall (A B:Type),
   forall (f g: A -> B),
   (forall x, f(x) = g(x)) -> f = g.
@@ -25,27 +25,24 @@ Lemma f_ext: forall (A B:Type),
   Princeton allows a user to prove that a Clight code matches pure Coq
   specification.
 
-  \item \textbf{CompCert}.
-  When compiling with CompCert we only need to trust CompCert's {assembly}
-  semantics, because it has been formally proven correct.
+  \item \textbf{CompCert}. When compiling with CompCert we only need to trust
+  CompCert's {assembly} semantics, because it has been formally proven correct.
   However, when compiling with other C compilers like Clang or GCC, we need to
   trust that the CompCert's Clight semantics matches the C17 standard.
 
-\todo{FIXME}
   \item \textbf{\texttt{clightgen}}. The tool making the translation from {C} to
-  {Clight}. It is the first step of the compilation.
-  VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
-  This required us to rewrite the lines into:
-\begin{lstlisting}[language=C]
-aux1 = a[i];
-aux2 = b[i];
+  {Clight}, the first step of the CompCert compilation.
+  The VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
+  This needs to be rewritten into:
+  \begin{lstlisting}[language=Ctweetnacl,stepnumber=0,belowskip=-0.5 \baselineskip]
+aux1 = a[i]; aux2 = b[i];
 o[i] = aux1 + aux2;
 \end{lstlisting}
-  The trust of the proof relies on the trust of a correct translation from the
-  initial version of \emph{TweetNaCl} to \emph{TweetNaclVerifiableC}.
-  \texttt{clightgen} comes with \texttt{-normalize} flag which
-  factors out function calls and assignments from inside subexpressions.
-  The changes required for C code to make it verifiable are now minimal.
+  The \texttt{-normalize} flag is taking care of this
+  rewritting and factors out assignments from inside subexpressions.
+  % The trust of the proof relies on a correct translation from the
+  % initial version of \emph{TweetNaCl} to \emph{TweetNaClVerifiableC}.
+  % The changes required for C code to make it verifiable are now minimal.
 
   \item Finally, we must trust the \textbf{Coq kernel} and its
   associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
@@ -62,13 +59,13 @@ we removed them.
 Peter Wu and Jason A. Donenfeld brought to our attention that the original
 \TNaCle{car25519} function carried a risk of undefined behavior if \texttt{c}
 is a negative number.
-\begin{lstlisting}[language=Ctweetnacl]
+\begin{lstlisting}[language=Ctweetnacl,stepnumber=0]
 c=o[i]>>16;
 o[i]-=c<<16; // c < 0 = UB !
 \end{lstlisting}
 We replaced this statement with a logical \texttt{and}, proved correctness,
 and thus solved this problem.
-\begin{lstlisting}[language=Ctweetnacl]
+\begin{lstlisting}[language=Ctweetnacl,stepnumber=0]
 o[i]&=0xffff;
 \end{lstlisting}
 
@@ -101,10 +98,13 @@ the workload.
 
 \subheading{A complete proof.}
 We provide a mechanized formal proof of the correctness of the X25519
-implementation in TweetNaCl.
-We first formalized X25519 from RFC~7748~\cite{rfc7748} in Coq. Then we proved
-that TweetNaCl's implementation of X25519 matches our formalization.
+implementation in TweetNaCl from C up the mathematical definitions with a single tool.
+We first formalized X25519 from RFC~7748~\cite{rfc7748} in Coq.
+Then we proved that TweetNaCl's implementation of X25519 matches our formalization.
 In a second step we extended the Coq library for elliptic curves \cite{BartziaS14}
-by Bartzia and Strub to support Montgomery curves. Using this extension we
-proved that the X25519 from the RFC and therefore its implementation in TweetNaCl matches
-the mathematical definitions as given in~\cite[Sec.~2]{Ber06}.
+by Bartzia and Strub to support Montgomery curves.
+Using this extension we proved that the X25519 from the RFC matches the
+mathematical definitions as given in~\cite[Sec.~2]{Ber06}.
+Therefore in addition to proving the mathematical correctness of TweetNaCl,
+we also increases the trust of other works such as
+\cite{zinzindohoue2017hacl,Erbsen2016SystematicSO} which rely on RFC~7748.

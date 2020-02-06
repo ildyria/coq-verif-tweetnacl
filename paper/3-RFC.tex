@@ -30,7 +30,6 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
 
 In this definition \coqe{montgomery_rec} is a generic ladder instantiated
 with integers and defined as follows:
-
 \begin{lstlisting}[language=Coq]
 Fixpoint montgomery_rec (m : nat) (z : T')
 (a: T) (b: T) (c: T) (d: T) (e: T) (f: T) (x: T) :
@@ -78,7 +77,6 @@ match m with
   montgomery_rec n z a b c d e f x
 end.
 \end{lstlisting}
-
 % The definitions of the encoding and decoding functions are detailed later
 % in this section.
 
@@ -120,7 +118,7 @@ Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
 a function given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
 % We define it in Coq as:
 \end{dfn}
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
 Fixpoint ZofList {n:Z} (a:list Z) : Z :=
   match a with
   | [] => 0
@@ -128,8 +126,6 @@ Fixpoint ZofList {n:Z} (a:list Z) : Z :=
   end.
 \end{lstlisting}
 
-% \Coqe{ZofList} is used in the decoding of byte arrays and also as a
-% base to verify operations over lists in TweetNaCl (see~\ref{subsec:num-repr-rfc}).
 The encoding from integers to bytes is defined in a similar way:
 \begin{dfn}
 Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
@@ -137,8 +133,7 @@ $n$ and $a$ returns $a$'s little-endian encoding as a list with radix $2^n$.
 %XXX-Peter: Again I'm confused... why are there two \rightarrows?
 %XXX-Benoit it is the functional view of arguments and partial functions. It is called Currying.
 \end{dfn}
-% We define it in Coq as:
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
 Fixpoint ListofZn_fp {n:Z} (a:Z) (f:nat) : list Z :=
 match f with
   | 0%nat => []
@@ -150,8 +145,7 @@ Definition ListofZ32 {n:Z} (a:Z) : list Z :=
 \end{lstlisting}
 In order to increase the trust in our formalization, we prove that
 \Coqe{ListofZ32} and \Coqe{ZofList} are inverse to each other.
-
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
 Lemma ListofZ32_ZofList_Zlength: forall (l:list Z),
   Forall (fun x => 0 <= x < 2^n) l ->
   Zlength l = 32 ->
@@ -160,7 +154,6 @@ Lemma ListofZ32_ZofList_Zlength: forall (l:list Z),
 
 With those tools at hand, we formally define the decoding and encoding as
 specified in the RFC.
-
 \begin{lstlisting}[language=Coq]
 Definition decodeScalar25519 (l: list Z) : Z :=
   ZofList 8 (clamp l).

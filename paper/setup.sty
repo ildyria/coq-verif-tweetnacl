@@ -230,6 +230,8 @@ columns=[l]flexible,
 % commentstyle={\ttfamily\color{dkgreen}},
 %
 %moredelim=**[is][\ttfamily\color{red}]{/&}{&/},
+aboveskip=3pt,
+belowskip=3pt,
 literate=
     % {\\forall}{{\color{dkgreen}{$\forall\;$}}}1
     % {\\exists}{{$\exists\;$}}1
@@ -355,7 +357,9 @@ literate=
   stepnumber=1, % step between two line numbers
   numberstyle=\tiny, % line number font size
   xleftmargin=5.0ex,
-  literate=
+  aboveskip=3pt,
+  belowskip=1pt,
+  literate=,
 }
 
 \def\TNaCle{\lstinline[language=Ctweetnacl, basicstyle=\ttfamily\normalsize]}
@@ -396,8 +400,8 @@ literate=
   keywordstyle=[4]\color{doc@lstfunctions},
   keywordstyle=[5]\color{doc@lstnumbers},
   %
-  aboveskip=5pt,
-  belowskip=5pt,
+  % aboveskip=5pt,
+  % belowskip=5pt,
   extendedchars=true,
   inputencoding=utf8,
   upquote=true, %

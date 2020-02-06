@@ -38,13 +38,13 @@ Lemma Crypto_Scalarmult_RFC_eq :
   Crypto_Scalarmult n p = RFC n p.
 \end{lstlisting}
 
-This proves that TweetNaCl's X25519 implementation respect RFC~7748.
-\todo{fix ``This''}
+Using this equality, we can directly replace \coqe{Crypto_Scalarmult} in our
+specification by \coqe{RFC}, proving that TweetNaCl's X25519 implementation
+respect RFC~7748.
+
 
 
 %% PREVIOUS TEXT BELOW.
-
-
 
 % \subsection{Reflections, inversions and packing}
 % \label{subsec:inversions-reflections}

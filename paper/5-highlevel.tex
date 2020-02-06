@@ -138,7 +138,7 @@ It is parameterized by
 a \texttt{K : ecuFieldType} --- the type of fields which characteristic is not
 2 or 3 --- and \texttt{M : mcuType} --- a record that packs the curve
 parameters $a$ and $b$ along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.1 \baselineskip]
 Record mcuType :=
   { cA : K; cB : K; _ : cB != 0; _ : cA^2 != 4}.
 Definition oncurve (p : point K) :=
@@ -150,7 +150,7 @@ Inductive mc : Type := MC p of oncurve p.
 Lemma oncurve_mc: forall p : mc, oncurve p.
 \end{lstlisting}
 We define the addition on Montgomery curves in the similar way as in the Weierstra{\ss} form.
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Definition add (p1 p2 : point K) :=
   match p1, p2 with
     | \infty, _ => p2
@@ -186,7 +186,7 @@ corresponding property for Weierstra{\ss} curves.
   \end{align*}
   is an isomorphism between elliptic curves.
 \end{lemma}
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Definition ec_of_mc_point p :=
   match p with
   | \infty => \infty
@@ -278,19 +278,17 @@ differential additions and point doublings using projective coordinates.
 \subsubsection{Scalar multiplication algorithms}
 \label{subsec:ECC-ladder}
 
-
-By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL} and \texttt{xADD}
-with their respective formulae (\lref{lemma:xADD} and \lref{lemma:xDBL}),
+By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL\&ADD} by a
+combination of the formulae from \lref{lemma:xADD} and \lref{lemma:xDBL},
 we define a ladder \coqe{opt_montgomery} (in which $\K$ has not been fixed yet),
-similar to the one used in
-TweetNaCl.
+similar to the one used in TweetNaCl.
 This definition is closely related to \coqe{montgomery_rec} that was used
 in the definition of \coqe{RFC}, and is easily proved to correspond to it.
 In Coq this correspondence proof is hidden in the proof of \coqe{RFC_Correct} shown above.
 
 We prove its correctness for any point whose \xcoord is not 0.
 
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Lemma opt_montgomery_x :
   forall (n m : nat) (x : K),
   n < 2^m -> x != 0 ->
@@ -298,12 +296,12 @@ Lemma opt_montgomery_x :
   opt_montgomery n m x = (p *+ n)#x0.
 \end{lstlisting}
 We can remark that for an input $x = 0$, the ladder returns $0$.
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Lemma opt_montgomery_0:
   forall (n m : nat), opt_montgomery n m 0 = 0.
 \end{lstlisting}
 Also \Oinf\ is the neutral element of $M_{a,b}(\K)$.
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Lemma p_x0_0_eq_0 : forall (n : nat) (p : mc M),
   p #x0 = 0%:R -> (p *+ n) #x0 = 0%R.
 \end{lstlisting}
@@ -313,7 +311,7 @@ This gives us the theorem of the correctness of the Montgomery ladder.
 For all $n, m \in \N$, $x \in \K$, $P \in M_{a,b}(\K)$,
 if $\chi_0(P) = x$ then \coqe{opt_montgomery} returns $\chi_0(n \cdot P)$
 \end{theorem}
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.5 \baselineskip]
 Theorem opt_montgomery_ok (n m: nat) (x : K) :
   n < 2^m ->
   forall (p : mc M), p#x0 = x ->
@@ -372,11 +370,11 @@ elements ($0, 1$) and prove \lref{lemma:Zmodp_field}.
 \end{lemma}
 For $a = 486662$, by using the Legendre symbol we prove that
 $a^2 - 4$ and $2$ are not squares in $\F{p}$.
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Fact a_not_square : forall x: Zmodp.type,
   x^+2 != (Zmodp.pi 486662)^+2 - 4%:R.
 \end{lstlisting}
-\begin{lstlisting}[language=Coq,label=two_not_square]
+\begin{lstlisting}[language=Coq,label=two_not_square,belowskip=-0.1 \baselineskip]
 Fact two_not_square : forall x: Zmodp.type,
   x^+2 != 2%:R.
 \end{lstlisting}
@@ -421,7 +419,7 @@ we can find a $y$ such that $(x,y)$ is either on the curve or on the quadratic t
   For all $x \in \F{p}$, there exists a point $P$ in $M_{486662,1}(\F{p})$ or
   in $M_{486662,2}(\F{p})$ such that the \xcoord of $P$ is $x$.
 \end{lemma}
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.5 \baselineskip]
 Theorem x_is_on_curve_or_twist:
   forall x : Zmodp.type,
   (exists (p : mc curve25519_mcuType), p#x0 = x) \/
@@ -445,7 +443,7 @@ We can represent $\F{p^2}$ as the set $\F{p} \times \F{p}$,
 in other words,
 the polynomial with coefficients in $\F{p}$ modulo $X^2 - 2$. In a similar way
 as for $\F{p}$ we use a module in Coq.
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Module Zmodp2.
 Inductive type :=
   Zmodp2 (x: Zmodp.type) (y:Zmodp.type).
@@ -490,16 +488,12 @@ of formulas by using rewrite rules:
 \begin{equation*}
 \begin{split}
 (a,0) + (b,0) &= (a+b, 0)\\
-(a, 0)^{-1} &= (a^{-1}, 0)\\
-% (a, 0)\cdot (0,b) &= (0, a\cdot b)\\
-(a, 0)^n &= (a^n, 0)\\
+(a, 0)^{-1} &= (a^{-1}, 0)
 \end{split}
 \qquad
 \begin{split}
 (a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
-(0,a)^{-1} &= (0,(2\cdot a)^{-1})\\
-% (0, a)\cdot (0,b) &= (2\cdot a\cdot b, 0)\\
-~\\
+(0,a)^{-1} &= (0,(2\cdot a)^{-1})
 \end{split}
 \end{equation*}
 
@@ -514,7 +508,7 @@ As direct consequence, using \lref{lemma:curve-or-twist}, we prove that for all
 $x \in \F{p}$, there exists a point $P \in \F{p^2}\times\F{p^2}$ on
 $M_{486662,1}(\F{p^2})$ such that $\chi_0(P) = (x,0) = x$.
 
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Lemma x_is_on_curve_or_twist_implies_x_in_Fp2:
   forall (x:Zmodp.type),
     exists (p: mc curve25519_Fp2_mcuType),
@@ -529,7 +523,7 @@ Define the functions $\varphi_c$, $\varphi_t$ and $\psi$\\
 -- $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
   such that $\varphi((x,y)) = ((x,0), (0,y))$.\\
 -- $\psi: \F{p^2} \mapsto \F{p}$\\
-  such that $\psi(x,y) = (x)$.
+  such that $\psi(x,y) = x$.
 \end{dfn}
 
 \begin{lemma}
@@ -564,7 +558,7 @@ computation in $\F{p^2}$.
   $Curve25519\_Fp(n,x)$ computes $\chi_0(n \cdot P)$.
 \end{theorem}
 which is formalized in Coq as:
-\begin{lstlisting}[language=Coq]
+\begin{lstlisting}[language=Coq,belowskip=-0.1 \baselineskip]
 Theorem curve25519_Fp2_ladder_ok:
   forall (n : nat) (x:Zmodp.type),
   (n < 2^255)%nat ->
