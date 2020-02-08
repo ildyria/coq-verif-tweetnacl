@@ -62,7 +62,6 @@ Finally, we need the \TNaCle{pack25519} function,
 which converts from the internal redundant radix-$2^{16}$
 representation to a unique byte array representing an
 integer in $\{0,\dots,p-1\}$ in little-endian format.
-
 This function is considerably more complex as it needs to convert
 to a \emph{unique} representation, i.e., also fully reduce modulo
 $p$ and remove the redundancy of the radix-$2^{16}$ representation.

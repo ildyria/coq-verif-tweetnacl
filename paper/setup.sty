@@ -46,6 +46,23 @@
 
 \newenvironment{informaltheorem}{\medskip\itshape\noindent}{\medskip}
 
+% \newsavebox{\mybox}
+% \newenvironment{answer}[1]
+% {\noindent\newcommand\colboxcolor{#1}%
+% \begin{lrbox}{\mybox}\begin{minipage}{\linewidth}}
+% {\end{minipage}\end{lrbox}\fbox{\colorbox[HTML]{\colboxcolor}{\usebox{\mybox}}}}
+
+\newsavebox{\riddlebox}
+\newenvironment{answer}[1]
+{\newcommand\colboxcolor{#1}%
+\begin{lrbox}{\riddlebox}%
+\begin{minipage}{\dimexpr\columnwidth-2\fboxsep\relax} \textbf{Our answer:} \\ \itshape }
+{\end{minipage}\end{lrbox}%
+\begin{center}
+  \colorbox[HTML]{\colboxcolor}{\usebox{\riddlebox}}
+\end{center}}
+
+% \newenvironment{answer}{\noindent\fbox\parbox\linewidth}{}
 
 \usepackage{hyphenat}
 

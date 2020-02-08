@@ -12,17 +12,18 @@ such detailed feedback.
 
 \subsection{S\&P 2020 Review \#582A}
 
-Overall merit: 3. Weak reject - The paper has flaws, but I will not argue against it.
-
+Overall merit: 3. Weak reject - The paper has flaws, but I will
+not argue against it.
 
 \begin{center}
   \subheading{===== Brief paper summary (2-3 sentences) =====}
 \end{center}
 
-This paper presents a verification of the C implementation of the X25519
-key-exchange protocol in the TweetNaCl library.  Correctness properties
-including the C code implements the algorithm correctly are verified in Coq,
-using the Verified Software Toolchain (VST).
+This paper presents a verification of the C implementa-
+tion of the X25519 key-exchange protocol in the TweetNaCl
+library. Correctness properties including the C code imple-
+ments the algorithm correctly are verified in Coq, using the
+Verified Software Toolchain (VST).
 
 
 \begin{center}
@@ -38,40 +39,91 @@ using the Verified Software Toolchain (VST).
   \subheading{===== Weaknesses =====}
 \end{center}
 
-- The novelty of this paper is not well explained. It's unclear whether this
-paper has pushed the boundary in terms of what can be formally verified.
+- The novelty of this paper is not well explained. It’s unclear
+whether this paper has pushed the boundary in terms of what
+can be formally verified.
 
 
 \begin{center}
   \subheading{===== Detailed comments for the author(s) =====}
 \end{center}
 
-I appreciate work on producing fully verified software. This paper presents
-another instance: X25519 protocol. The result here is very strong: it verified
-both safety properties and the correctness of the C implementation.
+I appreciate work on producing fully verified software. This
+paper presents another instance: X25519 protocol. The result
+here is very strong: it verified both safety properties and the
+correctness of the C implementation.
 
-One main weakness of this paper is that it is hard to extract from the writing,
-what are the new discoveries in this exercise. Are there new proof techniques
-developed for this verification? Is there anything new about the way that loops
-are handled? Is the application of reflection challenging? Are there bugs found,
-in particular, in the mathematical operations?
+One main weakness of this paper is that it is hard to ex-
+tract from the writing, what are the new discoveries in this
+exercise. Are there new proof techniques developed for this
+verification? Is there anything new about the way that loops
+are handled? Is the application of reflection challenging? Are
+there bugs found, in particular, in the mathematical opera-
+tions?
 
-A related comment is that it is unclear from the paper whether now we can re-use
-proofs in this paper to verify  mathematical operations of other protocols that
-use elliptic curve.
+\begin{answer}{EEEEEE}
+The novelty of this work is not in the proof techniques. It
+lies in the assurance gained by the formalization of the
+X25519 from RFC 7748, and its correctness with respect to
+the theory of elliptic curves. It is the first time, we have a
+link from the C code up to the mathematical definitions of
+Curve25519 using a single tool.
+\end{answer}
 
-In the Corrections in TweetNaCl paragraph, two things were discussed. It's
-unclear how and whether either one of them directly relate to the verification
-effort. It would be nice if they are. Then the story for the usefulness of the
-verification become stronger.
+A related comment is that it is unclear from the paper
+whether now we can re-use proofs in this paper to verify
+mathematical operations of other protocols that use elliptic
+curve.
 
-It would be nice if the authors comment on the verification effort: person month
-etc. Also, did the verified version replace the version in use in production
-software? If not, why not?
+\begin{answer}{EEEEEE}
+We believe that parts of our proofs are reusable either by
+their structure to give an intuition or by directly changing
+some values. The mathematical definitions are generic and
+can be instanciated over any fields (of characteristic neither
+2 or 3). The Ladder can be instanciated over operations
+over different data structure for the underlying arithmetic,
+making it reusable.
+\end{answer}
+
+In the Corrections in TweetNaCl paragraph, two things
+were discussed. It’s unclear how and whether either one of
+them directly relate to the verification effort. It would be nice
+if they are. Then the story for the usefulness of the verification
+become stronger.
+
+\begin{answer}{EEEEEE}
+  \todo{FIXME}
+\end{answer}
+
+It would be nice if the authors comment on the verification
+effort: person month etc.
+
+\begin{answer}{EEEEEE}
+This work has been done by a PhD student using research software.
+
+\todo{Familiarize with the tool, reporting bugs to the developing team, getting them fixed.}
+As a result the metric person-month is not a good representation of the verification effort.
+\end{answer}
+
+Also, did the verified version replace the version in use in
+production software? If not, why not?
+
+\begin{answer}{EEEEEE}
+We contacted the authors of TweetNaCl and expect that the
+changes above mentioned will soon be integrated in a new
+version of the library, mostly for \TNaCle{car25519} and the simplification in
+\TNaCle{crypto_scalarmult}.
+\end{answer}
 
 Section V is extremely dry. What are the high-level insights? Perhaps a picture
 representation of how the theorems and lemmas fit together would be a better way
 to represent this section.
+
+\begin{answer}{EEEEEE}
+We provided overviews of the proof at the begining of
+sections V.1 and V.2 to provide an intuition to the reader of
+how lemmas fit together.
+\end{answer}
 
 In summary, this paper is in need of significant improvements in the writing and
 providing detailed discussions of high-level intellectual contributions in this
@@ -86,22 +138,6 @@ dangling there.
 
 On page 9: "each functions" => no s
 
-\subheading{Our answer}
-
-We corrected the typos.
-The novelty of this work is not in the proof techniques.
-It lies in the assurance gained by the formalization of the X25519 from RFC~7748,
-and its correctness with respect to the theory of elliptic curves.
-It is the first time, we have a link from the C code up to the mathematical
-definitions of Curve25519.
-While they are part of the main proof but not novel techniques we removed the
-description of how verification of for loops are handled and the details of the
-proof by reflections.
-We described in the Conclusion (\sref{sec:Conclusion}) how our results can be
-extended or reused in future works.
-We added figures to provide a broader overview of how the proof are linked in
-Section V, making it hopefully easier to follow.
-
 
 \subsection{S\&P 2020 Review \#582B}
 
@@ -113,40 +149,70 @@ consider accepting it.
   \subheading{===== Brief paper summary (2-3 sentences) =====}
 \end{center}
 
-In this paper, the authors verify the C implementation of the X25519 elliptic
-curve key exchange in the TweetNaCl library, a short implementation of the NaCl
-library. The X25519 key exchange method is used in TLS 1.3, Signal, Tor, Zcash
-and SSH. Within TLS 1.3 (and probably also in other protocols), any implementation
-of X25519 may be used in an implementation of the standard. Thus, the present
-work contributes to a fully verified code-base for TLS 1.3 (and other crucial
+In this paper, the authors verify the C implementation of the
+X25519 elliptic curve key exchange in the TweetNaCl library,
+a short implementation of the NaCl library. The X25519 key
+exchange method is used in TLS 1.3, Signal, Tor, Zcash and
+SSH. Within TLS 1.3 (and probably also in other protocols),
+any implementation of X25519 may be used in an imple-
+mentation of the standard. Thus, the present work contributes
+to a fully verified code-base for TLS 1.3 (and other crucial
 protocols)
 
-The verification itself is practically significant. The paper makes a good
-effort to describe the approach, but I was, at times, a little disappointed at
-the description. Performing this type of verification yields substantial human
-understanding and enables the authors to carry out a similar approach for other
-primitives much more easily. I wish that the authors would extract their conceptual
-insights on the technique and communicate those to the readers. Regardless, I
-would very much like to see this work at S\&P, but I would like to encourage the
-authors to de-emphasize technical details (even more) and spend more space of
-the body on conceptual insights (see comments below).
+The verification itself is practically significant. The paper
+makes a good effort to describe the approach, but I was, at
+times, a little disappointed at the description. Performing this
+type of verification yields substantial human understanding
+and enables the authors to carry out a similar approach for
+other primitives much more easily. I wish that the authors
+would extract their conceptual insights on the technique and
+communicate those to the readers. Regardless, I would very
+much like to see this work at S\&P, but I would like to encour-
+age the authors to de-emphasize technical details (even more)
+and spend more space of the body on conceptual insights (see
+comments below).
 
 
 \begin{center}
   \subheading{===== Detailed comments for the author(s) =====}
 \end{center}
 
-I was confused that you did not seem have found any errors in an implementation.
-I can believe that the implementers of \cite{BGJ+15} are proficient implementers,
-but I would have expected some minor bugs/parsing issues to be found anyway.
-What is your explanation that you haven't found any issues?
+I was confused that you did not seem have found any errors
+in an implementation. I can believe that the implementers
+of \cite{BGJ+15} are proficient implementers, but I would have expected
+some minor bugs/parsing issues to be found anyway. What is
+your explanation that you haven’t found any issues?
 
-p.1: You discuss \cite{Ber06} as using heavy annotation of code, differently from your
-own code. However, as far as I understand, your Coq implementation must also be
-type-annotated. Thus, I imagine that the difference lies in whether SAT-solvers
-are used or not? This did not become very clear, because you mostly describe
-names of tool while leaving out the details of what these tools carry out
-conceptually.
+\begin{answer}{EEEEEE}
+The implementation of TweetNaCl is straight forward and
+simple, big number arithmetic is done without optimizations.
+It is easy to get an intuition of how the code work by reading
+it. The ladder is a direct mapping of RFC~7748. It does
+not aim for speed optimizations. This reduce significantly
+the complexity of the code compared to e.g., Fiat Crypto
+generated optimized C code.
+
+While we did not find errors in the implementation with
+respect to functionnal correctness under the CompCert as-
+sumptions, we removed an undefined behavior by the C
+standard.
+\end{answer}
+
+p.1: You discuss \cite{Ber06} as using heavy annotation of code, dif-
+ferently from your own code. However, as far as I understand,
+your Coq implementation must also be type-annotated. Thus,
+I imagine that the difference lies in whether SAT-solvers are
+used or not? This did not become very clear, because you
+mostly describe names of tool while leaving out the details of
+what these tools carry out conceptually.
+
+\begin{answer}{EEEEEE}
+SMT solvers are need of annotation, often written as
+parsable comment in the middle of the C code~\cite{acsl} in order to
+``guide'' the proof. In our case we only need to anotate the
+beginning of the function and loop invariants which allows
+us to get tighter bounds.
+\end{answer}
 
 p.2: Fig 1 is very nice. However, at this point, none of the notation has been
 explained to the reader, and I imagine that V stands for VST? It wasn't clear to
@@ -154,6 +220,12 @@ me. Maybe, the caption of the figure could explain what the details inside the
 figures represent. In particular, the Figure seems to used a nice abstraction of
 properties that is not used elsewhere in the paper. I.e., elsewhere in the paper,
 there is usually a lot of code details.
+
+\begin{answer}{EEEEEE}
+.V is the file extension for Coq files (as opposed to .C for C files).
+This allows us to emphasis that all our work is done in a single framework.
+We clarified this in the introduction.
+\end{answer}
 
 p.2-4: Subsection A took some mathematical background. Obviously, not all of it
 could be covered, but the motivation for why certain content was presented and
@@ -164,24 +236,51 @@ Subsection D seemed a good idea, but was very tough to follow, too much content
 in short time. Subsection D seems to jump between implementation levels and
 discussing high-level arguments such as Fermat's little theorem.
 
+\begin{answer}{EEEEEE}
+  \todo{FIXME}
+\end{answer}
+
 p.3: I very much liked the discussion of the Diff between TweetNaCl and your
 modifications! I imagine that many of them are conceptually interesting in that
 they make verification easier. I would have enjoyed reading a conceptual
 discussion of the differences. Instead, Appendix A just contains a Diff, and as
 a reader, I would need to perform the extraction of insights myself.
 
+\begin{answer}{EEEEEE}
+For IEEE S\&P we were limited to 18 pages including appendices.
+We changed the format to a ``diff -u'' to provide the context of
+the applied changes.
+\end{answer}
+
 p.5: CSWAP: Maybe use a backward reference to p.3 where CSWAP was defined, since
 in between, there was a lot of content, and relying on the reader's memory does
 not really work here (or at least, it did not work for me).
+
+\begin{answer}{EEEEEE}
+\todo{FIXME}
+\end{answer}
 
 p.7: I enjoyed the discussion on aliasing! This was the type of conceptual
 discussion I find interesting. I was confused about the mentioning that the case
 distinction k=0,1,2 does not cover "all cases" - all cases of what? And why is
 this distinction sufficient for the task at hand?
 
+\begin{answer}{EEEEEE}
+\todo{FIXME}
+We added a clarification of what would be an unnecessary alliasing case.
+Such case do not happen in TweetNaCl, it is therefore not required to write a
+specification for it.
+\end{answer}
+
 Most of the rest of the paper felt hard to read, because it read like a
 chronological enumeration of all steps. I think that it would be much more
 interesting if the paper highlights the interesting aspects of the verification.
+
+\begin{answer}{EEEEEE}
+  \todo{FIXME}
+  We removed some sections and added figures in section V to help the reader get a
+  better picture of the proof.
+\end{answer}
 
 Related work:
 
@@ -192,6 +291,11 @@ section, since it seems quite close. I was wondering whether you consider the
 approach in \cite{DBLP:journals/corr/BhargavanDFHPRR17} as synthesis or
 verification, because to me, it seemed a mix/neither.
 
+\begin{answer}{EEEEEE}
+\todo{Verifiable Low F*}
+Add figure.
+\end{answer}
+
 Clarification in intro:
 
 The intro states that this is, to the authors knowledge, the first use of
@@ -200,33 +304,12 @@ of an assymmetric cryptographic primitives. Does this mean that VST has been
 used for symmetric cryptographic primitives before? From the text, I wasn't sure
 whether this is careful quantification or not.
 
-\subheading{Our answer}
-
-Clarification in intro: VST has already been used to verify symmetric Cryptographic
+\begin{answer}{EEEEEE}
+The VST has already been used to verify symmetric Cryptographic
 primities (\eg SHA), as mentioned later by \cite{Beringer2015VerifiedCA}
 and \cite{2015-Appel}.
+\end{answer}
 
-We did not find errors in the implementation but we removed an undefined
-behavior by the C standard.
-
-p.1: SMT solvers are need of annotation, often written as parsable comment
-in the middle of the C code~\cite{acsl} in order to ``guide'' the proof.
-In our case we only need to anotate the beginning of the function and loop
-invariants which allows us to get tighter bounds.
-
-p.3: for IEEE we were limited to 18 pages including appendices.
-We changed the format to a ``diff -u'' to provide the context of the applied changes.
-
-p.5: We added the requested backward reference.
-
-p.7: We added a clarification of what would be an unnecessary alliasing case.
-Such case do not happen in TweetNaCl, it is therefore not required to write a
-specification for it.
-
-We removed some sections and added figures in section V to help the reader get a
-better picture of the proof.
-
-\todo{Verifiable Low F*}
 
 \subsection{S\&P 2020 Review \#582C}
 
@@ -293,14 +376,29 @@ verification papers, and I don't have great advice except to suggest that the
 authors separate out the code fragments into figures and let the text focus
 on the high-level ideas of the code.
 
+\begin{answer}{EEEEEE}
+\todo{FIXME}
+\end{answer}
+
 At the end of Section IV, I would have loved to see some high-level lessons on
 what the proof taught you, and what part of this proof would be reusable if you
 decided to verify Ed25519 or X448 or P-256, for example. This is particularly
 important for this work, since prior papers have shown how to share proof effort
 across multiple curves.
 
+\begin{answer}{EEEEEE}
+\todo{FIXME}
+See section 4, see section 6.
+\end{answer}
+
 It also appears that the authors do not verify the constant-time guarantees of
 the TweetNaCl code. Could this be done in their framework?
+
+\begin{answer}{EEEEEE}
+\todo{FIXME}
+No with VST.\\
+Related on CompCert: https://eprint.iacr.org/2019/926.pdf
+\end{answer}
 
 Section V presents the proof of mathematical equivalence. It appears to me that
 this proof is completely independent of the TweetNaCl proof. Is that the case?
@@ -309,17 +407,26 @@ importantly, could you claim that your proof of equivalence also provides a
 justification for the implementations of Fiat Crypto or HACL*, hence adding
 value to those other projects in addition to your own?
 
+\begin{answer}{EEEEEE}
+\todo{FIXME}
+See if we can emphasis this more in Section 5.
+\end{answer}
+
 I was hoping to see where the "clamping" used in X25519 would appear in the
 formalization of Section V but was unable to spot it. Does clamping affect the
 proofs in any way? Is there a stronger property you could prove because of the
 clamping (e.g. membership in the prime-order group)?
-Do you already prove such a property?  More generally, what about the proof of
+Do you already prove such a property?
+
+\begin{answer}{EEEEEE}
+\todo{FIXME}
+Clamping does not affect the correctness of the proof.
+Security of the scheme.
+\end{answer}
+
+More generally, what about the proof of
 Section V is specific to X25519 and what is generic?
 
-\subheading{Our answer}
-
-In order to improve the reading experience, we removed the section of Reflections
-which contained heavy proofs in Coq code. We also added figures in section V to
-give a broader view of the High-level proof.
-
-\todo{Reply constant time ? or in Conclusion ? Reply the clamping - reduction}
+\begin{answer}{EEEEEE}
+\todo{FIXME}
+\end{answer}
