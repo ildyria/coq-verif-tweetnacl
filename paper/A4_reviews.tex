@@ -19,10 +19,10 @@ not argue against it.
   \subheading{===== Brief paper summary (2-3 sentences) =====}
 \end{center}
 
-This paper presents a verification of the C implementa-
-tion of the X25519 key-exchange protocol in the TweetNaCl
-library. Correctness properties including the C code imple-
-ments the algorithm correctly are verified in Coq, using the
+This paper presents a verification of the C implementation
+of the X25519 key-exchange protocol in the TweetNaCl
+library. Correctness properties including the C code implements
+the algorithm correctly are verified in Coq, using the
 Verified Software Toolchain (VST).
 
 
@@ -53,13 +53,12 @@ paper presents another instance: X25519 protocol. The result
 here is very strong: it verified both safety properties and the
 correctness of the C implementation.
 
-One main weakness of this paper is that it is hard to ex-
-tract from the writing, what are the new discoveries in this
+One main weakness of this paper is that it is hard to extract
+from the writing, what are the new discoveries in this
 exercise. Are there new proof techniques developed for this
 verification? Is there anything new about the way that loops
 are handled? Is the application of reflection challenging? Are
-there bugs found, in particular, in the mathematical opera-
-tions?
+there bugs found, in particular, in the mathematical operations?
 
 \begin{answer}{EEEEEE}
 The novelty of this work is not in the proof techniques. It
@@ -78,11 +77,12 @@ curve.
 \begin{answer}{EEEEEE}
 We believe that parts of our proofs are reusable either by
 their structure to give an intuition or by directly changing
-some values. The mathematical definitions are generic and
-can be instanciated over any fields (of characteristic neither
-2 or 3). The Ladder can be instanciated over operations
-over different data structure for the underlying arithmetic,
-making it reusable.
+some values (for e.g. X448). The mathematical definitions
+are generic and may be instanciated over any fields (of characteristic
+neither 2 or 3). The Ladder may be instanciated
+over operations over different data structure for the underlying
+arithmetic, making it reusable. The low level operations
+\eg \TNaCle{A} are also reusable in the proof of ed25519.
 \end{answer}
 
 In the Corrections in TweetNaCl paragraph, two things
@@ -92,43 +92,56 @@ if they are. Then the story for the usefulness of the verification
 become stronger.
 
 \begin{answer}{EEEEEE}
-  \todo{FIXME}
+The switch from \TNaCle{i64} to \TNaCle{int} in \texttt{for} loops and the
+extraction of the computation outside of the function call in
+\TNaCle{pack25519} are required by the VST but we believe those
+change have no impact on the verification effort.
+
+The only modification which made the verification easier
+was the removal of the \textit{dead code} at the end of
+\TNaCle{crypto_scalarmult}. Peter Wu and Jason A.
+Donenfeld had also noticed this part and informed us after we
+already fixed the code.
 \end{answer}
 
 It would be nice if the authors comment on the verification
 effort: person month etc.
 
 \begin{answer}{EEEEEE}
-This work has been done by a PhD student using research software.
-
-\todo{Familiarize with the tool, reporting bugs to the developing team, getting them fixed.}
-As a result the metric person-month is not a good representation of the verification effort.
+This work has been done by a PhD student using research
+software and it takes time to get familiar with such tools.
+Research is often tied with their development and we had to
+report bug to developers of the VST and getting them fixed.
+As a result we do not believe the metric person-month to be
+a good representation of the verification effort.
 \end{answer}
 
 Also, did the verified version replace the version in use in
 production software? If not, why not?
 
 \begin{answer}{EEEEEE}
-We contacted the authors of TweetNaCl and expect that the
-changes above mentioned will soon be integrated in a new
-version of the library, mostly for \TNaCle{car25519} and the simplification in
-\TNaCle{crypto_scalarmult}.
+We contacted the authors of TweetNaCl and expect that
+the changes above mentioned will soon be integrated in a
+new version of the library, mostly for \TNaCle{car25519} and the
+simplification in \TNaCle{crypto_scalarmult}.
 \end{answer}
 
-Section V is extremely dry. What are the high-level insights? Perhaps a picture
-representation of how the theorems and lemmas fit together would be a better way
-to represent this section.
+Section V is extremely dry. What are the high-level insights?
+Perhaps a picture representation of how the theorems
+and lemmas fit together would be a better way to represent
+this section.
 
 \begin{answer}{EEEEEE}
-We provided overviews of the proof at the begining of
-sections V.1 and V.2 to provide an intuition to the reader of
-how lemmas fit together.
+We provided overviews of the proof at the begining of sections
+V.1 and V.2. We hope this will give the reader an intuition
+of how lemmas fit together.
 \end{answer}
 
-In summary, this paper is in need of significant improvements in the writing and
-providing detailed discussions of high-level intellectual contributions in this
-verification effort.
+In summary, this paper is in need of significant improvements
+in the writing and providing detailed discussions of
+high-level intellectual contributions in this verification effort.
 
+{\color{gray}
 Minor
 
 On page 6: "each elements" => no s
@@ -136,13 +149,13 @@ On page 6: "each elements" => no s
 On page 7, the beginning of the page, a half sentence is
 dangling there.
 
-On page 9: "each functions" => no s
+On page 9: "each functions" => no s}
 
 
 \subsection{S\&P 2020 Review \#582B}
 
-Overall merit: 4. Weak accept - While flawed, the paper has merit and we should
-consider accepting it.
+Overall merit: 4. Weak accept - While flawed, the paper has
+merit and we should consider accepting it.
 
 
 \begin{center}
@@ -198,8 +211,8 @@ sumptions, we removed an undefined behavior by the C
 standard.
 \end{answer}
 
-p.1: You discuss \cite{Ber06} as using heavy annotation of code, dif-
-ferently from your own code. However, as far as I understand,
+p.1: You discuss \cite{Ber06} as using heavy annotation of code,
+differently from your own code. However, as far as I understand,
 your Coq implementation must also be type-annotated. Thus,
 I imagine that the difference lies in whether SAT-solvers are
 used or not? This did not become very clear, because you
@@ -214,84 +227,120 @@ beginning of the function and loop invariants which allows
 us to get tighter bounds.
 \end{answer}
 
-p.2: Fig 1 is very nice. However, at this point, none of the notation has been
-explained to the reader, and I imagine that V stands for VST? It wasn't clear to
-me. Maybe, the caption of the figure could explain what the details inside the
-figures represent. In particular, the Figure seems to used a nice abstraction of
-properties that is not used elsewhere in the paper. I.e., elsewhere in the paper,
-there is usually a lot of code details.
+p.2: Fig 1 is very nice. However, at this point, none of
+the notation has been explained to the reader, and I imagine
+that V stands for VST? It wasn't clear to me. Maybe, the
+caption of the figure could explain what the details inside the
+figures represent. In particular, the Figure seems to used a
+nice abstraction of properties that is not used elsewhere in
+the paper. I.e., elsewhere in the paper, there is usually a lot
+of code details.
 
 \begin{answer}{EEEEEE}
-.V is the file extension for Coq files (as opposed to .C for C files).
-This allows us to emphasis that all our work is done in a single framework.
-We clarified this in the introduction.
+.V is the file extension for Coq files (as opposed to .C for C
+files). This allows us to emphasis that all our work is done
+in a single framework. We clarified this in the introduction.
 \end{answer}
 
-p.2-4: Subsection A took some mathematical background. Obviously, not all of it
-could be covered, but the motivation for why certain content was presented and
-not others was not clear to me as a reader, which was quite frustrating. In
-Section B, it was even less clear why particular details were presented, e.g.,
-the discussion of the computation of n' was completely unclear to me.
-Subsection D seemed a good idea, but was very tough to follow, too much content
-in short time. Subsection D seems to jump between implementation levels and
-discussing high-level arguments such as Fermat's little theorem.
+p.2-4: Subsection A took some mathematical background.
+Obviously, not all of it could be covered, but the motivation
+for why certain content was presented and not others was not
+clear to me as a reader, which was quite frustrating. In Section
+B, it was even less clear why particular details were presented,
+e.g., the discussion of the computation of n’ was completely
+unclear to me. Subsection D seemed a good idea, but was very
+tough to follow, too much content in short time. Subsection D
+seems to jump between implementation levels and discussing
+high-level arguments such as Fermat’s little theorem.
 
 \begin{answer}{EEEEEE}
-  \todo{FIXME}
+We aim to give a quick view of how Montgomery curves are
+defined and remind the reader of the ``twisting factor''. The
+computation of n' is required for the security of X25519 as
+it reduces the computations to a prime-order group, we use
+this presentation to refer it later as ``clamping''. We
+modified Subsection D to omit all the code definitions of small
+functions to ease the reader experience. The C definitions
+are now provided in the appendix.
 \end{answer}
 
-p.3: I very much liked the discussion of the Diff between TweetNaCl and your
-modifications! I imagine that many of them are conceptually interesting in that
-they make verification easier. I would have enjoyed reading a conceptual
-discussion of the differences. Instead, Appendix A just contains a Diff, and as
-a reader, I would need to perform the extraction of insights myself.
+p.3: I very much liked the discussion of the Diff between
+TweetNaCl and your modifications! I imagine that many of
+them are conceptually interesting in that they make verification
+easier. I would have enjoyed reading a conceptual discussion
+of the differences. Instead, Appendix A just contains a
+Diff, and as a reader, I would need to perform the extraction
+of insights myself.
 
 \begin{answer}{EEEEEE}
-For IEEE S\&P we were limited to 18 pages including appendices.
-We changed the format to a ``diff -u'' to provide the context of
-the applied changes.
+Due to page restrictions for IEEE S\&P, including appen-
+dices, We had a condensated diff. We changed the format to
+a “diff -u” to provide the context of the applied changes. We
+also now describe the motivations of each changes below
+the said Diff.
 \end{answer}
 
-p.5: CSWAP: Maybe use a backward reference to p.3 where CSWAP was defined, since
-in between, there was a lot of content, and relying on the reader's memory does
-not really work here (or at least, it did not work for me).
+p.5: CSWAP: Maybe use a backward reference to p.3 where
+CSWAP was defined, since in between, there was a lot of
+content, and relying on the reader's memory does not really
+work here (or at least, it did not work for me).
 
 \begin{answer}{EEEEEE}
-\todo{FIXME}
+As we rewrote significantly section 2.4, the space between
+the definition and the use of CSWAP decreased. We added a
+backward reference to where it was originally defined.
 \end{answer}
 
-p.7: I enjoyed the discussion on aliasing! This was the type of conceptual
-discussion I find interesting. I was confused about the mentioning that the case
-distinction k=0,1,2 does not cover "all cases" - all cases of what? And why is
-this distinction sufficient for the task at hand?
+p.7: I enjoyed the discussion on aliasing! This was the type
+of conceptual discussion I find interesting. I was confused
+about the mentioning that the case distinction k=0,1,2 does
+not cover "all cases" - all cases of what? And why is this
+distinction sufficient for the task at hand?
 
 \begin{answer}{EEEEEE}
-\todo{FIXME}
-We added a clarification of what would be an unnecessary alliasing case.
-Such case do not happen in TweetNaCl, it is therefore not required to write a
-specification for it.
+We clarified the discussion of what would be an unnecessary
+alliasing case and why such case do not happen in
+TweetNaCl in that section. For example, TweetNaCl never
+has function calls where the 3 pointers are aliased (\texttt{o = a = b}),
+as such we do not consider this aliasing case in the
+specifications of the function.
 \end{answer}
 
-Most of the rest of the paper felt hard to read, because it read like a
-chronological enumeration of all steps. I think that it would be much more
-interesting if the paper highlights the interesting aspects of the verification.
+Most of the rest of the paper felt hard to read, because it
+read like a chronological enumeration of all steps. I think that
+it would be much more interesting if the paper highlights the
+interesting aspects of the verification.
 
 \begin{answer}{EEEEEE}
-  \todo{FIXME}
-  We removed some sections and added figures in section V to help the reader get a
-  better picture of the proof.
+We removed sections and details in order to simplify the
+reading experience. We also added figures in section V in
+order to provide the reader a mental image of how the lemmas,
+definitions and theorems work together.
 \end{answer}
 
 Related work:
 
-In reference \cite{DBLP:journals/corr/BhargavanDFHPRR17}, the order of authors
-is different than in the original publication. I think that you might want to
-discuss \cite{DBLP:journals/corr/BhargavanDFHPRR17} in the Related work
-section, since it seems quite close. I was wondering whether you consider the
-approach in \cite{DBLP:journals/corr/BhargavanDFHPRR17} as synthesis or
-verification, because to me, it seemed a mix/neither.
+\newcommand{\rbar}{\cite{DBLP:journals/corr/BhargavanDFHPRR17}}
+
+In reference \rbar, the order of authors is different than
+in the original publication. I think that you might want to
+discuss \rbar in the Related work section, since it seems quite
+close. I was wondering whether you consider the approach
+in \rbar as synthesis or verification, because to me, it seemed
+a mix/neither.
 
 \begin{answer}{EEEEEE}
+The bibtex was from DBLP. We fixed the order of the
+authors with respect to the original publication and contacted
+DBLP to update their files.
+
+We see Low* as a mix.
+\begin{figure}[H]
+\centering
+\include{tikz/low}
+\caption{VST vs Low*}
+\label{tikz:LowVST}
+\end{figure}
 \todo{Verifiable Low F*}
 Add figure.
 \end{answer}
@@ -305,9 +354,9 @@ used for symmetric cryptographic primitives before? From the text, I wasn't sure
 whether this is careful quantification or not.
 
 \begin{answer}{EEEEEE}
-The VST has already been used to verify symmetric Cryptographic
-primities (\eg SHA), as mentioned later by \cite{Beringer2015VerifiedCA}
-and \cite{2015-Appel}.
+This is indeed careful quantification. The VST has already
+been used to verify symmetric Cryptographic primities
+(\eg SHA), as mentioned later by \cite{Beringer2015VerifiedCA} and \cite{2015-Appel}.
 \end{answer}
 
 

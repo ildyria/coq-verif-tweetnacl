@@ -12,7 +12,7 @@ typedef long long i64;
 \end{lstlisting}
 
 TweetNaCl functions take pointers as arguments. By convention the first one
-points to the output array. It is then followed by the input arguments.
+points to the output array \texttt{o}. It is then followed by the input arguments.
 
 Due to some limitations of the VST, indexes used in \TNaCle{for} loops have to be
 of type \TNaCle{int} instead of \TNaCle{i64}. We change the code to allow our
@@ -46,10 +46,9 @@ highly redundant; for any element $A \in \Ffield$ there are
 multiple ways to represent $A$ as $(a_0,\dots,a_{15})$.
 This is used to avoid or delay carry handling in basic operations such as
 Addition (\TNaCle{A}), subtraction (\TNaCle{Z}), multiplication (\TNaCle{M})
-and squaring (\TNaCle{S}). After a multiplication, the limbs of the result
-\texttt{o} are too large to be used again as input. The two calls to
-\TNaCle{car25519} at the end of \TNaCle{M} propagate the carries through
-the limbs.
+and squaring (\TNaCle{S}). After a multiplication, limbs of the result
+\texttt{o} are too large to be used again as input. Two calls to
+\TNaCle{car25519} at the end of \TNaCle{M} takes care of the carry propagation.
 
 Inverses in $\Ffield$ are computed with \TNaCle{inv25519}.
 This function uses exponentiation by $p - 2 = 2^{255}-21$,
@@ -58,8 +57,10 @@ computed with the square-and-multiply algorithm.
 \TNaCle{sel25519} implements a constant-time conditional swap (\texttt{CSWAP}) by
 applying a mask between two fields elements.
 
-Finally, we need the \TNaCle{pack25519} function,
-which converts from the internal redundant radix-$2^{16}$
+% Finally, we need the \TNaCle{pack25519} function,
+% which converts from the internal redundant radix-$2^{16}$
+Finally, the \TNaCle{pack25519} function
+converts the internal redundant radix-$2^{16}$
 representation to a unique byte array representing an
 integer in $\{0,\dots,p-1\}$ in little-endian format.
 This function is considerably more complex as it needs to convert
