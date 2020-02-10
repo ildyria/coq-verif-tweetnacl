@@ -1,0 +1,13 @@
+\begin{tikzpicture}[textstyle/.style={black, thick, anchor=north west, align=center, minimum height=0.45cm, minimum width=1cm, text centered, font=\scriptsize}]
+  \node [textstyle,draw] (VSTSpec) at (0,0) {Spec};
+  \node [textstyle,draw] (VSTC) at (0,-2) {C code};
+  \draw [->, thick] (VSTC.north) -- (VSTSpec.south);
+
+  \begin{scope}[yshift=0 cm,xshift=3 cm]
+    \node [textstyle,draw] (LowSpec) at (0,0) {Spec};
+    \node [textstyle,draw] (Low) at (0,-1) {Low*};
+    \node [textstyle,draw] (LowC) at (0,-2) {C code};
+    \draw [->, thick] (Low.south) -- (LowC.north);
+    \draw [->, thick] (Low.north) -- (LowSpec.south);
+  \end{scope}
+\end{tikzpicture}
