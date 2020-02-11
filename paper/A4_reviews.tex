@@ -64,9 +64,9 @@ there bugs found, in particular, in the mathematical operations?
 The novelty of this work is not in the proof techniques. It
 lies in the assurance gained by the formalization of the
 X25519 from RFC 7748, and its correctness with respect to
-the theory of elliptic curves. It is the first time, we have a
-link from the C code up to the mathematical definitions of
-Curve25519 using a single tool.
+the theory of elliptic curves. Additionally it is the first
+time, a link from the C code up to the mathematical definitions of
+Curve25519 using a single tool is presented.
 \end{answer}
 
 A related comment is that it is unclear from the paper
@@ -220,11 +220,11 @@ mostly describe names of tool while leaving out the details of
 what these tools carry out conceptually.
 
 \begin{answer}{EEEEEE}
-SMT solvers are need of annotation, often written as
-parsable comment in the middle of the C code~\cite{acsl} in order to
-``guide'' the proof. In our case we only need to anotate the
-beginning of the function and loop invariants which allows
-us to get tighter bounds.
+SMT solvers strategies are in need of annotation, often written
+as parsable comment in the middle of the C code~\cite{acsl}
+in order to ``guide'' the proof. In our case we only need to
+anotate the beginning of the function and loop invariants
+which allows us to get tighter bounds.
 \end{answer}
 
 p.2: Fig 1 is very nice. However, at this point, none of
@@ -237,7 +237,7 @@ the paper. I.e., elsewhere in the paper, there is usually a lot
 of code details.
 
 \begin{answer}{EEEEEE}
-.V is the file extension for Coq files (as opposed to .C for C
+``.V'' is the file extension for Coq files (as opposed to ``.C'' for C
 files). This allows us to emphasis that all our work is done
 in a single framework. We clarified this in the introduction.
 \end{answer}
@@ -275,7 +275,7 @@ of insights myself.
 \begin{answer}{EEEEEE}
 Due to page restrictions for IEEE S\&P, including appen-
 dices, We had a condensated diff. We changed the format to
-a “diff -u” to provide the context of the applied changes. We
+a ``diff -u'' to provide the context of the applied changes. We
 also now describe the motivations of each changes below
 the said Diff.
 \end{answer}
@@ -334,15 +334,21 @@ The bibtex was from DBLP. We fixed the order of the
 authors with respect to the original publication and contacted
 DBLP to update their files.
 
-We see Low* as a mix.
+\fref{tikz:LowVST} highlights the difference between Low*
+and our approach.
+
 \begin{figure}[H]
 \centering
 \include{tikz/low}
 \caption{VST vs Low*}
 \label{tikz:LowVST}
 \end{figure}
-\todo{Verifiable Low F*}
-Add figure.
+
+Low* generates C code, thus this is synthesis. We generate
+Clight from C code, thus this is verification. Because Low*
+also has a verification step with respect to some highlevel
+specifications, we consider their process to be a mix of the
+two methods.
 \end{answer}
 
 Clarification in intro:

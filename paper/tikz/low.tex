@@ -1,13 +1,21 @@
-\begin{tikzpicture}[textstyle/.style={black, thick, anchor=north west, align=center, minimum height=0.45cm, minimum width=1cm, text centered, font=\scriptsize}]
-  \node [textstyle,draw] (VSTSpec) at (0,0) {Spec};
-  \node [textstyle,draw] (VSTC) at (0,-2) {C code};
-  \draw [->, thick] (VSTC.north) -- (VSTSpec.south);
+\begin{tikzpicture}[textstyle/.style={black, thick, anchor=north west, align=center, minimum height=0.45cm, minimum width=1.2cm, text centered, font=\small}]
+  \begin{scope}[yshift=0 cm,xshift=0 cm]
+    \node [textstyle,draw] (VSTSpec) at (0,0) {Spec};
+    \node [textstyle,draw] (VSTClight) at (0,-1.5) {Clight};
+    \node [textstyle,draw] (VSTC) at (0,-3) {C code};
+    \draw [-{Latex[length=3mm]}, double, thick] (VSTC.north) -- (VSTClight.south) node [near end, below, textstyle, anchor=west] {\textbf{generated}};
+    \draw [-{Latex[length=2mm]}, thick] (VSTClight.north) -- (VSTSpec.south) node [midway, below, textstyle, anchor=west] {verified};
+    \draw[dashed] (-1,0.25) rectangle (2.25,-2.635);
+    \node [anchor=north west, font=\small] (Coq) at (-1,0.25) {Coq};
+  \end{scope}
 
-  \begin{scope}[yshift=0 cm,xshift=3 cm]
+  \begin{scope}[yshift=0 cm,xshift=4 cm]
     \node [textstyle,draw] (LowSpec) at (0,0) {Spec};
-    \node [textstyle,draw] (Low) at (0,-1) {Low*};
-    \node [textstyle,draw] (LowC) at (0,-2) {C code};
-    \draw [->, thick] (Low.south) -- (LowC.north);
-    \draw [->, thick] (Low.north) -- (LowSpec.south);
+    \node [textstyle,draw] (Low) at (0,-1.5) {Low*};
+    \node [textstyle,draw] (LowC) at (0,-3) {C code};
+    \draw [-{Latex[length=3mm]}, double, thick] (Low.south) -- (LowC.north) node [near start, below, textstyle, anchor=west] {\textbf{generated}};
+    \draw [-{Latex[length=2mm]}, thick] (Low.north) -- (LowSpec.south) node [midway, below, textstyle, anchor=west] {verified};
+    \draw[dashed] (-1,0.25) rectangle (2.25,-2.635);
+    \node [anchor=north west, font=\small] (F) at (-1,0.25) {F*};
   \end{scope}
 \end{tikzpicture}
