@@ -108,10 +108,13 @@ It would be nice if the authors comment on the verification
 effort: person month etc.
 
 \begin{answer}{EEEEEE}
-This work has been done by a PhD student using research
-software and it takes time to get familiar with such tools.
-Research is often tied with their development and we had to
-report bug to developers of the VST and getting them fixed.
+In addition to the time required to get familiar with
+research software, we faced a few bugs which we reported
+to the developers of the VST to get them fixed.
+It is very hard to work with a tool without being involved
+in the development loop. Additionally newer versions often
+broke some of our proofs and it was often needed to adapt
+to the changes.
 As a result we do not believe the metric person-month to be
 a good representation of the verification effort.
 \end{answer}
@@ -298,9 +301,9 @@ not cover "all cases" - all cases of what? And why is this
 distinction sufficient for the task at hand?
 
 \begin{answer}{EEEEEE}
-We clarified the discussion of what would be an unnecessary
-alliasing case and why such case do not happen in
-TweetNaCl in that section. For example, TweetNaCl never
+In that section we clarified the discussion of what
+would be an unnecessary alliasing case and why such case do
+not happen in TweetNaCl. For example, TweetNaCl never
 has function calls where the 3 pointers are aliased (\texttt{o = a = b}),
 as such we do not consider this aliasing case in the
 specifications of the function.
@@ -340,7 +343,7 @@ and our approach.
 \begin{figure}[H]
 \centering
 \include{tikz/low}
-\caption{VST vs Low*}
+\caption{The VST vs Low*}
 \label{tikz:LowVST}
 \end{figure}
 
@@ -348,16 +351,21 @@ Low* generates C code, thus this is synthesis. We generate
 Clight from C code, thus this is verification. Because Low*
 also has a verification step with respect to some highlevel
 specifications, we consider their process to be a mix of the
-two methods.
+two methods. Also to be noted that both the VST and Low*
+allow the verification of memory safety.
+% However Low* provides
+% sidechannel securities while the VST allow verification
+% of concurent programs.
 \end{answer}
 
 Clarification in intro:
 
-The intro states that this is, to the authors knowledge, the first use of
-Verifiable Software Toolchain (VST) in software verification of an implementation
-of an assymmetric cryptographic primitives. Does this mean that VST has been
-used for symmetric cryptographic primitives before? From the text, I wasn't sure
-whether this is careful quantification or not.
+The intro states that this is, to the authors knowledge, the
+first use of Verifiable Software Toolchain (VST) in software
+verification of an implementation of an assymmetric cryptographic
+primitives. Does this mean that VST has been used
+for symmetric cryptographic primitives before? From the text,
+I wasn’t sure whether this is careful quantification or not.
 
 \begin{answer}{EEEEEE}
 This is indeed careful quantification. The VST has already
@@ -368,35 +376,40 @@ been used to verify symmetric Cryptographic primities
 
 \subsection{S\&P 2020 Review \#582C}
 
-Overall merit: 3. Weak reject - The paper has flaws, but I will not argue against it.
+Overall merit: 3. Weak reject - The paper has flaws, but I will
+not argue against it.
 
 
 \begin{center}
   \subheading{===== Brief paper summary (2-3 sentences) =====}
 \end{center}
 
-This paper presents a formalization of the X25519 (Curve25519) elliptic curve
-Diffie-Hellman  (ECDH) construction in Coq, and uses this formalization to
-verify the functional correctness of a C implementation of this construction
-taken from the TweetNaCl library. Going further than prior work, the authors
-also link their Coq specification to a mathematical theory of elliptic curves
-in Coq.
+This paper presents a formalization of the X25519
+(Curve25519) elliptic curve Diffie-Hellman (ECDH)
+construction in Coq, and uses this formalization to verify the
+functional correctness of a C implementation of this
+construction taken from the TweetNaCl library. Going further than
+prior work, the authors also link their Coq specification to a
+mathematical theory of elliptic curves in Coq.
 
 
 \begin{center}
   \subheading{===== Strengths =====}
 \end{center}
 
-Proofs of cryptographic algorithms like X25519 tend to mean different things in
-different communities: (a) one may prove that X25519 implements a group based on
-the mathematical theory of elliptic curves, (b) one may prove that an X25519
-implementation meets its mathematical spec, or (c) one may prove that a protocol
-that uses X25519 is provably secure, based on some cryptographic assumption on
-the ECDH construction. It is rare to find papers that combine more than one of
-these proof levels, and this paper does a creditable job of linking (a) with (b),
-relying on the Coq framework to soundly glue these proofs together. Although a
-similar goal was considered in \cite{Zinzindohoue2016AVE}, this paper provides
-a more satisfying solution by not leaving any gaps between the formalizations,
+Proofs of cryptographic algorithms like X25519 tend to
+mean different things in different communities: (a) one may
+prove that X25519 implements a group based on the mathe-
+matical theory of elliptic curves, (b) one may prove that an
+X25519 implementation meets its mathematical spec, or (c)
+one may prove that a protocol that uses X25519 is provably se-
+cure, based on some cryptographic assumption on the ECDH
+construction. It is rare to find papers that combine more than
+one of these proof levels, and this paper does a creditable
+job of linking (a) with (b), relying on the Coq framework to
+soundly glue these proofs together. Although a similar goal
+was considered in \cite{Zinzindohoue2016AVE}, this paper provides a more satisfying
+solution by not leaving any gaps between the formalizations,
 and by relying on a smaller trusted computing base.
 
 
@@ -404,84 +417,137 @@ and by relying on a smaller trusted computing base.
   \subheading{===== Weaknesses =====}
 \end{center}
 
-X25519 implementations have now been verifying in multiple papers using multiple
-verification frameworks, and \cite{Erbsen2016SystematicSO} even uses Coq to
-verify a large portion of a C implementation of X25519 fully automatically.
-So, the main contribution here is that that the authors verify an existing
-popular implementation (TweetNaCl) without making many changes to the source
-code. Still, TweetNaCl is not necessarily the most complex (and certainly not
-the most efficient) implementation of X25519 that has been verified, which
-makes the novelty of this work hard to justify.
+X25519 implementations have now been verifying in multiple
+papers using multiple verification frameworks, and \cite{Erbsen2016SystematicSO}
+even uses Coq to verify a large portion of a C implementation
+of X25519 fully automatically. So, the main contribution
+here is that that the authors verify an existing popular im-
+plementation (TweetNaCl) without making many changes to
+the source code. Still, TweetNaCl is not necessarily the most
+complex (and certainly not the most efficient) implementation
+of X25519 that has been verified, which makes the novelty of
+this work hard to justify.
+
+\newcommand{\mitp}{\cite{Erbsen2016SystematicSO}}
+
+
+\begin{answer}{EEEEEE}
+Indeed \mitp's C code of X25519 is verified. However the
+authors do not qualify their approach as verification but
+as synthesis. They do not use Coq to verify C code, instead they
+``synthesize'' (generate) C code from verified refinements of
+the specification. Our approach goes from the C code up to the
+specification.
+ % which is completely different.
+
+\begin{figure}[H]
+\centering
+\include{tikz/mit}
+\caption{Our approach vs \mitp}
+\label{tikz:LowVST}
+\end{figure}
+
+\end{answer}
 
 
 \begin{center}
   \subheading{===== Detailed comments for the author(s) =====}
 \end{center}
 
-I like the approach taken in this paper and I think this work has value and
-should be published.
-However, I am not sure the current presentation of the work works well.
+I like the approach taken in this paper and I think this work
+has value and should be published. However, I am not sure
+the current presentation of the work works well.
 
-The paper can be essentially divided into two components: the proof of TweetNaCl
-using VST, and the proof of equivalence between the Coq spec of RFC7748 and the
-mathematical theory of Curve25519.  The details of both are interesting to
-formalists but the Coq details are quite hard to parse and distracting when
-trying to understand the text. This is a well-known problem for formal
-verification papers, and I don't have great advice except to suggest that the
-authors separate out the code fragments into figures and let the text focus
-on the high-level ideas of the code.
+The paper can be essentially divided into two components:
+the proof of TweetNaCl using VST, and the proof of equiva-
+lence between the Coq spec of RFC7748 and the mathemati-
+cal theory of Curve25519. The details of both are interesting
+to formalists but the Coq details are quite hard to parse and
+distracting when trying to understand the text. This is a well-
+known problem for formal verification papers, and I don’t
+have great advice except to suggest that the authors separate
+out the code fragments into figures and let the text focus on
+the high-level ideas of the code.
 
 \begin{answer}{EEEEEE}
-\todo{FIXME}
+We removed a significant part of the Coq details, especially
+details about reflections in order to smoothen the reading
+experience. As suggested, we also added a few figures to
+give the reader an overview of how the proofs are linked
+together.
 \end{answer}
 
-At the end of Section IV, I would have loved to see some high-level lessons on
-what the proof taught you, and what part of this proof would be reusable if you
-decided to verify Ed25519 or X448 or P-256, for example. This is particularly
-important for this work, since prior papers have shown how to share proof effort
-across multiple curves.
+At the end of Section IV, I would have loved to see some
+high-level lessons on what the proof taught you, and what
+part of this proof would be reusable if you decided to verify
+Ed25519 or X448 or P-256, for example. This is particularly
+important for this work, since prior papers have shown how
+to share proof effort across multiple curves.
 
 \begin{answer}{EEEEEE}
-\todo{FIXME}
-See section 4, see section 6.
+We added insights in \sref{subsec:with-VST} of how to improve
+working with the VST verification framework. In section \sref{sec:Conclusion},
+we desribed in further details how our work can
+be extended to other curves. The TweetNaCl ed25519
+implementation makes use of the same low level arithmetic
+as X25519, reusing our proofs. For example, \TNaCle{pow2523} is
+similar to \TNaCle{inv25519} and would allow us to reuse our
+reflection abstraction. X448 would reuse the ladder but the
+low level arithmetic would need to be proven again. P-256
+is a different case as due to its short Weierstra\ss{} shape, this
+implies that our ladder is not fit for it. However using \cite{BartziaS14}
+and our proofs as example it is possible to prove a similar
+ladder as ours.
 \end{answer}
 
-It also appears that the authors do not verify the constant-time guarantees of
-the TweetNaCl code. Could this be done in their framework?
+It also appears that the authors do not verify the constant-time
+guarantees of the TweetNaCl code. Could this be done
+in their framework?
 
 \begin{answer}{EEEEEE}
-\todo{FIXME}
-No with VST.\\
-Related on CompCert: https://eprint.iacr.org/2019/926.pdf
+Constant-timeness is not a property verfiable with the VST.
+This is not veriable with our framework.
+% Related on CompCert: https://eprint.iacr.org/2019/926.pdf
 \end{answer}
 
-Section V presents the proof of mathematical equivalence. It appears to me that
-this proof is completely independent of the TweetNaCl proof. Is that the case?
-Is there any lemma from the first part that is needed in the second? More
-importantly, could you claim that your proof of equivalence also provides a
-justification for the implementations of Fiat Crypto or HACL*, hence adding
-value to those other projects in addition to your own?
+Section V presents the proof of mathematical equivalence.
+It appears to me that this proof is completely independent of
+the TweetNaCl proof. Is that the case? Is there any lemma
+from the first part that is needed in the second? More
+importantly, could you claim that your proof of equivalence also
+provides a justification for the implementations of Fiat Crypto
+or HACL*, hence adding value to those other projects in addition
+to your own?
 
 \begin{answer}{EEEEEE}
-\todo{FIXME}
-See if we can emphasis this more in Section 5.
+Indeed those two proofs are completely independent. The
+only link between \sref{sec:C-Coq} and \sref{sec:maths} is the definition
+of \Coqe{RFC} and the preconditions on the inputs: 2 arrays of
+32 bytes. We highlighted in \sref{sec:Conclusion} that our proof of
+correctness of X25519 in RFC~7748 increases the confidence
+in other implementations such as Fiat Crypto and HACL*
+(under the assumption they correctly formalized the RFC).
 \end{answer}
 
-I was hoping to see where the "clamping" used in X25519 would appear in the
-formalization of Section V but was unable to spot it. Does clamping affect the
-proofs in any way? Is there a stronger property you could prove because of the
-clamping (e.g. membership in the prime-order group)?
-Do you already prove such a property?
+I was hoping to see where the ``clamping'' used in X25519
+would appear in the formalization of Section V but was unable
+to spot it. Does clamping affect the proofs in any way? Is there
+a stronger property you could prove because of the clamping
+(e.g. membership in the prime-order group)? Do you already
+prove such a property?
 
 \begin{answer}{EEEEEE}
-\todo{FIXME}
-Clamping does not affect the correctness of the proof.
-Security of the scheme.
+The clamping by itself has no impact on the computations using the ladder.
+It is thus normal to not see it appear in \sref{sec:maths} as our proofs work for any 255-bit $n$,
+We prove the correctness of X25519 in RFC~7748, we do not prove its security.
+The proof of a stronger property (e.g. membership in prime-order group)
+shall be done separately before being applied to Curve25519.
 \end{answer}
 
-More generally, what about the proof of
-Section V is specific to X25519 and what is generic?
+More generally, what about the proof of Section V is
+specific to X25519 and what is generic?
 
 \begin{answer}{EEEEEE}
-\todo{FIXME}
+Everything in \sref{subsec:ECC} is generic, anything left in \sref{subsec:curve_twist_fields}
+is specific to X25519.
 \end{answer}

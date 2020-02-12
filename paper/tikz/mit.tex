@@ -1,0 +1,15 @@
+\begin{tikzpicture}[textstyle/.style={black, thick, anchor=north west, align=center, minimum height=0.45cm, minimum width=2.5cm, text centered, font=\small}]
+  \begin{scope}[yshift=0 cm,xshift=0 cm]
+    \node [textstyle] (our) at (0,0.635) {Our paper};
+    \node [textstyle,draw] (VSTSpec) at (0,0) {Spec};
+    \node [textstyle,draw] (VSTC) at (0,-1.5) {\textit{Verified} C code};
+    \draw [-{Latex[length=3mm]}, double, thick] (VSTC.north) -- (VSTSpec.south) node [midway, below, textstyle, anchor=west] {\textbf{Verification}};
+  \end{scope}
+
+  \begin{scope}[yshift=0 cm,xshift=4 cm]
+    \node [textstyle] (mit) at (0,0.635) {\mitp};
+    \node [textstyle,draw] (MITSpec) at (0,0) {Spec};
+    \node [textstyle,draw] (MITC) at (0,-1.5) {\textit{Verified} C code};
+    \draw [-{Latex[length=3mm]}, double, thick] (MITSpec.south) -- (MITC.north) node [midway, below, textstyle, anchor=west] {\textbf{Synthesis}};
+  \end{scope}
+\end{tikzpicture}
