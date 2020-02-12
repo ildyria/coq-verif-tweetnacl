@@ -78,8 +78,8 @@ curve.
 We believe that parts of our proofs are reusable either by
 their structure to give an intuition or by directly changing
 some values (for e.g. X448). The mathematical definitions
-are generic and may be instanciated over any fields (of characteristic
-neither 2 or 3). The Ladder may be instanciated
+are generic and may be instantiated over any fields (of characteristic
+neither 2 or 3). The Ladder may be instantiated
 over operations over different data structure for the underlying
 arithmetic, making it reusable. The low level operations
 \eg \TNaCle{A} are also reusable in the proof of ed25519.
@@ -135,7 +135,7 @@ and lemmas fit together would be a better way to represent
 this section.
 
 \begin{answer}{EEEEEE}
-We provided overviews of the proof at the begining of sections
+We provided overviews of the proof at the beginning of sections
 V.1 and V.2. We hope this will give the reader an intuition
 of how lemmas fit together.
 \end{answer}
@@ -170,8 +170,8 @@ X25519 elliptic curve key exchange in the TweetNaCl library,
 a short implementation of the NaCl library. The X25519 key
 exchange method is used in TLS 1.3, Signal, Tor, Zcash and
 SSH. Within TLS 1.3 (and probably also in other protocols),
-any implementation of X25519 may be used in an imple-
-mentation of the standard. Thus, the present work contributes
+any implementation of X25519 may be used in an implementation
+of the standard. Thus, the present work contributes
 to a fully verified code-base for TLS 1.3 (and other crucial
 protocols)
 
@@ -183,8 +183,8 @@ and enables the authors to carry out a similar approach for
 other primitives much more easily. I wish that the authors
 would extract their conceptual insights on the technique and
 communicate those to the readers. Regardless, I would very
-much like to see this work at S\&P, but I would like to encour-
-age the authors to de-emphasize technical details (even more)
+much like to see this work at S\&P, but I would like to encourage
+the authors to de-emphasize technical details (even more)
 and spend more space of the body on conceptual insights (see
 comments below).
 
@@ -209,8 +209,8 @@ the complexity of the code compared to e.g., Fiat Crypto
 generated optimized C code.
 
 While we did not find errors in the implementation with
-respect to functionnal correctness under the CompCert as-
-sumptions, we removed an undefined behavior by the C
+respect to functional correctness under the CompCert assumptions,
+we removed an undefined behavior by the C
 standard.
 \end{answer}
 
@@ -224,9 +224,9 @@ what these tools carry out conceptually.
 
 \begin{answer}{EEEEEE}
 SMT solvers strategies are in need of annotation, often written
-as parsable comment in the middle of the C code~\cite{acsl}
+as parable comment in the middle of the C code~\cite{acsl}
 in order to ``guide'' the proof. In our case we only need to
-anotate the beginning of the function and loop invariants
+annotate the beginning of the function and loop invariants
 which allows us to get tighter bounds.
 \end{answer}
 
@@ -276,8 +276,8 @@ Diff, and as a reader, I would need to perform the extraction
 of insights myself.
 
 \begin{answer}{EEEEEE}
-Due to page restrictions for IEEE S\&P, including appen-
-dices, We had a condensated diff. We changed the format to
+Due to page restrictions for IEEE S\&P, including appendices,
+We had a condensed diff. We changed the format to
 a ``diff -u'' to provide the context of the applied changes. We
 also now describe the motivations of each changes below
 the said Diff.
@@ -302,7 +302,7 @@ distinction sufficient for the task at hand?
 
 \begin{answer}{EEEEEE}
 In that section we clarified the discussion of what
-would be an unnecessary alliasing case and why such case do
+would be an unnecessary aliasing case and why such case do
 not happen in TweetNaCl. For example, TweetNaCl never
 has function calls where the 3 pointers are aliased (\texttt{o = a = b}),
 as such we do not consider this aliasing case in the
@@ -349,7 +349,7 @@ and our approach.
 
 Low* generates C code, thus this is synthesis. We generate
 Clight from C code, thus this is verification. Because Low*
-also has a verification step with respect to some highlevel
+also has a verification step with respect to some high-level
 specifications, we consider their process to be a mix of the
 two methods. Also to be noted that both the VST and Low*
 allow the verification of memory safety.
@@ -362,14 +362,14 @@ Clarification in intro:
 
 The intro states that this is, to the authors knowledge, the
 first use of Verifiable Software Toolchain (VST) in software
-verification of an implementation of an assymmetric cryptographic
+verification of an implementation of an asymmetric cryptographic
 primitives. Does this mean that VST has been used
 for symmetric cryptographic primitives before? From the text,
 I wasn’t sure whether this is careful quantification or not.
 
 \begin{answer}{EEEEEE}
 This is indeed careful quantification. The VST has already
-been used to verify symmetric Cryptographic primities
+been used to verify symmetric Cryptographic primitives
 (\eg SHA), as mentioned later by \cite{Beringer2015VerifiedCA} and \cite{2015-Appel}.
 \end{answer}
 
@@ -399,11 +399,11 @@ mathematical theory of elliptic curves in Coq.
 
 Proofs of cryptographic algorithms like X25519 tend to
 mean different things in different communities: (a) one may
-prove that X25519 implements a group based on the mathe-
-matical theory of elliptic curves, (b) one may prove that an
+prove that X25519 implements a group based on the mathematical
+theory of elliptic curves, (b) one may prove that an
 X25519 implementation meets its mathematical spec, or (c)
-one may prove that a protocol that uses X25519 is provably se-
-cure, based on some cryptographic assumption on the ECDH
+one may prove that a protocol that uses X25519 is provably
+secure, based on some cryptographic assumption on the ECDH
 construction. It is rare to find papers that combine more than
 one of these proof levels, and this paper does a creditable
 job of linking (a) with (b), relying on the Coq framework to
@@ -421,8 +421,8 @@ X25519 implementations have now been verifying in multiple
 papers using multiple verification frameworks, and \cite{Erbsen2016SystematicSO}
 even uses Coq to verify a large portion of a C implementation
 of X25519 fully automatically. So, the main contribution
-here is that that the authors verify an existing popular im-
-plementation (TweetNaCl) without making many changes to
+here is that that the authors verify an existing popular
+implementation (TweetNaCl) without making many changes to
 the source code. Still, TweetNaCl is not necessarily the most
 complex (and certainly not the most efficient) implementation
 of X25519 that has been verified, which makes the novelty of
@@ -459,20 +459,20 @@ has value and should be published. However, I am not sure
 the current presentation of the work works well.
 
 The paper can be essentially divided into two components:
-the proof of TweetNaCl using VST, and the proof of equiva-
-lence between the Coq spec of RFC7748 and the mathemati-
-cal theory of Curve25519. The details of both are interesting
+the proof of TweetNaCl using VST, and the proof of equivalence
+between the Coq spec of RFC7748 and the mathematical
+theory of Curve25519. The details of both are interesting
 to formalists but the Coq details are quite hard to parse and
-distracting when trying to understand the text. This is a well-
-known problem for formal verification papers, and I don’t
+distracting when trying to understand the text. This is a well-known
+problem for formal verification papers, and I don’t
 have great advice except to suggest that the authors separate
 out the code fragments into figures and let the text focus on
 the high-level ideas of the code.
 
 \begin{answer}{EEEEEE}
 We removed a significant part of the Coq details, especially
-details about reflections in order to smoothen the reading
-experience. As suggested, we also added a few figures to
+details about reflections in order to make the reading
+experience smooth. As suggested, we also added a few figures to
 give the reader an overview of how the proofs are linked
 together.
 \end{answer}
@@ -487,7 +487,7 @@ to share proof effort across multiple curves.
 \begin{answer}{EEEEEE}
 We added insights in \sref{subsec:with-VST} of how to improve
 working with the VST verification framework. In section \sref{sec:Conclusion},
-we desribed in further details how our work can
+we described in further details how our work can
 be extended to other curves. The TweetNaCl ed25519
 implementation makes use of the same low level arithmetic
 as X25519, reusing our proofs. For example, \TNaCle{pow2523} is
@@ -505,8 +505,8 @@ guarantees of the TweetNaCl code. Could this be done
 in their framework?
 
 \begin{answer}{EEEEEE}
-Constant-timeness is not a property verfiable with the VST.
-This is not veriable with our framework.
+Constant-timeness is not a property verifiable with the VST.
+This is not verifiable with our framework.
 % Related on CompCert: https://eprint.iacr.org/2019/926.pdf
 \end{answer}
 

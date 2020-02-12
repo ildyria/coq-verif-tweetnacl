@@ -57,7 +57,8 @@
 \newenvironment{answer}[1]
 {\newcommand\colboxcolor{#1}%
 \begin{lrbox}{\riddlebox}%
-\begin{minipage}{\dimexpr\columnwidth-2\fboxsep\relax} \textbf{Our answer:} \\ \itshape }
+\begin{minipage}{\dimexpr\columnwidth-2\fboxsep\relax} \textbf{Our answer:} \\ }
+% \begin{minipage}{\dimexpr\columnwidth-2\fboxsep\relax} \textbf{Our answer:} \\ \itshape }
 {\end{minipage}\end{lrbox}%
 \begin{center}
   \colorbox[HTML]{\colboxcolor}{\usebox{\riddlebox}}
