@@ -83,25 +83,15 @@ match m with
   (a,b,c,d,e,f)
 end.
 \end{lstlisting}
-% The definitions of the encoding and decoding functions are detailed later
-% in this section.
 
-Our formalization differs slightly from the RFC. Indeed in order to optimize the
+Our formalization matches perfectly the RFC. In order to optimize the
 number of calls to \texttt{CSWAP} (defined in \sref{cswap})
-the RFC uses an additional variable to decide
-whether a conditional swap is required or not. Our description of the ladder
-follows strictly the shape of the exponent as described in \aref{alg:montgomery-ladder}.
-This divergence is allowed by the RFC:
-\emph{``Note that these formulas are slightly different from Montgomery's
-original paper. Implementations are free to use any correct formulas.''}~\cite{rfc7748}.
-We later prove our ladder correct in that respect (\sref{sec:maths}).
+the RFC uses an additional variable to decide whether a conditional swap
+is required or not, this differ from \aref{alg:montgomery-ladder}.
 
-% TweetNaCl implements X25519 with numbers represented as arrays.
-% RFC~7748 defines X25519 over field elements. We show the equivalence between
-% the different number representations. To simplify our proof, we define operations
-% used in the ladder over generic types \coqe{T} and \coqe{T'}.
-% Those types are later instantiated as list of integers, integers, natural
-% numbers, or field elements.
+Later in our proof we use a simpler description of the ladder
+(\coqe{montgomery_rec}) which follows strictly the shape of
+the exponent and prove those ladder equivalent.
 
 \emph{``To implement the X25519(k, u) [...] functions (where k is
 the scalar and u is the u-coordinate), first decode k and u and then
@@ -109,11 +99,6 @@ perform the following procedure, which is taken from [curve25519] and
 based on formulas from [montgomery].  All calculations are performed
 in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
 
-% In TweetNaCl, as described in \sref{subsec:Number-TweetNaCl},
-% elements of $\F{p}$ are represented as big integers using radix $2^{16}$.
-% We use a direct mapping to represent such an array of limbs
-% as a list of integers in Coq.
-% RFC~7748 states that \emph{``All calculations are performed in GF(p), i.e., they are performed modulo p.''}
 Operations used in the Montgomery ladder of \coqe{RFC} are performed on
 integers (See Appendix~\ref{subsubsec:RFC-Coq}).
 The reduction modulo $\p$ is deferred to the very end as part of the
@@ -122,7 +107,6 @@ We define the little-endian projection to integers as follows.
 \begin{dfn}
 Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
 a function given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
-% We define it in Coq as:
 \end{dfn}
 \begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
 Fixpoint ZofList {n:Z} (a:list Z) : Z :=
