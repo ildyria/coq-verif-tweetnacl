@@ -282,7 +282,7 @@ By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL\&ADD} by a
 combination of the formulae from \lref{lemma:xADD} and \lref{lemma:xDBL},
 we define a ladder \coqe{opt_montgomery} (in which $\K$ has not been fixed yet),
 similar to the one used in TweetNaCl.
-This definition is closely related to \coqe{montgomery_rec} that was used
+This definition is closely related to \coqe{montgomery_rec_swap} that was used
 in the definition of \coqe{RFC}, and is easily proved to correspond to it.
 In Coq this correspondence proof is hidden in the proof of \coqe{RFC_Correct} shown above.
 

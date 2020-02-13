@@ -12,7 +12,7 @@ More specifically, we formalized X25519 with the following definition:
 Definition RFC (n: list Z) (p: list Z) : list Z :=
   let k := decodeScalar25519 n in
   let u := decodeUCoordinate p in
-  let t := montgomery_rec
+  let t := montgomery_rec_swap
     255  (* iterate 255 times  *)
     k    (* clamped n          *)
     1    (* x_2                *)
@@ -21,60 +21,66 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
     1    (* z_3                *)
     0    (* dummy              *)
     0    (* dummy              *)
-    u    (* x_1                *) in
+    u    (* x_1                *)
+    0    (* previous bit = 0   *) in
   let a := get_a t in
   let c := get_c t in
   let o := ZPack25519 (Z.mul a (ZInv25519 c))
   in encodeUCoordinate o.
 \end{lstlisting}
 
-In this definition \coqe{montgomery_rec} is a generic ladder instantiated
+In this definition \coqe{montgomery_rec_swap} is a generic ladder instantiated
 with integers and defined as follows:
 \begin{lstlisting}[language=Coq]
-Fixpoint montgomery_rec (m : nat) (z : T')
-(a: T) (b: T) (c: T) (d: T) (e: T) (f: T) (x: T) :
-(* a: x2              *)
-(* b: x3              *)
-(* c: z2              *)
-(* d: z3              *)
-(* e: temporary  var   *)
-(* f: temporary  var   *)
-(* x: x1              *)
+Fixpoint montgomery_rec_swap (m : nat) (z : T')
+(a: T) (b: T) (c: T) (d: T) (e: T) (f: T) (x: T) (swap:Z) :
+(* a:    x2                 *)
+(* b:    x3                 *)
+(* c:    z2                 *)
+(* d:    z3                 *)
+(* e:    temporary  var      *)
+(* f:    temporary  var      *)
+(* x:    x1                 *)
+(* swap: previous bit value  *)
 (T * T * T * T * T * T) :=
 match m with
-| 0%nat => (a,b,c,d,e,f)
 | S n =>
   let r := Getbit (Z.of_nat n) z in
-    (* k_t = (k >> t) & 1                         *)
-    (* swap <- k_t                                *)
-  let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
-    (* (x_2, x_3) = cswap(swap, x_2, x_3)         *)
-  let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
-    (* (z_2, z_3) = cswap(swap, z_2, z_3)         *)
-  let e := a + c in (* A  = x_2+ z_2              *)
-  let a := a - c in (* B  = x_2- z_2              *)
-  let c := b + d in (* C  = x_3+ z_3              *)
-  let b := b - d in (* D  = x_3- z_3              *)
-  let d := e^2   in (* AA = A^2                   *)
-  let f := a^2   in (* BB = B^2                   *)
-  let a := c * a in (* CB = C * B                 *)
-  let c := b * e in (* DA = D * A                 *)
-  let e := a + c in (* x_3= (DA + CB)^2           *)
-  let a := a - c in (* z_3= x_1* (DA - CB)^2      *)
-  let b := a^2   in (* z_3= x_1* (DA - CB)^2      *)
-  let c := d - f in (* E  = AA - BB               *)
+    (* k_t = (k >> t) & 1                               *)
+  let swap := Z.lxor swap r in
+    (* swap ^= k_t                                      *)
+  let (a, b) := (Sel25519 swap a b, Sel25519 swap b a) in
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)               *)
+  let (c, d) := (Sel25519 swap c d, Sel25519 swap d c) in
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)               *)
+  let e := a + c in (* A  = x_2+ z_2                    *)
+  let a := a - c in (* B  = x_2- z_2                    *)
+  let c := b + d in (* C  = x_3+ z_3                    *)
+  let b := b - d in (* D  = x_3- z_3                    *)
+  let d := e^2   in (* AA = A^2                         *)
+  let f := a^2   in (* BB = B^2                         *)
+  let a := c * a in (* CB = C * B                       *)
+  let c := b * e in (* DA = D * A                       *)
+  let e := a + c in (* x_3= (DA + CB)^2                 *)
+  let a := a - c in (* z_3= x_1* (DA - CB)^2            *)
+  let b := a^2   in (* z_3= x_1* (DA - CB)^2            *)
+  let c := d - f in (* E  = AA - BB                     *)
   let a := c * C_121665 in
-                    (* z_2 = E * (AA + a24 * E)   *)
-  let a := a + d in (* z_2 = E * (AA + a24 * E)   *)
-  let c := c * a in (* z_2 = E * (AA + a24 * E)   *)
-  let a := d * f in (* x_2 = AA * BB              *)
-  let d := b * x in (* z_3 = x_1* (DA - CB)^2     *)
-  let b := e^2   in (* x_3 = (DA + CB)^2          *)
-  let (a, b) := (Sel25519 r a b, Sel25519 r b a) in
-    (* (x_2, x_3) = cswap(swap, x_2, x_3)         *)
-  let (c, d) := (Sel25519 r c d, Sel25519 r d c) in
-    (* (z_2, z_3) = cswap(swap, z_2, z_3)         *)
-  montgomery_rec n z a b c d e f x
+                    (* z_2 = E * (AA + a24 * E)         *)
+  let a := a + d in (* z_2 = E * (AA + a24 * E)         *)
+  let c := c * a in (* z_2 = E * (AA + a24 * E)         *)
+  let a := d * f in (* x_2 = AA * BB                    *)
+  let d := b * x in (* z_3 = x_1* (DA - CB)^2           *)
+  let b := e^2   in (* x_3 = (DA + CB)^2                *)
+  montgomery_rec_swap n z a b c d e f x r
+    (* swap = k_t                                       *)
+
+| 0%nat =>
+  let (a, b) := (Sel25519 swap a b, Sel25519 swap b a) in
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)               *)
+  let (c, d) := (Sel25519 swap c d, Sel25519 swap d c) in
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)               *)
+  (a,b,c,d,e,f)
 end.
 \end{lstlisting}
 % The definitions of the encoding and decoding functions are detailed later
