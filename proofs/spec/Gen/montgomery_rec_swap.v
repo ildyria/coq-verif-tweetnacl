@@ -30,12 +30,6 @@ Fixpoint montgomery_rec_swap (m : nat) (z : T')
 (* x: x1              *)
 (T * T * T * T * T * T) :=
 match m with
-| 0%nat => 
-  let (a, b) := (Sel25519 swap a b, Sel25519 swap b a) in
-    (* (x_2, x_3) = cswap(swap, x_2, x_3)            *)
-  let (c, d) := (Sel25519 swap c d, Sel25519 swap d c) in
-    (* (z_2, z_3) = cswap(swap, z_2, z_3)            *)
-  (a,b,c,d,e,f)
 | S n =>
   let r := Getbit (Z.of_nat n) z in
     (* k_t = (k >> t) & 1                            *)
@@ -64,11 +58,13 @@ match m with
   let a := d * f in   (* x_2 = AA * BB               *)
   let d := b * x in   (* z_3 = x_1 * (DA - CB)^2     *)
   let b := e ^2 in    (* x_3 = (DA + CB)^2           *)
-(*   let (a, b) := (Sel25519 r a b, Sel25519 r b a) in *)
-    (* (x_2, x_3) = cswap(swap, x_2, x_3)            *)
-(*   let (c, d) := (Sel25519 r c d, Sel25519 r d c) in *)
-    (* (z_2, z_3) = cswap(swap, z_2, z_3)            *)
   montgomery_rec_swap n z a b c d e f x r
+| 0%nat =>
+  let (a, b) := (Sel25519 swap a b, Sel25519 swap b a) in
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)            *)
+  let (c, d) := (Sel25519 swap c d, Sel25519 swap d c) in
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)            *)
+  (a,b,c,d,e,f)
 end.
 
 Close Scope Z.
