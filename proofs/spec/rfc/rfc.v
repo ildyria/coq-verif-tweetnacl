@@ -6,12 +6,16 @@ From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Import ListsOp.Export.
 From Tweetnacl Require Import Gen.Get_abcdef.
 From Tweetnacl Require Import Gen.montgomery_rec.
+From Tweetnacl Require Import Gen.montgomery_rec_swap.
+From Tweetnacl Require Import Gen.montgomery_rec_swap_eq.
 From Tweetnacl Require Import Low.Prep_n.
 From Tweetnacl Require Import Low.Unpack25519.
 From Tweetnacl Require Import Mid.Pack25519.
 From Tweetnacl Require Import Mid.Inv25519.
 From Tweetnacl Require Import Mid.Unpack25519.
 From Tweetnacl Require Import Mid.Prep_n.
+From Tweetnacl Require Import Mod.
+From Tweetnacl Require Import Mid.AMZubSqSel.
 From Tweetnacl Require Import Instances.
 From Tweetnacl Require Import Mid.Crypto_Scalarmult.
 From Tweetnacl Require Import Low.Crypto_Scalarmult.
@@ -41,7 +45,7 @@ Definition encodeUCoordinate (x: Z) : list Z :=
 Definition RFC (n: list Z) (p: list Z) : list Z :=
   let k := decodeScalar25519 n in
   let u := decodeUCoordinate p in
-  let t := montgomery_rec
+  let t := montgomery_rec_swap
     255  (* iterate 255 times *)
     k    (* clamped n         *)
     1    (* x_2                *)
@@ -50,7 +54,8 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
     1    (* z_3                *)
     0    (* dummy             *)
     0    (* dummy             *)
-    u    (* x_1                *) in
+    u    (* x_1                *)
+    0    (*initial value of swap *) in
   let a := get_a t in
   let c := get_c t in
   let o := ZPack25519 (Z.mul a (ZInv25519 c))
@@ -66,12 +71,20 @@ Proof.
   move => n p Hln Hlp Hbn Hbp.
   rewrite /RFC /encodeUCoordinate /decodeUCoordinate /decodeScalar25519.
   rewrite Crypto_Scalarmult_Eq2 ; try assumption.
+  rewrite (@montgomery_rec_swap_eq Z Z modP Z_Ops).
   apply f_equal.
   rewrite /ZCrypto_Scalarmult.
   rewrite Unpack25519'_Zlength.
   rewrite clamp_ZofList_eq_Zlength.
   reflexivity.
-  all: assumption.
+  all: try assumption.
+  all: clear; simpl.
+  - rewrite /GetBit.Mid.getbit.
+    move => n' z ; flatten.
+    + left => //.
+    + assert(Hland:= and_0_or_1 z) ; omega.
+    + assert(Hland:= and_0_or_1 (Z.shiftr z n')) ; omega.
+  all: rewrite /Mid.Sel25519 => //=.
 Qed.
 
 Open Scope ring_scope.
