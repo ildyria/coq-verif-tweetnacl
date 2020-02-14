@@ -15,7 +15,7 @@ TweetNaCl functions take pointers as arguments. By convention the first one
 points to the output array \texttt{o}. It is then followed by the input arguments.
 
 Due to some limitations of the VST, indexes used in \TNaCle{for} loops have to be
-of type \TNaCle{int} instead of \TNaCle{i64}. We change the code to allow our
+of type \TNaCle{int} instead of \TNaCle{i64}. We changed the code to allow our
 proofs to carry through. We believe this does not affect the correctness of the
 original code. A complete diff of our modifications to TweetNaCl can be found in
 Appendix~\ref{verified-C-and-diff}.
@@ -67,7 +67,7 @@ This function is considerably more complex as it needs to convert
 to a \emph{unique} representation, i.e., also fully reduce modulo
 $p$ and remove the redundancy of the radix-$2^{16}$ representation.
 
-The C definition of those functions are available in
+The C definitions of those functions are available in
 Appendix \ref{verified-C-and-diff}.
 
 \subheading{The Montgomery ladder.}
@@ -126,4 +126,4 @@ int crypto_scalarmult(u8 *q,
 }
 \end{lstlisting}
 
-Also note that lines 10 \& 11 represent the ``clamping'' operation.
+Note that lines 10 \& 11 represent the ``clamping'' operation.

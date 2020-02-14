@@ -1,5 +1,5 @@
-Then using ``Reflections'' techniques (chapter 15 in \cite{CpdtJFR}), we prove
-the functional correctness of the inversion over \Zfield.
+Using ``Reflections'' techniques (chapter 15 in \cite{CpdtJFR}), we prove
+the functional correctness of the multiplicative inverse over \Zfield.
 \begin{lemma}
 \label{cor:inv_comput_field}
 \Coqe{Inv25519} computes an inverse in \Zfield.
@@ -16,7 +16,7 @@ Corollary Inv25519_Zpow_GF : forall (g:list Z),
 By using each function \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
 \coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519};
 \coqe{montgomery_rec}, we defined in Coq \coqe{Crypto_Scalarmult} and with VST
-proved it mimics the exact behavior of X25519 in TweetNaCl.
+proved it matches the exact behavior of X25519 in TweetNaCl.
 \end{sloppypar}
 
 \begin{sloppypar}

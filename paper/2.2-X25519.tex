@@ -17,15 +17,16 @@ the \xcoord $x_P \in \F{p}$ of a point in $E(\F{p^2})$,
 using the standard mapping of integers modulo $p$ to elements in $\F{p}$.
 
 The X25519 function first computes a scalar $n'$ from $n$ by setting
-bits at position 0, 1, 2 and 255 to \texttt{0}; and to \texttt{1} bit at
-position 254.
+bits at position 0, 1, 2 and 255 to \texttt{0}; and at position 254
+to \texttt{1}.
 This operation is often called ``clamping'' of the scalar $n$.
 Note that $n' \in 2^{254} + 8\{0,1,\ldots,2^{251}-1\}$.
 X25519 then computes the \xcoord of $n'\cdot P$.
 
-RFC~7748~\cite{rfc7748} standardized the X25519 Diffie–Hellman key-exchange algorithm.
+RFC~7748~\cite{rfc7748} standardize the X25519 Diffie–Hellman key-exchange algorithm.
 Given the base point $B$ where $X_B=9$, each party generates a secret random number
 $s_a$ (respectively $s_b$), and computes $X_{P_a}$ (respectively $X_{P_b}$), the
 \xcoord of $P_A = s_a \cdot B$ (respectively $P_B = s_b \cdot B$).
-The parties exchange $X_{P_a}$ and $X_{P_b}$ and compute their shared secret with
+The parties exchange $X_{P_a}$ and $X_{P_b}$ and compute their shared secret
+$s_a \cdot  s_b \cdot B$ with
 X25519 on $s_a$ and $X_{P_b}$ (respectively $s_b$ and $X_{P_a}$).

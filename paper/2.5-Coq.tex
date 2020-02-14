@@ -33,7 +33,7 @@ memory shared such as being disjoint.
 We discuss this limitation further in \sref{subsec:with-VST}.
 
 The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework
-which uses Separation logic proven correct with respect to CompCert semantics
+which uses separation logic (proven correct with respect to CompCert semantics)
 to prove the functional correctness of C programs.
 The first step consists of translating the source code into Clight,
 an intermediate representation used by CompCert.
@@ -41,4 +41,4 @@ For such purpose one uses the parser of CompCert called \texttt{clightgen}.
 In a second step one defines the Hoare triple representing the specification of
 the piece of software one wants to prove. Then using the VST, one uses a strongest
 postcondition approach to prove the correctness of the triple.
-This approach can be seen as a forward symbolic execution of the program.
+This can be seen as a forward symbolic execution of the program.

@@ -4,7 +4,7 @@
 In this section we present our formalization of RFC~7748~\cite{rfc7748}.
 
 \begin{informaltheorem}
-The specification of X25519 in RFC~7748 is formalized by \Coqe{RFC} in Coq.
+The specification of X25519 in RFC~7748 is formalized by the function \Coqe{RFC} in Coq.
 \end{informaltheorem}
 
 More specifically, we formalized X25519 with the following definition:
@@ -84,14 +84,15 @@ match m with
 end.
 \end{lstlisting}
 
-Our formalization matches perfectly the RFC. In order to optimize the
+The comments in the ladder represent the text from the RFC which
+our formalization matches perfectly. In order to optimize the
 number of calls to \texttt{CSWAP} (defined in \sref{cswap})
 the RFC uses an additional variable to decide whether a conditional swap
-is required or not, this differ from \aref{alg:montgomery-ladder}.
+is required or not.
 
 Later in our proof we use a simpler description of the ladder
-(\coqe{montgomery_rec}) which follows strictly the shape of
-the exponent and prove those ladder equivalent.
+(\coqe{montgomery_rec}) which follows strictly the \aref{alg:montgomery-ladder}
+and prove those ladder equivalent.
 
 \emph{``To implement the X25519(k, u) [...] functions (where k is
 the scalar and u is the u-coordinate), first decode k and u and then

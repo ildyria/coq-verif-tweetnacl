@@ -84,10 +84,10 @@ As postcondition we have conditions like:
   We show that the computation for \VSTe{RFC} fits in  \TNaCle{u8[32]}.
 \end{itemize}
 
-computes the same result as \VSTe{RFC} in Coq provided that inputs are within
-their respective bounds: arrays of 32 bytes.
+\TNaCle{crypto_scalarmult} computes the same result as \VSTe{RFC}
+in Coq provided that inputs are within their respective bounds: arrays of 32 bytes.
 
-The correctness of this specification is formally proven in Coq with
+The correctness of this specification is formally proven in Coq as
 \coqe{Theorem body_crypto_scalarmult}.
 
 % \begin{sloppypar}
@@ -141,18 +141,19 @@ we define an additional parameter $k$ with values in $\{0,1,2,3\}$:
   \item else there is no aliasing.
 \end{itemize}
 In the proof of our specification, we do a case analysis over $k$ when needed.
-This solution does not generate all the possible cases of aliasing over 3 pointers
-(\eg \texttt{o} = \texttt{a} = \texttt{b}) but it is enough to cover our needs.
+This solution does not cover all the possible cases of aliasing over 3 pointers
+(\eg \texttt{o} = \texttt{a} = \texttt{b}) but it is enough to satisfy our needs.
 
 \subheading{Improving speed.}
 To make the verification the smoothest, the Coq formal definition of the function
-should be as close as possible to the C implementation behavior.
+should be as close as possible to the C implementation.
 Optimizations of such definitions are often counter-productive as they increase the
-amount of proofs required for \eg bounds checking, loops invariants.
+amount of proofs required for \eg bounds checking, loop invariants.
 
 In order to further speed-up the verification process, to prove the specification
 \TNaCle{crypto_scalarmult}, we only need the specification of the subsequently
 called functions (\eg \TNaCle{M}).
-This provide with multiple advantages: the verification by the Coq kernel can be
+This provide with multiple advantages: the verification by Coq can be
 done in parallel and multiple users can work on proving different functions at
-the same time. For the sake of completeness we proved all intermediate functions.
+the same time.
+% We proved all intermediate functions.
