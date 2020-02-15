@@ -49,55 +49,65 @@ We do this by extending the Coq library
 for elliptic curves~\cite{BartziaS14} by Bartzia and Strub to
 support Montgomery curves, and in particular Curve25519.
 
-To our knowledge, this is the first effort 
-presenting a computer-verified proof of correctness of
-ECC software from a fairly low-level real-world implementation all the way up
+To our knowledge, this verification effort is the first to not just
+connect a low-level implementation to a higher-level implementation (or ``specification''),
+but to prove correctness all the way up
 to the mathematical definition in terms of scalar multiplication on an elliptic curve.
+As a consequence, the result of this paper can readily be used in mechanized proofs of
+higher-level protocols that work with the mathematical definition of X25519.
+Also, connecting our formalization of the RFC to the mathematical definition
+significantly increases trust into the correctness of the formalization and
+reduces the effort of manual auditing of that formalization.
 
 \subheading{Related work.}
-Two methodologies exist to get formal guarantees that software meets its specification.
-The first is to write a formal specification and then synthesize
-machine code by refinement; the second is to formalize
-a specification and then verify that some
-implementation satisfies it.
+The field of computer-aided cryptography, i.e., using computer-verified proofs
+to strengthen our trust into cryptographic constructions and cryptographic software,
+has seen massive progress in the recent past. This progress, the state of the art,
+and future challenges have recently been compiled in a SoK paper by Barbosa,
+Barthe, Bhargavan, Blanchet, Cremers, Liao, and Parno~\cite{BBB+19}.
+This SoK paper, in Section III.C, also gives an overview of verification efforts of 
+X25519 software. What all the previous approaches have in common is that they
+prove correctness by verifying that some low-level implementation matches a
+higher-level specification. This specification is kept in terms of a sequence
+of finite-field operations, typically close to the pseudocode in RFC 7748.
 
-The synthesis approach was used by Zinzindohou{\'{e}}, Bartzia, and Bhargavan to build a verified extensible
-library of elliptic curves~\cite{Zinzindohoue2016AVE} in F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}.
-This served as ground work for the cryptographic library HACL*~\cite{zinzindohoue2017hacl}
-used in the NSS suite from Mozilla.
+There are two general approaches to establish this link 
+between low-level code and higher-level specification:
+Synthesize low-level code from the specification
+or write the low-level code by hand and prove that it
+matches the specification.
 
-Coq not only allows verification but also synthesis~\cite{CpdtJFR}.
-Erbsen, Philipoom, Gross, and Chlipala make use of it to have
-correct-by-construction finite field arithmetic, which is used
-to synthesize certified elliptic-curve crypto software~\cite{Philipoom2018CorrectbyconstructionFF,Erbsen2017CraftingCE,Erbsen2016SystematicSO}.
-This software suite is now being used in BoringSSL~\cite{fiat-crypto}.
+\todo{Say something about all X25519 implementations from the SoK paper.}
 
-The verification approach has been used to prove the correctness of OpenSSL's
-implementations of HMAC~\cite{Beringer2015VerifiedCA}, mbedTLS HMAC-DRBG~\cite{2017-Ye} and SHA-256~\cite{2015-Appel}.
-In terms of languages and tooling, this work is closest to what we present here,
-but our work considers an asymmetric primitive and provides computer-verified
-proofs up to the mathematical definition of the group theory behind elliptic curves.
 
-When considering the target of the verification effort, the closest work
-to this paper is presented in~\cite{Chen2014VerifyingCS}, which presents
-a mechanized proof of two assembly-level implementations of the core function
-of X25519.
+%The synthesis approach was used by Zinzindohou{\'{e}}, Bartzia, and Bhargavan to build a verified extensible
+%library of elliptic curves~\cite{Zinzindohoue2016AVE} in F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}.
+%This served as ground work for the cryptographic library HACL*~\cite{zinzindohoue2017hacl}
+%used in the NSS suite from Mozilla.
+%
+%Coq not only allows verification but also synthesis~\cite{CpdtJFR}.
+%Erbsen, Philipoom, Gross, and Chlipala make use of it to have
+%correct-by-construction finite field arithmetic, which is used
+%to synthesize certified elliptic-curve crypto software~\cite{Philipoom2018CorrectbyconstructionFF,Erbsen2017CraftingCE,Erbsen2016SystematicSO}.
+%This software suite is now being used in BoringSSL~\cite{fiat-crypto}.
+
+
+All of these X25519 verification efforts listed in~\cite{BBB+19} use a clean-slate
+approach to obtain code and proofs. 
+Our effort targets existing software and we are aware of only one earlier 
+work in the context of X25519 following a similar approach. 
+In~\cite{Chen2014VerifyingCS}, Chen, Hsu, Lin, Schwabe, Tsai, Wang, Yang, and Yang present
+a mechanized proof of two assembly-level implementations of the core function of X25519.
 The proof in~\cite{Chen2014VerifyingCS} takes a different approach from ours.
-It uses heavy annotation of code in order to ``guide'' a SAT solver,
+It uses heavy annotation of code in order to ``guide'' a SAT solver;
 also, it does not cover the full X25519 functionality and does
 not make the link to the mathematical definition from~\cite{Ber06}.
-We only need to annotate the specifications and loop invariants.
 
-%Synthesis approaches force the user to depend on generated code which may not
-%be optimal (speed, compactness) and they require compiler tweaks in order
-%to achieve the desired properties. On the other hand, carefully handcrafted
-%optimized code forces the verifier to consider all the possible special cases
-%and write a low-level specification of the details of the code in order to prove
-%the correctness of the algorithm.
-
-%It has to be noted that Curve25519 implementations have already been under scrutiny
-%However in this paper we provide a proofs of correctness and soundness of a C program up to
-%the theory of elliptic curves.
+Finally, in terms of languages and tooling the work closest to what we present here
+is the proof of correctness of OpenSSL's
+implementations of HMAC~\cite{Beringer2015VerifiedCA}, 
+and mbedTLS' implementations of 
+HMAC-DRBG~\cite{2017-Ye} and SHA-256~\cite{2015-Appel}.
 
 \subheading{Reproducing the proofs.}
 To maximize reusability of our results we placed the code of our formal proof
