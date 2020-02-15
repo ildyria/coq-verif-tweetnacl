@@ -19,7 +19,7 @@ As follow, we provide the explanations of the above changes to TweetNaCl's code.
 
   \item lines 29-31; lines 60-62: VST does not support \TNaCle{for} loops over \TNaCle{i64}, we convert it into an \TNaCle{int}.
 
-  \item lines 39 \& 41: We Initialize \TNaCle{m} with \TNaCle{0}.
+  \item lines 39 \& 41: We initialize \TNaCle{m} with \TNaCle{0}.
   This change allows us to prove the functional correctness of \TNaCle{pack25519} without having to deal with an array containing
   a mix of uninitialized and initialized values.
   A hand iteration over the loop trivially shows that no uninitialized values are used.

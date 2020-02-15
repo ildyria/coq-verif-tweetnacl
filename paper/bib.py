@@ -261,7 +261,7 @@ def generate_entry(block, summary):
             for b in block['sections']:
                 diagnostic(LightPurple('extra field:'.ljust(17)) + b[0].ljust(13) + b[1])
                 if not config['purify']:
-                    output += '  _{:14}= {},\n'.format(b[0],b[1])
+                    output += '  {:14}= {},\n'.format(b[0],b[1])
 
         diagnostic(DarkGray('{}---------------------------'.format('done'.ljust(9,'-'))))
 

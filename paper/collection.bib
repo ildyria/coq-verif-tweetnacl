@@ -1,10 +1,38 @@
 @STRING{LNCS = {LNCS}}
 @STRING{SV = {Springer}}
 
+@inproceedings{10.1145/3133956.3134078,
+  author         = {Jos\'{e} Bacelar Almeida and
+                    Manuel Barbosa and
+                    Gilles Barthe and
+                    Arthur Blot and
+                    Benjamin Gr\'{e}goire and
+                    Vincent Laporte and
+                    Tiago Oliveira and
+                    Hugo Pacheco and
+                    Benedikt Schmidt and
+                    Pierre-Yves Strub},
+  title          = {Jasmin: High-Assurance and High-Speed Cryptography},
+  booktitle      = {Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security},
+  year           = {2017},
+
+  series         = {CCS ’17},
+  pages          = {1807–1823},
+  address        = {New York, NY, USA},
+  publisher      = {ACM},
+
+  doi           = {10.1145/3133956.3134078},
+  isbn          = {9781450349468},
+  keywords      = {verified compiler, cryptographic implementations, safety, constant-time security},
+  location      = {Dallas, Texas, USA},
+  numpages      = {17},
+  url           = {https://doi.org/10.1145/3133956.3134078},
+}
+
 @article{1969-Hoare,
   author         = {C. A. R. Hoare},
   title          = {An Axiomatic Basis for Computer Programming},
-  journal        = {Commun. ACM},
+  journal        = {ACM},
   year           = {1969},
 
   volume         = {12},
@@ -12,7 +40,7 @@
   pages          = {576-580},
   note           = {\url{http://doi.acm.org/10.1145/363235.363259}},
 
-  _publisher     = {ACM},
+  publisher     = {ACM},
 }
 
 @article{2007-Blazy-C-chronique,
@@ -26,7 +54,7 @@
   pages          = {1195-1200},
   note           = {\url{http://hal.inria.fr/inria-00292049/}},
 
-  _publisher     = {Lavoisier},
+  publisher     = {Lavoisier},
 }
 
 @inproceedings{2012-Appel,
@@ -54,7 +82,7 @@
   pages          = {7:1--7:31},
   note           = {\url{http://doi.acm.org/10.1145/2701415}},
 
-  _publisher     = {ACM},
+  publisher     = {ACM},
 }
 
 @inproceedings{2017-Ye,
@@ -74,11 +102,11 @@
   publisher      = {ACM},
   note           = {\url{https://doi.org/10.1145/3133956.3133974}},
 
-  _doi           = {10.1145/3133956.3133974},
-  _isbn          = {9781450349468},
-  _keywords      = {formal verification, pseudo-random generator, hmac-drbg, functional specification},
-  _location      = {Dallas, Texas, USA},
-  _numpages      = {14},
+  doi           = {10.1145/3133956.3133974},
+  isbn          = {9781450349468},
+  keywords      = {formal verification, pseudo-random generator, hmac-drbg, functional specification},
+  location      = {Dallas, Texas, USA},
+  numpages      = {14},
 }
 
 @misc{BBB+19,
@@ -196,7 +224,7 @@
   pages          = {263-288},
   note           = {\url{http://gallium.inria.fr/~xleroy/publi/Clight.pdf}},
 
-  _publisher     = SV,
+  publisher     = SV,
 }
 
 @inproceedings{Chen2014VerifyingCS,
@@ -227,7 +255,7 @@
   pages          = {1-93},
   note           = {\url{http://adam.chlipala.net/papers/CpdtJFR/}},
 
-  _publisher     = {University of Bologna},
+  publisher     = {University of Bologna},
 }
 
 @inproceedings{DBLP:journals/corr/BhargavanDFHPRR17,
@@ -312,7 +340,7 @@
   pages          = {363--446},
   note           = {\url{http://gallium.inria.fr/~xleroy/publi/compcert-backend.pdf}},
 
-  _publisher     = SV,
+  publisher     = SV,
 }
 
 @article{Mon85,
@@ -326,7 +354,7 @@
   pages          = {519--521},
   note           = {\url{http://www.ams.org/journals/mcom/1985-44-170/S0025-5718-1985-0777282-X/S0025-5718-1985-0777282-X.pdf}},
 
-  _publisher     = {AMS},
+  publisher     = {AMS},
 }
 
 @article{MontgomerySpeeding,
@@ -340,7 +368,7 @@
   pages          = {243--243},
   note           = {\url{http://links.jstor.org/sici?sici=0025-5718(198701)48:177<243:STPAEC>2.0.CO;2-3}},
 
-  _publisher     = {AMS},
+  publisher     = {AMS},
 }
 
 @mastersthesis{Philipoom2018CorrectbyconstructionFF,
@@ -405,14 +433,15 @@
   number         = {1-4},
   pages          = {367--422},
 
-  _publisher     = SV,
+  publisher     = SV,
 }
 
 @misc{coq-faq,
 
-  key           = {INRIA},
   title          = {{The Coq Proof Assistant} -- {Frequently Asked Questions}},
   note           = {\url{https://coq.inria.fr/faq}},
+
+  key           = {INRIA},
 }
 
 @misc{cryptoeprint:2015:625,
@@ -435,7 +464,31 @@
   number         = {3},
   note           = {\url{https://eprint.iacr.org/2017/212}},
 
-  _publisher     = SV,
+  publisher     = SV,
+}
+
+@misc{cryptoeprint:2019:757,
+
+  author         = {Jonathan Protzenko and
+                    Bryan Parno and
+                    Aymeric Fromherz and
+                    Chris Hawblitzel and
+                    Marina Polubelova and
+                    Karthikeyan Bhargavan and
+                    Benjamin Beurdouche and
+                    Joonwon Choi and
+                    Antoine Delignat-Lavaud and
+                    Cedric Fournet and
+                    Natalia Kulatova and
+                    Tahina Ramananandro and
+                    Aseem Rastogi and
+                    Nikhil Swamy and
+                    Christoph Wintersteiger and
+                    Santiago Zanella-Beguelin},
+  title          = {EverCrypt: A Fast, Verified, Cross-Platform Cryptographic Provider},
+  howpublished   = {Cryptology ePrint Archive, Report 2019/757},
+  year           = {2019},
+  note           = {\url{https://eprint.iacr.org/2019/757}},
 }
 
 @inproceedings{fiat-crypto,
@@ -463,7 +516,7 @@
   pages          = {1382--1393},
   note           = {\url{https://www.ams.org/notices/200811/tx081101382p.pdf}},
 
-  _publisher     = {AMS},
+  publisher     = {AMS},
 }
 
 @misc{rfc4253,
