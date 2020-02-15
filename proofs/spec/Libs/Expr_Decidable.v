@@ -8,14 +8,6 @@ Require Import Tweetnacl.Libs.Decidable.
 Require Import Tweetnacl.Libs.Term_Decidable.
 
 Open Scope Z_scope.
-(*
-Instance term_dec : Decidable := 
-{
-  decide := term_eqb;
-  denote := term_denote;
-  decide_impl := term_eqb_impl
-}.
- *)
 
 Module TermOrder <: TotalLeBool.
     Definition t := term.

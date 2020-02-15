@@ -12,8 +12,6 @@ Definition C_25519 := [65517;65535;65535;65535;65535;65535;65535;65535;65535;655
 
 End Low.
 
-(* Eval compute in ZofList 16 c_121665. *)
-
 Lemma C_121665_bounds : Forall (fun x0 : ℤ => 0 <= x0 < 2 ^ 16) Low.C_121665.
 Proof. unfold Low.C_121665;
 repeat match goal with

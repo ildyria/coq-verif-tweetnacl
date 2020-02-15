@@ -32,22 +32,6 @@ Local Instance list_term_dec : Decidable := Build_Decidable
 
 Local Ltac solve_this_thing_please_autorewrite i j:= 
     subst i;
-(*    let H' := fresh in
-    gen_i H' j ; simpl;
-    repeat rewrite outer_M_i_j_eq by abstract omega;
-    repeat rewrite inner_M_i_j_eq by abstract omega;
-    repeat rewrite Znth_nth by abstract omega;
-    repeat rewrite upd_Znth_upd_nth by omega;
-    Grind_add_Z;
-    compute;
-    repeat rewrite Z.add_0_r;
-    repeat rewrite Z.add_0_l;
-    repeat rewrite Z.add_assoc;
-    reflexivity.
-
-  Opaque Z.add.
-  Opaque Z.mul.*)
-
     let H' := fresh in
     gen_i H' j ; simpl;
     repeat orewrite inner_M_i_j_eq;
@@ -101,26 +85,6 @@ Proof.
     repeat (destruct H ; [solve_this_thing_please_autorewrite i j|]).
     solve_this_thing_please_autorewrite i j.
 Qed.
-(*
-  intros i j a b Ha Hb Hi Hj Hii.
-  rewrite Zlength_correct in Ha.
-  rewrite Zlength_correct in Hb.
-  assert(Ha' : (length a = 16)%nat) by go.
-  assert(Hb' : (length b = 16)%nat) by go.
-  repeat (destruct a ; tryfalse).
-  repeat (destruct b ; tryfalse).
-  rewrite <- Zlength_correct in *.
-  rewrite (outer_M_fix_equation i).
-  flatten.
-    apply Z.leb_le in Eq ; omega.
-    clear Eq.
-  assert(H: i = 0 \/ i = 1 \/ i = 2 \/ i = 3) by omega.
-    destruct H ; try (subst i ; omega).
-  Opaque outer_M_fix.
-    repeat (destruct H ; [solve_this_thing_please_autorewrite i j|]). (* i = 1 -> 14 *)
-    solve_this_thing_please_autorewrite i j.
-Qed.
-*)
 
 Lemma outer_M_fix_i_1'' : forall i j contents_a contents_b,
 Zlength contents_a = 16 ->
@@ -161,26 +125,6 @@ Proof.
     repeat (destruct H ; [solve_this_thing_please_autorewrite i j|]).
     solve_this_thing_please_autorewrite i j.
 Qed.
-(* Admitted. *)
-(*
-  intros i j a b Ha Hb Hi Hj Hii.
-  rewrite Zlength_correct in Ha.
-  rewrite Zlength_correct in Hb.
-  assert(Ha' : (length a = 16)%nat) by go.
-  assert(Hb' : (length b = 16)%nat) by go.
-  repeat (destruct a ; tryfalse).
-  repeat (destruct b ; tryfalse).
-  rewrite <- Zlength_correct in *.
-  rewrite (outer_M_fix_equation i).
-  flatten.
-    apply Z.leb_le in Eq ; omega.
-    clear Eq.
-  assert(H: i = 4 \/ i = 5 \/ i = 6 \/ i = 7) by omega.
-  Opaque outer_M_fix.
-    repeat (destruct H ; [solve_this_thing_please_autorewrite i j|]). (* i = 1 -> 14 *)
-    solve_this_thing_please_autorewrite i j. (* i = 15 *)
-Qed.
-*)
 
 Lemma outer_M_fix_i_1''' : forall i j contents_a contents_b,
 Zlength contents_a = 16 ->
@@ -221,26 +165,6 @@ Proof.
     repeat (destruct H ; [solve_this_thing_please_autorewrite i j|]).
     solve_this_thing_please_autorewrite i j.
 Qed.
-(* Admitted. *)
-(*
-  intros i j a b Ha Hb Hi Hj Hii.
-  rewrite Zlength_correct in Ha.
-  rewrite Zlength_correct in Hb.
-  assert(Ha' : (length a = 16)%nat) by go.
-  assert(Hb' : (length b = 16)%nat) by go.
-  repeat (destruct a ; tryfalse).
-  repeat (destruct b ; tryfalse).
-  rewrite <- Zlength_correct in *.
-  rewrite (outer_M_fix_equation i).
-  flatten.
-    apply Z.leb_le in Eq ; omega.
-    clear Eq.
-  assert(H: i = 8 \/ i = 9 \/ i = 10 \/ i = 11 \/ i = 12) by omega.
-  Opaque outer_M_fix.
-    repeat (destruct H ; [solve_this_thing_please_autorewrite i j|]). (* i = 1 -> 14 *)
-    solve_this_thing_please_autorewrite i j. (* i = 15 *)
-Qed.
-*)
 
 Lemma outer_M_fix_i_1'''' : forall i j contents_a contents_b,
 Zlength contents_a = 16 ->
@@ -282,26 +206,6 @@ Proof.
     repeat (destruct H ; [solve_this_thing_please_autorewrite i j|]).
     solve_this_thing_please_autorewrite i j.
 Qed.
-(* Admitted. *)
-(* 
-  intros i j a b Ha Hb Hi Hj Hii.
-  rewrite Zlength_correct in Ha.
-  rewrite Zlength_correct in Hb.
-  assert(Ha' : (length a = 16)%nat) by go.
-  assert(Hb' : (length b = 16)%nat) by go.
-  repeat (destruct a ; tryfalse).
-  repeat (destruct b ; tryfalse).
-  rewrite <- Zlength_correct in *.
-  rewrite (outer_M_fix_equation i).
-  flatten.
-    apply Z.leb_le in Eq ; omega.
-    clear Eq.
-  assert(H: i = 12 \/ i = 13 \/ i = 14 \/ i = 15) by omega.
-  Opaque outer_M_fix.
-    repeat (destruct H ; [solve_this_thing_please_autorewrite i j|]). (* i = 1 -> 14 *)
-    solve_this_thing_please_autorewrite i j. (* i = 15 *)
-Qed.
-*)
 
 Lemma outer_M_fix_i_1 : forall i j contents_a contents_b,
 Zlength contents_a = 16 ->

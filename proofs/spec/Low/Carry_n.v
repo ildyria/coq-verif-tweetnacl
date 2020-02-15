@@ -95,11 +95,7 @@ Proof.
   clear Hi Hi' i Hi''' H17.
   rename H into Hi'.
   assert(HH : forall k, 0 ≤ getResidue 16 k ∧ getResidue 16 k < 2 ^ 16) by (clear ; intro; eapply getResidue_bounds ; omega).
-(*   change (2^62) with 4611686018427387904 in *.
-  change (2^63) with 9223372036854775808 in *.
-  change (2^16) with 65536 in *.
- *)
-   repeat match goal with
+  repeat match goal with
     | _ => rewrite Carry_n_step
     | _ => rewrite Carry_n_step_0
     | [H : _ \/ _ |- _ ] => destruct H ; try subst i'

@@ -3,8 +3,6 @@ Require Import ssreflect.
 
 Open Scope Z.
 
-(*Notation "A :𝓖𝓕" := (A mod (2^255 - 19)) (at level 80, right associativity).*)
-
 Lemma t2256is38 : (2^256 :𝓖𝓕 ) = (38 :𝓖𝓕).
 Proof.
   compute ; reflexivity.

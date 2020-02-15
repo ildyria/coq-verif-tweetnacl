@@ -59,8 +59,6 @@ Qed.
 End Integer.
 
 Close Scope Z.
-(* ADD LENGTH PROOF *)
-
 
 
 

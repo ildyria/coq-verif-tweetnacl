@@ -213,7 +213,6 @@ all: remember (pow_fn_rev 254 254 i i) as p. (* the expension is always anoying.
 
 (* Goal 1 *)
 1,2: freeze_local L.
-(* rewrite {1}/Sfor. (* because forward_for_simple_bound does not work otherwise *) *)
 1: forward_for_simple_bound 16 (copy_Inv L sho shi Tsh v_o v_o v_c (mVI64 i) i p 0) ; subst L.
 1: thaw_local.
 4: forward_for_simple_bound 16 (copy_Inv L sho shi Tsh v_o v_i v_c o i p 1) ; subst L.

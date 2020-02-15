@@ -6,7 +6,7 @@ Open Scope Z_scope.
 
 Section fun_rec.
 
-Context {T:Type} (n:Z). (* (Hn : 0 <= n). *)
+Context {T:Type} (n:Z).
 
 Definition dec_proof_fun (n a  : Z) : nat := Z.to_nat (a - n).
 

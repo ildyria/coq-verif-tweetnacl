@@ -149,94 +149,19 @@ Lemma mul_assoc : associative mul.
 Proof.
 move=> [x1 x2] [y1 y2] [z1 z2].
 solve_this.
-(* Zmodp2_unfold; ring_unfold.
-f_equal.
-f_equal.
-+ ring.
-+ ring. *)
-(*  ; apply val_inj => /=.
-+ rewrite Zminus_mod_idemp_r.
-  rewrite -(Zplus_mod (y1 * z1)).
-  rewrite Zmult_mod_idemp_r.
-  rewrite -(Zplus_mod (y1 * z2)).
-  rewrite Zmult_mod_idemp_r.
-  rewrite Zminus_mod_idemp_r.
-  rewrite -Zplus_mod.
-  rewrite Zminus_mod_idemp_r.
-  rewrite -(Zplus_mod (x1 * y1)).
-  rewrite Zmult_mod_idemp_l.
-  rewrite -(Zplus_mod (x1 * y2)).
-  rewrite Zmult_mod_idemp_l.
-  rewrite Zminus_mod_idemp_r.
-  rewrite -Zplus_mod.
-  have ->: (x1 * (y1 * z1 + (p - y2 * z2)) + (p - x2 * (y1 * z2 + y2 * z1)) = 
-            x1 * (y1 * z1 + (- y2 * z2)) + (- x2 * (y1 * z2 + y2 * z1)) + (x1 + 1) * p)%Z by ring.
-  have ->: ((x1 * y1 + (p - x2 * y2)) * z1 + (p - (x1 * y2 + x2 * y1) * z2) = 
-            x1 * (y1 * z1 + (- y2 * z2)) + (- x2 * (y1 * z2 + y2 * z1)) + (z1 + 1) * p)%Z by ring.
-  by rewrite ?Z_mod_plus_full.
-+ rewrite Zminus_mod_idemp_r.
-  rewrite -(Zplus_mod (y1 * z2)).
-  rewrite Zmult_mod_idemp_r.
-  rewrite -(Zplus_mod (y1 * z1)).
-  rewrite Zmult_mod_idemp_r.
-  rewrite -Zplus_mod.
-  rewrite Zminus_mod_idemp_r.
-  rewrite -(Zplus_mod (x1 * y1)).
-  rewrite Zmult_mod_idemp_l.
-  rewrite -(Zplus_mod (x1 * y2)).
-  rewrite Zmult_mod_idemp_l.
-  rewrite -Zplus_mod.
-  have ->: (x1 * (y1 * z2 + y2 * z1) + x2 * (y1 * z1 + (p - y2 * z2)) = 
-            x1 * (y1 * z2 + y2 * z1) + x2 * (y1 * z1 + ( - y2 * z2)) + (x2 * p))%Z by ring.
-  have ->: ((x1 * y1 + (p - x2 * y2)) * z2 + (x1 * y2 + x2 * y1) * z1 = 
-            x1 * (y1 * z2 + y2 * z1) + x2 * (y1 * z1 + ( - y2 * z2)) + (z2 * p))%Z by ring.
-  by rewrite ?Z_mod_plus_full. *)
+
 Qed.
 
 Lemma mul_left_id : left_id one mul.
 Proof.
 move=> [x1 x2].
 solve_this.
-(* Zmodp2_unfold; ring_unfold.
-rewrite Zmodp_ring.mul_left_id.
-rewrite Zmodp_ring.mul_left_id.
-have ->: Zmodp2 x1 x2 = pi (x1,x2) => //.
-f_equal ; f_equal ; Zmodp_ringify ; ring_simplify_this. *)
 Qed.
 
 Lemma mul_left_distr : left_distributive mul add.
 Proof.
 move=> [x1 x2] [y1 y2] [z1 z2].
 solve_this.
-(*  rewrite /mul /add /GRing.add /=. f_equal.
-f_equal.
-ring.
-ring.
- *)
-(* + apply val_inj => /=.
-  rewrite Zmult_mod_idemp_l.
-  rewrite Zmult_mod_idemp_l.
-  rewrite Zminus_mod_idemp_r.
-  rewrite -Zplus_mod.
-  rewrite Zminus_mod_idemp_r.
-  rewrite Zminus_mod_idemp_r.
-  rewrite -(Zplus_mod (x1 * z1)).
-  rewrite -(Zplus_mod (y1 * z1)).
-  rewrite -Zplus_mod.
-  have ->: ((x1 + y1) * z1 + (p - (x2 + y2) * z2) = 
-          (x1 + y1) * z1 + - (x2 + y2) * z2 + 1 * p)%Z by ring.
-  have ->: (x1 * z1 + (p - x2 * z2) + (y1 * z1 + (p - y2 * z2)) = 
-          (x1 + y1) * z1 + - (x2 + y2) * z2 + 2 * p)%Z by ring.
-  by rewrite ?Z_mod_plus_full.
-+ apply val_inj => /=.
-  rewrite Zmult_mod_idemp_l.
-  rewrite Zmult_mod_idemp_l.
-  rewrite -Zplus_mod.
-  rewrite -(Zplus_mod (x1 * z2)).
-  rewrite -(Zplus_mod (y1 * z2)).
-  rewrite -Zplus_mod.
-  f_equal.
-  ring. *)
 Qed.
 
 Lemma one_neq_zero : one != zero.
@@ -283,16 +208,6 @@ Inductive Zinv_spec (x : type) : Type :=
 | Zinv_spec_zero : x = zero -> Zinv_spec x
 | Zinv_spec_unit : x <> zero -> forall y, (y * x)%R = one -> Zinv_spec x.
 
-(* Local Ltac ringify := repeat match goal with
-  | [ |- context[Zmodp.pi 2]] => rewrite pi_2
-  | [ |- context[Zmodp.mul ?a ?b]] => have ->: (Zmodp.mul a b) = a * b => //
-  | [ |- context[Zmodp.add ?a (Zmodp.opp ?b)]] => have ->: (Zmodp.add a (Zmodp.opp b)) = a - b => //
-  | [ |- context[Zmodp.opp ?a]] => have ->: Zmodp.opp a = -a => //
-  | [ |- context[Zmodp.add ?a ?b]] => have ->: (Zmodp.add a b) = a + b => //
-  | [ |- context[Zmodp.one] ] => have ->: Zmodp.one = 1 => //
-  | [ |- context[Zmodp.zero] ] => have ->: Zmodp.zero = 0 => //
-  end.
- *)
 Lemma Zinv x : Zinv_spec x.
 Proof.
 case_eq (eqb x zero) ; move/eqb_spec.

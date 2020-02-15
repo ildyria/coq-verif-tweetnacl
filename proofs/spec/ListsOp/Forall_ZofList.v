@@ -4,8 +4,6 @@ From Tweetnacl Require Import Libs.Export.
 From Tweetnacl Require Export ListsOp.ZofList.
 Open Scope Z.
 
-(* Import ListNotations. *)
-
 Section Integer.
 
 Variable n:Z.
@@ -243,7 +241,6 @@ Proof.
         replace (n * S m) with (n * m + n).
         rewrite Zred_factor2 Z.pow_add_r ; try omega.
         apply Zmult_le_compat_l ; try omega.
-        
         assert(minilemma : forall a b, a < b -> 1 + a <= b).
           intros ; omega.
         apply minilemma.
@@ -310,8 +307,6 @@ Proof.
   reflexivity.
   simpl.
   orewrite Z.shiftl_mul_pow2.
-(*   replace ((ℤ.lst l) * 2 ^ n) with (2^n * (ℤ.lst l)). *)
-(*   2: rewrite Z.mul_comm ; reflexivity. *)
   rewrite -IHl.
   rewrite Zxor_add.
   f_equal.

@@ -98,14 +98,7 @@ all: clean_context_from_VST.
 all: rewrite /tkdp -?map_firstn -?map_skipn -?map_app in HHaux3.
 all: rewrite /tkdp -?map_firstn -?map_skipn -?map_app in HHaux4.
 all: inv HHaux1 ; inv HHaux2 ; inv HHaux3 ; inv HHaux4.
-(* all: rewrite ?(Znth_map 0) ?take_drop_Zlength ; try omega. *)
 all: rewrite add64_repr /nat_of_Z.
-(* all: rewrite ?app_Znth2. *)
-(* all: try replace (Zlength (firstn (Z.to_nat i) (A _ _))) with i. *)
-(* all: rewrite ?Znth_skipn. *)
-(* all: rewrite ?Zlength_firstn ?HA. *)
-(* all: rewrite ?Z.max_r ?Z.min_l ; try omega. *)
-(* all: replace (i - i + i) with i by omega. *)
 all: rewrite ?Znth_nth; try omega.
 all: rewrite <- ZsubList_nth_Zlength ; try omega.
 all: rewrite /tkdp ?simple_S_i ; try omega.

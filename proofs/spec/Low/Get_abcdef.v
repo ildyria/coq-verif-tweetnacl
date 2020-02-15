@@ -1,23 +1,6 @@
 Require Import Tweetnacl.Libs.Export.
 Require Export Tweetnacl.Gen.Get_abcdef.
 
-(*
-Definition get_b (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d,e,f) => b
-end.
-Definition get_c (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d,e,f) => c
-end.
-Definition get_d (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d,e,f) => d
-end.
-Definition get_e (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d,e,f) => e
-end.
-Definition get_f (t:(list Z * list Z * list Z * list Z * list Z * list Z)) : list Z := match t with
-  (a,b,c,d,e,f) => f
-end.
-*)
 Definition get_m (c:(list Z * list Z)) : list Z := match c with
   (m,t) => m
 end.

@@ -253,7 +253,7 @@ Lemma data_at_sh_if : forall T SH i a b p ,
   = data_at SH T (if 254 =? i then a else b) p.
 Proof. intros ; flatten. Qed.
 
-Local Ltac solve_lengths H48 H4 H5 H6 H7 := repeat match goal with 
+(* Local Ltac solve_lengths H48 H4 H5 H6 H7 := repeat match goal with 
     | _ => omega
     | _ => rewrite H48
     | _ => rewrite H4
@@ -270,8 +270,8 @@ Local Ltac solve_lengths2 := repeat match goal with
     | _ => rewrite undef16_Zlength
     | _ => rewrite Zlength_map
   end.
-
-Lemma replace_list_app_app_app_app : forall i xx aa bb cc dd va vb vc vd,
+ *)
+(* Lemma replace_list_app_app_app_app : forall i xx aa bb cc dd va vb vc vd,
   0 <= i < 16 ->
   Zlength aa = 16 ->
   Zlength bb = 16 ->
@@ -412,14 +412,5 @@ Proof.
   rewrite ?simple_S_i ; try omega;
   rewrite ?Hvd ?Hvb -upd_Znth_app_step_Zlength ; solve_lengths2.
 Qed.
-
-(* Definition sc_mult n p :=
-  let p' := Unpack25519 p in
-  let n' := clamp n in
-  let m  := montgomery_fn 255 254 n' gf1 p' gf0 gf1 gf0 gf0 p' in
-  let c  := get_c m in 
-  let c' := Inv25519 c in 
-  let a  := get_a m in
-  Pack25519 (M a c').
  *)
 Close Scope Z.

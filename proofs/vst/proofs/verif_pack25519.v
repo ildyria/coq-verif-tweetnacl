@@ -117,8 +117,6 @@ entailer!.
 rewrite map_map (Znth_map 0)  in Ht0 ; [|by rewrite Hlengtht'].
 inversion Ht0.
 assert(Ht'0:= verif_pack25519_4 t' Hlengtht' Hboundt').
-(* assert(Int64.min_signed + 65517 <= Znth 0 t' 0  <= Int64.max_signed  + 65517).
-omega. *)
 forward.
 entailer!.
 {

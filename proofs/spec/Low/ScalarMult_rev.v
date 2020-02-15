@@ -85,7 +85,6 @@ Local Ltac solve_dependencies_bound :=
 repeat match goal with
   | _ => assumption
   | _ => reflexivity
-(*   | _ => solve_dependencies_length *)
   | _ => apply M_bound_Zlength
   | _ => apply Sq_bound_Zlength
   | _ => apply A_bound_Zlength_le

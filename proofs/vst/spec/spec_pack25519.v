@@ -34,8 +34,7 @@ From Tweetnacl.Low Require Import GetBit_pack25519.
 From Tweetnacl.Low Require Import Pack25519.
 From Tweetnacl.Low Require Import Car25519.
 From Tweetnacl_verif Require Import init_tweetnacl.
-(* From Tweetnacl_verif Require Import verif_pack25519_lemmas.
- *)
+
 Open Scope Z.
 
 Definition pack25519_spec := 

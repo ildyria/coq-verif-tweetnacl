@@ -38,11 +38,6 @@ Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;Z.ones 8;127]). *)
 Definition Zclamp (n : Z) : Z :=
   (Z.lor (Z.land n (Z.land (Z.ones 255) (-8))) (Z.shiftl 64 (31 * 8))).
 
-(*
-Lemma Zclamp_eq : forall n,
-  Zclamp' n = Zclamp n.
-Proof. done. Qed.
-*)
 Lemma Zclamp_min n : 0 <= Zclamp n.
 Proof.
 rewrite /Zclamp.
