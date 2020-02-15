@@ -103,7 +103,9 @@ in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
 Operations used in the Montgomery ladder of \coqe{RFC} are performed on
 integers (See Appendix~\ref{subsubsec:RFC-Coq}).
 The reduction modulo $\p$ is deferred to the very end as part of the
-\coqe{ZPack25519} operation. We now turn our attention to the decoding and encoding of the byte arrays.
+\coqe{ZPack25519} operation.
+
+We now turn our attention to the decoding and encoding of the byte arrays.
 We define the little-endian projection to integers as follows.
 \begin{dfn}
 Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
@@ -116,7 +118,6 @@ Fixpoint ZofList {n:Z} (a:list Z) : Z :=
   | h :: q => h + 2^n * ZofList q
   end.
 \end{lstlisting}
-
 The encoding from integers to bytes is defined in a similar way:
 \begin{dfn}
 Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
