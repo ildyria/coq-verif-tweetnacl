@@ -25,6 +25,22 @@
     \texttt{ZofList} & \texttt{ListsOp/ZofList.v} & \Z $\rightarrow$ List \Z $\rightarrow$ \Z\\
     \texttt{ListofZ32} & \texttt{ListsOp/ListofZ.v} & \Z $\rightarrow$  \Z $\rightarrow$ list \Z\\
     \hline
+    \multicolumn{3}{c}{Generic ladder}\\
+    \hline
+    \texttt{get\_a} & \texttt{Gen/Get\_abcdef.v} & $(a,b,c,d,e,f) \mapsto a$ \\
+    \texttt{get\_c} & \texttt{Gen/Get\_abcdef.v} & $(a,b,c,d,e,f) \mapsto c$ \\
+    \texttt{Ops.A} & \texttt{Gen/AMZubSqSel.v} & Addition \\
+    \texttt{Ops.M} & \texttt{Gen/AMZubSqSel.v} & Multiplication \\
+    \texttt{Ops.Zub} & \texttt{Gen/AMZubSqSel.v} & Subtraction \\
+    \texttt{Ops.Sq} & \texttt{Gen/AMZubSqSel.v} & Squaring \\
+    \texttt{Ops.C\_0} & \texttt{Gen/AMZubSqSel.v} & Constant $0$ \\
+    \texttt{Ops.C\_1} & \texttt{Gen/AMZubSqSel.v} & Constant $1$ \\
+    \texttt{Ops.C\_121665} & \texttt{Gen/AMZubSqSel.v} & Constant $121665$ \\
+    \texttt{Ops.Sel25519} & \texttt{Gen/AMZubSqSel.v} & Conditional swap \\
+    \texttt{Ops.Getbit} & \texttt{Gen/GetBit.v} & Bit selection \\
+    \texttt{montgomery\_rec} & \texttt{Gen/montgomery\_rec.v} & Montgomery ladder \\
+    \texttt{montgomery\_rec\_swap} & \texttt{Gen/montgomery\_rec\_swap.v} & Montgomery ladder \\
+    \hline
     \multicolumn{3}{c}{Elliptic Curve \& Fields }\\
     \hline
     \texttt{mcuType} & \texttt{High/mc.v} & $M_{a,b}$ \\
@@ -47,21 +63,6 @@
     \texttt{twist25519\_Fp\_ladder} & \texttt{High/twist25519\_Fp.v} & Montgomery ladder for the quadratic twist $M_{486662,2}$ over \F{p} \\
     \texttt{twist25519\_Fp\_to\_Fp2} & \texttt{High/twist25519\_Fp\_incl\_Fp2.v} & $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$ \\
     % \texttt{primo} & \texttt{High/prime\_cert.v} & $\p$ is prime \\
-    \hline
-    \multicolumn{3}{c}{Generic ladder}\\
-    \hline
-    \texttt{get\_a} & \texttt{Gen/Get\_abcdef.v} & $(a,b,c,d,e,f) \mapsto a$ \\
-    \texttt{get\_c} & \texttt{Gen/Get\_abcdef.v} & $(a,b,c,d,e,f) \mapsto c$ \\
-    \texttt{Ops.A} & \texttt{Gen/AMZubSqSel.v} & Addition \\
-    \texttt{Ops.M} & \texttt{Gen/AMZubSqSel.v} & Multiplication \\
-    \texttt{Ops.Zub} & \texttt{Gen/AMZubSqSel.v} & Subtraction \\
-    \texttt{Ops.Sq} & \texttt{Gen/AMZubSqSel.v} & Squaring \\
-    \texttt{Ops.C\_0} & \texttt{Gen/AMZubSqSel.v} & Constant $0$ \\
-    \texttt{Ops.C\_1} & \texttt{Gen/AMZubSqSel.v} & Constant $1$ \\
-    \texttt{Ops.C\_121665} & \texttt{Gen/AMZubSqSel.v} & Constant $121665$ \\
-    \texttt{Ops.Sel25519} & \texttt{Gen/AMZubSqSel.v} & Conditional swap \\
-    \texttt{Ops.Getbit} & \texttt{Gen/GetBit.v} & Bit selection \\
-    \texttt{montgomery\_rec} & \texttt{Gen/montgomery\_rec.v} & Montgomery ladder \\
     \hline
     \multicolumn{3}{c}{Operations over \Z and \Zfield}\\
     \hline
