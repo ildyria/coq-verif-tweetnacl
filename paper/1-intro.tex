@@ -77,38 +77,30 @@ Synthesize low-level code from the specification
 or write the low-level code by hand and prove that it
 matches the specification.
 
-\todo{Say something about all X25519 implementations from the SoK paper.}
-The work described in~\cite{XXX}
-
-The X25519 implementation from the Everycrypt project~\cite{}
+The X25519 implementation from the Evercrypt project~\cite{EverCrypt}
 uses a low-level language called Vale that translates
 directly to assembly and proves equivalence to a high-level specification in F$^*$.
-evercrypt
-hacl*
-jasmin
-fiat
+In~\cite{Zinzindohoue2016AVE}, Zinzindohou{\'{e}}, Bartzia, and Bhargavan 
+describe a verified extensible library of elliptic curves~ in F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}.
+This served as ground work for the cryptographic library HACL*~\cite{zinzindohoue2017hacl}
+used in the NSS suite from Mozilla. The approach they use is a combination
+of proving and synthesising: A fairly low-level implementation written in
+Low$^*$ is proven to be equivalent to a high-level specification in F$^*$.
+The Low$^*$ code is then compiled to C using an unverified and thus trusted
+compiler called Kremlin.
 
-
-
-
-%The synthesis approach was used by Zinzindohou{\'{e}}, Bartzia, and Bhargavan to build a verified extensible
-%library of elliptic curves~\cite{Zinzindohoue2016AVE} in F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}.
-%This served as ground work for the cryptographic library HACL*~\cite{zinzindohoue2017hacl}
-%used in the NSS suite from Mozilla.
-
-%Coq not only allows verification but also synthesis~\cite{CpdtJFR}.
-%Erbsen, Philipoom, Gross, and Chlipala make use of it to have
-%correct-by-construction finite field arithmetic, which is used
-%to synthesize certified elliptic-curve crypto software~\cite{Philipoom2018CorrectbyconstructionFF,Erbsen2017CraftingCE,Erbsen2016SystematicSO}.
-%This software suite is now being used in BoringSSL~\cite{fiat-crypto}.
-
+Coq not only allows verification but also synthesis~\cite{CpdtJFR}.
+Erbsen, Philipoom, Gross, and Chlipala make use of it to have
+correct-by-construction finite-field arithmetic, which is used
+to synthesize certified elliptic-curve crypto software~\cite{Philipoom2018CorrectbyconstructionFF,Erbsen2017CraftingCE,Erbsen2016SystematicSO}.
+This software suite is now being used in BoringSSL~\cite{fiat-crypto}.
 
 All of these X25519 verification efforts use a clean-slate approach to obtain code and proofs.
-Our effort targets existing software; we are aware of only one earlier work verifying existing X25519 software.
+Our effort targets existing software; we are aware of only one earlier work verifying existing X25519 software:
 In~\cite{Chen2014VerifyingCS}, Chen, Hsu, Lin, Schwabe, Tsai, Wang, Yang, and Yang present
 a mechanized proof of two assembly-level implementations of the core function of X25519.
-The proof in~\cite{Chen2014VerifyingCS} takes a different approach from ours.
-It uses heavy annotation of code in order to ``guide'' a SAT solver;
+Their proof takes a different approach from ours.
+It uses heavy annotation of the assembly-level code in order to ``guide'' a SAT solver;
 also, it does not cover the full X25519 functionality and does
 not make the link to the mathematical definition from~\cite{Ber06}.
 
@@ -117,6 +109,8 @@ is the proof of correctness of OpenSSL's
 implementations of HMAC~\cite{Beringer2015VerifiedCA},
 and mbedTLS' implementations of
 HMAC-DRBG~\cite{2017-Ye} and SHA-256~\cite{2015-Appel}.
+As those are all symmetric primitives without the rich mathematical
+structure of finite field and elliptic curves the actual proofs are quite different.
 
 \subheading{Reproducing the proofs.}
 To maximize reusability of our results we placed the code of our formal proof
