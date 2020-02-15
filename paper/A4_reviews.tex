@@ -94,7 +94,7 @@ become stronger.
 \begin{answer}{EEEEEE}
 The switch from \TNaCle{i64} to \TNaCle{int} in \texttt{for} loops and the
 extraction of the computation outside of the function call in
-\TNaCle{pack25519} are required by the VST but we believe those
+\TNaCle{pack25519} are required by VST but we believe those
 change have no impact on the verification effort.
 
 The only modification which made the verification easier
@@ -110,7 +110,7 @@ effort: person month etc.
 \begin{answer}{EEEEEE}
 In addition to the time required to get familiar with
 research software, we faced a few bugs which we reported
-to the developers of the VST to get them fixed.
+to the developers of VST to get them fixed.
 It is very hard to work with a tool without being involved
 in the development loop. Additionally newer versions often
 broke some of our proofs and it was often needed to adapt
@@ -343,7 +343,7 @@ and our approach.
 \begin{figure}[H]
 \centering
 \include{tikz/low}
-\caption{The VST vs Low*}
+\caption{VST vs Low*}
 \label{tikz:LowVST}
 \end{figure}
 
@@ -351,10 +351,10 @@ Low* generates C code, thus this is synthesis. We generate
 Clight from C code, thus this is verification. Because Low*
 also has a verification step with respect to some high-level
 specifications, we consider their process to be a mix of the
-two methods. Also to be noted that both the VST and Low*
+two methods. Also to be noted that both VST and Low*
 allow the verification of memory safety.
 % However Low* provides
-% sidechannel securities while the VST allow verification
+% sidechannel securities while VST allow verification
 % of concurent programs.
 \end{answer}
 
@@ -368,7 +368,7 @@ for symmetric cryptographic primitives before? From the text,
 I wasn’t sure whether this is careful quantification or not.
 
 \begin{answer}{EEEEEE}
-This is indeed careful quantification. The VST has already
+This is indeed careful quantification. VST has already
 been used to verify symmetric Cryptographic primitives
 (\eg SHA), as mentioned later by \cite{Beringer2015VerifiedCA} and \cite{2015-Appel}.
 \end{answer}
@@ -486,7 +486,7 @@ to share proof effort across multiple curves.
 
 \begin{answer}{EEEEEE}
 We added insights in \sref{subsec:with-VST} of how to improve
-working with the VST verification framework. In section \sref{sec:Conclusion},
+working with VST. In section \sref{sec:Conclusion},
 we described in further details how our work can
 be extended to other curves. The TweetNaCl ed25519
 implementation makes use of the same low level arithmetic
@@ -505,7 +505,7 @@ guarantees of the TweetNaCl code. Could this be done
 in their framework?
 
 \begin{answer}{EEEEEE}
-Constant-timeness is not a property verifiable with the VST.
+Constant-timeness is not a property verifiable with VST.
 This is not verifiable with our framework.
 % Related on CompCert: https://eprint.iacr.org/2019/926.pdf
 \end{answer}

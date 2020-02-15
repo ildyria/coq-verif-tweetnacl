@@ -116,12 +116,12 @@ In other words,
 we only prove correctness of \TNaCle{crypto_scalarmult} when it is called without aliasing.
 But for other TweetNaCl functions, like the multiplication function \texttt{M(o,a,b)}, we cannot ignore aliasing, as it is called in the ladder in an aliased manner.
 
-In the VST, a simple specification of this function will assume that the pointer arguments
+In VST, a simple specification of this function will assume that the pointer arguments
 point to non-overlapping space in memory.
 When called with three memory fragments (\texttt{o, a, b}),
 the three of them will be consumed. However assuming this naive specification
 when \texttt{M(o,a,a)} is called (squaring), the first two memory areas (\texttt{o, a})
-are consumed and the VST will expect a third memory section (\texttt{a}) which does not \emph{exist} anymore.
+are consumed and VST will expect a third memory section (\texttt{a}) which does not \emph{exist} anymore.
 Examples of such cases are illustrated in \fref{tikz:MemSame}.
 \begin{figure}[h]%
   \centering%

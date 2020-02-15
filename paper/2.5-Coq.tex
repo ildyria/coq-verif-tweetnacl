@@ -1,4 +1,4 @@
-\subsection{Coq, separation logic, and the VST}
+\subsection{Coq, separation logic, and VST}
 \label{subsec:Coq-VST}
 
 Coq~\cite{coq-faq} is an interactive theorem prover based on type theory. It
@@ -39,6 +39,6 @@ The first step consists of translating the source code into Clight,
 an intermediate representation used by CompCert.
 For such purpose one uses the parser of CompCert called \texttt{clightgen}.
 In a second step one defines the Hoare triple representing the specification of
-the piece of software one wants to prove. Then using the VST, one uses a strongest
+the piece of software one wants to prove. Then using VST, one uses a strongest
 postcondition approach to prove the correctness of the triple.
 This can be seen as a forward symbolic execution of the program.

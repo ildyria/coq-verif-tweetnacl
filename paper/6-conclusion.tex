@@ -32,7 +32,7 @@ Lemma f_ext: forall (A B:Type),
 
   \item \textbf{\texttt{clightgen}}. The tool making the translation from {C} to
   {Clight}, the first step of the CompCert compilation.
-  The VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
+  VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
   This needs to be rewritten into:
   \begin{lstlisting}[language=Ctweetnacl,stepnumber=0,belowskip=-0.5 \baselineskip]
 aux1 = a[i]; aux2 = b[i];
@@ -83,7 +83,7 @@ above will soon be integrated in a new version of the library.
 % \subheading{Verification Effort.}
 % In addition to the time required to get familiar with
 % research software, we faced a few bugs which we reported
-% to the developers of the VST to get them fixed.
+% to the developers of VST to get them fixed.
 % It is very hard to work with a tool without being involved
 % in the development loop. Additionally newer versions often
 % broke some of our proofs and it was often needed to adapt

@@ -14,7 +14,7 @@ typedef long long i64;
 TweetNaCl functions take pointers as arguments. By convention the first one
 points to the output array \texttt{o}. It is then followed by the input arguments.
 
-Due to some limitations of the VST, indexes used in \TNaCle{for} loops have to be
+Due to some limitations of VST, indexes used in \TNaCle{for} loops have to be
 of type \TNaCle{int} instead of \TNaCle{i64}. We changed the code to allow our
 proofs to carry through. We believe this does not affect the correctness of the
 original code. A complete diff of our modifications to TweetNaCl can be found in
