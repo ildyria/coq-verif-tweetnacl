@@ -39,7 +39,7 @@ This part of the proof uses the Verifiable Software Toolchain (VST)~\cite{2012-A
 to establish a link between C and Coq.
 VST uses separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
 to show that the semantics of the program satisfy a functional specification in Coq.
-To the best of our knowledge, this is the first time that VST 
+To the best of our knowledge, this is the first time that the VST
 is used in the formal proof of correctness of an implementation
 of an asymmetric cryptographic primitive.
 
@@ -65,13 +65,13 @@ to strengthen our trust into cryptographic constructions and cryptographic softw
 has seen massive progress in the recent past. This progress, the state of the art,
 and future challenges have recently been compiled in a SoK paper by Barbosa,
 Barthe, Bhargavan, Blanchet, Cremers, Liao, and Parno~\cite{BBB+19}.
-This SoK paper, in Section III.C, also gives an overview of verification efforts of 
+This SoK paper, in Section III.C, also gives an overview of verification efforts of
 X25519 software. What all the previous approaches have in common is that they
 prove correctness by verifying that some low-level implementation matches a
 higher-level specification. This specification is kept in terms of a sequence
 of finite-field operations, typically close to the pseudocode in RFC 7748.
 
-There are two general approaches to establish this link 
+There are two general approaches to establish this link
 between low-level code and higher-level specification:
 Synthesize low-level code from the specification
 or write the low-level code by hand and prove that it
@@ -93,9 +93,9 @@ matches the specification.
 
 
 All of these X25519 verification efforts listed in~\cite{BBB+19} use a clean-slate
-approach to obtain code and proofs. 
-Our effort targets existing software and we are aware of only one earlier 
-work in the context of X25519 following a similar approach. 
+approach to obtain code and proofs.
+Our effort targets existing software and we are aware of only one earlier
+work in the context of X25519 following a similar approach.
 In~\cite{Chen2014VerifyingCS}, Chen, Hsu, Lin, Schwabe, Tsai, Wang, Yang, and Yang present
 a mechanized proof of two assembly-level implementations of the core function of X25519.
 The proof in~\cite{Chen2014VerifyingCS} takes a different approach from ours.
@@ -105,8 +105,8 @@ not make the link to the mathematical definition from~\cite{Ber06}.
 
 Finally, in terms of languages and tooling the work closest to what we present here
 is the proof of correctness of OpenSSL's
-implementations of HMAC~\cite{Beringer2015VerifiedCA}, 
-and mbedTLS' implementations of 
+implementations of HMAC~\cite{Beringer2015VerifiedCA},
+and mbedTLS' implementations of
 HMAC-DRBG~\cite{2017-Ye} and SHA-256~\cite{2015-Appel}.
 
 \subheading{Reproducing the proofs.}
@@ -127,7 +127,7 @@ proof techniques used to show the correctness with respect to RFC~7748~\cite{rfc
 and Strub and the correctness of X25519 implementation with respect to Bernstein's
 specifications~\cite{Ber14}.
 Finally in \sref{sec:Conclusion} we discuss the trusted code base of our proofs
-and conclude with some lessons learned about TweetNaCl and with sketching the 
+and conclude with some lessons learned about TweetNaCl and with sketching the
 effort required to extend our work to other elliptic-curve software.
 
 \fref{tikz:ProofOverview} shows a graph of dependencies of the proofs.

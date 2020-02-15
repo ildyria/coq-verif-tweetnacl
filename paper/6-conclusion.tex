@@ -6,7 +6,7 @@ chain of trust.
 
 \subheading{Trusted Code Base of the proof.}
 Our proof relies on a trusted base, i.e. a foundation of definitions that must be
-correct. One should not be able to prove a false statement in that system, \eg, by
+correct. One should not be able to prove a false statement in that system, \eg by
 proving an inconsistency.
 
 In our case we rely on:
@@ -26,7 +26,7 @@ Lemma f_ext: forall (A B:Type),
   specification.
 
   \item \textbf{CompCert}. When compiling with CompCert we only need to trust
-  CompCert's {assembly} semantics, because it has been formally proven correct.
+  CompCert's {assembly} semantics, as the compilation chain has been formally proven correct.
   However, when compiling with other C compilers like Clang or GCC, we need to
   trust that the CompCert's Clight semantics matches the C17 standard.
 
@@ -71,7 +71,7 @@ o[i]&=0xffff;
 
 Aside from this modifications, all subsequent alterations to the TweetNaCl code%
 ---such as the type change of loop indexes (\TNaCle{int} instead of \TNaCle{i64})---%
-were required for VST to parse the code properly. We believe that those
+were required for VST to step through the code properly. We believe that those
 adjustments do not impact the trust of our proof.
 
 We contacted the authors of TweetNaCl and expect that the changes described
@@ -89,12 +89,11 @@ the verification effort to Ed25519 would make directly use of the low-level
 arithmetic. The ladder steps formula being different this would require a high
 level verification similar to \tref{thm:montgomery-ladder-correct}.
 
-The verification \eg X448~\cite{cryptoeprint:2015:625,rfc7748} in C would
+The verification of \eg X448~\cite{cryptoeprint:2015:625,rfc7748} in C would
 require the adaptation of most of the low-level arithmetic (mainly the
 multiplication, carry propagation and reduction).
 Once the correctness and bounds of the basic operations are established,
-reproving the full ladder would make use of our generic definition and lower
-the workload.
+reproving the full ladder would make use of our generic definition.
 
 \subheading{A complete proof.}
 We provide a mechanized formal proof of the correctness of the X25519

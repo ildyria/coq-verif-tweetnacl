@@ -32,7 +32,7 @@ We discuss the plot twist (\ref{subsec:Zmodp}) of Curve25519 and solve it (\ref{
 \subsection{Formalization of elliptic Curves}
 \label{subsec:ECC}
 
-\fref{tikz:ProofHighLevel1} presents an intuition of the proof of the ladder's
+\fref{tikz:ProofHighLevel1} presents the structure of the proof of the ladder's
 correctness.
 \begin{figure}[h]
   \centering
@@ -149,7 +149,7 @@ Inductive mc : Type := MC p of oncurve p.
 
 Lemma oncurve_mc: forall p : mc, oncurve p.
 \end{lstlisting}
-We define the addition on Montgomery curves in the similar way as in the Weierstra{\ss} form.
+We define the addition on Montgomery curves in a similar way as for the Weierstra{\ss} form.
 \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Definition add (p1 p2 : point K) :=
   match p1, p2 with
@@ -165,7 +165,7 @@ Definition add (p1 p2 : point K) :=
           (| xs, - s * (xs - x1) - y1 |)
     end.
 \end{lstlisting}
-And again we prove the result is on the curve (again with coercion):
+And again we prove the result is on the curve: % (again with coercion):
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : mc) : oncurve (add p q).
 Definition addmc (p1 p2 : mc) : mc :=
@@ -239,7 +239,7 @@ We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
 -- $\chi_0 : M_{a,b}(\K) \to \K$\\
   such that $\chi_0(\Oinf) = 0$ and $\chi_0((x,y)) = x$.
 \end{dfn}
-Using projective coordinates we prove the formula for differential addition (\lref{lemma:xADD}).
+Using projective coordinates we prove the formula for differential addition.% (\lref{lemma:xADD}).
 \begin{lemma}
 \label{lemma:xADD}
 Let $M_{a,b}$ be a Montgomery curve such that $a^2-4$ is not a square in \K, and
@@ -254,11 +254,10 @@ then for any point $P_1$ and $P_2$ in $M_{a,b}(\K)$ such that
 $X_1/Z_1 = \chi(P_1), X_2/Z_2 = \chi(P_2)$, and $X_4/Z_4 = \chi(P_1 - P_2)$,
 we have $X_3/Z_3 = \chi(P_1+P_2)$.\\
 \textbf{Remark:}
-%For any $x \in \K \backslash\{0\}, x/0$ should be understood as $\infty$.
 These definitions should be understood in $\K \cup \{\infty\}$.
 If $x\ne 0$ then we define $x/0 = \infty$.
 \end{lemma}
-Similarly we also prove the formula for point doubling (\lref{lemma:xDBL}).
+Similarly we also prove the formula for point doubling.% (\lref{lemma:xDBL}).
 \begin{lemma}
 \label{lemma:xDBL}
 Let $M_{a,b}$ be a Montgomery curve such that $a^2-4$ is not a square in \K, and
@@ -331,7 +330,7 @@ final proof of \coqe{Theorem RFC_Correct}.
 \begin{figure}[h]
   \centering
   \include{tikz/highlevel2}
-  \caption{Instantiation and proof dependencies for the correctness of X25519}
+  \caption{Proof dependencies for the correctness of X25519.}
   \label{tikz:ProofHighLevel2}
 \end{figure}
 
@@ -444,10 +443,8 @@ elements here.
 For this reason we decided to formalize a definition of $\F{p^2}$ ourselves.
 
 We can represent $\F{p^2}$ as the set $\F{p} \times \F{p}$,
-%with $\delta = 2$,
-%we haven't introduced this delta?
-in other words,
-the polynomial with coefficients in $\F{p}$ modulo $X^2 - 2$. In a similar way
+% in other words,
+representing polynomials with coefficients in $\F{p}$ modulo $X^2 - 2$. In a similar way
 as for $\F{p}$ we use a module in Coq.
 \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Module Zmodp2.
@@ -481,7 +478,7 @@ $\F{p^2}\backslash\{0\}$, there exists a multiplicative inverse.
   For all $x \in \F{p^2}\backslash\{0\}$ and $a,b \in \F{p}$ such that $x = (a,b)$,
   $$x^{-1} = \Big(\frac{a}{a^2-2b^2}\ , \frac{-b}{a^2-2b^2}\Big)$$
 \end{lemma}
-Similarly as in $\F{p}$, we define $0^{-1} = 0$ and prove \lref{lemma:Zmodp2_field}.
+As in $\F{p}$, we define $0^{-1} = 0$ and prove \lref{lemma:Zmodp2_field}.
 \begin{lemma}
   \label{lemma:Zmodp2_field}
   $\F{p^2}$ is a commutative field.
