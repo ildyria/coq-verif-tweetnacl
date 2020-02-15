@@ -69,13 +69,13 @@ and thus solved this problem.
 o[i]&=0xffff;
 \end{lstlisting}
 
-Aside from the modifications above mentioned, all subsequent alteration
----such as the type change of loop indexes (\TNaCle{int} instead of \TNaCle{i64})---
-were required for VST to parse the code properly. We believe those
+Aside from this modifications, all subsequent alterations to the TweetNaCl code%
+---such as the type change of loop indexes (\TNaCle{int} instead of \TNaCle{i64})---%
+were required for VST to parse the code properly. We believe that those
 adjustments do not impact the trust of our proof.
 
-We contacted the authors of TweetNaCl and expect that the changes above
-mentioned will soon be integrated in a new version of the library.
+We contacted the authors of TweetNaCl and expect that the changes described
+above will soon be integrated in a new version of the library.
 
 \subheading{Extending our work.}
 The high-level definition (\sref{sec:maths}) can easily be ported to any
@@ -85,12 +85,12 @@ In addition to the curve equation, the field \F{p} would need to be redefined
 as $p=2^{255}-19$ is hard-coded in order to speed up some proofs.
 
 With respect to the C code verification (\sref{sec:C-Coq}), the extension of
-the verification effort to Ed25519 would make directly use of the low level
+the verification effort to Ed25519 would make directly use of the low-level
 arithmetic. The ladder steps formula being different this would require a high
 level verification similar to \tref{thm:montgomery-ladder-correct}.
 
 The verification \eg X448~\cite{cryptoeprint:2015:625,rfc7748} in C would
-require the adaptation of most of the low level arithmetic (mainly the
+require the adaptation of most of the low-level arithmetic (mainly the
 multiplication, carry propagation and reduction).
 Once the correctness and bounds of the basic operations are established,
 reproving the full ladder would make use of our generic definition and lower
@@ -100,7 +100,7 @@ the workload.
 We provide a mechanized formal proof of the correctness of the X25519
 implementation in TweetNaCl from C up the mathematical definitions with a single tool.
 We first formalized X25519 from RFC~7748~\cite{rfc7748} in Coq.
-Then we proved that TweetNaCl's implementation of X25519 matches our formalization.
+We then proved that TweetNaCl's implementation of X25519 matches our formalization.
 In a second step we extended the Coq library for elliptic curves \cite{BartziaS14}
 by Bartzia and Strub to support Montgomery curves.
 Using this extension we proved that the X25519 from the RFC matches the

@@ -13,7 +13,7 @@ this claim, for example, formal verification of memory safety, but does not actu
 prove correctness of any of the primitives implemented by the library.
 
 One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519 presented
-by Bernstein in~\cite{rfc7748}.
+by Bernstein in~\cite{Ber06}.
 This protocol is standardized in RFC~7748 and used by a wide variety of applications~\cite{things-that-use-curve25519}
 such as SSH, Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
 an insecure channel.
@@ -26,31 +26,33 @@ Curve25519 for the underlying elliptic curve~\cite{Ber14}.
 We use this updated terminology in this paper.
 
 \subheading{Contribution of this paper.}
-We provide a mechanized formal proof of the correctness of the X25519
-implementation in TweetNaCl.
+In short, in this paper we provide a computer-verified proof that the
+X25519 implementation in TweetNaCl matches the mathematical definition
+of the function given in~\cite[Sec.~2]{Ber06}.
 This proof is done in three steps:
 
 We first formalize RFC~7748~\cite{rfc7748} in Coq~\cite{coq-faq}.
-% This part uses generic techniques to facilitate later proofs.
 
 In the second step we prove equivalence of the C implementation of X25519
 to our RFC formalization.
 This part of the proof uses the Verifiable Software Toolchain (VST)~\cite{2012-Appel}
 to establish a link between C and Coq.
-The VST uses separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
+VST uses separation logic~\cite{1969-Hoare,Reynolds02separationlogic}
 to show that the semantics of the program satisfy a functional specification in Coq.
-To the best of our knowledge, this is the first time that the
-VST is used in the formal proof of correctness of an implementation
+To the best of our knowledge, this is the first time that VST 
+is used in the formal proof of correctness of an implementation
 of an asymmetric cryptographic primitive.
 
-In the last step we prove that the Coq implementation matches
+In the last step we prove that the Coq formalization of the RFC matches
 the mathematical definition of X25519 as given in~\cite[Sec.~2]{Ber06}.
-This provides additional confidence that there are no transcription errors
-in our formalized version of X25519.
 We do this by extending the Coq library
 for elliptic curves~\cite{BartziaS14} by Bartzia and Strub to
 support Montgomery curves, and in particular Curve25519.
-This extension may be of independent interest.
+
+To our knowledge, this is the first effort 
+presenting a computer-verified proof of correctness of
+ECC software from a fairly low-level real-world implementation all the way up
+to the mathematical definition in terms of scalar multiplication on an elliptic curve.
 
 \subheading{Related work.}
 Two methodologies exist to get formal guarantees that software meets its specification.
@@ -114,7 +116,9 @@ proof techniques used to show the correctness with respect to RFC~7748~\cite{rfc
 \sref{sec:maths} describes our extension of the formal library by Bartzia
 and Strub and the correctness of X25519 implementation with respect to Bernstein's
 specifications~\cite{Ber14}.
-Finally in \sref{sec:Conclusion} we discuss the trusted code base of our proofs.
+Finally in \sref{sec:Conclusion} we discuss the trusted code base of our proofs
+and conclude with some lessons learned about TweetNaCl and with sketching the 
+effort required to extend our work to other elliptic-curve software.
 
 \fref{tikz:ProofOverview} shows a graph of dependencies of the proofs.
 C source files are represented by {\color{doc@lstfunctions}.C} while
