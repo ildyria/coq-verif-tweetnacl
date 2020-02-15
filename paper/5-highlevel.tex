@@ -54,7 +54,7 @@ $$E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
 where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
 or self-intersections). The set of points defined over \K, written $E(\K)$, is formed by the
 solutions $(x,y)$ of $E$ together with a distinguished point $\Oinf$ called point at infinity:
-$$E(\K) = \{ E(x,y)~|~(x,y) \in \K \times \K\} \cup \{\Oinf\}$$
+$$E(\K) = \{ (x,y) \in \K \times \K ~|~E(x,y)\} \cup \{\Oinf\}$$
 \end{dfn}
 
 \subsubsection{Short Weierstra{\ss} curves}
@@ -317,7 +317,7 @@ Theorem opt_montgomery_ok (n m: nat) (x : K) :
   forall (p : mc M), p#x0 = x ->
   opt_montgomery n m x = (p *+ n)#x0.
 \end{lstlisting}
-The definition of \coqe{opt_montgomery} is closely related to \coqe{montgomery_rec_swap}
+The definition of \coqe{opt_montgomery} is similar to \coqe{montgomery_rec_swap}
 that was used in \coqe{RFC}.
 We proved their equivalence, and used it in our
 final proof of \coqe{Theorem RFC_Correct}.
