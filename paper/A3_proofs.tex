@@ -2,7 +2,7 @@
 \label{appendix:proof-folders}
 
 \subheading{Requirements}
-Our proofs requires the use of \emph{Coq.8.8.2} for the proofs and
+Our proofs requires the use of \emph{Coq 8.8.2} for the proofs and
 \emph{Opam 2.0} to manage the dependencies. We are aware that there exists more
 recent versions of Coq; VST; CompCert etc. however to avoid dealing with backward
 breaking compatibility we decided to freeze our dependencies.
@@ -29,12 +29,12 @@ In this folder the reader will find multiple levels of implementation of X25519.
   reason with lists and decidable procedures.
   \item \textbf{\texttt{ListsOp/}} defines operators on list such as
   \Coqe{ZofList} and related lemmas using \eg \VSTe{Forall}.
-  \item \textbf{\texttt{High/}} contains the theory of Montgomery curves,
-  twists, quadratic extensions and ladder.
-  It also proves the correctness of the ladder over $\F{\p}$.
   \item \textbf{\texttt{Gen/}} defines a generic Montgomery ladder which can be
   instantiated with different operations. This ladder is the stub for the
   following implementations.
+  \item \textbf{\texttt{High/}} contains the theory of Montgomery curves,
+  twists, quadratic extensions and ladder.
+  It also proves the correctness of the ladder over $\F{\p}$.
   \item \textbf{\texttt{Mid/}} provides a list-based implementation of the
   basic operations \TNaCle{A}, \TNaCle{Z}, \TNaCle{M} \ldots~and the ladder. It
   makes the link with the theory of Montgomery curves.
