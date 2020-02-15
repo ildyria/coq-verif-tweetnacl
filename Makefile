@@ -41,6 +41,8 @@ $(DIST)/specs_map.pdf:
 dist: clean-dist $(DIST) $(DIST)/specs_map.pdf
 	@echo $(BOLD)$(YELLOW)"Preparing $(DIST)"$(NO_COLOR)$(DARKGRAY)
 	cp -r proofs $(DIST)
+	cd $(DIST)/proofs/spec && $(MAKE) clean
+	cd $(DIST)/proofs/vst && $(MAKE) clean
 	mkdir $(DIST)/packages
 	cp -r packages/coq-compcert $(DIST)/packages/
 	cp -r packages/coq-reciprocity $(DIST)/packages/
