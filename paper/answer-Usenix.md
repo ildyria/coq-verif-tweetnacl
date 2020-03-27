@@ -17,7 +17,7 @@ REVIEW 1:
 
 * Would following the same approach for other implementation radically change
   the proof effort?
-  
+
   We would expect that the proof effort for another C implementation of X25519
   does not change drastically, as long as it does not use any features that are
   not supported by VST (e.g., the 128-bit integers used by the donna64
@@ -60,7 +60,7 @@ REVIEW 3:
 
   We were not able to reproduce this failure. We prepared a VM image together
   with a README to rule out any kind of system dependencies; see
-  XXX
+  https://github.com/coq-verif-tweetnacl/coq-verif-tweetnacl-VM
 
 * Demonstrate a security benefit relative to [12]: what bugs does this
   eliminate? What specific correctness properties does it add?
