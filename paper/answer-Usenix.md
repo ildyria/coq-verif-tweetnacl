@@ -25,14 +25,14 @@ REVIEW A:
   does not change for other implementations.
 
 * Does compiling TweetNaCl with CompCert rather than gcc impact the performance
-  beyond what is acceptable? 
+  beyond what is acceptable?
 
   For the X25519 implementation in TweetNaCl, CompCert generates code that is
   about 6x slower than code generated with gcc. While this sounds like a lot, it
   may not be too much of an issue for projects that use TweetNaCl, because they
   chose for a library that prioritizes simplicity over performance in the first
   place. A more serious issue however can be the non-free CompCert license.
-  
+
 * If so, what trust do you consider this proof effort to bring to a gcc compiled
   implementation?
 
@@ -70,7 +70,7 @@ REVIEW C:
 
   We were not able to reproduce this failure. We prepared a VM image together
   with a README to rule out any kind of system dependencies; see
-  https://github.com/coq-verif-tweetnacl/coq-verif-tweetnacl-VM
+  https://github.com/coq-verif-tweetnacl/coq-verif-tweetnacl
 
 * Demonstrate a security benefit relative to [12]: what bugs does this
   eliminate? What specific correctness properties does it add?
