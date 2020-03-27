@@ -50,11 +50,11 @@ REVIEW C:
 
 * Changed code, i64 -> int, but the size of `int` depends on architecture
 
-  This change is required for the proof because of limitations of VST. We
-  recommend that TweetNaCl does not change to int and that this issue is longer
-  term addressed in VST. As i64 has a larger range than int, there is only small
-  concern that our proof does not extend to TweetNaCl with i64. We will clarify
-  this in the paper.
+  We made this change because VST does not support standard for-loop
+  verification tactics with i64. We recommend that TweetNaCl does not change to
+  int and that this issue is longer term addressed in VST. As i64 has a larger
+  range than int, there is only small concern that our proof does not extend to
+  TweetNaCl with i64. We will clarify this in the paper.
 
 * How do you know the pre/post conditions are complete? What happens if a
   critical one is missed? Does this influence a full functional correctness?
