@@ -10,10 +10,10 @@ REVIEW 1:
 * What made TweetNaCl the right choice for this project?  
 
   One goal of the project was to investigate how suitable the combination of
-  VST+Coq is for verifying correctness of existing C code. The X25519
-  implementation in TweetNaCl was chosen because it is relatively simple, it has
-  some real-world use cases, and the original paper claims that the library
-  should be verifiable.
+  VST+Coq is for verifying correctness of existing C code for asymmetric
+  primitives. The X25519 implementation in TweetNaCl was chosen because it is
+  relatively simple, it has some real-world use cases, and the original paper
+  claims that the library should be verifiable.
 
 * Would following the same approach for other implementation radically change
   the proof effort?
