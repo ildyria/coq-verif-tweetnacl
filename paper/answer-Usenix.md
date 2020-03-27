@@ -5,15 +5,15 @@ brief answers to specific comments.
 
 ---------------------------- Answers to questions ----------------------------
 
-REVIEW 1:
+REVIEW A:
 
 * What made TweetNaCl the right choice for this project?  
 
   One goal of the project was to investigate how suitable the combination of
   VST+Coq is for verifying correctness of existing C code for asymmetric
-  primitives. The X25519 implementation in TweetNaCl was chosen because it is
-  relatively simple, it has some real-world use cases, and the original paper
-  claims that the library should be verifiable.
+  crypto primitives. The X25519 implementation in TweetNaCl was chosen because
+  it is relatively simple, it has some real-world use cases, and the original
+  paper claims that the library should be verifiable.
 
 * Would following the same approach for other implementation radically change
   the proof effort?
@@ -21,7 +21,8 @@ REVIEW 1:
   We would expect that the proof effort for another C implementation of X25519
   does not change drastically, as long as it does not use any features that are
   not supported by VST (e.g., the 128-bit integers used by the donna64
-  implementation).
+  implementation). The proof relating the RFC to the mathematical definition
+  does not change for other implementations.
 
 * Does compiling TweetNaCl with CompCert rather than gcc impact the performance
   beyond what is acceptable? 
@@ -42,9 +43,10 @@ REVIEW 1:
   massively expands the TCB and should be reason for concern.
 
 
-REVIEW 2: No questions
+REVIEW B: No specific questions; we agree with the comments and will make the
+          requested changes.
 
-REVIEW 3:
+REVIEW C:
 
 * Changed code, i64 -> int, but the size of `int` depends on architecture
 
