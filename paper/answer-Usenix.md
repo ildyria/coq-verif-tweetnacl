@@ -28,7 +28,13 @@ REVIEW A:
   beyond what is acceptable? 
 
   For the X25519 implementation in TweetNaCl, CompCert generates code that is
-  about 6x slower than code generated with gcc. While this sounds like a lot, it
+  about 6x slower than code generated with gcc. But our verification also
+  applies to compilers like gcc and clang. The CompCert semantics is more
+  strict than the C17 standard with certain parameers (like integer sizes)
+  fixed. Therefore, if a compiler obeys the standard, then our correctness
+  proof also applies there.
+
+While this sounds like a lot, it
   may not be too much of an issue for projects that use TweetNaCl, because they
   chose for a library that prioritizes simplicity over performance in the first
   place. A more serious issue however can be the non-free CompCert license.
