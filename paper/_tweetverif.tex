@@ -1,13 +1,21 @@
 \newif\ifusenix
+\newif\ifacm
+\newif\ifieee
 \newif\ifpublic
 
-\usenixtrue
+\usenixfalse
+\acmfalse
+\ieeetrue
 \publicfalse
 
 \ifusenix
-\input{_usenix}
-\else
-\input{_acmccs}
+  \input{_usenix}
+\fi
+\ifacm
+  \input{_acmccs}
+\fi
+\ifieee
+  \input{_ieee}
 \fi
 
 % \begin{acks}
@@ -21,14 +29,20 @@
 \ifusenix
   \bibliographystyle{plain}
   \bibliography{collection}
-\else
+\fi
+\ifacm
   \vspace*{1cm}
   {\bibliographystyle{ACM-Reference-Format}
-  \bibliography{collection}}
+    \bibliography{collection}}
+\fi
+\ifieee
+  \vspace*{1cm}
+  {\footnotesize \bibliographystyle{IEEEtran}
+    \bibliography{collection}}
 \fi
 
 \begin{appendix}
-\intput{appendix}
+  \intput{appendix}
 \end{appendix}
 
 \end{document}

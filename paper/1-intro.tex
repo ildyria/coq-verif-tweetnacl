@@ -7,7 +7,7 @@ It uses specialized code for different platforms, which makes it rather complex 
 TweetNaCl~\cite{BGJ+15} is a compact re-implementation in C
 of the core functionalities of NaCl and is claimed to be
 \emph{``the first cryptographic library that allows correct functionality
-to be verified by auditors with reasonable effort''}~\cite{BGJ+15}.
+  to be verified by auditors with reasonable effort''}~\cite{BGJ+15}.
 The original paper presenting TweetNaCl describes some effort to support
 this claim, for example, formal verification of memory safety, but does not actually
 prove correctness of any of the primitives implemented by the library.
@@ -115,7 +115,7 @@ structure of finite field and elliptic curves the actual proofs are quite differ
 \subheading{Reproducing the proofs.}
 To maximize reusability of our results we place the code of our formal proof
 presented in this paper into the public domain.
-It is available at \url{https://anonfile.com/B9x43aZ6n4/coq-verif-tweetnacl.tar.gz}
+It is available at \url{https://github.com/coq-verif-tweetnacl/coq-verif-tweetnacl/}
 with instructions of how to compile and verify our proof.
 A description of the content of the code archive is provided in
 Appendix~\ref{appendix:proof-folders}.
@@ -135,7 +135,7 @@ effort required to extend our work to other elliptic-curve software.
 
 \fref{tikz:ProofOverview} shows a graph of dependencies of the proofs.
 C source files are represented by {\color{doc@lstfunctions}.C} while
-{\color{doc@lstfunctions}.V} corresponds to Coq files.
+  {\color{doc@lstfunctions}.V} corresponds to Coq files.
 
 \begin{figure}[h]
   \centering
