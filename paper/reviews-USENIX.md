@@ -1,18 +1,32 @@
-The Program Committee of the 2020 USENIX Security Symposium (Winter
-Deadline) has decided that your paper 324 should advance to Round 2 of the
-reviewing process. Before the second round begins, we are giving authors of
-all such papers the opportunity to respond to the first round of reviews.
-Authors should pay special attention to the “Questions for Authors’
-Response” section of reviews, where present. The Program Chairs have asked
-the reviewers to use this section to indicate the most critical issues
-that, if successfully clarified, can possibly lead to changes in opinions.
 
-You have until Friday, March 27, 2020 at midnight PDT to respond to these
-reviews. Responses are limited to 700 words.
 
-We apologize again for any inconvenience caused by the delay of this
-notification, and we appreciate your patience during this unprecedented
-time. We hope you are well.
+Dear Benoit Viguier,
+
+Thank you for submitting your paper to the Winter Deadline for the 2020
+USENIX Security Symposium. The Program Committee has reviewed your
+submission (324: “A Coq proof of the correctness of X25519 in TweetNaCl”)
+and we regret to inform you that your paper has been rejected.
+
+Specifically, your paper has received a Reject & Resubmit decision. This
+means that you cannot resubmit your paper to USENIX Security for the
+upcoming Summer deadline. Your paper is no longer considered to be under
+review by USENIX Security, and you may submit it elsewhere without needing
+to formally withdraw it. For more details on the process, please see here:
+https://www.usenix.org/conference/usenixsecurity20/publication-model-change.
+Please also stay tuned to the USENIX Security ‘21 website for new
+developments on the process for next year:
+https://www.usenix.org/conference/usenixsecurity21.
+
+Please find a copy of your reviews detailing this decision below.
+
+A note on the process: This decision is a result of the discussions between
+the reviewers, PC chairs, and other members of the PC. The reviews and
+scores that you received serve only as a basis for that discussion. While
+we encourage reviewers to update their reviews and scores after the
+discussion, they may not fully reflect all aspects of the discussion. The
+program committee has put significant effort into reviewing and discussing
+each paper, and we hope that the resulting feedback will help you improve
+your work.
 
 Best regards,
 Srdjan Čapkun and Franziska Roesner
@@ -287,11 +301,9 @@ Weaknesses
 
 Detailed comments for authors
 -----------------------------
-Let me start by stating that I’m no expert but rather an enthusiast hoping to see formal modeling and verification applied in practice. I really appreciate this paper on verifying a real crypto implementation. As far as validating the particular properties and math representations I cannot comment. I did appreciate that the Coq model of X25519 was formally proven to match the mathematical specification, a key property to base any trust in. Overall, I appreciate the effort, but as a non-expert I’m left wondering whether or not this was simply an excellent effort of engineering or if we learn anything as a research community. From a research project I anticipate taking some new knowledge/idea that would inform me on future endeavors, which is more than simply a verified artifact. As such, my recommendation is that this paper must do a better job of *connecting the dots* so the value and technical lessons learned are more clear to the less expert reader. More detailed commen
- ts follow. 
+Let me start by stating that I’m no expert but rather an enthusiast hoping to see formal modeling and verification applied in practice. I really appreciate this paper on verifying a real crypto implementation. As far as validating the particular properties and math representations I cannot comment. I did appreciate that the Coq model of X25519 was formally proven to match the mathematical specification, a key property to base any trust in. Overall, I appreciate the effort, but as a non-expert I’m left wondering whether or not this was simply an excellent effort of engineering or if we learn anything as a research community. From a research project I anticipate taking some new knowledge/idea that would inform me on future endeavors, which is more than simply a verified artifact. As such, my recommendation is that this paper must do a better job of *connecting the dots* so the value and technical lessons learned are more clear to the less expert reader. More detailed comments follow. 
 
-**Problem**: The core problem is trusting in the implementation of a key cryptographic algorithm. This of course is a critical problem, but it is not clear how it is a research problem. What makes this worth a publication at a top tier security conference? Things I’m thinking of are, the proof system had to do X,Y, and Z to be correct. I presume this paper has things like that (for example, proving the specification seems the most complex and most critical piece). Furthermore, it is not clear how [12] has not solved the problem already? I get that this work has some deltas to [12] but how much? Why isn’t that work enough? What’s the gap? Is it a conceptual gap, or is it just *do more mathematical modeling and proving*? Maybe there is a problem in the way software is structured for verification? Maybe mathematical models of this complexity are hard to specify for verification? Overall, it isn’t clear what makes this a research problem as opposed to throwing engineering
-  at the problem. I presume it does in fact have some research elements. This is of course an issue when coming to a community like USENIX Security which doesn’t have many such papers. The paper will need to help us bridge this gap. 
+**Problem**: The core problem is trusting in the implementation of a key cryptographic algorithm. This of course is a critical problem, but it is not clear how it is a research problem. What makes this worth a publication at a top tier security conference? Things I’m thinking of are, the proof system had to do X,Y, and Z to be correct. I presume this paper has things like that (for example, proving the specification seems the most complex and most critical piece). Furthermore, it is not clear how [12] has not solved the problem already? I get that this work has some deltas to [12] but how much? Why isn’t that work enough? What’s the gap? Is it a conceptual gap, or is it just *do more mathematical modeling and proving*? Maybe there is a problem in the way software is structured for verification? Maybe mathematical models of this complexity are hard to specify for verification? Overall, it isn’t clear what makes this a research problem as opposed to throwing engineering at the problem. I presume it does in fact have some research elements. This is of course an issue when coming to a community like USENIX Security which doesn’t have many such papers. The paper will need to help us bridge this gap. 
 
 **Approach**: The approach is to model the specification in Coq, prove funcational correctness of the C implementation thorough translating to VST and specifying Hoare triples in Coq, and proving the specification matches the model. Overall, I am excited about the proof that the model matches the math. I am less convinced about the C level translations.
 
@@ -315,12 +327,336 @@ Let me start by stating that I’m no expert but rather an enthusiast hoping to 
 
 Requested changes
 -----------------
-- Provide better justification of the need for this work relative to [12]
-- Demonstrate a security benefit relative to [12]: what bugs does this eliminate? What specific correctness properties does it add? 
-- Provide justification for the research aspects of this work that take it beyond mere engineering (which I believe it likely has but that I do not have the expertise to readily grasp).
 
 Questions for authors' response
 -------------------------------
 - How do you know the pre/post conditions are complete? What happens if a critical on is missed? Does this influence a full functional correctness?
 
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+Review #324D
+===========================================================================
+
+Review recommendation
+---------------------
+5. Accept
+
+Writing quality
+---------------
+4. Well-written
+
+Reviewer interest
+-----------------
+3. I would definitely go to this talk and tell my students or colleagues to
+   read this paper
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Paper summary
+-------------
+Presents a complete proof chain from mathematical specification to the compiled binary for a widely used key-exchange protocol.
+
+Strengths
+---------
+* correctness of crypto protocols is very important, any bug has huge security implications
+* such an end-to-end proof from math to implementation is impressive and rare (if not unique)
+
+Weaknesses
+----------
+* couldn't get provided proofs to build – reproducibility issue!
+
+Detailed comments for authors
+-----------------------------
+I congratulate the authors on this impressive achievement of an end-to-end proof from math to code. This is nice work and will have big impact. I also commend them on the clarity of the description of their trusted computing/proof base.
+
+I'm not a crypto person and didn't try to understand the math. But the approach and formalisation seems sensible. The Coq code is clear and seems to do exactly what they say it does. rfc.v (the entrypoint) is very clear and simple. Their code and project is structured well.
+
+Unfortunately I was not able to check the proofs. First off, the link the authors supplied in the paper is broken, but I managed to find the code. However, I couldn't get it to work:
+* couldn't get the code from their repo working for their toolchain stuff.
+* couldn't get the coq code to compile either.
+* tried for a number of hours on two machines to get their code to compile, they specify a particular version of the Ocaml compiler which I couldn't get to build, trying on three different machines and operating systems
+
+So, while I really like this work, the lack of reproducibility even with access to the code is a problem
+
+Requested changes
+-----------------
+Please provide a working version, either clear instructions on how to build, or maybe a virtual machine image.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+Review #324E
+===========================================================================
+
+Review recommendation
+---------------------
+1. Reject
+
+Writing quality
+---------------
+2. Needs improvement
+
+Reviewer interest
+-----------------
+1. I am not interested in this paper
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Paper summary
+-------------
+This paper presents a proof and technique for proving the correctness of and implementation of the X25519 key exchange protocol.  The authors provide a sketch of the system and related various components of the formal analysis.
+
+Strengths
+---------
+This is an exceptionally sophisticated approach for formally verifying the correctness of a crypto library.
+
+The authors have provided a usable library implementing an important protocol.
+
+Weaknesses
+----------
+This paper does not feel like a great fit for USENIX security.   This should likely go to a formal verification or crypto conference, because the details and contributions are likely to be lost on the USENIX community.
+
+To that point, the paper is very, very dense and requires an incredible amount of background to appreciate the nuances of the work.  For example, to appreciate the work, you have to study the code, definitions, and intermediate languages on pages 5-7.  The whole thing reads like a technical report without much prose to help me understand what is going on
+
+I had a difficult time understanding how this work generalizes.  Even the introduction failed to provide a clear statement of the contributions of this work.  This is highlighted in the previous reviews when prior reviewers could not fully ascertain the contribution of this work.
+
+Oddly, I found that the responses to the past reviewer's questions were often more instructive than the paper itself.  I am also not sure that the authors really appreciated that the previous reviews were asking you to provide a more structured and less detail oriented paper.
+
+In the end, I strongly feel that this paper must be rewritten with the low level details deemphasized and the contributions and intuition presented with clarity.
+
+Questions for authors' response
+-------------------------------
+Why was this submitted to USENIX?  S&P seems like a much better venue.
+
+What am I to take away from this?  How does this generalize?
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+Review #324F
+===========================================================================
+
+Review recommendation
+---------------------
+2. Reject and resubmit
+
+Writing quality
+---------------
+2. Needs improvement
+
+Reviewer interest
+-----------------
+2. I might go to a talk about this
+
+Reviewer expertise
+------------------
+3. Knowledgeable
+
+Paper summary
+-------------
+The authors formally prove that the TweetNaCl implementation of the X25519
+function correctly implements the spec given in RFC 7748. Furthermore, they
+prove that the pseudocode spec in RFC 7748 matches the mathematical definitions
+of the curve operations originally presented by Bernstein.
+
+Strengths
+---------
+- Proof that the TweetNaCl source (with very minor modifications) can be trusted.
+
+Weaknesses
+----------
+- The majority of the paper is simply working through proofs.
+- Not written for a USENIX Security audience.
+- No clear value beyond the proof itself; no interesting challenges or solutions.
+
+Detailed comments for authors
+-----------------------------
+As written, I'm not sure this paper is a good fit for USENIX Security.  There
+is no clear contribution beyond the mechanized proof that the TweetNaCl
+implementation of X25519 is correct.  This is useful (proof) engineering, but
+it's not clear if any research challenges were addressed. I would say such an
+effort is worth accepting if the proof is for something widely used, but
+TweetNaCl is not really used seriously last I checked.
+
+Buried in the introduction and conclusion is some text describing how this work
+might be made more widely useful.  I suggest the authors reframe their paper
+with the main focus being any useful challenges and problems that arose during
+this work. For example, did extending Bartzia and Strub lead to any new
+insights?  Proving TweetNaCl's X25519 could be an application/case study a
+larger effort (e.g., the authors also mention that it would be easy to port
+their curve definitions to other curves).
+
+I found large large sections of the text to be largely ill suited to a USENIX
+Security audience (e.g., walking step-by-step through proofs, with no text
+explaining why this is important or interesting). I also find bits of the text
+somewhat rushed (e.g., paragraph from RFC with no context).
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+Review #324G
+===========================================================================
+
+Review recommendation
+---------------------
+4. Minor revision
+
+Writing quality
+---------------
+4. Well-written
+
+Reviewer interest
+-----------------
+2. I might go to a talk about this
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Paper summary
+-------------
+The paper takes a C implementation of the X25519 DH operation in the TweetNaCl library and proves it is correct. This proof ocurrs in two stages. Firstly, the paper formalises RFC 7748, which standardised X25519, in Coq. Then it goes on to show the C code, the Coq reference and the mathematical definition coincide.
+
+Strengths
+---------
+* Clearly Written
+* Comprehensive with respect to the studied object
+* Most formally verified cryptography code is generated or written with verification in mind, so verifying arbitrary code is impressive.
+
+Weaknesses
+----------
+* TweetNaCl is explicitly written as a simple and easy to audit library, compared to faster, more complex implementations.
+* The paper does not extend tooling or provide general techniques.
+
+Detailed comments for authors
+-----------------------------
+I found the paper easy to read, especially for relativel complex topic. 
+Although I am not an expect on the implementation of cryptographic primitives, I found the mathematical explanation and verification in particular easy to follow. 
+
+However, I found it very difficult to evaluate the scientific value of this paper. It gave me no new insights into proof methodology, the benefits or drawbacks of this particular approach, or the effort required. 
+
+If the paper was proposing a new technique which could be applied more generally, attempted to show the same technique scaled to multiple X25519 implementations or otherwise compared different techniques for verification this would significantly improve it.
+
+Requested changes
+-----------------
+  * Better clarify effort required for this undertaking.
+  * Describe challenges for proving statements about the more complex (faster) implementations.
+  * Describe which parts of the contributions could possibly be applied more generally.
+
+Comments
+===========================================================================
+
+Response by Benoit Viguier <b.viguier@science.ru.nl>
+---------------------------------------------------------------------------
+First of all, thank you very much to all reviewers for their detailed comments.
+We agree with the comments and will update our manuscript accordingly. Please
+see below first our answers to the questions asked in the reviews and then some
+brief answers to specific comments.
+
+
+ Answers to questions 
+--------------------------------------------------------
+
+## REVIEW A:
+
+* What made TweetNaCl the right choice for this project?  
+
+  One goal of the project was to investigate how suitable the combination of
+  VST+Coq is for verifying correctness of existing C code for asymmetric
+  crypto primitives. The X25519 implementation in TweetNaCl was chosen because
+  it is relatively simple, it has some real-world use cases, and the original
+  paper claims that the library should be verifiable.
+
+* Would following the same approach for other implementation radically change
+  the proof effort?
+
+  We would expect that the proof effort for another C implementation of X25519
+  does not change drastically, as long as it does not use any features that are
+  not supported by VST (e.g., the 128-bit integers used by the donna64
+  implementation). The proof relating the RFC to the mathematical definition
+  does not change for other implementations.
+
+* Does compiling TweetNaCl with CompCert rather than gcc impact the performance
+  beyond what is acceptable?
+
+  For the X25519 implementation in TweetNaCl, CompCert generates code that is
+  about 6x slower than code generated with gcc. While this sounds like a lot, it
+  may not be too much of an issue for projects that use TweetNaCl, because they
+  chose for a library that prioritizes simplicity over performance in the first
+  place. A more serious issue however can be the non-free CompCert license.
+
+* If so, what trust do you consider this proof effort to bring to a gcc compiled
+  implementation?
+
+  We are not aware of any bugs that were introduced into ECC software by bugs in
+  gcc; so from a practical, crypto-engineering point of view we rule out all
+  classes of bugs that users are typically concerned about. From a more
+  theoretical point of view, relying on gcc (or any other unverified C compiler)
+  massively expands the TCB and should be reason for concern.
+
+
+## REVIEW B:
+
+No specific questions; we agree with the comments and will make the
+          requested changes.
+
+## REVIEW C:
+
+* Changed code, i64 -> int, but the size of `int` depends on architecture
+
+  We made this change because VST does not support standard for-loop
+  verification tactics with i64. We recommend that TweetNaCl does not change to
+  int and that this issue is longer term addressed in VST. As i64 has a larger
+  range than int, there is only small concern that our proof does not extend to
+  TweetNaCl with i64. We will clarify this in the paper.
+
+* How do you know the pre/post conditions are complete? What happens if a
+  critical one is missed? Does this influence a full functional correctness?
+
+  The semantics of VST guarantee that we do not miss a critical pre-condition
+  required to guarantee any of the post conditions. The post conditions are
+  sufficient to prove correctness with regards to the mathematical definition.
+
+
+Answers to additional comments
+----------------------------------------------
+
+* On a side note, I failed to compile the project.
+
+  We were not able to reproduce this failure. We prepared a VM image together
+  with a README to rule out any kind of system dependencies; see
+  https://github.com/coq-verif-tweetnacl/coq-verif-tweetnacl
+
+* Demonstrate a security benefit relative to [12]: what bugs does this
+  eliminate? What specific correctness properties does it add?
+
+  The work in [12] proves correctness only of the the main routine of an X25519
+  implementation, namely one ladder step. Examples of bugs that would not be
+  caught by [12] but would be caught by our proof are
+  - bugs in the clamping of the scalar,
+  - bugs in the final inversion,
+  - bugs in the freezing (full modular reduction) of the final result,
+  - inconsistencies between the specification and the mathematical model.
+
+* The proof does not cover side-channel resistance ("constant-time")
+
+  While the verification of this property is outside the scope of this paper,
+  we will include a short discussion on constant-time verification, in
+  particular referring to [POPL'20, Barthe et al.] and [USENIX'16, Almeida et
+  al.].
+
+Comment @A1
+---------------------------------------------------------------------------
+Dear authors, 
+
+This paper was extensively discussed. While an impressive effort, ultimately the committee was not convinced that the level of contribution was significant enough, and especially that it was of sufficient interest to the USENIX Security audience, to warrant acceptance. We remain open to a future submission that is significantly revised to make fit to / lessons for this audience clear, but several reviewers believe this would be a non-trivial task (if even possible). We encourage the authors to seek other publications venues instead.
 

@@ -1,0 +1,56 @@
+\newpage
+\subsection{Usenix Security 2020 Review \#324G}
+
+\begin{tabular}{rl}
+    \toprule
+    Review recommendation & 4. Minor revision                  \\
+    Writing quality       & 4. Well-written                    \\
+    Reviewer interest     & 2. I might go to a talk about this \\
+    Reviewer expertise    & 2. Some familiarity                \\
+    \bottomrule
+\end{tabular}
+
+\begin{center}
+    \subheading{===== Paper summary =====}
+\end{center}
+The paper takes a C implementation of the X25519 DH operation in the TweetNaCl library and proves it is correct. This proof ocurrs in two stages. Firstly, the paper formalises RFC 7748, which standardised X25519, in Coq. Then it goes on to show the C code, the Coq reference and the mathematical definition coincide.
+
+\begin{center}
+    \subheading{===== Strengths =====}
+\end{center}
+
+\begin{itemize}
+    \item Clearly Written
+    \item Comprehensive with respect to the studied object
+    \item Most formally verified cryptography code is generated or written with verification in mind, so verifying arbitrary code is impressive.
+\end{itemize}
+
+\begin{center}
+    \subheading{===== Weaknesses =====}
+\end{center}
+
+\begin{itemize}
+    \item TweetNaCl is explicitly written as a simple and easy to audit library, compared to faster, more complex implementations.
+    \item The paper does not extend tooling or provide general techniques.
+\end{itemize}
+
+\begin{center}
+    \subheading{===== Detailed comments for authors =====}
+\end{center}
+
+I found the paper easy to read, especially for relativel complex topic.
+Although I am not an expect on the implementation of cryptographic primitives, I found the mathematical explanation and verification in particular easy to follow.
+
+However, I found it very difficult to evaluate the scientific value of this paper. It gave me no new insights into proof methodology, the benefits or drawbacks of this particular approach, or the effort required.
+
+If the paper was proposing a new technique which could be applied more generally, attempted to show the same technique scaled to multiple X25519 implementations or otherwise compared different techniques for verification this would significantly improve it.
+
+\begin{center}
+    \subheading{===== Requested changes =====}
+\end{center}
+
+\begin{itemize}
+    \item  Better clarify effort required for this undertaking.
+    \item  Describe challenges for proving statements about the more complex (faster) implementations.
+    \item  Describe which parts of the contributions could possibly be applied more generally.
+\end{itemize}

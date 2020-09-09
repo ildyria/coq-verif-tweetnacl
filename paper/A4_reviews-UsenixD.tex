@@ -1,0 +1,61 @@
+\newpage
+\subsection{Usenix Security 2020 Review \#324D}
+
+\begin{tabular}{rl}
+    \toprule
+    Review recommendation & 5. Accept                        \\
+    Writing quality       & 4. Well-written                  \\
+    Reviewer interest     & 3. I would definitely go to this \\
+                          & talk and tell my students or     \\
+                          & colleagues to read this paper    \\
+    Reviewer expertise    & 2. Some familiarity              \\
+    \bottomrule
+\end{tabular}
+
+\begin{center}
+    \subheading{===== Paper summary =====}
+\end{center}
+Presents a complete proof chain from mathematical specification to the compiled binary for a widely used key-exchange protocol.
+
+\begin{center}
+    \subheading{===== Strengths =====}
+\end{center}
+
+\begin{itemize}
+    \item correctness of crypto protocols is very important, any bug has huge security implications
+    \item such an end-to-end proof from math to implementation is impressive and rare (if not unique)
+\end{itemize}
+
+
+\begin{center}
+    \subheading{===== Weaknesses =====}
+\end{center}
+
+\begin{itemize}
+    \item I couldn't get provided proofs to build – reproducibility issue!
+\end{itemize}
+
+\begin{center}
+    \subheading{===== Detailed comments for authors =====}
+\end{center}
+
+I congratulate the authors on this impressive achievement of an end-to-end proof from math to code. This is nice work and will have big impact. I also commend them on the clarity of the description of their trusted computing/proof base.
+
+I'm not a crypto person and didn't try to understand the math. But the approach and formalisation seems sensible. The Coq code is clear and seems to do exactly what they say it does. rfc.v (the entrypoint) is very clear and simple. Their code and project is structured well.
+
+Unfortunately I was not able to check the proofs. First off, the link the authors supplied in the paper is broken, but I managed to find the code. However, I couldn't get it to work:
+\begin{itemize}
+    \item couldn't get the code from their repo working for their toolchain stuff.
+    \item couldn't get the coq code to compile either.
+    \item tried for a number of hours on two machines to get their code to compile, they specify a particular version of the Ocaml compiler which I couldn't get to build, trying on three different machines and operating systems
+\end{itemize}
+
+So, while I really like this work, the lack of reproducibility even with access to the code is a problem
+
+\begin{center}
+    \subheading{===== Requested changes =====}
+\end{center}
+
+Please provide a working version, either clear instructions on how to build, or maybe a virtual machine image.
+
+

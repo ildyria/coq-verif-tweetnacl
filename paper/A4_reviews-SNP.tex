@@ -2,7 +2,7 @@
 % ~\\
 % \newpage
 
-\section{Prior reviews}
+\section{Prior reviews (S\&P 2020)}
 \label{appendix:past-reviews}
 
 This paper has been submitted to IEEE Symposium on Security and Privacy 2020.
@@ -61,12 +61,12 @@ are handled? Is the application of reflection challenging? Are
 there bugs found, in particular, in the mathematical operations?
 
 \begin{answer}{EEEEEE}
-The novelty of this work is not in the proof techniques. It
-lies in the assurance gained by the formalization of the
-X25519 from RFC 7748, and its correctness with respect to
-the theory of elliptic curves. Additionally it is the first
-time, a link from the C code up to the mathematical definitions of
-Curve25519 using a single tool is presented.
+  The novelty of this work is not in the proof techniques. It
+  lies in the assurance gained by the formalization of the
+  X25519 from RFC 7748, and its correctness with respect to
+  the theory of elliptic curves. Additionally it is the first
+  time, a link from the C code up to the mathematical definitions of
+  Curve25519 using a single tool is presented.
 \end{answer}
 
 A related comment is that it is unclear from the paper
@@ -75,14 +75,14 @@ mathematical operations of other protocols that use elliptic
 curve.
 
 \begin{answer}{EEEEEE}
-We believe that parts of our proofs are reusable either by
-their structure to give an intuition or by directly changing
-some values (for e.g. X448). The mathematical definitions
-are generic and may be instantiated over any fields (of characteristic
-neither 2 or 3). The Ladder may be instantiated
-over operations over different data structure for the underlying
-arithmetic, making it reusable. The low level operations
-\eg \TNaCle{A} are also reusable in the proof of ed25519.
+  We believe that parts of our proofs are reusable either by
+  their structure to give an intuition or by directly changing
+  some values (for e.g. X448). The mathematical definitions
+  are generic and may be instantiated over any fields (of characteristic
+  neither 2 or 3). The Ladder may be instantiated
+  over operations over different data structure for the underlying
+  arithmetic, making it reusable. The low level operations
+  \eg \TNaCle{A} are also reusable in the proof of ed25519.
 \end{answer}
 
 In the Corrections in TweetNaCl paragraph, two things
@@ -92,41 +92,41 @@ if they are. Then the story for the usefulness of the verification
 become stronger.
 
 \begin{answer}{EEEEEE}
-The switch from \TNaCle{i64} to \TNaCle{int} in \texttt{for} loops and the
-extraction of the computation outside of the function call in
-\TNaCle{pack25519} are required by VST but we believe those
-change have no impact on the verification effort.
+  The switch from \TNaCle{i64} to \TNaCle{int} in \texttt{for} loops and the
+  extraction of the computation outside of the function call in
+  \TNaCle{pack25519} are required by VST but we believe those
+  change have no impact on the verification effort.
 
-The only modification which made the verification easier
-was the removal of the \textit{dead code} at the end of
-\TNaCle{crypto_scalarmult}. Peter Wu and Jason A.
-Donenfeld had also noticed this part and informed us after we
-already fixed the code.
+  The only modification which made the verification easier
+  was the removal of the \textit{dead code} at the end of
+  \TNaCle{crypto_scalarmult}. Peter Wu and Jason A.
+  Donenfeld had also noticed this part and informed us after we
+  already fixed the code.
 \end{answer}
 
 It would be nice if the authors comment on the verification
 effort: person month etc.
 
 \begin{answer}{EEEEEE}
-In addition to the time required to get familiar with
-research software, we faced a few bugs which we reported
-to the developers of VST to get them fixed.
-It is very hard to work with a tool without being involved
-in the development loop. Additionally newer versions often
-broke some of our proofs and it was often needed to adapt
-to the changes.
-As a result we do not believe the metric person-month to be
-a good representation of the verification effort.
+  In addition to the time required to get familiar with
+  research software, we faced a few bugs which we reported
+  to the developers of VST to get them fixed.
+  It is very hard to work with a tool without being involved
+  in the development loop. Additionally newer versions often
+  broke some of our proofs and it was often needed to adapt
+  to the changes.
+  As a result we do not believe the metric person-month to be
+  a good representation of the verification effort.
 \end{answer}
 
 Also, did the verified version replace the version in use in
 production software? If not, why not?
 
 \begin{answer}{EEEEEE}
-We contacted the authors of TweetNaCl and expect that
-the changes above mentioned will soon be integrated in a
-new version of the library, mostly for \TNaCle{car25519} and the
-simplification in \TNaCle{crypto_scalarmult}.
+  We contacted the authors of TweetNaCl and expect that
+  the changes above mentioned will soon be integrated in a
+  new version of the library, mostly for \TNaCle{car25519} and the
+  simplification in \TNaCle{crypto_scalarmult}.
 \end{answer}
 
 Section V is extremely dry. What are the high-level insights?
@@ -135,24 +135,24 @@ and lemmas fit together would be a better way to represent
 this section.
 
 \begin{answer}{EEEEEE}
-We provided overviews of the proof at the beginning of sections
-V.1 and V.2. We hope this will give the reader an intuition
-of how lemmas fit together.
+  We provided overviews of the proof at the beginning of sections
+  V.1 and V.2. We hope this will give the reader an intuition
+  of how lemmas fit together.
 \end{answer}
 
 In summary, this paper is in need of significant improvements
 in the writing and providing detailed discussions of
 high-level intellectual contributions in this verification effort.
 
-{\color{gray}
-Minor
+  {\color{gray}
+    Minor
 
-On page 6: "each elements" => no s
+    On page 6: "each elements" => no s
 
-On page 7, the beginning of the page, a half sentence is
-dangling there.
+    On page 7, the beginning of the page, a half sentence is
+    dangling there.
 
-On page 9: "each functions" => no s}
+    On page 9: "each functions" => no s}
 
 
 \subsection{S\&P 2020 Review \#582B}
@@ -200,18 +200,18 @@ some minor bugs/parsing issues to be found anyway. What is
 your explanation that you haven’t found any issues?
 
 \begin{answer}{EEEEEE}
-The implementation of TweetNaCl is straight forward and
-simple, big number arithmetic is done without optimizations.
-It is easy to get an intuition of how the code work by reading
-it. The ladder is a direct mapping of RFC~7748. It does
-not aim for speed optimizations. This reduce significantly
-the complexity of the code compared to e.g., Fiat Crypto
-generated optimized C code.
+  The implementation of TweetNaCl is straight forward and
+  simple, big number arithmetic is done without optimizations.
+  It is easy to get an intuition of how the code work by reading
+  it. The ladder is a direct mapping of RFC~7748. It does
+  not aim for speed optimizations. This reduce significantly
+  the complexity of the code compared to e.g., Fiat Crypto
+  generated optimized C code.
 
-While we did not find errors in the implementation with
-respect to functional correctness under the CompCert assumptions,
-we removed an undefined behavior by the C
-standard.
+  While we did not find errors in the implementation with
+  respect to functional correctness under the CompCert assumptions,
+  we removed an undefined behavior by the C
+  standard.
 \end{answer}
 
 p.1: You discuss \cite{Ber06} as using heavy annotation of code,
@@ -223,11 +223,11 @@ mostly describe names of tool while leaving out the details of
 what these tools carry out conceptually.
 
 \begin{answer}{EEEEEE}
-SMT solvers strategies are in need of annotation, often written
-as parsable comment in the middle of the C code~\cite{acsl}
-in order to ``guide'' the proof. In our case we only need to
-annotate the beginning of the function and loop invariants
-which allows us to get tighter bounds.
+  SMT solvers strategies are in need of annotation, often written
+  as parsable comment in the middle of the C code~\cite{acsl}
+  in order to ``guide'' the proof. In our case we only need to
+  annotate the beginning of the function and loop invariants
+  which allows us to get tighter bounds.
 \end{answer}
 
 p.2: Fig 1 is very nice. However, at this point, none of
@@ -240,9 +240,9 @@ the paper. I.e., elsewhere in the paper, there is usually a lot
 of code details.
 
 \begin{answer}{EEEEEE}
-``.V'' is the file extension for Coq files (as opposed to ``.C'' for C
-files). This allows us to emphasis that all our work is done
-in a single framework. We clarified this in the introduction.
+  ``.V'' is the file extension for Coq files (as opposed to ``.C'' for C
+  files). This allows us to emphasis that all our work is done
+  in a single framework. We clarified this in the introduction.
 \end{answer}
 
 p.2-4: Subsection A took some mathematical background.
@@ -257,14 +257,14 @@ seems to jump between implementation levels and discussing
 high-level arguments such as Fermat’s little theorem.
 
 \begin{answer}{EEEEEE}
-We aim to give a quick view of how Montgomery curves are
-defined and remind the reader of the ``twisting factor''. The
-computation of n' is required for the security of X25519 as
-it reduces the computations to a prime-order group, we use
-this presentation to refer it later as ``clamping''. We
-modified Subsection D to omit all the code definitions of small
-functions to ease the reader experience. The C definitions
-are now provided in the appendix.
+  We aim to give a quick view of how Montgomery curves are
+  defined and remind the reader of the ``twisting factor''. The
+  computation of n' is required for the security of X25519 as
+  it reduces the computations to a prime-order group, we use
+  this presentation to refer it later as ``clamping''. We
+  modified Subsection D to omit all the code definitions of small
+  functions to ease the reader experience. The C definitions
+  are now provided in the appendix.
 \end{answer}
 
 p.3: I very much liked the discussion of the Diff between
@@ -276,11 +276,11 @@ Diff, and as a reader, I would need to perform the extraction
 of insights myself.
 
 \begin{answer}{EEEEEE}
-Due to page restrictions for IEEE S\&P, including appendices,
-We had a condensed diff. We changed the format to
-a ``diff -u'' to provide the context of the applied changes. We
-also now describe the motivations of each changes below
-the said Diff.
+  Due to page restrictions for IEEE S\&P, including appendices,
+  We had a condensed diff. We changed the format to
+  a ``diff -u'' to provide the context of the applied changes. We
+  also now describe the motivations of each changes below
+  the said Diff.
 \end{answer}
 
 p.5: CSWAP: Maybe use a backward reference to p.3 where
@@ -289,9 +289,9 @@ content, and relying on the reader's memory does not really
 work here (or at least, it did not work for me).
 
 \begin{answer}{EEEEEE}
-As we rewrote significantly section 2.4, the space between
-the definition and the use of CSWAP decreased. We added a
-backward reference to where it was originally defined.
+  As we rewrote significantly section 2.4, the space between
+  the definition and the use of CSWAP decreased. We added a
+  backward reference to where it was originally defined.
 \end{answer}
 
 p.7: I enjoyed the discussion on aliasing! This was the type
@@ -301,12 +301,12 @@ not cover "all cases" - all cases of what? And why is this
 distinction sufficient for the task at hand?
 
 \begin{answer}{EEEEEE}
-In that section we clarified the discussion of what
-would be an unnecessary aliasing case and why such case do
-not happen in TweetNaCl. For example, TweetNaCl never
-has function calls where the 3 pointers are aliased (\texttt{o = a = b}),
-as such we do not consider this aliasing case in the
-specifications of the function.
+  In that section we clarified the discussion of what
+  would be an unnecessary aliasing case and why such case do
+  not happen in TweetNaCl. For example, TweetNaCl never
+  has function calls where the 3 pointers are aliased (\texttt{o = a = b}),
+  as such we do not consider this aliasing case in the
+  specifications of the function.
 \end{answer}
 
 Most of the rest of the paper felt hard to read, because it
@@ -315,10 +315,10 @@ it would be much more interesting if the paper highlights the
 interesting aspects of the verification.
 
 \begin{answer}{EEEEEE}
-We removed sections and details in order to simplify the
-reading experience. We also added figures in section V in
-order to provide the reader a mental image of how the lemmas,
-definitions and theorems work together.
+  We removed sections and details in order to simplify the
+  reading experience. We also added figures in section V in
+  order to provide the reader a mental image of how the lemmas,
+  definitions and theorems work together.
 \end{answer}
 
 Related work:
@@ -333,29 +333,29 @@ in \rbar as synthesis or verification, because to me, it seemed
 a mix/neither.
 
 \begin{answer}{EEEEEE}
-The bibtex was from DBLP. We fixed the order of the
-authors with respect to the original publication and contacted
-DBLP to update their files.
+  The bibtex was from DBLP. We fixed the order of the
+  authors with respect to the original publication and contacted
+  DBLP to update their files.
 
-\fref{tikz:LowVST} highlights the difference between Low*
-and our approach.
+  \fref{tikz:LowVST} highlights the difference between Low*
+  and our approach.
 
-\begin{figure}[H]
-\centering
-\include{tikz/low}
-\caption{VST vs Low*}
-\label{tikz:LowVST}
-\end{figure}
+  \begin{figure}[H]
+    \centering
+    \include{tikz/low}
+    \caption{VST vs Low*}
+    \label{tikz:LowVST}
+  \end{figure}
 
-Low* generates C code, thus this is synthesis. We generate
-Clight from C code, thus this is verification. Because Low*
-also has a verification step with respect to some high-level
-specifications, we consider their process to be a mix of the
-two methods. Also to be noted that both VST and Low*
-allow the verification of memory safety.
-% However Low* provides
-% sidechannel securities while VST allow verification
-% of concurent programs.
+  Low* generates C code, thus this is synthesis. We generate
+  Clight from C code, thus this is verification. Because Low*
+  also has a verification step with respect to some high-level
+  specifications, we consider their process to be a mix of the
+  two methods. Also to be noted that both VST and Low*
+  allow the verification of memory safety.
+  % However Low* provides
+  % sidechannel securities while VST allow verification
+  % of concurent programs.
 \end{answer}
 
 Clarification in intro:
@@ -368,9 +368,9 @@ for symmetric cryptographic primitives before? From the text,
 I wasn’t sure whether this is careful quantification or not.
 
 \begin{answer}{EEEEEE}
-This is indeed careful quantification. VST has already
-been used to verify symmetric Cryptographic primitives
-(\eg SHA), as mentioned later by \cite{Beringer2015VerifiedCA} and \cite{2015-Appel}.
+  This is indeed careful quantification. VST has already
+  been used to verify symmetric Cryptographic primitives
+  (\eg SHA), as mentioned later by \cite{Beringer2015VerifiedCA} and \cite{2015-Appel}.
 \end{answer}
 
 
@@ -432,20 +432,20 @@ this work hard to justify.
 
 
 \begin{answer}{EEEEEE}
-Indeed \mitp's C code of X25519 is verified. However the
-authors do not qualify their approach as verification but
-as synthesis. They do not use Coq to verify C code, instead they
-``synthesize'' (generate) C code from verified refinements of
-the specification. Our approach goes from the C code up to the
-specification.
- % which is completely different.
+  Indeed \mitp's C code of X25519 is verified. However the
+  authors do not qualify their approach as verification but
+  as synthesis. They do not use Coq to verify C code, instead they
+  ``synthesize'' (generate) C code from verified refinements of
+  the specification. Our approach goes from the C code up to the
+  specification.
+  % which is completely different.
 
-\begin{figure}[H]
-\centering
-\include{tikz/mit}
-\caption{Our approach vs \mitp}
-\label{tikz:MitVST}
-\end{figure}
+  \begin{figure}[H]
+    \centering
+    \include{tikz/mit}
+    \caption{Our approach vs \mitp}
+    \label{tikz:MitVST}
+  \end{figure}
 
 \end{answer}
 
@@ -470,11 +470,11 @@ out the code fragments into figures and let the text focus on
 the high-level ideas of the code.
 
 \begin{answer}{EEEEEE}
-We removed a significant part of the Coq details, especially
-details about reflections in order to make the reading
-experience smooth. As suggested, we also added a few figures to
-give the reader an overview of how the proofs are linked
-together.
+  We removed a significant part of the Coq details, especially
+  details about reflections in order to make the reading
+  experience smooth. As suggested, we also added a few figures to
+  give the reader an overview of how the proofs are linked
+  together.
 \end{answer}
 
 At the end of Section IV, I would have loved to see some
@@ -485,19 +485,19 @@ important for this work, since prior papers have shown how
 to share proof effort across multiple curves.
 
 \begin{answer}{EEEEEE}
-We added insights in \sref{subsec:with-VST} of how to improve
-working with VST. In section \sref{sec:Conclusion},
-we described in further details how our work can
-be extended to other curves. The TweetNaCl ed25519
-implementation makes use of the same low level arithmetic
-as X25519, reusing our proofs. For example, \TNaCle{pow2523} is
-similar to \TNaCle{inv25519} and would allow us to reuse our
-reflection abstraction. X448 would reuse the ladder but the
-low level arithmetic would need to be proven again. P-256
-is a different case as due to its short Weierstra\ss{} shape, this
-implies that our ladder is not fit for it. However using \cite{BartziaS14}
-and our proofs as example it is possible to prove a similar
-ladder as ours.
+  We added insights in \sref{subsec:with-VST} of how to improve
+  working with VST. In section \sref{sec:Conclusion},
+  we described in further details how our work can
+  be extended to other curves. The TweetNaCl ed25519
+  implementation makes use of the same low level arithmetic
+  as X25519, reusing our proofs. For example, \TNaCle{pow2523} is
+  similar to \TNaCle{inv25519} and would allow us to reuse our
+  reflection abstraction. X448 would reuse the ladder but the
+  low level arithmetic would need to be proven again. P-256
+  is a different case as due to its short Weierstra\ss{} shape, this
+  implies that our ladder is not fit for it. However using \cite{BartziaS14}
+  and our proofs as example it is possible to prove a similar
+  ladder as ours.
 \end{answer}
 
 It also appears that the authors do not verify the constant-time
@@ -505,9 +505,9 @@ guarantees of the TweetNaCl code. Could this be done
 in their framework?
 
 \begin{answer}{EEEEEE}
-Constant-timeness is not a property verifiable with VST.
-This is not verifiable with our framework.
-% Related on CompCert: https://eprint.iacr.org/2019/926.pdf
+  Constant-timeness is not a property verifiable with VST.
+  This is not verifiable with our framework.
+  % Related on CompCert: https://eprint.iacr.org/2019/926.pdf
 \end{answer}
 
 Section V presents the proof of mathematical equivalence.
@@ -520,13 +520,13 @@ or HACL*, hence adding value to those other projects in addition
 to your own?
 
 \begin{answer}{EEEEEE}
-Indeed those two proofs are completely independent. The
-only link between \sref{sec:C-Coq} and \sref{sec:maths} is the definition
-of \Coqe{RFC} and the preconditions on the inputs: 2 arrays of
-32 bytes. We highlighted in \sref{sec:Conclusion} that our proof of
-correctness of X25519 in RFC~7748 increases the confidence
-in other implementations such as Fiat Crypto and HACL*
-(under the assumption they correctly formalized the RFC).
+  Indeed those two proofs are completely independent. The
+  only link between \sref{sec:C-Coq} and \sref{sec:maths} is the definition
+  of \Coqe{RFC} and the preconditions on the inputs: 2 arrays of
+  32 bytes. We highlighted in \sref{sec:Conclusion} that our proof of
+  correctness of X25519 in RFC~7748 increases the confidence
+  in other implementations such as Fiat Crypto and HACL*
+  (under the assumption they correctly formalized the RFC).
 \end{answer}
 
 I was hoping to see where the ``clamping'' used in X25519
@@ -537,17 +537,17 @@ a stronger property you could prove because of the clamping
 prove such a property?
 
 \begin{answer}{EEEEEE}
-The clamping by itself has no impact on the computations using the ladder.
-It is thus normal to not see it appear in \sref{sec:maths} as our proofs work for any 255-bit $n$,
-We prove the correctness of X25519 in RFC~7748, we do not prove its security.
-The proof of a stronger property (e.g. membership in prime-order group)
-shall be done separately before being applied to Curve25519.
+  The clamping by itself has no impact on the computations using the ladder.
+  It is thus normal to not see it appear in \sref{sec:maths} as our proofs work for any 255-bit $n$,
+  We prove the correctness of X25519 in RFC~7748, we do not prove its security.
+  The proof of a stronger property (e.g. membership in prime-order group)
+  shall be done separately before being applied to Curve25519.
 \end{answer}
 
 More generally, what about the proof of Section V is
 specific to X25519 and what is generic?
 
 \begin{answer}{EEEEEE}
-Everything in \sref{subsec:ECC} is generic, anything left in \sref{subsec:curve_twist_fields}
-is specific to X25519.
+  Everything in \sref{subsec:ECC} is generic, anything left in \sref{subsec:curve_twist_fields}
+  is specific to X25519.
 \end{answer}
