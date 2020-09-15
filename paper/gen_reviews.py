@@ -43,6 +43,9 @@ def check_tex(s):
         raise argparse.ArgumentTypeError(msg)
     return s
 
+
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Generate paper.')
     parser.add_argument('input', nargs=1, default='', help='input: paper.tex', type=check_tex)
@@ -54,25 +57,21 @@ def main():
 
     fn = parse_arguments()
 
-    files = [x for x in glob.glob("**/*.tex", recursive=True) if not is_ignored(x) and is_tex(x) and not (x == fn) and is_not_tikz(x)]
-    
-    main = [x for x in files if not is_appendix(x)]
-    appendices = [x for x in files if is_appendix(x)]
+    files = [x for x in glob.glob("_reviews/*.tex", recursive=True) if is_tex(x) and not (x == fn) and is_not_tikz(x)]
 
-    main.sort()
-    appendices.sort()
+    # for f in files:
+    #     print(f)
+
+    files.sort()
 
     main_output = ''
-    for f in main:
+    for f in files:
         main_output += "\\input{{{}}}\n".format(f)
 
     appendix_output = ''
-    for f in appendices:
-        appendix_output += "  \\input{{{}}}\n".format(f)
 
-    output = read('_' + fn)
+    output = read('_tpl' + fn)
     output = output.replace('\\intput{main}\n', '$main_output')
-    output = output.replace('\\intput{appendix}\n', '$appendix_output')
     output = Template(output)
     output = output.safe_substitute(main_output = main_output, appendix_output = appendix_output)
     # print(output)
