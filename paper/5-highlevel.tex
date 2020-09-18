@@ -4,9 +4,9 @@
 In this section we prove the following informal theorem:
 
 \begin{informaltheorem}
-The implementation of X25519 in TweetNaCl computes the
-$\F{p}$-restricted \xcoord scalar multiplication on $E(\F{p^2})$ where $p$ is $\p$
-and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
+  The implementation of X25519 in TweetNaCl computes the
+  $\F{p}$-restricted \xcoord scalar multiplication on $E(\F{p^2})$ where $p$ is $\p$
+  and $E$ is the elliptic curve $y^2 = x^3 + 486662 x^2 + x$.
 \end{informaltheorem}
 
 More precisely, we prove that our formalization of the RFC matches the definitions of Curve25519 by Bernstein:
@@ -46,15 +46,15 @@ We consider elliptic curves over a field $\K$. We assume that the
 characteristic of $\K$ is neither 2 or 3.
 
 \begin{dfn}
-Given a field $\K$,
-using an appropriate choice of coordinates,
-an elliptic curve $E$
-is a plane cubic algebraic curve defined by an equation $E(x,y)$ of the form:
-$$E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
-where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
-or self-intersections). The set of points defined over \K, written $E(\K)$, is formed by the
-solutions $(x,y)$ of $E$ together with a distinguished point $\Oinf$ called point at infinity:
-$$E(\K) = \{ (x,y) \in \K \times \K ~|~E(x,y)\} \cup \{\Oinf\}$$
+  Given a field $\K$,
+  using an appropriate choice of coordinates,
+  an elliptic curve $E$
+  is a plane cubic algebraic curve defined by an equation $E(x,y)$ of the form:
+  $$E : y^2 + a_1 xy + a_3 y = x^3 + a_2 x^2 + a_4 x + a_6$$
+  where the $a_i$'s are in \K\ and the curve has no singular point (\ie no cusps
+  or self-intersections). The set of points defined over \K, written $E(\K)$, is formed by the
+  solutions $(x,y)$ of $E$ together with a distinguished point $\Oinf$ called point at infinity:
+  $$E(\K) = \{ (x,y) \in \K \times \K ~|~E(x,y)\} \cup \{\Oinf\}$$
 \end{dfn}
 
 \subsubsection{Short Weierstra{\ss} curves}
@@ -63,16 +63,16 @@ $$E(\K) = \{ (x,y) \in \K \times \K ~|~E(x,y)\} \cup \{\Oinf\}$$
 This equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
 
 \begin{dfn}
-Let $a \in \K$ and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$
-The \textit{elliptic curve} $E_{a,b}$ is defined by the equation:
-$$y^2 = x^3 + ax + b.$$
-$E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the $E_{a,b}$
-along with an additional formal point $\Oinf$, ``at infinity''. Such a curve does not have any singularity.
+  Let $a \in \K$ and $b \in \K$ such that $$\Delta(a,b) = -16(4a^3 + 27b^2) \neq 0.$$
+  The \textit{elliptic curve} $E_{a,b}$ is defined by the equation:
+  $$y^2 = x^3 + ax + b.$$
+  $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the $E_{a,b}$
+  along with an additional formal point $\Oinf$, ``at infinity''. Such a curve does not have any singularity.
 \end{dfn}
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
 represent the points on a specific curve. It is parameterized by
-a \texttt{K : ecuFieldType} --- the type of fields which characteristic is not 2 or 3 ---
+a \texttt{K : ecuFieldType} --- the type of fields whose characteristic is not 2 or 3 ---
 and \texttt{E : ecuType} --- a record that packs the curve parameters $a$ and $b$
 along with the proof that $\Delta(a,b) \neq 0$.
 \begin{lstlisting}[language=Coq]
@@ -93,7 +93,7 @@ Points on an elliptic curve are equipped with the structure of an abelian group.
 \begin{itemize}
   \item The negation of a point $P = (x,y)$ is defined by reflection over the $x$ axis $-P = (x, -y)$.
   \item The addition of two points $P$ and $Q$ is defined as the negation of the third intersection point
-  of the line passing through $P$ and $Q$, or tangent to $P$ if $P = Q$.
+        of the line passing through $P$ and $Q$, or tangent to $P$ if $P = Q$.
   \item $\Oinf$ is the neutral element under this law: if 3 points are collinear, their sum is equal to $\Oinf$.
 \end{itemize}
 These operations are defined in Coq as follows (where we omit the code for the tangent case):
@@ -112,7 +112,7 @@ Definition add (p1 p2 : point) :=
           (| xs, - s * (xs - x1 ) - y1 |)
   end.
 \end{lstlisting}
-The value of \texttt{add} is proven to be on the curve (with coercion):
+The value of \texttt{add} is proven to be on the curve with coercion:
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : ec): oncurve (add p q).
 
@@ -136,7 +136,7 @@ than the Weierstra{\ss} form. We consider the Montgomery form \cite{MontgomerySp
 Similar to the definition of \texttt{ec}, we defined the parametric type \texttt{mc} which
 represents the points on a specific Montgomery curve.
 It is parameterized by
-a \texttt{K : ecuFieldType} --- the type of fields which characteristic is not
+a \texttt{K : ecuFieldType} --- the type of fields whose characteristic is not
 2 or 3 --- and \texttt{M : mcuType} --- a record that packs the curve
 parameters $a$ and $b$ along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
 \begin{lstlisting}[language=Coq,belowskip=-0.1 \baselineskip]
@@ -182,8 +182,8 @@ corresponding property for Weierstra{\ss} curves.
   then $E_{a',b'}$ is an elliptic curve, and the mapping
   $\varphi : M_{a,b} \mapsto E_{a',b'}$ defined as:
   \begin{align*}
-    \varphi(\Oinf_M) &= \Oinf_E\\
-    \varphi( (x , y) ) &= \left( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} \right)
+    \varphi(\Oinf_M)   & = \Oinf_E                                                 \\
+    \varphi( (x , y) ) & = \left( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} \right)
   \end{align*}
   is an isomorphism between elliptic curves.
 \end{lemma}
@@ -226,8 +226,8 @@ setting $Z=0$, we derive $X=0$, giving us the ``infinite point'' $(0:1:0)$.
 By restricting the parameter $a$ of $M_{a,b}(\K)$ such that $a^2-4$ is not a
 square in \K, we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
 \begin{hypothesis}
-\label{hyp:a_minus_4_not_square}
-$a^2-4$ is not a square in \K.
+  \label{hyp:a_minus_4_not_square}
+  $a^2-4$ is not a square in \K.
 \end{hypothesis}
 \begin{lstlisting}[language=Coq]
 Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
@@ -235,41 +235,41 @@ Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 
 We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
 \begin{dfn}Let $\chi$ and $\chi_0$:\\
--- $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$\\
+  -- $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$\\
   such that $\chi(\Oinf) = \infty$ and $\chi((x,y)) = x$.\\
--- $\chi_0 : M_{a,b}(\K) \to \K$\\
+  -- $\chi_0 : M_{a,b}(\K) \to \K$\\
   such that $\chi_0(\Oinf) = 0$ and $\chi_0((x,y)) = x$.
 \end{dfn}
 Using projective coordinates we prove the formula for differential addition.% (\lref{lemma:xADD}).
 \begin{lemma}
-\label{lemma:xADD}
-Let $M_{a,b}$ be a Montgomery curve such that $a^2-4$ is not a square in \K, and
-let $X_1, Z_1, X_2, Z_2, X_4, Z_4 \in \K$, such that $(X_1,Z_1) \neq (0,0)$,
-$(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
-Define
-\begin{align*}
-X_3 &= Z_4((X_1 - Z_1)(X_2+Z_2) + (X_1+Z_1)(X_2-Z_2))^2\\
-Z_3 &= X_4((X_1 - Z_1)(X_2+Z_2) - (X_1+Z_1)(X_2-Z_2))^2,
-\end{align*}
-then for any point $P_1$ and $P_2$ in $M_{a,b}(\K)$ such that
-$X_1/Z_1 = \chi(P_1), X_2/Z_2 = \chi(P_2)$, and $X_4/Z_4 = \chi(P_1 - P_2)$,
-we have $X_3/Z_3 = \chi(P_1+P_2)$.\\
-\textbf{Remark:}
-These definitions should be understood in $\K \cup \{\infty\}$.
-If $x\ne 0$ then we define $x/0 = \infty$.
+  \label{lemma:xADD}
+  Let $M_{a,b}$ be a Montgomery curve such that $a^2-4$ is not a square in \K, and
+  let $X_1, Z_1, X_2, Z_2, X_4, Z_4 \in \K$, such that $(X_1,Z_1) \neq (0,0)$,
+  $(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
+  Define
+  \begin{align*}
+    X_3 & = Z_4((X_1 - Z_1)(X_2+Z_2) + (X_1+Z_1)(X_2-Z_2))^2  \\
+    Z_3 & = X_4((X_1 - Z_1)(X_2+Z_2) - (X_1+Z_1)(X_2-Z_2))^2,
+  \end{align*}
+  then for any point $P_1$ and $P_2$ in $M_{a,b}(\K)$ such that
+  $X_1/Z_1 = \chi(P_1), X_2/Z_2 = \chi(P_2)$, and $X_4/Z_4 = \chi(P_1 - P_2)$,
+  we have $X_3/Z_3 = \chi(P_1+P_2)$.\\
+  \textbf{Remark:}
+  These definitions should be understood in $\K \cup \{\infty\}$.
+  If $x\ne 0$ then we define $x/0 = \infty$.
 \end{lemma}
 Similarly we also prove the formula for point doubling.% (\lref{lemma:xDBL}).
 \begin{lemma}
-\label{lemma:xDBL}
-Let $M_{a,b}$ be a Montgomery curve such that $a^2-4$ is not a square in \K, and
-let $X_1, Z_1 \in \K$, such that $(X_1,Z_1) \neq (0,0)$. Define
-\begin{align*}
-  c &= (X_1 + Z_1)^2 - (X_1 - Z_1)^2\\
-X_3 &= (X_1 + Z_1)^2(X_1-Z_1)^2\\
-Z_3 &= c\Big((X_1 + Z_1)^2+\frac{a-2}{4}\times c\Big),
-\end{align*}
-then for any point $P_1$ in $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_1)$,
-we have $X_3/Z_3 = \chi(2P_1)$.
+  \label{lemma:xDBL}
+  Let $M_{a,b}$ be a Montgomery curve such that $a^2-4$ is not a square in \K, and
+  let $X_1, Z_1 \in \K$, such that $(X_1,Z_1) \neq (0,0)$. Define
+  \begin{align*}
+    c   & = (X_1 + Z_1)^2 - (X_1 - Z_1)^2                   \\
+    X_3 & = (X_1 + Z_1)^2(X_1-Z_1)^2                        \\
+    Z_3 & = c\Big((X_1 + Z_1)^2+\frac{a-2}{4}\times c\Big),
+  \end{align*}
+  then for any point $P_1$ in $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_1)$,
+  we have $X_3/Z_3 = \chi(2P_1)$.
 \end{lemma}
 
 With \lref{lemma:xADD} and \lref{lemma:xDBL}, we are able to compute efficiently
@@ -282,7 +282,7 @@ By taking \aref{alg:montgomery-ladder} and replacing \texttt{xDBL\&ADD} by a
 combination of the formulae from \lref{lemma:xADD} and \lref{lemma:xDBL},
 we define a ladder \coqe{opt_montgomery} (in which $\K$ has not been fixed yet).
 % similar to the one used in TweetNaCl (with \coqe{montgomery_rec}).
- % shown above.
+% shown above.
 
 % We prove its correctness for any point whose \xcoord is not 0.
 %
@@ -307,9 +307,9 @@ we define a ladder \coqe{opt_montgomery} (in which $\K$ has not been fixed yet).
 
 This gives us the theorem of the correctness of the Montgomery ladder.
 \begin{theorem}
-\label{thm:montgomery-ladder-correct}
-For all $n, m \in \N$, $x \in \K$, $P \in M_{a,b}(\K)$,
-if $\chi_0(P) = x$ then \coqe{opt_montgomery} returns $\chi_0(n \cdot P)$
+  \label{thm:montgomery-ladder-correct}
+  For all $n, m \in \N$, $x \in \K$, $P \in M_{a,b}(\K)$,
+  if $\chi_0(P) = x$ then \coqe{opt_montgomery} returns $\chi_0(n \cdot P)$
 \end{theorem}
 \begin{lstlisting}[language=Coq]
 Theorem opt_montgomery_ok (n m: nat) (x : K) :
@@ -344,8 +344,8 @@ preventing the use \tref{thm:montgomery-ladder-correct}
 with $\K = \F{p^2}$.
 
 \begin{sloppypar}
-We first study Curve25519 and one of its quadratic twists Twist25519,
-both defined over \F{p}.
+  We first study Curve25519 and one of its quadratic twists Twist25519,
+  both defined over \F{p}.
 \end{sloppypar}
 
 \subsubsection{Curves and twists}
@@ -387,22 +387,22 @@ Fact two_not_square : forall x: Zmodp.type,
 We now consider $M_{486662,1}(\F{p})$ and $M_{486662,2}(\F{p})$, one of its quadratic twists.
 % \begin{dfn}Let the following instantiations of \aref{alg:montgomery-double-add}:\\
 \begin{dfn}
-%Let the following instantiations of \aref{alg:montgomery-ladder}:\\
-We instantiate \coqe{opt_montgomery} in two specific ways:\\
--- $Curve25519\_Fp(n,x)$ for $M_{486662,1}(\F{p})$.\\
--- $Twist25519\_Fp(n,x)$ for $M_{486662,2}(\F{p})$.
+  %Let the following instantiations of \aref{alg:montgomery-ladder}:\\
+  We instantiate \coqe{opt_montgomery} in two specific ways:\\
+  -- $Curve25519\_Fp(n,x)$ for $M_{486662,1}(\F{p})$.\\
+  -- $Twist25519\_Fp(n,x)$ for $M_{486662,2}(\F{p})$.
 \end{dfn}
 
 With \tref{thm:montgomery-ladder-correct} we derive the following two lemmas:
 \begin{lemma}
-For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$,\\
-such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.
-$$Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$$
+  For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$,\\
+  such that $P \in M_{486662,1}(\F{p})$ and $\chi_0(P) = x$.
+  $$Curve25519\_Fp(n,x) = \chi_0(n \cdot P)$$
 \end{lemma}
 \begin{lemma}
-For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$\\
-such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.
-$$Twist25519\_Fp(n,x) = \chi_0(n \cdot P)$$
+  For all $x \in \F{p},\ n \in \N,\ P \in \F{p} \times \F{p}$\\
+  such that $P \in M_{486662,2}(\F{p})$ and $\chi_0(P) = x$.
+  $$Twist25519\_Fp(n,x) = \chi_0(n \cdot P)$$
 \end{lemma}
 As the Montgomery ladder does not depend on $b$, it is trivial to
 see that the computations done for points in $M_{486662,1}(\F{p})$ and in
@@ -490,15 +490,15 @@ As in $\F{p}$, we define $0^{-1} = 0$ and prove \lref{lemma:Zmodp2_field}.
 We then specialize the basic operations in order to speed up the verification
 of formulas by using rewrite rules:
 \begin{equation*}
-\begin{split}
-(a,0) + (b,0) &= (a+b, 0)\\
-(a, 0)^{-1} &= (a^{-1}, 0)
-\end{split}
-\qquad
-\begin{split}
-(a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
-(0,a)^{-1} &= (0,(2\cdot a)^{-1})
-\end{split}
+  \begin{split}
+    (a,0) + (b,0) &= (a+b, 0)\\
+    (a, 0)^{-1} &= (a^{-1}, 0)
+  \end{split}
+  \qquad
+  \begin{split}
+    (a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
+    (0,a)^{-1} &= (0,(2\cdot a)^{-1})
+  \end{split}
 \end{equation*}
 
 The injection $a \mapsto (a,0)$ from $\F{p}$ to $\F{p^2}$ preserves
@@ -521,12 +521,12 @@ Lemma x_is_on_curve_or_twist_implies_x_in_Fp2:
 
 We now study the case of the scalar multiplication and show similar proofs.
 \begin{dfn}
-Define the functions $\varphi_c$, $\varphi_t$ and $\psi$\\
--- $\varphi_c: M_{486662,1}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
+  Define the functions $\varphi_c$, $\varphi_t$ and $\psi$\\
+  -- $\varphi_c: M_{486662,1}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
   such that $\varphi((x,y)) = ((x,0), (y,0))$.\\
--- $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
+  -- $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
   such that $\varphi((x,y)) = ((x,0), (0,y))$.\\
--- $\psi: \F{p^2} \mapsto \F{p}$\\
+  -- $\psi: \F{p^2} \mapsto \F{p}$\\
   such that $\psi(x,y) = x$.
 \end{dfn}
 
@@ -535,14 +535,14 @@ Define the functions $\varphi_c$, $\varphi_t$ and $\psi$\\
   For all $n \in \N$, for all point $P\in\F{p}\times\F{p}$ on the curve
   $M_{486662,1}(\F{p})$ (respectively on the quadratic twist $M_{486662,2}(\F{p})$), we have:
   \begin{align*}
-  P \in M_{486662,1}(\F{p}) &\implies \varphi_c(n \cdot P) = n \cdot \varphi_c(P)\\
-  P \in M_{486662,2}(\F{p}) &\implies \varphi_t(n \cdot P) = n \cdot \varphi_t(P)
+    P \in M_{486662,1}(\F{p}) & \implies \varphi_c(n \cdot P) = n \cdot \varphi_c(P) \\
+    P \in M_{486662,2}(\F{p}) & \implies \varphi_t(n \cdot P) = n \cdot \varphi_t(P)
   \end{align*}
 \end{lemma}
 Notice that:
 \begin{align*}
-\forall P \in M_{486662,1}(\F{p}),\ \ \psi(\chi_0(\varphi_c(P))) = \chi_0(P)\\
-\forall P \in M_{486662,2}(\F{p}),\ \ \psi(\chi_0(\varphi_t(P))) = \chi_0(P)
+  \forall P \in M_{486662,1}(\F{p}),\ \ \psi(\chi_0(\varphi_c(P))) = \chi_0(P) \\
+  \forall P \in M_{486662,2}(\F{p}),\ \ \psi(\chi_0(\varphi_t(P))) = \chi_0(P)
 \end{align*}
 
 In summary for all $n \in \N,\ n < 2^{255}$, for any given point $P\in\F{p}\times\F{p}$

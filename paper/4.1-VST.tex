@@ -2,14 +2,16 @@
 \label{subsec:with-VST}
 
 \begin{sloppypar}
-We now turn our focus to the formal specification of \TNaCle{crypto_scalarmult}.
-We use our definition of X25519 from the RFC in the Hoare triple and prove
-its correctness.
+  We now turn our focus to the formal specification of \TNaCle{crypto_scalarmult}.
+  We use our definition of X25519 from the RFC in the Hoare triple and prove
+  its correctness.
 \end{sloppypar}
 
 \subheading{Specifications.}
 We show the soundness of TweetNaCl by proving a correspondence between
 the C version of TweetNaCl and the same code as a pure Coq function.
+\todo{same code => to fix}
+
 % why "pure" ?
 % A pure function is a function where the return value is only determined by its
 % input values, without observable side effects (Side effect are e.g. printing)
@@ -52,36 +54,36 @@ SEP  (sh [{ v_q }] <<(uch32)-- mVI (RFC n p);
 In this specification we state preconditions like:
 \begin{itemize}
   \item[] \VSTe{PRE}: \VSTe{_p OF (tptr tuchar)}\\
-  The function \TNaCle{crypto_scalarmult} takes as input three pointers to
-  arrays of unsigned bytes (\VSTe{tptr tuchar}) \VSTe{_p}, \VSTe{_q} and \VSTe{_n}.
+        The function \TNaCle{crypto_scalarmult} takes as input three pointers to
+        arrays of unsigned bytes (\VSTe{tptr tuchar}) \VSTe{_p}, \VSTe{_q} and \VSTe{_n}.
   \item[] \VSTe{LOCAL}: \VSTe{temp _p v_p}\\
-  Each pointer represent an address \VSTe{v_p},
-  \VSTe{v_q} and \VSTe{v_n}.
+        Each pointer represent an address \VSTe{v_p},
+        \VSTe{v_q} and \VSTe{v_n}.
   \item[] \VSTe{SEP}: \VSTe{sh [{ v_p $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI p}\\
-  In the memory share \texttt{sh}, the address \VSTe{v_p} points
-  to a list of integer values \VSTe{mVI p}.
+        In the memory share \texttt{sh}, the address \VSTe{v_p} points
+        to a list of integer values \VSTe{mVI p}.
   \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) p}\\
-  In order to consider all the possible inputs, we assume each
-  element of the list \texttt{p} to be bounded by $0$ included and $2^8$
-  excluded.
+        In order to consider all the possible inputs, we assume each
+        element of the list \texttt{p} to be bounded by $0$ included and $2^8$
+        excluded.
   \item[] \VSTe{PROP}: \VSTe{Zlength p = 32}\\
-  We also assume that the length of the list \texttt{p} is 32. This defines the
-  complete representation of \TNaCle{u8[32]}.
+        We also assume that the length of the list \texttt{p} is 32. This defines the
+        complete representation of \TNaCle{u8[32]}.
 \end{itemize}
 
 As postcondition we have conditions like:
 \begin{itemize}
   \item[] \VSTe{POST}: \VSTe{tint}\\
-  The function \TNaCle{crypto_scalarmult} returns an integer.
+        The function \TNaCle{crypto_scalarmult} returns an integer.
   \item[] \VSTe{LOCAL}: \VSTe{temp ret_temp (Vint Int.zero)}\\
-  The returned integer has value $0$.
+        The returned integer has value $0$.
   \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (RFC n p)}\\
-  In the memory share \texttt{sh}, the address \VSTe{v_q} points
-  to a list of integer values \VSTe{mVI (RFC n p)} where \VSTe{RFC n p} is the
-  result of the \TNaCle{crypto_scalarmult} of \VSTe{n} and \VSTe{p}.
+        In the memory share \texttt{sh}, the address \VSTe{v_q} points
+        to a list of integer values \VSTe{mVI (RFC n p)} where \VSTe{RFC n p} is the
+        result of the \TNaCle{crypto_scalarmult} of \VSTe{n} and \VSTe{p}.
   \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (RFC n p)}\\
-  \VSTe{PROP}: \VSTe{Zlength (RFC n p) = 32}\\
-  We show that the computation for \VSTe{RFC} fits in  \TNaCle{u8[32]}.
+        \VSTe{PROP}: \VSTe{Zlength (RFC n p) = 32}\\
+        We show that the computation for \VSTe{RFC} fits in  \TNaCle{u8[32]}.
 \end{itemize}
 
 \TNaCle{crypto_scalarmult} computes the same result as \VSTe{RFC}
