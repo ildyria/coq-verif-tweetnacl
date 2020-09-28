@@ -298,36 +298,36 @@ literate=
     {^n}{{$^n$}}1
     {^+n}{{$^n$}}1
     {^m}{{$^m$}}1
-    {^2}{{\makebox[8pt][l]{$^2$}}}1
-    {^+2}{{\makebox[8pt][l]{$^2$}}}1
-    {^3}{{\makebox[8pt][l]{$^3$}}}1
-    {^+3}{{\makebox[8pt][l]{$^3$}}}1
+    {^2}{{\makebox[4.5pt][l]{$^2$}}}1
+    {^+2}{{\makebox[4.5pt][l]{$^2$}}}1
+    {^3}{{\makebox[4.5pt][l]{$^3$}}}1
+    {^+3}{{\makebox[4.5pt][l]{$^3$}}}1
     {^nd}{{$^{nd}$}}1
     {^rd}{{$^{rd}$}}1
     {^th}{{$^{th}$}}1
     {^255}{{$^{255}$}}1
     {^-1}{{$^{-1}$}}1
     {\%:R}{{}}1
-    {p1}{{p\makebox[8pt][l]{$_1$}}}1
-    {p2}{{p\makebox[8pt][l]{$_2$}}}1
-    {x1}{{x\makebox[8pt][l]{$_1$}}}1
-    {x2}{{x\makebox[8pt][l]{$_2$}}}1
-    {x3}{{x\makebox[8pt][l]{$_3$}}}1
-    {x_1}{{x\makebox[8pt][l]{$_1$}}}1
-    {x_2}{{x\makebox[8pt][l]{$_2$}}}1
-    {x_3}{{x\makebox[8pt][l]{$_3$}}}1
-    {x4}{{x\makebox[8pt][l]{$_4$}}}1
-    {y1}{{y\makebox[8pt][l]{$_1$}}}1
-    {y2}{{y\makebox[8pt][l]{$_2$}}}1
-    {y3}{{y\makebox[8pt][l]{$_3$}}}1
-    {y4}{{y\makebox[8pt][l]{$_4$}}}1
-    {z1}{{z\makebox[8pt][l]{$_1$}}}1
-    {z2}{{z\makebox[8pt][l]{$_2$}}}1
-    {z3}{{z\makebox[8pt][l]{$_3$}}}1
-    {z4}{{z\makebox[8pt][l]{$_4$}}}1
-    {z_2}{{z\makebox[8pt][l]{$_2$}}}1
-    {z_3}{{z\makebox[8pt][l]{$_3$}}}1
-    {xs}{{x\makebox[8pt][l]{$_s$}}}1
+    {p1}{{p\makebox[5pt][l]{$_1$}}}1
+    {p2}{{p\makebox[5pt][l]{$_2$}}}1
+    {x1}{{x\makebox[5pt][l]{$_1$}}}1
+    {x2}{{x\makebox[5pt][l]{$_2$}}}1
+    {x3}{{x\makebox[5pt][l]{$_3$}}}1
+    {x_1}{{x\makebox[5pt][l]{$_1$}}}1
+    {x_2}{{x\makebox[5pt][l]{$_2$}}}1
+    {x_3}{{x\makebox[5pt][l]{$_3$}}}1
+    {x4}{{x\makebox[5pt][l]{$_4$}}}1
+    {y1}{{y\makebox[5pt][l]{$_1$}}}1
+    {y2}{{y\makebox[5pt][l]{$_2$}}}1
+    {y3}{{y\makebox[5pt][l]{$_3$}}}1
+    {y4}{{y\makebox[5pt][l]{$_4$}}}1
+    {z1}{{z\makebox[5pt][l]{$_1$}}}1
+    {z2}{{z\makebox[5pt][l]{$_2$}}}1
+    {z3}{{z\makebox[5pt][l]{$_3$}}}1
+    {z4}{{z\makebox[5pt][l]{$_4$}}}1
+    {z_2}{{z\makebox[5pt][l]{$_2$}}}1
+    {z_3}{{z\makebox[5pt][l]{$_3$}}}1
+    {xs}{{x\makebox[5pt][l]{$_s$}}}1
     {\\-}{{\makebox[9pt][c]{$-$}}}1
     {\\+}{{\makebox[9pt][c]{$+$}}}1
     {\\*}{{\makebox[9pt][c]{$*$}}}1
@@ -391,7 +391,7 @@ literate=
 
 % \newcommand{\lstbg}[3][0pt]{{\fboxsep#1\colorbox{#2}{\strut #3}}}
 \lstdefinelanguage{diff}{
-  basicstyle=\ttfamily\small,
+  basicstyle=\ttfamily\scriptsize,
   morecomment=[f][\color{doc@lstidentifiers2}]-,
   morecomment=[f][\color{doc@lstfunctions}]+,
   morecomment=[f][\color{gray}\textit]{@@},
@@ -408,9 +408,9 @@ literate=
 \lstset{%
   lineskip=-0.1em,
   %
-  % basicstyle=\ttfamily\scriptsize, % font that is used for the code
+  basicstyle=\ttfamily\scriptsize, % font that is used for the code
   % basicstyle=\ttfamily\small, % font that is used for the code
-  basicstyle=\ttfamily\footnotesize, % font that is used for the code
+  % basicstyle=\ttfamily\footnotesize, % font that is used for the code
   identifierstyle=\color{doc@lstidentifier},
   commentstyle=\color{doc@lstcomment}\footnotesize,
   % \itshape,

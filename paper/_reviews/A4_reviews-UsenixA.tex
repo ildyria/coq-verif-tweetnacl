@@ -69,6 +69,12 @@ I believe this paper describes a valuable work and contribution, that I apprecia
 Such a paper is difficult to write. The authors have visibly devoted great efforts to tackle this difficulty, but it remains a challenging read.
 \begin{itemize}
     \item The paper takes us from one technical point to another in a manner that seems arbitrary at times, and hinders the overall structure. The problem is quite global, but a typical example is Definition 2.3: as a non-expert, it is hard to understand why this notion is important to introduce here, and it is essentially not used anywhere in the paper.
+\end{itemize}
+\begin{answer}{EEEEEE}
+    Computations over Curve25519 are done in $\F{p}$, as a result an easy mistake is to assume the curve defined over $\F{p}$ for all $x \in \F{p}$. However Curve25519 is defined over the quadratic extension which makes the Curve25519 over $\F{p}$ and its quadratic twist isomorphic over $\F{p^2}$ (Definition 2.3).
+\end{answer}
+
+\begin{itemize}
     \item Figure 1 and Figure 4 are great, and have the potential to help so much the reader against the previous issue. Unfortunately, they are not commenting, and hence fail to do so!
     \item The protocol considered is standard, and its implementation made to be of reasonable complexity. The paper should therefore really aim to:
           \begin{enumerate}
@@ -107,15 +113,21 @@ Here are a few linear comments:
 
     \item \textbf{page 2:}\\
           Figure 1 is great, but would deserve a lengthy explanation!
+\end{itemize}
+\begin{answer}{EEEEEE}
+    We added an additional description of the figure.
+\end{answer}
+
+\begin{itemize}
 
     \item \textbf{page 3, column 1:}\\
           Definition 2.3: It's been very unclear to me as a non-expert in cryptography and this protocole in particular what was the purpose of this definition.\\
-          "depending of" $\rightarrow$ "depending on"\\
+          {\color{gray}"depending of" $\rightarrow$ "depending on"}\\
           "depending of the value of the kth bit" $\rightarrow$ unclear what k is at this point
 
     \item \textbf{page 3, column 2:}\\
           Algorithm 1: unclear what "m" is\\
-          "RFC 7748 standardize" $\rightarrow$   "RFC 7748 standardizes"
+          {\color{gray}"RFC 7748 standardize" $\rightarrow$   "RFC 7748 standardizes"}
 
     \item \textbf{page 4, column 2:}\\
           It's minor, but it is more shiny nowadays to cite The Odd Order theorem that the Four Color theorem as a mathematical achievement in Coq\\
@@ -151,8 +163,8 @@ Here are a few linear comments:
           Figure 3: Please comment generously this figure, it looks great but it is frustrating to try to decipher it without help.
 
     \item \textbf{page 9:}\\
-          "the type of field which characteristic" $\rightarrow$ "whose characteristic"?\\
-          "The value of add is proven to be on the curve (with coercion)" $\rightarrow$ This parenthesis is too cryptic, it should probably be dropped
+          {\color{gray}"the type of field which characteristic" $\rightarrow$ "whose characteristic"\\
+          "The value of add is proven to be on the curve (with coercion)" $\rightarrow$ This parenthesis is too cryptic, it should probably be dropped.}
 
     \item \textbf{page 11:}\\
           Figure 4: this one is the apex: it would deserve a full column of explanations
@@ -162,8 +174,11 @@ Here are a few linear comments:
           CompCert: "However, when compiling (...)" $\rightarrow$ I am quite confused about this sentence. Do you mean when compiling the verified C code with gcc? If so, beyond the question whether CompCert matches C17 (which it doesn't, it matches C99), the real problem is to assume that gcc is bug free! I would expect with this whole approach that the expectation is to run a protocole compiled with CompCert.\\
           clightGen: "VST does not support (...)" $\rightarrow$ Hard to undertand the relation between this sentence and the previous one.\\
           Extending our work: What about proving other NaCl implementations?
-
 \end{itemize}
+
+\begin{answer}{EEEEEE}
+    \todo{Freek : which version of ISO.}
+\end{answer}
 
 \begin{center}
     \subheading{===== Requested changes =====}

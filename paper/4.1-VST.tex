@@ -2,9 +2,9 @@
 \label{subsec:with-VST}
 
 \begin{sloppypar}
-  We now turn our focus to the formal specification of \TNaCle{crypto_scalarmult}.
-  We use our definition of X25519 from the RFC in the Hoare triple and prove
-  its correctness.
+      We now turn our focus to the formal specification of \TNaCle{crypto_scalarmult}.
+      We use our definition of X25519 from the RFC in the Hoare triple and prove
+      its correctness.
 \end{sloppypar}
 
 \subheading{Specifications.}
@@ -53,37 +53,40 @@ SEP  (sh [{ v_q }] <<(uch32)-- mVI (RFC n p);
 
 In this specification we state preconditions like:
 \begin{itemize}
-  \item[] \VSTe{PRE}: \VSTe{_p OF (tptr tuchar)}\\
-        The function \TNaCle{crypto_scalarmult} takes as input three pointers to
-        arrays of unsigned bytes (\VSTe{tptr tuchar}) \VSTe{_p}, \VSTe{_q} and \VSTe{_n}.
-  \item[] \VSTe{LOCAL}: \VSTe{temp _p v_p}\\
-        Each pointer represent an address \VSTe{v_p},
-        \VSTe{v_q} and \VSTe{v_n}.
-  \item[] \VSTe{SEP}: \VSTe{sh [{ v_p $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI p}\\
-        In the memory share \texttt{sh}, the address \VSTe{v_p} points
-        to a list of integer values \VSTe{mVI p}.
-  \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) p}\\
-        In order to consider all the possible inputs, we assume each
-        element of the list \texttt{p} to be bounded by $0$ included and $2^8$
-        excluded.
-  \item[] \VSTe{PROP}: \VSTe{Zlength p = 32}\\
-        We also assume that the length of the list \texttt{p} is 32. This defines the
-        complete representation of \TNaCle{u8[32]}.
+      \item[] \VSTe{PRE}: \VSTe{_p OF (tptr tuchar)}\\
+            The function \TNaCle{crypto_scalarmult} takes as input three pointers to
+            arrays of unsigned bytes (\VSTe{tptr tuchar}) \VSTe{_p}, \VSTe{_q} and \VSTe{_n}.
+      \item[] \VSTe{LOCAL}: \VSTe{temp _p v_p}\\
+            Each pointer represent an address \VSTe{v_p},
+            \VSTe{v_q} and \VSTe{v_n}.
+      \item[] \VSTe{SEP}: \VSTe{sh [{ v_p $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI p}\\
+            In the memory share \texttt{sh}, the address \VSTe{v_p} points
+            to a list of integer values \VSTe{mVI p}.
+      \item[] \VSTe{Ews [{ c121665 $\!\!\}\!\!]\!$ <<(lg16)-- mVI64 c_121665}\\
+            In the global memory share \texttt{Ews}, the address \VSTe{c121665} points
+            to a list of 16 64-bit integer values corresponding to $a/4 = 121665$.
+      \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) p}\\
+            In order to consider all the possible inputs, we assume each
+            element of the list \texttt{p} to be bounded by $0$ included and $2^8$
+            excluded.
+      \item[] \VSTe{PROP}: \VSTe{Zlength p = 32}\\
+            We also assume that the length of the list \texttt{p} is 32. This defines the
+            complete representation of \TNaCle{u8[32]}.
 \end{itemize}
 
 As postcondition we have conditions like:
 \begin{itemize}
-  \item[] \VSTe{POST}: \VSTe{tint}\\
-        The function \TNaCle{crypto_scalarmult} returns an integer.
-  \item[] \VSTe{LOCAL}: \VSTe{temp ret_temp (Vint Int.zero)}\\
-        The returned integer has value $0$.
-  \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (RFC n p)}\\
-        In the memory share \texttt{sh}, the address \VSTe{v_q} points
-        to a list of integer values \VSTe{mVI (RFC n p)} where \VSTe{RFC n p} is the
-        result of the \TNaCle{crypto_scalarmult} of \VSTe{n} and \VSTe{p}.
-  \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (RFC n p)}\\
-        \VSTe{PROP}: \VSTe{Zlength (RFC n p) = 32}\\
-        We show that the computation for \VSTe{RFC} fits in  \TNaCle{u8[32]}.
+      \item[] \VSTe{POST}: \VSTe{tint}\\
+            The function \TNaCle{crypto_scalarmult} returns an integer.
+      \item[] \VSTe{LOCAL}: \VSTe{temp ret_temp (Vint Int.zero)}\\
+            The returned integer has value $0$.
+      \item[] \VSTe{SEP}: \VSTe{sh [{ v_q $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI (RFC n p)}\\
+            In the memory share \texttt{sh}, the address \VSTe{v_q} points
+            to a list of integer values \VSTe{mVI (RFC n p)} where \VSTe{RFC n p} is the
+            result of the \TNaCle{crypto_scalarmult} of \VSTe{n} and \VSTe{p}.
+      \item[] \VSTe{PROP}: \VSTe{Forall (fun x => 0 <= x < 2^8) (RFC n p)}\\
+            \VSTe{PROP}: \VSTe{Zlength (RFC n p) = 32}\\
+            We show that the computation for \VSTe{RFC} fits in  \TNaCle{u8[32]}.
 \end{itemize}
 
 \TNaCle{crypto_scalarmult} computes the same result as \VSTe{RFC}
@@ -126,10 +129,10 @@ when \texttt{M(o,a,a)} is called (squaring), the first two memory areas (\texttt
 are consumed and VST will expect a third memory section (\texttt{a}) which does not \emph{exist} anymore.
 Examples of such cases are illustrated in \fref{tikz:MemSame}.
 \begin{figure}[h]%
-  \centering%
-  \include{tikz/memory_same_sh}%
-  \caption{Aliasing and Separation Logic}%
-  \label{tikz:MemSame}%
+      \centering%
+      \include{tikz/memory_same_sh}%
+      \caption{Aliasing and Separation Logic}%
+      \label{tikz:MemSame}%
 \end{figure}
 As a result, a function must either have multiple specifications or specify which
 aliasing case is being used.
@@ -137,16 +140,16 @@ The first option would require us to do very similar proofs multiple times for a
 We chose the second approach: for functions with 3 arguments, named hereafter \texttt{o, a, b},
 we define an additional parameter $k$ with values in $\{0,1,2,3\}$:
 \begin{itemize}
-  \item if $k=0$ then \texttt{o} and \texttt{a} are aliased.
-  \item if $k=1$ then \texttt{o} and \texttt{b} are aliased.
-  \item if $k=2$ then \texttt{a} and \texttt{b} are aliased.
-  \item else there is no aliasing.
+      \item if $k=0$ then \texttt{o} and \texttt{a} are aliased.
+      \item if $k=1$ then \texttt{o} and \texttt{b} are aliased.
+      \item if $k=2$ then \texttt{a} and \texttt{b} are aliased.
+      \item else there is no aliasing.
 \end{itemize}
 In the proof of our specification, we do a case analysis over $k$ when needed.
 This solution does not cover all the possible cases of aliasing over 3 pointers
 (\eg \texttt{o} = \texttt{a} = \texttt{b}) but it is enough to satisfy our needs.
 
-\subheading{Improving speed.}
+\subheading{Improving verification speed.}
 To make the verification the smoothest, the Coq formal definition of the function
 should be as close as possible to the C implementation.
 Optimizations of such definitions are often counter-productive as they increase the

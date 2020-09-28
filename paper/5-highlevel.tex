@@ -34,7 +34,16 @@ with it in the proofs (\ref{subsec:curvep2}).
 \label{subsec:ECC}
 
 \fref{tikz:ProofHighLevel1} presents the structure of the proof of the ladder's
-correctness.
+correctness. The white tiles are definitions, the orange one are hypothesis and
+the green tiles represent major lemmas and theorems.
+
+We consider elliptic curves over a field $\K$. We assume that the
+characteristic of $\K$ is neither 2 or 3.
+We formalize the Montgomery curves ($M_{a,b}(\K)$), then by using the equivalent
+Weierstra{\ss} form ($E_{a',b'}(\K)$) from the library of Bartzia and Strub, we prove
+that $M_{a,b}(\K)$ forms an associative finite group. Under the hypothesis that
+$a^2 - 4$ is not a square in $\K$, we prove the correctness of the ladder (\tref{thm:montgomery-ladder-correct}).
+
 \begin{figure}[h]
   \centering
   \include{tikz/highlevel1}
@@ -42,8 +51,6 @@ correctness.
   \label{tikz:ProofHighLevel1}
 \end{figure}
 
-We consider elliptic curves over a field $\K$. We assume that the
-characteristic of $\K$ is neither 2 or 3.
 
 \begin{dfn}
   Given a field $\K$,
@@ -169,14 +176,17 @@ Definition add (p1 p2 : point K) :=
 And again we prove the result is on the curve: % (again with coercion):
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : mc) : oncurve (add p q).
+
 Definition addmc (p1 p2 : mc) : mc :=
   MC p1 p2 (addO p1 p2)
 \end{lstlisting}
 
-We then define a bijection between a Montgomery curve and its short Weierstra{\ss} form.
+We then define a bijection between a Montgomery curve and its short Weierstra{\ss} form
+(\lref{lemma:bij-ecc}).
 In this way we get associativity of addition on Montgomery curves from the
 corresponding property for Weierstra{\ss} curves.
 \begin{lemma}
+  \label{lemma:bij-ecc}
   Let $M_{a,b}$ be a Montgomery curve, define
   $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
   then $E_{a',b'}$ is an elliptic curve, and the mapping
@@ -187,21 +197,21 @@ corresponding property for Weierstra{\ss} curves.
   \end{align*}
   is an isomorphism between elliptic curves.
 \end{lemma}
-\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
-Definition ec_of_mc_point p :=
-  match p with
-  | \infty => \infty
-  | (|x, y|) => (|x/(M#b) + (M#a)/(3%:R * (M#b)), y/(M#b)|)
-  end.
-Lemma ec_of_mc_point_ok p :
-  oncurve M p ->
-  ec.oncurve E (ec_of_mc_point p).
+% \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
+% Definition ec_of_mc_point p :=
+%   match p with
+%   | \infty => \infty
+%   | (|x, y|) => (|x/(M#b) + (M#a)/(3%:R * (M#b)), y/(M#b)|)
+%   end.
+% Lemma ec_of_mc_point_ok p :
+%   oncurve M p ->
+%   ec.oncurve E (ec_of_mc_point p).
 
-Definition ec_of_mc p :=
-  EC (ec_of_mc_point_ok (oncurve_mc p)).
+% Definition ec_of_mc p :=
+%   EC (ec_of_mc_point_ok (oncurve_mc p)).
 
-Lemma ec_of_mc_bij : bijective ec_of_mc.
-\end{lstlisting}
+% Lemma ec_of_mc_bij : bijective ec_of_mc.
+% \end{lstlisting}
 
 \subsubsection{Projective coordinates}
 \label{subsec:ECC-projective}
@@ -224,21 +234,26 @@ With this equation we can additionally represent the ``point at infinity''. By
 setting $Z=0$, we derive $X=0$, giving us the ``infinite point'' $(0:1:0)$.
 
 By restricting the parameter $a$ of $M_{a,b}(\K)$ such that $a^2-4$ is not a
-square in \K, we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
+square in \K (Hypothesis \ref{hyp:a_minus_4_not_square}),
+we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
 \begin{hypothesis}
   \label{hyp:a_minus_4_not_square}
   $a^2-4$ is not a square in \K.
 \end{hypothesis}
 \begin{lstlisting}[language=Coq]
-Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
+Hypothesis mcu_no_square :
+  forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 \end{lstlisting}
 
 We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
 \begin{dfn}Let $\chi$ and $\chi_0$:\\
-  -- $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$\\
-  such that $\chi(\Oinf) = \infty$ and $\chi((x,y)) = x$.\\
-  -- $\chi_0 : M_{a,b}(\K) \to \K$\\
-  such that $\chi_0(\Oinf) = 0$ and $\chi_0((x,y)) = x$.
+  \vspace{-1em}
+  \begin{itemize}
+    \item[--] $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$\\
+          such that $\chi(\Oinf) = \infty$ and $\chi((x,y)) = x$.
+    \item[--] $\chi_0 : M_{a,b}(\K) \to \K$\\
+          such that $\chi_0(\Oinf) = 0$ and $\chi_0((x,y)) = x$.
+  \end{itemize}
 \end{dfn}
 Using projective coordinates we prove the formula for differential addition.% (\lref{lemma:xADD}).
 \begin{lemma}
@@ -327,6 +342,17 @@ final proof of \coqe{Theorem RFC_Correct}.
 \label{subsec:curve_twist_fields}
 
 \fref{tikz:ProofHighLevel2} gives a high-level view of the proofs presented here.
+The white tiles are definitions while green tiles are important lemmas and theorems.
+
+A brief overview of the complete proof is described bellow.
+We first pose $a = 486662$, $b = 1$, $b' = 2$, $p = 2^{255}-19$, with the equations $C = M_{a,b}$, and $T = M_{a,b'}$.
+We prove the primality of $p$ and define the field $\F{p}$.
+Subsquently we show that neither $2$ nor $a^2 - 2$ are square in $\F{p}$.
+We consider $\F{p^2}$ and define $C(\F{p})$, $T(\F{p})$, and $C(\F{p^2})$.
+We prove that for all $x \in \F{p}$ there exist a point of \xcoord $x$ either on $C(\F{p})$ or on the quadratic twist $T(\F{p})$.
+We prove that all points in $M(\F{p})$ and $T(\F{p})$ can be projected in $M(\F{p^2})$ and derive that computations done in $M(\F{p})$ and $T(\F{p})$ yield to the same results if projected to $M(\F{p^2})$.
+Using \tref{thm:montgomery-ladder-correct} we prove that the ladder is correct for $M(\F{p})$ and $T(\F{p})$; with the previous results, this results in the correctness of the ladder for $M(\F{p^2})$, in other words the correctness of X25519.
+
 
 \begin{figure}[h]
   \centering
@@ -359,13 +385,6 @@ Definition betweenb x y z := (x <=? z) && (z <? y).
 Definition p := locked (2^255 - 19).
 Fact Hp_gt0 : p > 0.
 Inductive type := Zmodp x of betweenb 0 p x.
-
-Lemma Z_mod_betweenb (x y : Z) :
-  y > 0 -> betweenb 0 y (x mod y).
-Definition pi (x : Z) : type :=
-  Zmodp (Z_mod_betweenb x Hp_gt0).
-Coercion repr (x : type) : Z :=
-  let: @Zmodp x _ := x in x.
 \end{lstlisting}
 
 We define the basic operations ($+, -, \times$) with their respective neutral
@@ -454,8 +473,6 @@ Inductive type :=
 
 Definition pi (x: Zmodp.type * Zmodp.type) : type :=
   Zmodp2 x.1 x.2.
-Coercion repr (x: type) : Zmodp.type*Zmodp.type :=
-  let: Zmodp2 u v := x in (u, v).
 Definition mul (x y: type) : type :=
   pi ((x.1 * y.1) + (2%:R * (x.2 * y.2)),
       (x.1 * y.2) + (x.2 * y.1)).
@@ -561,15 +578,15 @@ computation in $\F{p^2}$.
   for all $x \in \F{p}$ and $P \in M_{486662,1}(\F{p^2})$ such that $\chi_0(P) = x$,
   $Curve25519\_Fp(n,x)$ computes $\chi_0(n \cdot P)$.
 \end{theorem}
-which is formalized in Coq as:
-\begin{lstlisting}[language=Coq,belowskip=-0.1 \baselineskip]
-Theorem curve25519_Fp2_ladder_ok:
-  forall (n : nat) (x:Zmodp.type),
-  (n < 2^255)%nat ->
-  forall (p  : mc curve25519_Fp2_mcuType),
-  p #x0 = Zmodp2.Zmodp2 x 0 ->
-  curve25519_Fp_ladder n x = (p *+ n)#x0 /p.
-\end{lstlisting}
+% which is formalized in Coq as:
+% \begin{lstlisting}[language=Coq,belowskip=-0.1 \baselineskip]
+% Theorem curve25519_Fp2_ladder_ok:
+%   forall (n : nat) (x:Zmodp.type),
+%   (n < 2^255)%nat ->
+%   forall (p  : mc curve25519_Fp2_mcuType),
+%   p #x0 = Zmodp2.Zmodp2 x 0 ->
+%   curve25519_Fp_ladder n x = (p *+ n)#x0 /p.
+% \end{lstlisting}
 
 We then prove the equivalence between of operations in $\Ffield$ and $\Zfield$,
 in other words between \coqe{Zmodp} and \coqe{:GF}.

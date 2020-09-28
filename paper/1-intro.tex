@@ -136,6 +136,14 @@ effort required to extend our work to other elliptic-curve software.
 \fref{tikz:ProofOverview} shows a graph of dependencies of the proofs.
 C source files are represented by {\color{doc@lstfunctions}.C} while
   {\color{doc@lstfunctions}.V} corresponds to Coq files.
+\todo{Double Check (new)}
+In a nutshell, we formalize X25519 into a Coq function \texttt{RFC},
+and we write a specification in Separation logic with VST.
+The first step of CompCert compilation (clightgen) is used to translates
+the C source code into a DSL (CLight). By using VST,
+we step through the translated instructions and verify that the program satisfies the specifications.
+Additionally we formally define the scalar multiplication over elliptic curves and show that,
+under the same preconditions as used in the specification, \texttt{RFC} computes the desired results
 
 \begin{figure}[h]
   \centering

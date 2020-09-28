@@ -5,8 +5,8 @@ In this section we prove the following theorem:
 % In this section we outline the structure of our proofs of the following theorem:
 
 \begin{informaltheorem}
-The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
-the specifications of RFC~7748~\cite{rfc7748} (\Coqe{RFC}).
+  The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
+  the specifications of RFC~7748~\cite{rfc7748} (\Coqe{RFC}).
 \end{informaltheorem}
 
 More formally:
@@ -14,7 +14,7 @@ More formally:
 Theorem body_crypto_scalarmult:
   (* VST boiler plate. *)
   semax_body
-    (* Clight translation of TweetNaCl. *)
+    (* Clight translation of TweetNaCl.  *)
     Vprog
     (* Hoare triples for fct calls. *)
     Gprog

@@ -4,7 +4,7 @@
 In this section we present our formalization of RFC~7748~\cite{rfc7748}.
 
 \begin{informaltheorem}
-The specification of X25519 in RFC~7748 is formalized by the function \Coqe{RFC} in Coq.
+  The specification of X25519 in RFC~7748 is formalized by the function \Coqe{RFC} in Coq.
 \end{informaltheorem}
 
 More specifically, we formalized X25519 with the following definition:
@@ -15,13 +15,13 @@ Definition RFC (n: list Z) (p: list Z) : list Z :=
   let t := montgomery_rec_swap
     255  (* iterate 255 times  *)
     k    (* clamped n          *)
-    1    (* x_2                *)
-    u    (* x_3                *)
-    0    (* z_2                *)
-    1    (* z_3                *)
+    1    (* x_2                 *)
+    u    (* x_3                 *)
+    0    (* z_2                 *)
+    1    (* z_3                 *)
     0    (* dummy              *)
     0    (* dummy              *)
-    u    (* x_1                *)
+    u    (* x_1                 *)
     0    (* previous bit = 0   *) in
   let a := get_a t in
   let c := get_c t in
@@ -38,48 +38,48 @@ Fixpoint montgomery_rec_swap (m : nat) (z : T')
 (* b:    x3                 *)
 (* c:    z2                 *)
 (* d:    z3                 *)
-(* e:    temporary  var      *)
-(* f:    temporary  var      *)
+(* e:    temporary  var     *)
+(* f:    temporary  var     *)
 (* x:    x1                 *)
-(* swap: previous bit value  *)
+(* swap: previous bit value *)
 (T * T * T * T * T * T) :=
 match m with
 | S n =>
   let r := Getbit (Z.of_nat n) z in
-    (* k_t = (k >> t) & 1                               *)
+    (* k_t = (k >> t) & 1                        *)
   let swap := Z.lxor swap r in
-    (* swap ^= k_t                                      *)
+    (* swap ^= k_t                               *)
   let (a, b) := (Sel25519 swap a b, Sel25519 swap b a) in
-    (* (x_2, x_3) = cswap(swap, x_2, x_3)               *)
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)            *)
   let (c, d) := (Sel25519 swap c d, Sel25519 swap d c) in
-    (* (z_2, z_3) = cswap(swap, z_2, z_3)               *)
-  let e := a + c in (* A  = x_2+ z_2                    *)
-  let a := a - c in (* B  = x_2- z_2                    *)
-  let c := b + d in (* C  = x_3+ z_3                    *)
-  let b := b - d in (* D  = x_3- z_3                    *)
-  let d := e^2   in (* AA = A^2                         *)
-  let f := a^2   in (* BB = B^2                         *)
-  let a := c * a in (* CB = C * B                       *)
-  let c := b * e in (* DA = D * A                       *)
-  let e := a + c in (* x_3= (DA + CB)^2                 *)
-  let a := a - c in (* z_3= x_1* (DA - CB)^2            *)
-  let b := a^2   in (* z_3= x_1* (DA - CB)^2            *)
-  let c := d - f in (* E  = AA - BB                     *)
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)            *)
+  let e := a + c in (* A  = x_2 + z_2                *)
+  let a := a - c in (* B  = x_2 - z_2                *)
+  let c := b + d in (* C  = x_3 + z_3                *)
+  let b := b - d in (* D  = x_3 - z_3                *)
+  let d := e^2    in (* AA = A^2                     *)
+  let f := a^2    in (* BB = B^2                     *)
+  let a := c * a in (* CB = C * B                  *)
+  let c := b * e in (* DA = D * A                  *)
+  let e := a + c in (* x_3= (DA + CB)^2              *)
+  let a := a - c in (* z_3= x_1* (DA - CB)^2          *)
+  let b := a^2    in (* z_3= x_1* (DA - CB)^2          *)
+  let c := d - f in (* E  = AA - BB                *)
   let a := c * C_121665 in
-                    (* z_2 = E * (AA + a24 * E)         *)
-  let a := a + d in (* z_2 = E * (AA + a24 * E)         *)
-  let c := c * a in (* z_2 = E * (AA + a24 * E)         *)
-  let a := d * f in (* x_2 = AA * BB                    *)
-  let d := b * x in (* z_3 = x_1* (DA - CB)^2           *)
-  let b := e^2   in (* x_3 = (DA + CB)^2                *)
+                    (* z_2 = E * (AA + a24 * E)     *)
+  let a := a + d in (* z_2 = E * (AA + a24 * E)     *)
+  let c := c * a in (* z_2 = E * (AA + a24 * E)     *)
+  let a := d * f in (* x_2 = AA * BB                *)
+  let d := b * x in (* z_3 = x_1* (DA - CB)^2       *)
+  let b := e^2    in (* x_3 = (DA + CB)^2           *)
   montgomery_rec_swap n z a b c d e f x r
-    (* swap = k_t                                       *)
+    (* swap = k_t                              *)
 
 | 0%nat =>
   let (a, b) := (Sel25519 swap a b, Sel25519 swap b a) in
-    (* (x_2, x_3) = cswap(swap, x_2, x_3)               *)
+    (* (x_2, x_3) = cswap(swap, x_2, x_3)          *)
   let (c, d) := (Sel25519 swap c d, Sel25519 swap d c) in
-    (* (z_2, z_3) = cswap(swap, z_2, z_3)               *)
+    (* (z_2, z_3) = cswap(swap, z_2, z_3)          *)
   (a,b,c,d,e,f)
 end.
 \end{lstlisting}
@@ -95,10 +95,10 @@ Later in our proof we use a simpler description of the ladder
 and prove those ladder equivalent.
 
 \emph{``To implement the X25519(k, u) [...] functions (where k is
-the scalar and u is the u-coordinate), first decode k and u and then
-perform the following procedure, which is taken from [curve25519] and
-based on formulas from [montgomery].  All calculations are performed
-in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
+  the scalar and u is the u-coordinate), first decode k and u and then
+  perform the following procedure, which is taken from [curve25519] and
+  based on formulas from [montgomery].  All calculations are performed
+  in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
 
 Operations used in the Montgomery ladder of \coqe{RFC} are performed on
 integers (See Appendix~\ref{subsubsec:RFC-Coq}).
@@ -108,8 +108,8 @@ The reduction modulo $\p$ is deferred to the very end as part of the
 We now turn our attention to the decoding and encoding of the byte arrays.
 We define the little-endian projection to integers as follows.
 \begin{dfn}
-Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
-a function given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
+  Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
+  a function given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
 \end{dfn}
 \begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
 Fixpoint ZofList {n:Z} (a:list Z) : Z :=
@@ -120,10 +120,10 @@ Fixpoint ZofList {n:Z} (a:list Z) : Z :=
 \end{lstlisting}
 The encoding from integers to bytes is defined in a similar way:
 \begin{dfn}
-Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
-$n$ and $a$ returns $a$'s little-endian encoding as a list with radix $2^n$.
-%XXX-Peter: Again I'm confused... why are there two \rightarrows?
-%XXX-Benoit it is the functional view of arguments and partial functions. It is called Currying.
+  Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
+  $n$ and $a$ returns $a$'s little-endian encoding as a list with radix $2^n$.
+  %XXX-Peter: Again I'm confused... why are there two \rightarrows?
+  %XXX-Benoit it is the functional view of arguments and partial functions. It is called Currying.
 \end{dfn}
 \begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
 Fixpoint ListofZn_fp {n:Z} (a:Z) (f:nat) : list Z :=
