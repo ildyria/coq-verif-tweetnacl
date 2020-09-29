@@ -140,13 +140,11 @@ Here are a few linear comments:
 
     \item \textbf{page 6, column 1:}\\
           In ListofZn\_fp $\rightarrow$ The use of fuel might deserve a comment. Don't you end up having to prove at some point that you can always compute ahead of time an overapproximation of the fuel needed? Wouldn't it have been simple to use the strong recursion principle of naturals to define the function?
-\end{itemize}
 
-\begin{answer}{EEEEEE}
-    In our case the fuel is used to garantee to have as an output a list of 32 elements. This allows to prove that for all List of 32 bytes, ListofZn\_fp (ZofList L) = L. With this lemma at hand we can later simplify some of the expressions.
-\end{answer}
+          \begin{answer}{EEEEEE}
+              In our case the fuel is used to garantee to have as an output a list of 32 elements. This allows to prove that for all List of 32 bytes, ListofZn\_fp (ZofList L) = L. With this lemma at hand we can later simplify some of the expressions.
+          \end{answer}
 
-\begin{itemize}
     \item \textbf{page 6, column 2:}\\
           "and the same code as a pure Coq function" $\rightarrow$ I would rephrase, the term "same code" is misleading.
           Specification: I think explaining the structure of a VST statement would be necessary to help an unfamiliar reader understand this specification.

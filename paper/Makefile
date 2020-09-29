@@ -1,6 +1,6 @@
 TEX := $(filter-out tweetverif.tex,$(wildcard *.tex))
 FILES := $(TEX) $(wildcard tikz/*.tex) $(wildcard *.sty)
-REVIEWS := $(filter-out _reviews.tex,$(TEX)) $(wildcard _reviews/*.tex) $(wildcard *.sty)
+REVIEWS := _reviews.tex $(wildcard _reviews/*.tex) $(wildcard *.sty)
 
 NO_COLOR="\033[0m"
 RED = "\033[38;5;009m"
@@ -69,7 +69,6 @@ clean:
 	@rm */*.aux 2> /dev/null || true
 	@rm tweetverif.tex 2> /dev/null || true
 	@rm tweetnacl.diff 2> /dev/null || true
-	@rm _reviews.tex 2> /dev/null || true
 
 # CHECK SPELLING
 spell:
@@ -84,16 +83,11 @@ feedback.pdf:
 	python3 latexrun.py _includes/_feedback.tex
 	@mv _feedback.pdf feedback.pdf
 
-reviews.pdf: FORCE _reviews.tex _tpl_reviews.tex $(REVIEWS)
+reviews.pdf: FORCE _reviews.tex $(REVIEWS)
 	@echo $(BOLD)$(LIGHTPURPLE)"Building reviews.pdf"$(NO_COLOR)$(DARKGRAY)
 	python3 latexrun.py _reviews.tex
 	@mv _reviews.pdf reviews.pdf
 	
-_reviews.tex: FORCE _tpl_reviews.tex $(REVIEWS)
-	@echo $(BOLD)$(YELLOW)"Generating _reviews.tex"$(NO_COLOR)$(DARKGRAY)
-	python3 gen_reviews.py _reviews.tex
-
-
 # SPEC MAPS
 specs_map.pdf: FORCE _files.tex
 	@echo $(BOLD)$(LIGHTPURPLE)"Building specs_map.pdf"$(NO_COLOR)$(DARKGRAY)
