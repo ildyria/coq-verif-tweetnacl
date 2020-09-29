@@ -51,7 +51,7 @@ $a^2 - 4$ is not a square in $\K$, we prove the correctness of the ladder (\tref
   \label{tikz:ProofHighLevel1}
 \end{figure}
 
-We now turn our attention to the details of the proof.
+We now turn our attention to the details of the proof of the ladder's correctness.
 
 \begin{dfn}
   Given a field $\K$,
@@ -345,7 +345,14 @@ final proof of \coqe{Theorem RFC_Correct}.
 \fref{tikz:ProofHighLevel2} gives a high-level view of the proofs presented here.
 The white tiles are definitions while green tiles are important lemmas and theorems.
 
-A brief overview of the complete proof is described bellow.
+\begin{figure}[h]
+  \centering
+  \include{tikz/highlevel2}
+  \caption{Proof dependencies for the correctness of X25519.}
+  \label{tikz:ProofHighLevel2}
+\end{figure}
+
+A brief overview of the complete proof of is described bellow.
 We first pose $a = 486662$, $b = 1$, $b' = 2$, $p = 2^{255}-19$, with the equations $C = M_{a,b}$, and $T = M_{a,b'}$.
 We prove the primality of $p$ and define the field $\F{p}$.
 Subsquently we show that neither $2$ nor $a^2 - 2$ are square in $\F{p}$.
@@ -354,26 +361,15 @@ We prove that for all $x \in \F{p}$ there exist a point of \xcoord $x$ either on
 We prove that all points in $M(\F{p})$ and $T(\F{p})$ can be projected in $M(\F{p^2})$ and derive that computations done in $M(\F{p})$ and $T(\F{p})$ yield to the same results if projected to $M(\F{p^2})$.
 Using \tref{thm:montgomery-ladder-correct} we prove that the ladder is correct for $M(\F{p})$ and $T(\F{p})$; with the previous results, this results in the correctness of the ladder for $M(\F{p^2})$, in other words the correctness of X25519.
 
-
-\begin{figure}[h]
-  \centering
-  \include{tikz/highlevel2}
-  \caption{Proof dependencies for the correctness of X25519.}
-  \label{tikz:ProofHighLevel2}
-\end{figure}
-
-To be able to use the \tref{thm:montgomery-ladder-correct} we need to satisfy
+Now that we have an red line for the proof, we turn our attention to the details.
+Indeed \tref{thm:montgomery-ladder-correct} cannot be applied directly to prove that X25519 is
+doing the computations over $M(\F{p^2})$. This would infer that $\K = \F{p^2}$ and we would need to satisfy
 hypothesis~\ref{hyp:a_minus_4_not_square}:%
 % $a^2-4$ is not a square in \K:
 $$\forall x \in \K,\ x^2 \neq a^2-4.$$
-However there always exists $x \in \F{p^2}$ such that $x^2 = a^2-4$,
-preventing the use \tref{thm:montgomery-ladder-correct}
-with $\K = \F{p^2}$.
-
-\begin{sloppypar}
-  We first study Curve25519 and one of its quadratic twists Twist25519,
-  both defined over \F{p}.
-\end{sloppypar}
+which is not possible as there always exists $x \in \F{p^2}$ such that $x^2 = a^2-4$.
+Consequently, we first study Curve25519 and one of its quadratic twists Twist25519,
+both defined over \F{p}.
 
 \subsubsection{Curves and twists}
 \label{subsec:Zmodp}
@@ -408,9 +404,11 @@ We now consider $M_{486662,1}(\F{p})$ and $M_{486662,2}(\F{p})$, one of its quad
 % \begin{dfn}Let the following instantiations of \aref{alg:montgomery-double-add}:\\
 \begin{dfn}
   %Let the following instantiations of \aref{alg:montgomery-ladder}:\\
-  We instantiate \coqe{opt_montgomery} in two specific ways:\\
-  -- $Curve25519\_Fp(n,x)$ for $M_{486662,1}(\F{p})$.\\
-  -- $Twist25519\_Fp(n,x)$ for $M_{486662,2}(\F{p})$.
+  We instantiate \coqe{opt_montgomery} in two specific ways:
+  \begin{itemize}
+    \item[--] $Curve25519\_Fp(n,x)$ for $M_{486662,1}(\F{p})$.
+    \item[--] $Twist25519\_Fp(n,x)$ for $M_{486662,2}(\F{p})$.
+  \end{itemize}
 \end{dfn}
 
 With \tref{thm:montgomery-ladder-correct} we derive the following two lemmas:
@@ -539,13 +537,15 @@ Lemma x_is_on_curve_or_twist_implies_x_in_Fp2:
 
 We now study the case of the scalar multiplication and show similar proofs.
 \begin{dfn}
-  Define the functions $\varphi_c$, $\varphi_t$ and $\psi$\\
-  -- $\varphi_c: M_{486662,1}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
-  such that $\varphi((x,y)) = ((x,0), (y,0))$.\\
-  -- $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
-  such that $\varphi((x,y)) = ((x,0), (0,y))$.\\
-  -- $\psi: \F{p^2} \mapsto \F{p}$\\
-  such that $\psi(x,y) = x$.
+  Define the functions $\varphi_c$, $\varphi_t$ and $\psi$
+  \begin{itemize}
+    \item[--] $\varphi_c: M_{486662,1}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
+          such that $\varphi((x,y)) = ((x,0), (y,0))$.
+    \item[--] $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
+          such that $\varphi((x,y)) = ((x,0), (0,y))$.
+    \item[--] $\psi: \F{p^2} \mapsto \F{p}$\\
+          such that $\psi(x,y) = x$.
+  \end{itemize}
 \end{dfn}
 
 \begin{lemma}

@@ -18,7 +18,6 @@ BOLD = "\033[1m"
 
 all: tweetverif.pdf reviews.pdf
 
-
 # main pdf
 tweetverif.pdf: FORCE tweetverif.tex tweetnacl.diff
 	@echo $(BOLD)$(LIGHTPURPLE)"Building tweetverif.pdf"$(NO_COLOR)$(DARKGRAY)
