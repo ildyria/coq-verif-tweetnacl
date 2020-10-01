@@ -1,0 +1,62 @@
+\newpage
+\section{Usenix Security 2020 Review \#324B}
+
+\begin{tabular}{rl}
+    \toprule
+    Review recommendation & 4. Minor revision                                                        \\
+    Writing quality       & 4. Well-written                                                          \\
+    Reviewer interest     & 3. I would definitely go to this talk and tell my students or colleagues \\
+                          & to read this paper                                                       \\
+    Reviewer expertise    & 4. Expert                                                                \\
+    \bottomrule
+\end{tabular}
+
+\begin{center}
+    \subheading{===== Paper summary =====}
+\end{center}
+This paper presents two formal proofs. The first links a C implementation of the popular X25519 elliptic curve Diffie-Hellman construction, taken from a crypto library called TweetNaCl, to a formalization of its specification as per RFC 7748. The second links the RFC 7748 formalization to the mathematical theory of elliptic curves. In composition, the two results mean that the TweetNaCl implementation of X25519 meets the abstract mathematical description of Curve25519 in [7]. All proofs are mechanized in the Coq theorem prover, with some help from the Verified Software Toolchain (VST).
+
+\begin{center}
+    \subheading{===== Strengths =====}
+\end{center}
+
+\begin{itemize}
+    \item A formal proof of an important component of TweetNaCl, a popular crypto library
+    \item A proof that RFC 7748 meets its mathematical spec, which is of independent interest
+    \item A major new case study for the VST framework
+\end{itemize}
+
+\begin{center}
+    \subheading{===== Weaknesses =====}
+\end{center}
+
+\begin{itemize}
+    \item The C code analyzed here is very simple; prior works have verified much more complex and optimized implementations of X25519
+    \item The proof does not cover side-channel resistance ("constant-time")
+    \item The details of the Coq formalization may be less interesting for non-formally oriented readers
+\end{itemize}
+
+\begin{center}
+    \subheading{===== Detailed comments for authors =====}
+\end{center}
+This works provides a rare fully formalized proof linking a mathematical description of a cryptographic construction to a concrete widely-used C implementation. Bridging this gap with a theorem prover requires expertise in the underlying mathematics, in formal verification, and in cryptographic engineering. We need more papers like this to show how this can be done.
+
+Section 3 describes how RFC 7748 is formalized in Coq. The functions "RFC" and "montgomery\_rec\_swap" are interesting and well documented. It is also useful to observe that the spec needs to take care of low-level details like the little-endian encoding of field elements and points, but the functions ZofList/ListofZ32 don't provide much value here. I would recommend just describing them in text and ending the section with the encode/decode functions.
+
+Section 4 shows that the TweetNaCl C code meets the Coq spec of RFC 7748. While details of the proof are interesting to formalists, it would be nice to provide a summary of the proof structure and the workflow. For example: (1) Prove that the code is memory-safe, (2) prove that the field arithmetic functions are correct, (3) prove that the add and double functions meet the RFC spec, (4) prove that the montgomery ladder correctly implements the RFC spec. It would also be useful for readers not familiar with Coq or VST to know which of these steps are "easy" and which of them usually take more time and effort.
+
+Even though you don't find any bugs in the C code it would be useful for the reader if you could describe the kinds of bugs you would have found. For example, there is a history of carry propagation bugs in X25519 code (both in C and in assembly). You could illustrate one of these bugs and show how the VST/Coq proof would be able to find it.
+
+On page 23, you say "Constant-timeness is not a property verifiable with VST. This is not verifiable with our framework." Please say this prominently in Section 1. When readers sees your montgomery ladder, and sees the constant-time CSWAP function, they may well assume that you are verifying constant-timeness for the implementation. Stating that this is not the case early will help avoid misunderstanding. I recommend that you also cite other (complementary) tools that could be used just to verify constant-timeness for the code. It may be even better if you were to demonstrate the use of some such tool on the TweetNaCl code.
+
+I enjoyed Section 5 and I believe it is one of the more important (and reusable) parts of this work. However, the way it is presented reads like a long list of Lemmas and Theorems with hardly any explanation or motivation in between. By the end of this section, the reader has read 20 lemmas and definitions in a mixture of mathematical and Coq syntax. I recommend that the authors pick and choose 5 key lemmas and explain them, leaving the rest to an appendix. The high-level structure of the proof and some examples of "interesting" or "tricky" cases is the best they can hope to communicate in the body of the paper.
+
+\begin{center}
+    \subheading{===== Requested changes =====}
+\end{center}
+
+\begin{itemize}
+    \item Show a known bug that the VST proof would prevent
+    \item Clarify that constant-timeness is not proved here
+    \item Rewrite section 5 to focus on proof structure and a few well-chosen lemmas/definitions
+\end{itemize}

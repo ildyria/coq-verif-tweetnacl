@@ -1,0 +1,112 @@
+\newpage
+\section{Usenix Security 2020 Review \#324C}
+
+\begin{tabular}{rl}
+    \toprule
+    Review recommendation & 3. Major revision                    \\
+    Writing quality       & 3. Adequate                          \\
+    Reviewer interest     & 1. I am not interested in this paper \\
+    Reviewer expertise    & 1. No familiarity                    \\
+    \bottomrule
+\end{tabular}
+
+\begin{center}
+    \subheading{===== Paper summary =====}
+\end{center}
+
+This paper presents a formal specification and verification of X25519 in TweetNaCl code base. The value of doing this is that many communications systems depend on TweetNaCl for encryption and proving that it is correct improves trust in not only the implementation but also the translation from mathematical specification down to the code. The challenge of doing so include translating the mathematical model into a Coq model, and more importantly proving that it matches. The C version is then translated into the VST framework where properties (foundational correctness) are specified as Hoare triples and proven correct in Coq.
+
+\begin{center}
+    \subheading{===== Strengths =====}
+\end{center}
+
+\begin{itemize}
+    \item Proof the Coq X25519 matches the mathematical model
+    \item Automated translation to VST and logic to specify and prove correct
+    \item Real world piece of code proven correct
+\end{itemize}
+
+\begin{center}
+    \subheading{===== Weaknesses =====}
+\end{center}
+
+\begin{itemize}
+    \item Unclear novelty and motivation given related work: does it improve security? How? Proof? How much harder is the missed code?
+    \item Changed code, i64 -> int, but the size of `int` depends on architecture
+\end{itemize}
+
+\begin{answer}{EEEEEE}
+    We made this change because VST does not support standard for-loop
+    verification tactics with i64. We recommend that TweetNaCl does not change to
+    int and that this issue is longer term addressed in VST. As i64 has a larger
+    range than int, there is only small concern that our proof does not extend to
+    TweetNaCl with i64. We will clarify this in the paper.
+\end{answer}
+
+\begin{itemize}
+    \item Are the properties the only ones? How do we know that more important ones weren’t missed?
+    \item Only verified at the C level (maybe the CompCert chain proves some of the assembly?)
+\end{itemize}
+
+
+\begin{center}
+    \subheading{===== Detailed comments for authors =====}
+\end{center}
+
+Let me start by stating that I’m no expert but rather an enthusiast hoping to see formal modeling and verification applied in practice. I really appreciate this paper on verifying a real crypto implementation. As far as validating the particular properties and math representations I cannot comment. I did appreciate that the Coq model of X25519 was formally proven to match the mathematical specification, a key property to base any trust in. Overall, I appreciate the effort, but as a non-expert I’m left wondering whether or not this was simply an excellent effort of engineering or if we learn anything as a research community. From a research project I anticipate taking some new knowledge/idea that would inform me on future endeavors, which is more than simply a verified artifact. As such, my recommendation is that this paper must do a better job of \textit{connecting the dots} so the value and technical lessons learned are more clear to the less expert reader. More detailed comments follow.
+
+\textbf{Problem}: The core problem is trusting in the implementation of a key cryptographic algorithm. This of course is a critical problem, but it is not clear how it is a research problem. What makes this worth a publication at a top tier security conference? Things I’m thinking of are, the proof system had to do X,Y, and Z to be correct. I presume this paper has things like that (for example, proving the specification seems the most complex and most critical piece). Furthermore, it is not clear how [12] has not solved the problem already? I get that this work has some deltas to [12] but how much? Why isn’t that work enough? What’s the gap? Is it a conceptual gap, or is it just *do more mathematical modeling and proving*? Maybe there is a problem in the way software is structured for verification? Maybe mathematical models of this complexity are hard to specify for verification? Overall, it isn’t clear what makes this a research problem as opposed to throwing engineering at the problem. I presume it does in fact have some research elements. This is of course an issue when coming to a community like USENIX Security which doesn’t have many such papers. The paper will need to help us bridge this gap.
+
+\textbf{Approach}: The approach is to model the specification in Coq, prove funcational correctness of the C implementation thorough translating to VST and specifying Hoare triples in Coq, and proving the specification matches the model. Overall, I am excited about the proof that the model matches the math. I am less convinced about the C level translations.
+
+- As a non expert I lack the understanding of why the choices made will lead to complete and desired properties. It would be nice to have some description/justification for these design decisions.
+
+- A table describing the properties and argument for why they are complete should be made.
+
+- What makes this work more than just engineering a specific result? In general, as experts/scientist we solve challenging problems and distill critical lessons learned or provide frameworks so that others can easily use knowledge that has been encoded into a system. I don’t see any general lessons that come from this work. The main contribution is a proof of some properties that the implementation matches the spec. This is clearly valuable from a real world perspective, but I haven’t learned anything from it. As an example of a systems paper that was based on proofs and taught many lessons see \href{https://www.sigops.org/s/conferences/sosp/2009/papers/klein-sosp09.pdf}{seL4: Formal Verification of an OS Kernel}.
+
+- It seems like the bulk of the development was in proving the specification correct, why is that? Are the properties of the C program easier to specify and then prove? Is it a matter of complexity? I would expect the C code to carry a similar complexity and proof burden.
+
+- Other work in this arena have verified much larger systems (e.g., \href{https://unsat.cs.washington.edu/papers/nelson-hyperkernel.pdf}{Hyperkernel}), how does this compare in complexity and contribution?
+
+- One major concern I have is that this only proves the C level implementation. C must get translated to assembly, which seems like a lot of work to prove equivalence for. Also, some design decisions, such as changing the representations, seem to be problematic. What happens if this code is compiled on a 32-bit machine? Does that invalidate the proof? If not why not?
+
+\textbf{Evaluation}: The proof is in the result, however, it would be interesting from a systems security perspective to know how long it took to specify. How long does it take to run? How do your decisions for representation impact performance? Can you show a graph depicting these costs? If I want to use a similar strategy, what should I avoid or try to do? What lessons learned? How easy will it be to use this in a different proof? My experience has been that proof reuse is a long way from being practical.
+
+\textbf{Nits}: Maybe move the TCB into its own section (maybe section 3) title Assumptions/Threat Model?
+
+\begin{center}
+    \subheading{===== Requested changes =====}
+\end{center}
+
+\begin{itemize}
+    \item Provide better justification of the need for this work relative to [12]
+    \item Demonstrate a security benefit relative to [12]: what bugs does this eliminate? What specific correctness properties does it add?
+    \item Provide justification for the research aspects of this work that take it beyond mere engineering (which I believe it likely has but that I do not have the expertise to readily grasp).
+\end{itemize}
+
+\begin{answer}{EEEEEE}
+    The work in [12] proves correctness only of the the main routine of an X25519
+    implementation, namely one ladder step. Examples of bugs that would not be
+    caught by [12] but would be caught by our proof are
+    \begin{itemize}
+        \item bugs in the clamping of the scalar,
+        \item bugs in the final inversion,
+        \item bugs in the freezing (full modular reduction) of the final result,
+        \item inconsistencies between the specification and the mathematical model.
+    \end{itemize}
+\end{answer}
+
+\begin{center}
+    \subheading{===== Questions for authors' response =====}
+\end{center}
+
+\begin{itemize}
+    \item How do you know the pre/post conditions are complete? What happens if a critical on is missed? Does this influence a full functional correctness?
+\end{itemize}
+
+\begin{answer}{EEEEEE}
+    The semantics of VST guarantee that we do not miss a critical pre-condition
+    required to guarantee any of the post conditions. The post conditions are
+    sufficient to prove correctness with regards to the mathematical definition.
+\end{answer}

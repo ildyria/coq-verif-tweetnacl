@@ -2,7 +2,7 @@ SOURCES= code-tweetnacl.tex collection.bib conclusion.tex coq.tex highlevel.tex 
 
 tweetverif.pdf: ${SOURCES}
 	pdflatex tweetverif.tex
-	bibtex twetverif
+	bibtex tweetverif
 	pdflatex tweetverif.tex
 	pdflatex tweetverif.tex
 
