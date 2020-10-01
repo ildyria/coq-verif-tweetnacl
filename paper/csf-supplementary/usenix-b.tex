@@ -65,8 +65,15 @@ Section 4 shows that the TweetNaCl C code meets the Coq spec of RFC 7748. While 
 Even though you don't find any bugs in the C code it would be useful for the reader if you could describe the kinds of bugs you would have found. For example, there is a history of carry propagation bugs in X25519 code (both in C and in assembly). You could illustrate one of these bugs and show how the VST/Coq proof would be able to find it.
 
 On page 23, you say "Constant-timeness is not a property verifiable with VST. This is not verifiable with our framework." Please say this prominently in Section 1. When readers sees your montgomery ladder, and sees the constant-time CSWAP function, they may well assume that you are verifying constant-timeness for the implementation. Stating that this is not the case early will help avoid misunderstanding. I recommend that you also cite other (complementary) tools that could be used just to verify constant-timeness for the code. It may be even better if you were to demonstrate the use of some such tool on the TweetNaCl code.
+\begin{answer}
+  We added a paragraph on verification of implementation security, in particular ``constant-timeness'' to the introduction.
+\end{answer}
 
 I enjoyed Section 5 and I believe it is one of the more important (and reusable) parts of this work. However, the way it is presented reads like a long list of Lemmas and Theorems with hardly any explanation or motivation in between. By the end of this section, the reader has read 20 lemmas and definitions in a mixture of mathematical and Coq syntax. I recommend that the authors pick and choose 5 key lemmas and explain them, leaving the rest to an appendix. The high-level structure of the proof and some examples of "interesting" or "tricky" cases is the best they can hope to communicate in the body of the paper.
+\begin{answer}
+  We reduced the amount of technical details in Section 5.
+\end{answer}
+
 
 \begin{center}
     \subheading{===== Requested changes =====}

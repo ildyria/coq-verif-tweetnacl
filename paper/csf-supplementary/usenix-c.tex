@@ -45,8 +45,20 @@ This paper presents a formal specification and verification of X25519 in TweetNa
 
 \begin{itemize}
     \item Are the properties the only ones? How do we know that more important ones weren’t missed?
+\end{itemize}
+\begin{answer}
+  We verify correctness of the software. There are indeed other important properties, in particular
+  implementation security. We now discuss this in the introduction.
+\end{answer}
+
+\begin{itemize}
     \item Only verified at the C level (maybe the CompCert chain proves some of the assembly?)
 \end{itemize}
+\begin{answer}
+  CompCert guarantees correct translation (via a formal verification in Coq), 
+  but if the code is translated with, for example, gcc, we agree that the compiler becomes part of the TCB.
+\end{answer}
+
 
 
 \begin{center}
