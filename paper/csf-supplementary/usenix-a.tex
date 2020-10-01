@@ -1,19 +1,19 @@
 \section*{Usenix Security 2020 Review \#324A}
 
 \begin{tabular}{rrp{.6\textwidth}}
-    \toprule
-    Review recommendation & 3.& Major revision                  \\
-    Writing quality       & 3.& Adequate                        \\
-    Reviewer interest     & 2.& I might go to a talk about this \\
-    Reviewer expertise    & 3.& Knowledgeable                   \\
-    \bottomrule
+  \toprule
+  Review recommendation & 3.& Major revision                  \\
+  Writing quality       & 3.& Adequate                        \\
+  Reviewer interest     & 2.& I might go to a talk about this \\
+  Reviewer expertise    & 3.& Knowledgeable                   \\
+  \bottomrule
 \end{tabular}
 
 
 
 
 \begin{center}
-    \subheading{===== Paper summary =====}
+  \subheading{===== Paper summary =====}
 \end{center}
 
 The Networking and Cryptography library (NaCl) admits a compact implementation,
@@ -47,47 +47,59 @@ traditional Coq proof.
 The complete formal development is provided as an artifact.
 
 \begin{center}
-    \subheading{===== Strengths =====}
+  \subheading{===== Strengths =====}
 \end{center}
 I believe this paper describes a valuable work and contribution, that I appreciated learning about.
 \begin{itemize}
-    \item The authors follow a thorough and valuable methodology, establishing excellent guarantees on the implementation considered.
-    \item It is great to see a development such as VST being used in this context.
-    \item Additionally, going the extra-mile to both refine the C code against RFC and prove this specification to be equivalent to the mathematical model is indeed I believe the right way to go.
-    \item They position their paper in a quite dense corpus of work in a quite satisfactory way.
-    \item The provided artifact showcase a significant proof effort.
-    \item I found barely a couple of typos while reading the paper.
-    \item The conclusion is particularly nice.
-    \item The diff provided between the verified C code and the original code is excellent. Overall there is a great care in stating clearly and precisely what has been proved.
+  \item The authors follow a thorough and valuable methodology, establishing excellent guarantees on the implementation considered.
+  \item It is great to see a development such as VST being used in this context.
+  \item Additionally, going the extra-mile to both refine the C code against RFC and prove this specification to be equivalent to the mathematical model is indeed I believe the right way to go.
+  \item They position their paper in a quite dense corpus of work in a quite satisfactory way.
+  \item The provided artifact showcase a significant proof effort.
+  \item I found barely a couple of typos while reading the paper.
+  \item The conclusion is particularly nice.
+  \item The diff provided between the verified C code and the original code is excellent. Overall there is a great care in stating clearly and precisely what has been proved.
 \end{itemize}
 
 \begin{center}
-    \subheading{===== Weaknesses =====}
+  \subheading{===== Weaknesses =====}
 \end{center}
 
 Such a paper is difficult to write. The authors have visibly devoted great efforts to tackle this difficulty, but it remains a challenging read.
 \begin{itemize}
-    \item The paper takes us from one technical point to another in a manner that seems arbitrary at times, and hinders the overall structure. The problem is quite global, but a typical example is Definition 2.3: as a non-expert, it is hard to understand why this notion is important to introduce here, and it is essentially not used anywhere in the paper.
+  \item The paper takes us from one technical point to another in a manner that seems arbitrary at times, and hinders the overall structure. The problem is quite global, but a typical example is Definition 2.3: as a non-expert, it is hard to understand why this notion is important to introduce here, and it is essentially not used anywhere in the paper.
 \end{itemize}
 \begin{answer}
-    Computations over Curve25519 are done in $\F{p}$, as a result an easy mistake is to assume the curve defined over $\F{p}$ for all $x \in \F{p}$. However Curve25519 is defined over the quadratic extension which makes the Curve25519 over $\F{p}$ and its quadratic twist isomorphic over $\F{p^2}$ (Definition 2.3).
+  The notion of the twist of Curve25519 is quite central in the proof of the second main theorem of our paper,
+  which is linking our formalization of the RFC to the mathematical definition of Curve25519. 
+  We therefore feel like it should not be omitted from the preliminaries, but we are of course
+  open to suggestions how to motivate the definition better at this early point of the paper.
 \end{answer}
 
 \begin{itemize}
-    \item Figure 1 and Figure 4 are great, and have the potential to help so much the reader against the previous issue. Unfortunately, they are not commenting, and hence fail to do so!
-    \item The protocol considered is standard, and its implementation made to be of reasonable complexity. The paper should therefore really aim to:
-          \begin{enumerate}
-              \item promote a new approach (full stack, use of VST, use of the B\&S elliptic curve library,...)
-              \item explain all specific difficulties and unexpected problems that came across to smooth the path to similar projects in the future;
-              \item give a sense of whether it would scale and/or be reusable for similar/related projects. In particular, the choice of TweetNaCl is never really motivated. How much of a challenge would proving the same result over a more complex/efficient implementation be?
-          \end{enumerate}
-
-          The paper does a good job at 1, but unfortunately a quite poor at 2 and 3.
-    \item Skimming through the development convinces me that this is a consequent work. But the paper does not help evaluating this effort. It is always difficult to find relevant metrics to evaluate such things, but it would be great to get a sense of the aspects of the work that turned out difficult, and the extent of these difficulties.
+  \item Figure 1 and Figure 4 are great, and have the potential to help so much the reader against the previous issue. Unfortunately, they are not commenting, and hence fail to do so!
 \end{itemize}
+\begin{answer}
+  We extended the discussion of Figures 1, 3, and 4 to address this point.
+\end{answer}
+\begin{itemize}
+  \item The protocol considered is standard, and its implementation made to be of reasonable complexity. The paper should therefore really aim to:
+    \begin{enumerate}
+      \item promote a new approach (full stack, use of VST, use of the B\&S elliptic curve library,...)
+      \item explain all specific difficulties and unexpected problems that came across to smooth the path to similar projects in the future;
+      \item give a sense of whether it would scale and/or be reusable for similar/related projects. In particular, the choice of TweetNaCl is never really motivated. How much of a challenge would proving the same result over a more complex/efficient implementation be?
+    \end{enumerate}
+
+    The paper does a good job at 1, but unfortunately a quite poor at 2 and 3.
+  \item Skimming through the development convinces me that this is a consequent work. But the paper does not help evaluating this effort. It is always difficult to find relevant metrics to evaluate such things, but it would be great to get a sense of the aspects of the work that turned out difficult, and the extent of these difficulties.
+\end{itemize}
+\begin{answer}
+  \todo{We should say something regarding these two points.}
+\end{answer}
+
 
 \begin{center}
-    \subheading{===== Detailed comments for authors =====}
+  \subheading{===== Detailed comments for authors =====}
 \end{center}
 My feelings are essentially summed up through the strengths and weaknesses described above. I find this work to be a great contribution, but regret having a hard time getting as much as I would like out of the paper.
 
@@ -97,144 +109,187 @@ You mention in the rebuttal to a previous submission that constant time is not a
 On a side note, I failed to compile the project: setting up an opam switch with Coq pinned to 8.8.2 as instructed, I had dependency issues with respect to `coq-coqprime`when running `opam install --deps-only coq-verif-tweetnacl `. Having installed manually `coq-coqprime`, I then ended up with the following error:
 
 {\footnotesize\texttt{
-    "The following dependencies couldn't be met:\\
-    - coq-verif-tweetnacl $\rightarrow$ coq-stdpp \\
-    unknown package\\
-    No solution found, exiting"}}
+  "The following dependencies couldn't be met:\\
+  - coq-verif-tweetnacl $\rightarrow$ coq-stdpp \\
+  unknown package\\
+  No solution found, exiting"}}
+\begin{answer}
+  We were not able to reproduce this error, but 
+  now make the code available in an anonymous GitHub repository that also contains
+  a virtual-machine image with all software that is required to reproduce the proofs.
+\end{answer}
 
 Here are a few linear comments:
 
 \begin{itemize}
-    \item \textbf{page 1, column 2:}\\
-          - "the program satisfy" $\rightarrow$ "the program satisfies"\\
-          - "the result of this paper can readily be used in mechanized proofs of higher-level protocols (...)"
-          This statement should probably be made more precise, it is quite unclear to me what you mean exactly.
-
-    \item \textbf{page 2:}\\
-          Figure 1 is great, but would deserve a lengthy explanation!
+  \item \textbf{page 1, column 2:}\\
+    - "the program satisfy" $\rightarrow$ "the program satisfies"\\
+    - "the result of this paper can readily be used in mechanized proofs of higher-level protocols (...)"
+    This statement should probably be made more precise, it is quite unclear to me what you mean exactly.
 \end{itemize}
 \begin{answer}
-    We added an additional description of the figure.
+  Typo fixed (the satisfy/satisfies actually refers to the semantics of a program in this sentence).
+  We rephrased the second statement to (hopefully) clarify what we mean.
+\end{answer}
+\begin{itemize}
+
+  \item \textbf{page 2:}\\
+    Figure 1 is great, but would deserve a lengthy explanation!
+\end{itemize}
+\begin{answer}
+  We added an additional description of the figure.
 \end{answer}
 
 \begin{itemize}
 
-    \item \textbf{page 3, column 1:}\\
-          Definition 2.3: It's been very unclear to me as a non-expert in cryptography and this protocole in particular what was the purpose of this definition.\\
-          {\color{gray}"depending of" $\rightarrow$ "depending on"}\\
-          "depending of the value of the kth bit" $\rightarrow$ unclear what k is at this point
+  \item \textbf{page 3, column 1:}\\
+    Definition 2.3: It's been very unclear to me as a non-expert in cryptography and this protocole in particular what was the purpose of this definition.\\
+    {\color{gray}"depending of" $\rightarrow$ "depending on"}\\
+    "depending of the value of the kth bit" $\rightarrow$ unclear what k is at this point
+\end{itemize}
+\begin{answer}
+  Regarding Definition 2.3 see our answer above. Typo fixed. 
+  We updated the text to clarify what we mean by the $k$th bit.
+\end{answer}
 
-    \item \textbf{page 3, column 2:}\\
-          Algorithm 1: unclear what "m" is\\
-          {\color{gray}"RFC 7748 standardize" $\rightarrow$   "RFC 7748 standardizes"}
+\begin{itemize}
+  \item \textbf{page 3, column 2:}\\
+    Algorithm 1: unclear what "m" is\\
+    "RFC 7748 standardize" $\rightarrow$   "RFC 7748 standardizes"
+\end{itemize}
+\begin{answer}
+  Clarified that $m$ is an upper bound on the bitlength of the scalar. Typo fixed.
+\end{answer}
 
-    \item \textbf{page 4, column 2:}\\
-          It's minor, but it is more shiny nowadays to cite The Odd Order theorem that the Four Color theorem as a mathematical achievement in Coq\\
-          CompCert $\rightarrow$ Wrong hyphenation\\
-          Hoare-seq $\rightarrow$ It is clearly hard to find the balance with respect to what should be assumed on the crypto side, and what should be assumed on the verification side. I nonetheless think that this should be omitted.\\
-          "Separation logic is an extension of Hoare logic" $\rightarrow$ Minor, but the work "extension" does not quite sit right with me. The model is quite intrinsically different.
+\begin{itemize}
+  \item \textbf{page 4, column 2:}\\
+    It's minor, but it is more shiny nowadays to cite The Odd Order theorem that the Four Color theorem as a mathematical achievement in Coq\\
+    CompCert $\rightarrow$ Wrong hyphenation\\
+    Hoare-seq $\rightarrow$ It is clearly hard to find the balance with respect to what should be assumed on the crypto side, and what should be assumed on the verification side. I nonetheless think that this should be omitted.\\
+    "Separation logic is an extension of Hoare logic" $\rightarrow$ Minor, but the work "extension" does not quite sit right with me. The model is quite intrinsically different.
+\end{itemize}
+\begin{answer}
+  \todo{Fix, comment here.}
+\end{answer}
 
-    \item \textbf{page 5, column 2:}\\
-          "'To implement (...)" $\rightarrow$ I am very confused by this. The whole paragraph is an unannounced quote, it would need context/explanation.
+\begin{itemize}
+  \item \textbf{page 5, column 2:}\\
+    "'To implement (...)" $\rightarrow$ I am very confused by this. The whole paragraph is an unannounced quote, it would need context/explanation.
+\end{itemize}
+\begin{answer}
+  \todo{Fix, comment here.}
+\end{answer}
 
-    \item \textbf{page 6, column 1:}\\
-          In ListofZn\_fp $\rightarrow$ The use of fuel might deserve a comment. Don't you end up having to prove at some point that you can always compute ahead of time an overapproximation of the fuel needed? Wouldn't it have been simple to use the strong recursion principle of naturals to define the function?
+\begin{itemize}
+  \item \textbf{page 6, column 1:}\\
+    In ListofZn\_fp $\rightarrow$ The use of fuel might deserve a comment. Don't you end up having to prove at some point that you can always compute ahead of time an overapproximation of the fuel needed? Wouldn't it have been simple to use the strong recursion principle of naturals to define the function?
+\end{itemize}
+    \begin{answer}
+      In our case the fuel is used to garantee to have as an output a list of 32 elements. This allows to prove that for all List of 32 bytes, ListofZn\_fp (ZofList L) = L. With this lemma at hand we can later simplify some of the expressions.
+    \end{answer}
 
-          \begin{answer}
-              In our case the fuel is used to garantee to have as an output a list of 32 elements. This allows to prove that for all List of 32 bytes, ListofZn\_fp (ZofList L) = L. With this lemma at hand we can later simplify some of the expressions.
-          \end{answer}
+\begin{itemize}
+  \item \textbf{page 6, column 2:}\\
+    "and the same code as a pure Coq function" $\rightarrow$ I would rephrase, the term "same code" is misleading.
+    Specification: I think explaining the structure of a VST statement would be necessary to help an unfamiliar reader understand this specification.
 
-    \item \textbf{page 6, column 2:}\\
-          "and the same code as a pure Coq function" $\rightarrow$ I would rephrase, the term "same code" is misleading.
-          Specification: I think explaining the structure of a VST statement would be necessary to help an unfamiliar reader understand this specification.
+  \item \textbf{page 7:}\\
+    Discussion on memory aliasing is great, I would have liked more of this kind through the paper.\\
+    Figure 2: I had to fish back a little for the definition of "sh", but "Ews" has really never been defined I believe.\\
+    "Improving speed" $\rightarrow$ of what? This whole paragraph is quite hard to read. In particular be careful that it is not obvious to the reader whether you are speeding up the verification process or the runtime of the implementation. In particular it was unclear to me what you were referring to by saying "Optimizations of such definitions".\\
+    The following paragraph also is a bit cryptic. I assume you are saying that identifying finely the dependencies between definitions allow for parallelizing the work? Arguably, simply admitting temporarily yon the fly any specification needed  achieves the same.\\
+    "Numbers in gf" $\rightarrow$ Please remind the reader what "gf" is. Good section overall
 
-    \item \textbf{page 7:}\\
-          Discussion on memory aliasing is great, I would have liked more of this kind through the paper.\\
-          Figure 2: I had to fish back a little for the definition of "sh", but "Ews" has really never been defined I believe.\\
-          "Improving speed" $\rightarrow$ of what? This whole paragraph is quite hard to read. In particular be careful that it is not obvious to the reader whether you are speeding up the verification process or the runtime of the implementation. In particular it was unclear to me what you were referring to by saying "Optimizations of such definitions".\\
-          The following paragraph also is a bit cryptic. I assume you are saying that identifying finely the dependencies between definitions allow for parallelizing the work? Arguably, simply admitting temporarily yon the fly any specification needed  achieves the same.\\
-          "Numbers in gf" $\rightarrow$ Please remind the reader what "gf" is. Good section overall
+  \item \textbf{page 8:}\\
+    "Using reflection (...)" $\rightarrow$ Would deserve more explanations.\\
+    Figure 3: Please comment generously this figure, it looks great but it is frustrating to try to decipher it without help.
 
-    \item \textbf{page 8:}\\
-          "Using reflection (...)" $\rightarrow$ Would deserve more explanations.\\
-          Figure 3: Please comment generously this figure, it looks great but it is frustrating to try to decipher it without help.
+  \item \textbf{page 9:}\\
+    "the type of field which characteristic" $\rightarrow$ "whose characteristic"\\
+    "The value of add is proven to be on the curve (with coercion)" $\rightarrow$ This parenthesis is too cryptic, it should probably be dropped.
+\end{itemize}
+\begin{answer}
+  Fixed.
+\end{answer}
 
-    \item \textbf{page 9:}\\
-          {\color{gray}"the type of field which characteristic" $\rightarrow$ "whose characteristic"\\
-          "The value of add is proven to be on the curve (with coercion)" $\rightarrow$ This parenthesis is too cryptic, it should probably be dropped.}
+\begin{itemize}
+  \item \textbf{page 11:}\\
+    Figure 4: this one is the apex: it would deserve a full column of explanations
+\end{itemize}
+\begin{answer}
+  \todo{How much explanation did we actually add here?}
+\end{answer}
 
-    \item \textbf{page 11:}\\
-          Figure 4: this one is the apex: it would deserve a full column of explanations
-
-    \item \textbf{Conclusion:}\\
-          Great wrap up overall.\\
-          CompCert: "However, when compiling (...)" $\rightarrow$ I am quite confused about this sentence. Do you mean when compiling the verified C code with gcc? If so, beyond the question whether CompCert matches C17 (which it doesn't, it matches C99), the real problem is to assume that gcc is bug free! I would expect with this whole approach that the expectation is to run a protocole compiled with CompCert.\\
-          clightGen: "VST does not support (...)" $\rightarrow$ Hard to undertand the relation between this sentence and the previous one.\\
-          Extending our work: What about proving other NaCl implementations?
+\begin{itemize}
+  \item \textbf{Conclusion:}\\
+    Great wrap up overall.\\
+    CompCert: "However, when compiling (...)" $\rightarrow$ I am quite confused about this sentence. Do you mean when compiling the verified C code with gcc? If so, beyond the question whether CompCert matches C17 (which it doesn't, it matches C99), the real problem is to assume that gcc is bug free! I would expect with this whole approach that the expectation is to run a protocole compiled with CompCert.\\
+    clightGen: "VST does not support (...)" $\rightarrow$ Hard to undertand the relation between this sentence and the previous one.\\
+    Extending our work: What about proving other NaCl implementations?
 \end{itemize}
 
 \begin{answer}
-    \todo{Freek : which version of ISO.}
+  \todo{Freek : which version of ISO.}
 \end{answer}
 
 \begin{center}
-    \subheading{===== Requested changes =====}
+  \subheading{===== Requested changes =====}
 \end{center}
 \begin{itemize}
-    \item Please provide high level explanations to your three Figures describing the infrastructure.
-    \item Please reduce slightly the width of the technical material covered, and use the gained space to provide a bit more context to the one covered
-    \item Please provide more get away lessons from this development that would benefit new similar works
-    \item Please give a sense of the difficulties encountered during the formalization.
+  \item Please provide high level explanations to your three Figures describing the infrastructure.
+  \item Please reduce slightly the width of the technical material covered, and use the gained space to provide a bit more context to the one covered
+  \item Please provide more get away lessons from this development that would benefit new similar works
+  \item Please give a sense of the difficulties encountered during the formalization.
 \end{itemize}
 
 \begin{center}
-    \subheading{===== Questions for authors' response =====}
+  \subheading{===== Questions for authors' response =====}
 \end{center}
 
 \begin{itemize}
-    \item What made TweetNaCl the right choice for this project?
+  \item What made TweetNaCl the right choice for this project?
 \end{itemize}
 
 \begin{answer}
-    One goal of the project was to investigate how suitable the combination of
-    VST+Coq is for verifying correctness of existing C code for asymmetric
-    crypto primitives. The X25519 implementation in TweetNaCl was chosen because
-    it is relatively simple, it has some real-world use cases, and the original
-    paper claims that the library should be verifiable.
+  One goal of the project was to investigate how suitable the combination of
+  VST+Coq is for verifying correctness of existing C code for asymmetric
+  crypto primitives. The X25519 implementation in TweetNaCl was chosen because
+  it is relatively simple, it has some real-world use cases, and the original
+  paper claims that the library should be verifiable.
 \end{answer}
 
 \begin{itemize}
-    \item Would following the same approach for other implementation radically change the proof effort?
+  \item Would following the same approach for other implementation radically change the proof effort?
 \end{itemize}
 
 \begin{answer}
-    We would expect that the proof effort for another C implementation of X25519
-    does not change drastically, as long as it does not use any features that are
-    not supported by VST (e.g., the 128-bit integers used by the donna64
-    implementation). The proof relating the RFC to the mathematical definition
-    does not change for other implementations.
+  We would expect that the proof effort for another C implementation of X25519
+  does not change drastically, as long as it does not use any features that are
+  not supported by VST (e.g., the 128-bit integers used by the donna64
+  implementation). The proof relating the RFC to the mathematical definition
+  does not change for other implementations.
 \end{answer}
 
 \begin{itemize}
-    \item Does compiling TweetNaCl with CompCert rather than gcc impact the performance beyond what is acceptable?
+  \item Does compiling TweetNaCl with CompCert rather than gcc impact the performance beyond what is acceptable?
 \end{itemize}
 
 \begin{answer}
-    For the X25519 implementation in TweetNaCl, CompCert generates code that is
-    about 6x slower than code generated with gcc. While this sounds like a lot, it
-    may not be too much of an issue for projects that use TweetNaCl, because they
-    chose for a library that prioritizes simplicity over performance in the first
-    place. A more serious issue however can be the non-free CompCert license.
+  For the X25519 implementation in TweetNaCl, CompCert generates code that is
+  about 6$\times$ slower than code generated with gcc. While this sounds like a lot, it
+  may not be too much of an issue for projects that use TweetNaCl, because they
+  chose for a library that prioritizes simplicity over performance in the first
+  place. A more serious issue however can be the non-free CompCert license.
 \end{answer}
 
 \begin{itemize}
-    \item If so, what trust do you consider this proof effort to bring to a gcc compiled implementation?
+  \item If so, what trust do you consider this proof effort to bring to a gcc compiled implementation?
 \end{itemize}
 
 \begin{answer}
-    We are not aware of any bugs that were introduced into ECC software by bugs in
-    gcc; so from a practical, crypto-engineering point of view we rule out all
-    classes of bugs that users are typically concerned about. From a more
-    theoretical point of view, relying on gcc (or any other unverified C compiler)
-    massively expands the TCB and should be reason for concern.
+  We are not aware of any bugs that were introduced into ECC software by bugs in
+  gcc; so from a practical, crypto-engineering point of view we rule out all
+  classes of bugs that users are typically concerned about. From a more
+  theoretical point of view, relying on gcc (or any other unverified C compiler)
+  massively expands the TCB and should be reason for concern.
 \end{answer}

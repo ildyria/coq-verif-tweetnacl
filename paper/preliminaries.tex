@@ -23,7 +23,6 @@ Finally, we provide a brief description of the formal tools we use in our proofs
 \end{dfn}
 Details of the formalization can be found in \sref{subsec:ECC-Montgomery}.
 
-
 For $M_{a,b}$ over a finite field $\F{p}$, the parameter $b$ is known as the ``twisting factor''.
 For $b'\in \F{p}\backslash\{0\}$ and $b' \neq b$, the curves $M_{a,b}$ and $M_{a,b'}$
 are isomorphic via $(x,y) \mapsto (x, \sqrt{b/b'} \cdot y)$.
@@ -51,10 +50,13 @@ We define the operation:
   \texttt{xDBL\&ADD} & : (x_{Q-P}, (X_P:Z_P), (X_Q:Z_Q)) \mapsto              \\
                      & ((X_{2 \cdot P}:Z_{2 \cdot P}), (X_{P + Q}:Z_{P + Q}))
 \end{align*}
-In the Montgomery ladder, % notice that
-% the arguments of \texttt{xADD} and \texttt{xDBL}
+
+A pseudocode description of the Montgomery ladder 
+is given in Algorithm~\ref{alg:montgomery-ladder}.
+The main loop iterates over the bits of the scalar $n$. 
+The $k^{\text{th}}$ iteration conditionally swaps
 the arguments $P$ and $Q$ of \texttt{xDBL\&ADD}
-are swapped depending on the value of the $k^{\text{th}}$ bit.
+depending on the value of the $k^{\text{th}}$ bit of $n$.
 We use a conditional swap \texttt{CSWAP} to change the arguments of the above
 function while keeping the same body of the loop. \label{cswap}
 Given a pair $(P_0, P_1)$ and a bit $b$, \texttt{CSWAP} returns the pair
@@ -66,7 +68,7 @@ computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}
   \caption{Montgomery ladder for scalar mult.}
   \label{alg:montgomery-ladder}
   \begin{algorithmic}
-    \REQUIRE{\xcoord $x_P$ of a point $P$, scalar $n$ with $n < 2^m$}
+    \REQUIRE{\xcoord $x_P$ of a point $P$, scalar $n$ of bitlength upperbound by some integer $m$}
     \ENSURE{\xcoord $x_Q$ of $Q = n \cdot P$}
     \STATE $Q = (X_Q:Z_Q) \leftarrow (1:0)$
     \STATE $R = (X_R:Z_R) \leftarrow (x_P:1)$

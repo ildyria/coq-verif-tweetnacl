@@ -53,11 +53,40 @@ To our knowledge, this verification effort is the first to not just
 connect a low-level implementation to a higher-level implementation (or ``specification''),
 but to prove correctness all the way up
 to the mathematical definition in terms of scalar multiplication on an elliptic curve.
-As a consequence, the result of this paper can readily be used in mechanized proofs of
-higher-level protocols that work with the mathematical definition of X25519.
+As a consequence, the result of this paper can readily be used in mechanized proofs
+arguing about the security of cryptographic constructions on the more abstract
+level of operations in groups and related problems, like the elliptic-curve
+discrete-logarithm (ECDLP) or elliptic-curve Diffie-Hellman (ECDH) problem.
+\todo{Add examples of such mechanized proofs?}
 Also, connecting our formalization of the RFC to the mathematical definition
 significantly increases trust into the correctness of the formalization and
 reduces the effort of manual auditing of that formalization.
+
+\subheading{The bigger picture of high-assurance crypto.}
+This work fits into the bigger area of \emph{high-assurance} cryptography,
+i.e., a line of work that applies techniques and tools from formal methods 
+to obtain computer-verified guarantees for cryptographic software. 
+Traditionally, high-assurance cryptography is concerned with three main properties
+of cryptographic software:
+\begin{enumerate}
+  \item verifying \textbf{correctness} of cryptographic software, 
+    typically against a high-level specification;\label{hacs:correct}
+  \item verifying \textbf{implementation security} and in particular
+    security against timing attacks; and\label{hacs:sca}
+  \item verifying \textbf{cryptographic security} notions of primitives and protocols 
+    through computer-checked reductions from some assumed-to-be-hard mathematical problem.\label{hacs:secure}
+\end{enumerate}
+A recent addition to this triplet (or rather an extension of implementation security)
+is security also against speculative attacks. See, e.g.,~\cite{XXX}.
+This paper targets only the first point and attempts to make results
+immediately usable for verification efforts of cryptographic security.
+
+Verification of implementation security is probably equally important as
+verification of correctness, but working on the C language level as we do
+in this paper is not helpful. To obtain guarantees of security against 
+timing-attack we recommend verifying \emph{compiled} code on LLVM level with, 
+e.g., ct-verif~\cite{XXX}, 
+or even better on binary level with, e.g., BinSec/Rel~\cite{XXX}.
 
 \subheading{Related work.}
 The field of computer-aided cryptography, i.e., using computer-verified proofs
@@ -103,6 +132,10 @@ Their proof takes a different approach from ours.
 It uses heavy annotation of the assembly-level code in order to ``guide'' a SAT solver;
 also, it does not cover the full X25519 functionality and does
 not make the link to the mathematical definition from~\cite{Ber06}.
+As a consequence, this work would not find bugs in any of the routines
+processing the scalar (like ``clamping'', see Section~\ref{subsec:X25519-key-exchange}),
+bugs in the the serialization routines or, maybe most importantly,
+bugs in the high-level specification that the code is verified against.
 
 Finally, in terms of languages and tooling the work closest to what we present here
 is the proof of correctness of OpenSSL's
