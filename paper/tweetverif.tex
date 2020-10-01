@@ -1,0 +1,65 @@
+\newif\ifpublic
+\publictrue
+
+\documentclass[conference]{IEEEtran}
+
+% Make sure that we have page numbers
+\thispagestyle{plain}
+\pagestyle{plain}
+
+\IEEEoverridecommandlockouts % this enables the \thanks command
+
+\usepackage{epsfig}
+\usepackage{setup}
+
+\newif\ifpublic
+\publicfalse
+
+\newif\iffull
+\fulltrue
+
+\input{_macros}
+
+\begin{document}
+
+
+\title{\Large \bf A Coq proof of the correctness of X25519 in TweetNaCl}
+\date{}
+
+\ifpublic
+    \author{
+        \IEEEauthorblockN{Peter Schwabe}
+        \IEEEauthorblockA{Max Planck Institute for Security and Privacy (DE) \& Radboud University (NL)
+        \and
+        \IEEEauthorblockN{Beno\^it Viguier}
+        \IEEEauthorblockA{Radboud University (NL)}
+        \and
+        \IEEEauthorblockN{Timmy Weerwag}
+        \IEEEauthorblockA{Radboud University (NL)}
+        \and
+        \IEEEauthorblockN{Freek Wiedijk}
+        \IEEEauthorblockA{Radboud University (NL)}
+    }
+\else
+    \author{}
+\fi
+
+\maketitle
+
+\input{intro.tex}
+\input{preliminaries.tex}
+\input{rfc.tex}
+\input{lowlevel.tex}
+\input{highlevel.tex}
+\input{conclusion.tex}
+
+\bibliographystyle{IEEEtran}
+\bibliography{collection}}
+
+\begin{appendices}
+  \input{code-tweetnacl.tex}
+  \input{coq.tex}
+  \input{proofs.tex}
+\end{appendices}
+
+\end{document}
