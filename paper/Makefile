@@ -14,3 +14,6 @@ clean:
 	-rm tweetverif.out
 	-rm tweetverif.pdf
 	-rm tweetverif.thm
+	-rm tweetverif.bbl
+	-rm tweetverif.blg
+	-rm tweetverif.brf
