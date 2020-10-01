@@ -1,6 +1,7 @@
 all: tweetverif.pdf csf-supplementary/previous.pdf
 
 SOURCES= code-tweetnacl.tex collection.bib conclusion.tex coq.tex highlevel.tex intro.tex lowlevel.tex preliminaries.tex proofs.tex rfc.tex t.bib tweetverif.tex tweetnacl.diff
+PREVIOUS= csf-supplementary/previous.tex csf-supplementary/usenix-*.tex csf-supplementary/tweetverif-USENIX.pdf csf-supplementary/tweetverif-SP.pdf
 
 tweetverif.pdf: $(SOURCES)
 	pdflatex tweetverif.tex
@@ -8,7 +9,7 @@ tweetverif.pdf: $(SOURCES)
 	pdflatex tweetverif.tex
 	pdflatex tweetverif.tex
 
-csf-supplementary/previous.pdf:
+csf-supplementary/previous.pdf: $(PREVIOUS)
 	make -C csf-supplementary
 
 tweetnacl.diff:

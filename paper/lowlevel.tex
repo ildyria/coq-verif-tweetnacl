@@ -5,8 +5,8 @@ In this section we prove the following theorem:
 % In this section we outline the structure of our proofs of the following theorem:
 
 \begin{informaltheorem}
-  The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
-  the specifications of RFC~7748~\cite{rfc7748} (\Coqe{RFC}).
+      The implementation of X25519 in TweetNaCl (\TNaCle{crypto_scalarmult}) matches
+      the specifications of RFC~7748~\cite{rfc7748} (\Coqe{RFC}).
 \end{informaltheorem}
 
 More formally:
@@ -242,8 +242,9 @@ the same time.
 \subsection{Number representation and C implementation}
 \label{subsec:num-repr-rfc}
 
-As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf} are represented
-in   $2^{16}$ and we use a direct mapping to represent that array as a list
+As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf}
+(typedef of an array of 16 \TNaCle{long long}) are represented
+in $2^{16}$ and we use a direct mapping to represent that array as a list
 integers in Coq. However, in order to show the correctness of the basic operations,
 we need to convert this number to an integer.
 We reuse the mapping
@@ -262,8 +263,8 @@ Equivalence between operations in $\Zfield$ (\ie under \coqe{:GF}) and in $\Ffie
 Using these two definitions, we prove intermediate lemmas such as the correctness of the
 multiplication \Coqe{Low.M} where \Coqe{Low.M} replicates the computations and steps done in C.
 \begin{lemma}
-  \label{lemma:mult_correct}
-  \Coqe{Low.M} correctly implements the multiplication over $\Zfield$.
+      \label{lemma:mult_correct}
+      \Coqe{Low.M} correctly implements the multiplication over $\Zfield$.
 \end{lemma}
 And specified in Coq as follows:
 \begin{lstlisting}[language=Coq]
@@ -280,9 +281,9 @@ We also need to define the bounds under which the operation is correct,
 allowing us to chain them, guaranteeing us the absence of overflow.
 
 \begin{lemma}
-  \label{lemma:mult_bounded}
-  if all the values of the input arrays are constrained between $-2^{26}$ and $2^{26}$,
-  then the output of \coqe{Low.M} will be constrained between $-38$ and $2^{16} + 38$.
+      \label{lemma:mult_bounded}
+      if all the values of the input arrays are constrained between $-2^{26}$ and $2^{26}$,
+      then the output of \coqe{Low.M} will be constrained between $-38$ and $2^{16} + 38$.
 \end{lemma}
 And seen in Coq as follows:
 \begin{lstlisting}[language=Coq]
@@ -296,33 +297,28 @@ Lemma M_bound_Zlength :
 \end{lstlisting}
 
 
-Using reflection (chapter 15 in \cite{CpdtJFR}), we prove
-the functional correctness of the multiplicative inverse over \Zfield.
-\begin{lemma}
-\label{cor:inv_comput_field}
-\Coqe{Inv25519} computes an inverse in \Zfield.
-\end{lemma}
-This statement is formalized as
-\begin{lstlisting}[language=Coq]
-Corollary Inv25519_Zpow_GF : forall (g:list Z),
-  length g = 16 ->
-  Z16.lst (Inv25519 g) :GF  =
-    (pow (Z16.lst g) (2^255-21)) :GF.
-\end{lstlisting}
+% We prove the functional correctness of the multiplicative inverse over \Zfield,
+% formalized as
+% \begin{lstlisting}[language=Coq]
+% Corollary Inv25519_Zpow_GF : forall (g:list Z),
+%   length g = 16 ->
+%   Z16.lst (Inv25519 g) :GF  =
+%     (pow (Z16.lst g) (2^255-21)) :GF.
+% \end{lstlisting}
 
 \begin{sloppypar}
-By using each function \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
-\coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519};
-\coqe{montgomery_rec}, we defined in Coq \coqe{Crypto_Scalarmult} and with VST
-proved it matches the exact behavior of X25519 in TweetNaCl.
+      By using each function \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
+      \coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519};
+      \coqe{montgomery_rec}, we defined in Coq \coqe{Crypto_Scalarmult} and with VST
+      proved it matches the exact behavior of X25519 in TweetNaCl.
 \end{sloppypar}
 
 \begin{sloppypar}
-By proving that each function \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq};
-\coqe{Low.Zub}; \coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519};
-\coqe{Inv25519}; \coqe{car25519} behave over \coqe{list Z} as their equivalent
-over \coqe{Z} with \coqe{:GF} (in \Zfield), we prove that given the same inputs
-\coqe{Crypto_Scalarmult} performs the same computation as \coqe{RFC}.
+      By proving that each function \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq};
+      \coqe{Low.Zub}; \coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519};
+      \coqe{Inv25519}; \coqe{car25519} behave over \coqe{list Z} as their equivalent
+      over \coqe{Z} with \coqe{:GF} (in \Zfield), we prove that given the same inputs
+      \coqe{Crypto_Scalarmult} performs the same computation as \coqe{RFC}.
 \end{sloppypar}
 
 % This is formalized as follows in Coq:

@@ -2,51 +2,51 @@
 \section*{Usenix Security 2020 Review \#324B}
 
 \begin{tabular}{rrp{.6\textwidth}}
-    \toprule
-    Review recommendation & 4. & Minor revision                                                                                     \\
-    Writing quality       & 4. & Well-written                                                                                       \\
-    Reviewer interest     & 3. & I would definitely go to this talk and tell my students or colleagues colleages to read this paper \\ 
-    Reviewer expertise    & 4. & Expert                                                                                             \\
-    \bottomrule
+  \toprule
+  Review recommendation & 4. & Minor revision                                                                                     \\
+  Writing quality       & 4. & Well-written                                                                                       \\
+  Reviewer interest     & 3. & I would definitely go to this talk and tell my students or colleagues colleages to read this paper \\
+  Reviewer expertise    & 4. & Expert                                                                                             \\
+  \bottomrule
 \end{tabular}
 
 \begin{center}
-    \subheading{===== Paper summary =====}
+  \subheading{===== Paper summary =====}
 \end{center}
 This paper presents two formal proofs. The first links a C implementation of the popular X25519 elliptic curve Diffie-Hellman construction, taken from a crypto library called TweetNaCl, to a formalization of its specification as per RFC 7748. The second links the RFC 7748 formalization to the mathematical theory of elliptic curves. In composition, the two results mean that the TweetNaCl implementation of X25519 meets the abstract mathematical description of Curve25519 in [7]. All proofs are mechanized in the Coq theorem prover, with some help from the Verified Software Toolchain (VST).
 
 \begin{center}
-    \subheading{===== Strengths =====}
+  \subheading{===== Strengths =====}
 \end{center}
 
 \begin{itemize}
-    \item A formal proof of an important component of TweetNaCl, a popular crypto library
-    \item A proof that RFC 7748 meets its mathematical spec, which is of independent interest
-    \item A major new case study for the VST framework
+  \item A formal proof of an important component of TweetNaCl, a popular crypto library
+  \item A proof that RFC 7748 meets its mathematical spec, which is of independent interest
+  \item A major new case study for the VST framework
 \end{itemize}
 
 \begin{center}
-    \subheading{===== Weaknesses =====}
+  \subheading{===== Weaknesses =====}
 \end{center}
 
 \begin{itemize}
-    \item The C code analyzed here is very simple; prior works have verified much more complex and optimized implementations of X25519
+  \item The C code analyzed here is very simple; prior works have verified much more complex and optimized implementations of X25519
 \end{itemize}
 \begin{answer}
   It is true that the C code is more simple and less optimized than the code considered in other verification efforts.
   However, unlike \emph{most} previous X25519 verification efforts we verify pre-existing code written in a language
-  that is not developed with easy verification in mind (like jasmin or F$^*$). 
+  that is not developed with easy verification in mind (like jasmin or F$^*$).
   Also, our proof goes beyond what all previous X25519 verification efforts targeted and links the
   high-level specification to the mathematical definition of X25519.
 \end{answer}
 \begin{itemize}
-    \item The proof does not cover side-channel resistance ("constant-time")
+  \item The proof does not cover side-channel resistance ("constant-time")
 \end{itemize}
 \begin{answer}
-  We added a comment on ``constant-time'' verification in the introduction. 
+  We added a comment on ``constant-time'' verification in the introduction.
 \end{answer}
 \begin{itemize}
-    \item The details of the Coq formalization may be less interesting for non-formally oriented readers
+  \item The details of the Coq formalization may be less interesting for non-formally oriented readers
 \end{itemize}
 \begin{answer}
   This is true; we hope that the audience of CSF is generally more oriented towards formal verification
@@ -54,7 +54,7 @@ This paper presents two formal proofs. The first links a C implementation of the
 \end{answer}
 
 \begin{center}
-    \subheading{===== Detailed comments for authors =====}
+  \subheading{===== Detailed comments for authors =====}
 \end{center}
 This works provides a rare fully formalized proof linking a mathematical description of a cryptographic construction to a concrete widely-used C implementation. Bridging this gap with a theorem prover requires expertise in the underlying mathematics, in formal verification, and in cryptographic engineering. We need more papers like this to show how this can be done.
 
@@ -76,30 +76,33 @@ I enjoyed Section 5 and I believe it is one of the more important (and reusable)
 
 
 \begin{center}
-    \subheading{===== Requested changes =====}
+  \subheading{===== Requested changes =====}
 \end{center}
 
 \begin{itemize}
-    \item Show a known bug that the VST proof would prevent
+  \item Show a known bug that the VST proof would prevent
 \end{itemize}
 \begin{answer}
   The most concerning bugs are, as the reviewer mentions, carry bugs that are triggered only with
   very small probability on random inputs. As TweetNaCl uses a different internal representation
-  of field elements than the speed-optimized implementations that had such bugs in the past, we 
-  cannot easily put precisely such a known bug into the software.\\ 
-  As we provide the software together with the proofs, it is easy though, to see how the proof fails, 
+  of field elements than the speed-optimized implementations that had such bugs in the past, we
+  cannot easily put precisely such a known bug into the software.\\
+  As we provide the software together with the proofs, it is easy though, to see how the proof fails,
   if, for example the final call to \texttt{car25519} in the \texttt{M} routine is omitted.
 \end{answer}
 \begin{itemize}
-    \item Clarify that constant-timeness is not proved here
+  \item Clarify that constant-timeness is not proved here
 \end{itemize}
 \begin{answer}
   This is clarified in the introduction now.
 \end{answer}
 \begin{itemize}
-    \item Rewrite section 5 to focus on proof structure and a few well-chosen lemmas/definitions
+  \item Rewrite section 5 to focus on proof structure and a few well-chosen lemmas/definitions
 \end{itemize}
 \begin{answer}
-  \todo{Say what we did here}
+  By including a descriptions to figures 3 and 4, we provide a better readding experience of the subsequent proofs.
+  The reader is not faced anymore with a list of lemmas and theorem but can understand why they arrive in such order.
+  In addition to those paragraphs we reduced the technical material provided; these two modifications results in
+  improved readability of the full section.
 \end{answer}
 
