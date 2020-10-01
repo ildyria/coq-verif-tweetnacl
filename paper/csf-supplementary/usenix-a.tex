@@ -1,5 +1,4 @@
-\newpage
-\section{Usenix Security 2020 Review \#324A}
+\section*{Usenix Security 2020 Review \#324A}
 
 \begin{tabular}{rl}
     \toprule
@@ -70,7 +69,7 @@ Such a paper is difficult to write. The authors have visibly devoted great effor
 \begin{itemize}
     \item The paper takes us from one technical point to another in a manner that seems arbitrary at times, and hinders the overall structure. The problem is quite global, but a typical example is Definition 2.3: as a non-expert, it is hard to understand why this notion is important to introduce here, and it is essentially not used anywhere in the paper.
 \end{itemize}
-\begin{answer}{EEEEEE}
+\begin{answer}
     Computations over Curve25519 are done in $\F{p}$, as a result an easy mistake is to assume the curve defined over $\F{p}$ for all $x \in \F{p}$. However Curve25519 is defined over the quadratic extension which makes the Curve25519 over $\F{p}$ and its quadratic twist isomorphic over $\F{p^2}$ (Definition 2.3).
 \end{answer}
 
@@ -114,7 +113,7 @@ Here are a few linear comments:
     \item \textbf{page 2:}\\
           Figure 1 is great, but would deserve a lengthy explanation!
 \end{itemize}
-\begin{answer}{EEEEEE}
+\begin{answer}
     We added an additional description of the figure.
 \end{answer}
 
@@ -141,7 +140,7 @@ Here are a few linear comments:
     \item \textbf{page 6, column 1:}\\
           In ListofZn\_fp $\rightarrow$ The use of fuel might deserve a comment. Don't you end up having to prove at some point that you can always compute ahead of time an overapproximation of the fuel needed? Wouldn't it have been simple to use the strong recursion principle of naturals to define the function?
 
-          \begin{answer}{EEEEEE}
+          \begin{answer}
               In our case the fuel is used to garantee to have as an output a list of 32 elements. This allows to prove that for all List of 32 bytes, ListofZn\_fp (ZofList L) = L. With this lemma at hand we can later simplify some of the expressions.
           \end{answer}
 
@@ -174,7 +173,7 @@ Here are a few linear comments:
           Extending our work: What about proving other NaCl implementations?
 \end{itemize}
 
-\begin{answer}{EEEEEE}
+\begin{answer}
     \todo{Freek : which version of ISO.}
 \end{answer}
 
@@ -196,7 +195,7 @@ Here are a few linear comments:
     \item What made TweetNaCl the right choice for this project?
 \end{itemize}
 
-\begin{answer}{EEEEEE}
+\begin{answer}
     One goal of the project was to investigate how suitable the combination of
     VST+Coq is for verifying correctness of existing C code for asymmetric
     crypto primitives. The X25519 implementation in TweetNaCl was chosen because
@@ -208,7 +207,7 @@ Here are a few linear comments:
     \item Would following the same approach for other implementation radically change the proof effort?
 \end{itemize}
 
-\begin{answer}{EEEEEE}
+\begin{answer}
     We would expect that the proof effort for another C implementation of X25519
     does not change drastically, as long as it does not use any features that are
     not supported by VST (e.g., the 128-bit integers used by the donna64
@@ -220,7 +219,7 @@ Here are a few linear comments:
     \item Does compiling TweetNaCl with CompCert rather than gcc impact the performance beyond what is acceptable?
 \end{itemize}
 
-\begin{answer}{EEEEEE}
+\begin{answer}
     For the X25519 implementation in TweetNaCl, CompCert generates code that is
     about 6x slower than code generated with gcc. While this sounds like a lot, it
     may not be too much of an issue for projects that use TweetNaCl, because they
@@ -232,7 +231,7 @@ Here are a few linear comments:
     \item If so, what trust do you consider this proof effort to bring to a gcc compiled implementation?
 \end{itemize}
 
-\begin{answer}{EEEEEE}
+\begin{answer}
     We are not aware of any bugs that were introduced into ECC software by bugs in
     gcc; so from a practical, crypto-engineering point of view we rule out all
     classes of bugs that users are typically concerned about. From a more

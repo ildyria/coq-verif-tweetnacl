@@ -35,7 +35,7 @@ This paper presents a formal specification and verification of X25519 in TweetNa
     \item Changed code, i64 -> int, but the size of `int` depends on architecture
 \end{itemize}
 
-\begin{answer}{EEEEEE}
+\begin{answer}
     We made this change because VST does not support standard for-loop
     verification tactics with i64. We recommend that TweetNaCl does not change to
     int and that this issue is longer term addressed in VST. As i64 has a larger
@@ -85,7 +85,7 @@ Let me start by stating that I’m no expert but rather an enthusiast hoping to 
     \item Provide justification for the research aspects of this work that take it beyond mere engineering (which I believe it likely has but that I do not have the expertise to readily grasp).
 \end{itemize}
 
-\begin{answer}{EEEEEE}
+\begin{answer}
     The work in [12] proves correctness only of the the main routine of an X25519
     implementation, namely one ladder step. Examples of bugs that would not be
     caught by [12] but would be caught by our proof are
@@ -105,7 +105,7 @@ Let me start by stating that I’m no expert but rather an enthusiast hoping to 
     \item How do you know the pre/post conditions are complete? What happens if a critical on is missed? Does this influence a full functional correctness?
 \end{itemize}
 
-\begin{answer}{EEEEEE}
+\begin{answer}
     The semantics of VST guarantee that we do not miss a critical pre-condition
     required to guarantee any of the post conditions. The post conditions are
     sufficient to prove correctness with regards to the mathematical definition.

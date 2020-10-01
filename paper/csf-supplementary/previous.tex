@@ -2,6 +2,19 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
+\usepackage{amsfonts,amsmath,amscd,amssymb,array}
+\usepackage{xspace}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+
+\def\subheading#1{\medskip\noindent{\boldmath\textbf{#1}}~\ignorespaces}
+\newenvironment{answer}{\begin{tcolorbox}[width=\textwidth,colback={lightgray},title={Our answer}]}{\end{tcolorbox}}
+
+\newcommand{\todo}[1]{
+  {\color{red} \textbf{ TODO: #1}}
+}
+
 \definecolor{linkcolor}{rgb}{0.65,0,0}
 \definecolor{citecolor}{rgb}{0,0.45,0}
 \definecolor{urlcolor}{rgb}{0,0,0.65}
@@ -10,12 +23,55 @@
 \title{Previous submissions of this manuscript}
 \subtitle{Supplementary material to the CSF submission}
 \date{}
+\author{}
+
+\input{../macros}
 
 \begin{document}
   \maketitle
 
 \section*{Submissions to IEEE S\&P and to USENIX Security}
 
-\section*{Updates and modifications compared to the USENIX submission}
+\section*{Addressing the USENIX reviews}
+
+\newpage
+\vspace*{10cm}
+\begin{center}
+  \textsf{
+\Huge{USENIX Security Reviews}
+}
+\end{center}
+\newpage
+
+\input{usenix-a}
+\input{usenix-b}
+\input{usenix-c}
+\input{usenix-d}
+\input{usenix-e}
+\input{usenix-f}
+\input{usenix-g}
+
+\newpage
+\vspace*{10cm}
+\begin{center}
+  \textsf{
+\Huge{USENIX Submission}\\
+\large{(including replies to IEEE S\&P reviews)}
+}
+\end{center}
+\newpage
+
+\includepdf[pages=-]{tweetverif-USENIX.pdf}
+
+\newpage
+\vspace*{10cm}
+\begin{center}
+  \textsf{
+\Huge{IEEE S\&P Submission}\\
+}
+\end{center}
+\newpage
+
+\includepdf[pages=-]{tweetverif-SP.pdf}
 
 \end{document}
