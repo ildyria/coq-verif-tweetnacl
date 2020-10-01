@@ -12,42 +12,42 @@ proving an inconsistency.
 In our case we rely on:
 \begin{itemize}
   \item \textbf{Calculus of Inductive Constructions}. The intuitionistic logic
-  used by Coq must be consistent in order to trust the proofs. As an axiom,
-  we assume that the functional extensionality is also consistent with that logic.
-  $$\forall x, f(x) = g(x) \implies f = g$$
-\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
+        used by Coq must be consistent in order to trust the proofs. As an axiom,
+        we assume that the functional extensionality is also consistent with that logic.
+        $$\forall x, f(x) = g(x) \implies f = g$$
+        \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Lemma f_ext: forall (A B:Type),
   forall (f g: A -> B),
   (forall x, f(x) = g(x)) -> f = g.
 \end{lstlisting}
 
   \item \textbf{Verifiable Software Toolchain}. This framework developed at
-  Princeton allows a user to prove that a Clight code matches pure Coq
-  specification.
+        Princeton allows a user to prove that a Clight code matches pure Coq
+        specification.
 
   \item \textbf{CompCert}. When compiling with CompCert we only need to trust
-  CompCert's {assembly} semantics, as the compilation chain has been formally proven correct.
-  However, when compiling with other C compilers like Clang or GCC, we need to
-  trust that the CompCert's Clight semantics matches the C17 standard.
+        CompCert's {assembly} semantics, as the compilation chain has been formally proven correct.
+        However, when compiling with other C compilers like Clang or GCC, we need to
+        trust that the CompCert's Clight semantics matches the C17 standard.
 
   \item \textbf{\texttt{clightgen}}. The tool making the translation from {C} to
-  {Clight}, the first step of the CompCert compilation.
-  VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
-  This needs to be rewritten into:
-  \begin{lstlisting}[language=Ctweetnacl,stepnumber=0,belowskip=-0.5 \baselineskip]
+          {Clight}, the first step of the CompCert compilation.
+        VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
+        This needs to be rewritten into:
+        \begin{lstlisting}[language=Ctweetnacl,stepnumber=0,belowskip=-0.5 \baselineskip]
 aux1 = a[i]; aux2 = b[i];
 o[i] = aux1 + aux2;
 \end{lstlisting}
-  The \texttt{-normalize} flag is taking care of this
-  rewriting and factors out assignments from inside subexpressions.
-  % The trust of the proof relies on a correct translation from the
-  % initial version of \emph{TweetNaCl} to \emph{TweetNaClVerifiableC}.
-  % The changes required for C code to make it verifiable are now minimal.
+        The \texttt{-normalize} flag is taking care of this
+        rewriting and factors out assignments from inside subexpressions.
+        % The trust of the proof relies on a correct translation from the
+        % initial version of \emph{TweetNaCl} to \emph{TweetNaClVerifiableC}.
+        % The changes required for C code to make it verifiable are now minimal.
 
   \item Finally, we must trust the \textbf{Coq kernel} and its
-  associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
-  the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
-  done with this architecture \cite{2015-Appel,coq-faq}.
+        associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
+        the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
+        done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
 \subheading{Corrections in TweetNaCl.}
@@ -91,8 +91,25 @@ above will soon be integrated in a new version of the library.
 % As a result we do not believe the metric person-month to be
 % a good representation of the verification effort.
 
-\subheading{Lessons learned.}
-\todo{Write something about VST etc.}
+\subheading{Lessons learned.} The effort to verify an existing code base is
+significantly harder than synthesizing a proven by construction piece of software.
+This difficulty is additionally increased by not having the freedom to modify
+the original code, and by the low-level optimization applied in it.
+This often requires to write functions that mimic the behavior of the C
+code before proving multi-level equivalences to reach the desired level of specifications.
+
+VST provides on one hand a large set of lemmas, and on the second hand tactics to use them.
+If a lemma is directly applied, it generates a multiple sub-goals with a large set of dependent existential variables.
+The tactics provided try to resolve those, and aim to simplify the workload of its user.
+In an ideal world, the user does not need to know the lemmas applied under the hood and can just rely on those tactics.
+Unfortunately, there were instances where those were not helping
+%  (\eg applying unnecessary substitutions, unfolding, exploding the size of our current goal; or simply failing),
+at such moment, it was necessary to look into the VST code base and search for the right lemma.
+
+Furthermore, the VST being an academic software, it is very hard to work with a tool
+without being involved in the development loop. Additionally newer versions often broke
+some of our proofs and it was often needed to adapt to the changes. That being said,
+as we reported our bugs and struggles to the development team, the toolchain improved a lot.
 
 \subheading{Extending our work.}
 The high-level definition (\sref{sec:maths}) can easily be ported to any

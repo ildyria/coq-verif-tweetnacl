@@ -34,3 +34,8 @@ clean:
 	-rm tweetverif.blg
 	-rm tweetverif.brf
 	make -C csf-supplementary clean
+
+spell:
+	@for f in $(SOURCES) ; do \
+		aspell -t -c $$f; \
+	done
