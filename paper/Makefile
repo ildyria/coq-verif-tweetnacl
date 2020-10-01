@@ -1,11 +1,15 @@
+all: tweetverif.pdf csf-supplementary/previous.pdf
+
 SOURCES= code-tweetnacl.tex collection.bib conclusion.tex coq.tex highlevel.tex intro.tex lowlevel.tex preliminaries.tex proofs.tex rfc.tex t.bib tweetverif.tex tweetnacl.diff
 
-tweetverif.pdf: ${SOURCES}
+tweetverif.pdf: $(SOURCES)
 	pdflatex tweetverif.tex
 	bibtex tweetverif
 	pdflatex tweetverif.tex
 	pdflatex tweetverif.tex
 
+csf-supplementary/previous.pdf:
+	make -C csf-supplementary
 
 tweetnacl.diff:
 	@echo $(BOLD)$(YELLOW)"Generating tweetnacl.diff"$(NO_COLOR)$(DARKGRAY)
@@ -28,3 +32,4 @@ clean:
 	-rm tweetverif.bbl
 	-rm tweetverif.blg
 	-rm tweetverif.brf
+	make -C csf-supplementary clean
