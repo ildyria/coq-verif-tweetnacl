@@ -25,7 +25,7 @@ Theorem RFC_Correct: forall (n p : list Z)
 
 We first review the work of Bartzia and Strub \cite{BartziaS14} (\ref{subsec:ECC-Weierstrass}).
 We extend it to support Montgomery curves (\ref{subsec:ECC-Montgomery})
-with homogeneous coordinates (\ref{subsec:ECC-projective}) and prove the
+with projective coordinates (\ref{subsec:ECC-projective}) and prove the
 correctness of the ladder (\ref{subsec:ECC-ladder}).
 We discuss the twist of Curve25519 (\ref{subsec:Zmodp}) and explain how we deal
 with it in the proofs (\ref{subsec:curvep2}).
@@ -40,7 +40,7 @@ the green tiles represent major lemmas and theorems.
 The plan is as follows.
 We consider the field $\K$ and formalize the Montgomery curves ($M_{a,b}(\K)$).
 Then, by using the equivalent Weierstra{\ss} form ($E_{a',b'}(\K)$) from the library of Bartzia and Strub,
-we prove that $M_{a,b}(\K)$ forms an abelian group.
+we prove that $M_{a,b}(\K)$ forms an commutative group.
 Under the hypothesis that
 $a^2 - 4$ is not a square in $\K$, we prove the correctness of the ladder (\tref{thm:montgomery-ladder-correct}).
 
@@ -96,7 +96,7 @@ Definition oncurve (p : point) :=
 Inductive ec : Type := EC p of oncurve p.
 \end{lstlisting}
 
-Points on an elliptic curve form an abelian group when equipped with the following structure.
+Points on an elliptic curve form an commutative group when equipped with the following structure.
 \begin{itemize}
   \item The negation of a point $P = (x,y)$ is defined by reflection over the $x$-axis, \ie $-P = (x, -y)$.
   \item The addition of two points $P, Q \in E_{a,b}(\K) \setminus \{\Oinf\}$ with $P \neq Q$ and $P \neq -Q$
@@ -134,7 +134,7 @@ Definition addec (p1 p2 : ec) : ec :=
 \subsubsection{Montgomery curves}
 \label{subsec:ECC-Montgomery}
 
-Speedups can be obtained by switching to homogeneous coordinates and other forms
+Speedups can be obtained by switching to projective coordinates and other forms
 than the Weierstra{\ss} form. We consider the Montgomery form \cite{MontgomerySpeeding}.
 
 \begin{dfn}
@@ -222,7 +222,7 @@ After we have verified the group properties, it follows that the bijection is a 
 % Lemma ec_of_mc_bij : bijective ec_of_mc.
 % \end{lstlisting}
 
-\subsubsection{Homogeneous coordinates}
+\subsubsection{Projective coordinates}
 \label{subsec:ECC-projective}
 
 In a projective plane, points are represented by the triples $(X:Y:Z)$ excluding $(0:0:0)$.
@@ -263,7 +263,7 @@ We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
     \end{align*}
 \end{dfn}
 
-Using homogeneous coordinates we prove the formula for differential addition.% (\lref{lemma:xADD}).
+Using projective coordinates we prove the formula for differential addition.% (\lref{lemma:xADD}).
 \begin{lemma}
   \label{lemma:xADD}
   Let $M_{a,b}$ be a Montgomery curve such that $a^2-4$ is not a square in \K, and
@@ -296,7 +296,7 @@ Similarly, we also prove the formula for point doubling.% (\lref{lemma:xDBL}).
 \end{lemma}
 
 With \lref{lemma:xADD} and \lref{lemma:xDBL}, we are able to compute efficiently
-differential additions and point doublings using homogeneous coordinates.
+differential additions and point doublings using projective coordinates.
 
 \subsubsection{Scalar multiplication algorithms}
 \label{subsec:ECC-ladder}
