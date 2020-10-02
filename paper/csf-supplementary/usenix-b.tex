@@ -66,7 +66,7 @@ Section 3 describes how RFC 7748 is formalized in Coq. The functions "RFC" and "
 
 Section 4 shows that the TweetNaCl C code meets the Coq spec of RFC 7748. While details of the proof are interesting to formalists, it would be nice to provide a summary of the proof structure and the workflow. For example: (1) Prove that the code is memory-safe, (2) prove that the field arithmetic functions are correct, (3) prove that the add and double functions meet the RFC spec, (4) prove that the montgomery ladder correctly implements the RFC spec. It would also be useful for readers not familiar with Coq or VST to know which of these steps are "easy" and which of them usually take more time and effort.
 \begin{answer}
-  \todo{Can we answer this one? Would be good to say something.}
+  In the case of TweetNaCl, the ladder step and the montgomery ladder are merged together, there is no external function call. Additionally the proof of memory safety is tied up to the proof that the C code respects the RFC specifications. This results in steps 1, 3 and 4 to be done at the same time. On the other hand the proof of the field arithmetic --and correctness of the RFC-- (2) can be done separately. In subsection ``Improving verification speed'' and ``Lessons learned'' we provide advices and insights to help readers attempting such verification effort.
 \end{answer}
 
 Even though you don't find any bugs in the C code it would be useful for the reader if you could describe the kinds of bugs you would have found. For example, there is a history of carry propagation bugs in X25519 code (both in C and in assembly). You could illustrate one of these bugs and show how the VST/Coq proof would be able to find it.

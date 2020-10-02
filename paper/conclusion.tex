@@ -11,44 +11,44 @@ proving an inconsistency.
 
 In our case we rely on:
 \begin{itemize}
-  \item \textbf{Calculus of Inductive Constructions}. The intuitionistic logic
-        used by Coq must be consistent in order to trust the proofs. As an axiom,
-        we assume that the functional extensionality is also consistent with that logic.
-        $$\forall x, f(x) = g(x) \implies f = g$$
-        \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
+      \item \textbf{Calculus of Inductive Constructions}. The intuitionistic logic
+            used by Coq must be consistent in order to trust the proofs. As an axiom,
+            we assume that the functional extensionality is also consistent with that logic.
+            $$\forall x, f(x) = g(x) \implies f = g$$
+            \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 Lemma f_ext: forall (A B:Type),
   forall (f g: A -> B),
   (forall x, f(x) = g(x)) -> f = g.
 \end{lstlisting}
 
-  \item \textbf{Verifiable Software Toolchain}. This framework developed at
-        Princeton allows a user to prove that a Clight code matches pure Coq
-        specification.
+      \item \textbf{Verifiable Software Toolchain}. This framework developed at
+            Princeton allows a user to prove that a Clight code matches pure Coq
+            specification.
 
-  \item \textbf{CompCert}. When compiling with CompCert we only need to trust
-        CompCert's {assembly} semantics, as the compilation chain has been formally proven correct.
-        However, when compiling with other C compilers like Clang or GCC, the
-        whole code base of these compilers becomes part of the TCB.
+      \item \textbf{CompCert}. When compiling with CompCert we only need to trust
+            CompCert's {assembly} semantics, as the compilation chain has been formally proven correct.
+            However, when compiling with other C compilers like Clang or GCC, the
+            whole code base of these compilers becomes part of the TCB.
 
-  \item \textbf{\texttt{clightgen}}. The tool translating from {C} to
-          {Clight}, the first step of the CompCert compilation.
-          This compilation step is not covered by the proofs of CompCert
-          and VST requires Clight input. For example, VST does not support the direct verification of 
-          \texttt{o[i] = a[i] + b[i]}, which \texttt{clightgen} translates to
-        \begin{lstlisting}[language=Ctweetnacl,stepnumber=0,belowskip=-0.5 \baselineskip]
+      \item \textbf{\texttt{clightgen}}. The tool translating from {C} to
+                  {Clight}, the first step of the CompCert compilation.
+            This compilation step is not covered by the proofs of CompCert
+            and VST requires Clight input. For example, VST does not support the direct verification of
+            \texttt{o[i] = a[i] + b[i]}, which \texttt{clightgen} translates to
+            \begin{lstlisting}[language=Ctweetnacl,stepnumber=0,belowskip=-0.5 \baselineskip]
 aux1 = a[i]; aux2 = b[i];
 o[i] = aux1 + aux2;
 \end{lstlisting}
-        The \texttt{-normalize} flag is taking care of this
-        rewriting and factors out assignments from inside subexpressions.
-        % The trust of the proof relies on a correct translation from the
-        % initial version of \emph{TweetNaCl} to \emph{TweetNaClVerifiableC}.
-        % The changes required for C code to make it verifiable are now minimal.
+            The \texttt{-normalize} flag is taking care of this
+            rewriting and factors out assignments from inside subexpressions.
+            % The trust of the proof relies on a correct translation from the
+            % initial version of \emph{TweetNaCl} to \emph{TweetNaClVerifiableC}.
+            % The changes required for C code to make it verifiable are now minimal.
 
-  \item Finally, we must trust the \textbf{Coq kernel} and its
-        associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
-        the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
-        done with this architecture \cite{2015-Appel,coq-faq}.
+      \item Finally, we must trust the \textbf{Coq kernel} and its
+            associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
+            the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
+            done with this architecture \cite{2015-Appel,coq-faq}.
 \end{itemize}
 
 \subheading{Corrections in TweetNaCl.}
@@ -92,7 +92,7 @@ above will soon be integrated in a new version of the library.
 % As a result we do not believe the metric person-month to be
 % a good representation of the verification effort.
 
-\subheading{Lessons learned.} 
+\subheading{Lessons learned.}
 Most efforts in the area of high-assurance crypto are carried out
 by teams who at the same time work on tools and proofs and often
 even co-develop the implementations with the proofs.
@@ -109,19 +109,25 @@ our verified version of TweetNaCl and the original TweetNaCl in
 Appendix~\ref{verified-C-and-diff} gives an idea of some minimal
 changes we had to apply to work with VST; many more small changes
 would have made the proof much easier and more elegant. As one
-example, \todo{Add example here}.
+example, in \TNaCle{pack25519} the substraction of $p$ and the carry
+propagation are done in a single \TNaCle{for} loop;
+had they been splitted into two loops, the final result would have been the same with a
+verification effort significantly lessen.
 
 There were many positive lessons to be learned from this verification effort;
 most importantly that it is possible to prove ``legacy'' cryptographic
 software written in C correct without having to co-develop proofs
 and tools. However, we also learned that it is still necessary to
 understand to some extent how these tools (in particular VST)
-work under the hood. 
+work under the hood.
 VST is a collection of lemmas and proof tactics; the idea is
 to expose the user only to the tactics and hide the details of
-the underlying lemmas. At least in the VST versions we worked
-with, this approach did not quite work and at various stages in
-the proofs we had to look into the underlying lemmas \todo{Give an example here? Why did we have to do this?}.
+the underlying lemmas.
+At least in the VST versions we worked with,
+this approach did not quite work and at various stages in
+the proofs we had to look into the underlying lemmas.
+This was due to the provided tactics not terminating,
+for example in the last few steps \coqe{pack25519}'s VST proof.
 Some struggle with VST also taught us another very pleasant lesson,
 namely that the VST development team is very responsive and helpful.
 Various of our issues were sorted out with their help and we hope
