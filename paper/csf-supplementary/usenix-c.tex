@@ -84,6 +84,13 @@ Let me start by stating that I’m no expert but rather an enthusiast hoping to 
 - One major concern I have is that this only proves the C level implementation. C must get translated to assembly, which seems like a lot of work to prove equivalence for. Also, some design decisions, such as changing the representations, seem to be problematic. What happens if this code is compiled on a 32-bit machine? Does that invalidate the proof? If not why not?
 
 \textbf{Evaluation}: The proof is in the result, however, it would be interesting from a systems security perspective to know how long it took to specify. How long does it take to run? How do your decisions for representation impact performance? Can you show a graph depicting these costs? If I want to use a similar strategy, what should I avoid or try to do? What lessons learned? How easy will it be to use this in a different proof? My experience has been that proof reuse is a long way from being practical.
+\begin{answer}
+  We find it very hard to estimate what time it took to write the proof. 
+  Also, even if we were able to count the hours we spent, this would not really say much about
+  how much it would take us \emph{now} to undertake a similar effort with the same toolchain
+  and approach -- as we now have more experience and also because the toolchain has improved
+  significantly since we started working on this, it would certainly take much less time.
+\end{answer}
 
 \textbf{Nits}: Maybe move the TCB into its own section (maybe section 3) title Assumptions/Threat Model?
 

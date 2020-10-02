@@ -92,25 +92,40 @@ above will soon be integrated in a new version of the library.
 % As a result we do not believe the metric person-month to be
 % a good representation of the verification effort.
 
-\subheading{Lessons learned.} The effort to verify an existing code base is
-significantly harder than synthesizing a proven by construction piece of software.
-This difficulty is additionally increased by not having the freedom to modify
-the original code, and by the low-level optimization applied in it.
-This often requires to write functions that mimic the behavior of the C
-code before proving multi-level equivalences to reach the desired level of specifications.
+\subheading{Lessons learned.} 
+Most efforts in the area of high-assurance crypto are carried out
+by teams who at the same time work on tools and proofs and often
+even co-develop the implementations with the proofs.
+In this effort we set out to verify pre-existing software,
+written in a not particularly verification-friendly language
+using a set of tools (VST and Coq) whose development we are not
+actively involved in.
 
-VST provides on one hand a large set of lemmas, and on the second hand tactics to use them.
-If a lemma is directly applied, it generates a multiple sub-goals with a large set of dependent existential variables.
-The tactics provided try to resolve those, and aim to simplify the workload of its user.
-In an ideal world, the user does not need to know the lemmas applied under the hood and can just rely on those tactics.
-Unfortunately, there were instances where those were not helping
-%  (\eg applying unnecessary substitutions, unfolding, exploding the size of our current goal; or simply failing),
-at such moment, making it necessary to look into the VST code base and search for the right lemma.
+TweeNaCl comes with a claim of verifiability, but it became clear
+rather quickly that this claim is only based on the overall simplicity
+of the library and not supported by code written carefully such that it can
+efficiently be verified with existing tools. The difference between
+our verified version of TweetNaCl and the original TweetNaCl in
+Appendix~\ref{verified-C-and-diff} gives an idea of some minimal
+changes we had to apply to work with VST; many more small changes
+would have made the proof much easier and more elegant. As one
+example, \todo{Add example here}.
 
-Furthermore, the VST being an academic software, it is very hard to work with a tool
-without being involved in the development loop. Additionally newer versions often broke
-some of our proofs and it was often needed to adapt to the changes. That being said,
-as we reported our bugs and struggles to the development team, since then the toolchain improved a lot.
+There were many positive lessons to be learned from this verification effort;
+most importantly that it is possible to prove ``legacy'' cryptographic
+software written in C correct without having to co-develop proofs
+and tools. However, we also learned that it is still necessary to
+understand to some extent how these tools (in particular VST)
+work under the hood. 
+VST is a collection of lemmas and proof tactics; the idea is
+to expose the user only to the tactics and hide the details of
+the underlying lemmas. At least in the VST versions we worked
+with, this approach did not quite work and at various stages in
+the proofs we had to look into the underlying lemmas \todo{Give an example here? Why did we have to do this?}.
+Some struggle with VST also taught us another very pleasant lesson,
+namely that the VST development team is very responsive and helpful.
+Various of our issues were sorted out with their help and we hope
+that some of the experience we brought in also helped improve VST.
 
 \subheading{Extending our work.}
 The high-level definition (\sref{sec:maths}) can easily be ported to any

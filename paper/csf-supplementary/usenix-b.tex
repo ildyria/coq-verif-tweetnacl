@@ -59,10 +59,20 @@ This paper presents two formal proofs. The first links a C implementation of the
 This works provides a rare fully formalized proof linking a mathematical description of a cryptographic construction to a concrete widely-used C implementation. Bridging this gap with a theorem prover requires expertise in the underlying mathematics, in formal verification, and in cryptographic engineering. We need more papers like this to show how this can be done.
 
 Section 3 describes how RFC 7748 is formalized in Coq. The functions "RFC" and "montgomery\_rec\_swap" are interesting and well documented. It is also useful to observe that the spec needs to take care of low-level details like the little-endian encoding of field elements and points, but the functions ZofList/ListofZ32 don't provide much value here. I would recommend just describing them in text and ending the section with the encode/decode functions.
+\begin{answer}
+  The ZofList/listofZ32 functions are quite central in our correctness proofs
+  of arithmetic operations, so decided to keep them in the main body of the paper.
+\end{answer}
 
 Section 4 shows that the TweetNaCl C code meets the Coq spec of RFC 7748. While details of the proof are interesting to formalists, it would be nice to provide a summary of the proof structure and the workflow. For example: (1) Prove that the code is memory-safe, (2) prove that the field arithmetic functions are correct, (3) prove that the add and double functions meet the RFC spec, (4) prove that the montgomery ladder correctly implements the RFC spec. It would also be useful for readers not familiar with Coq or VST to know which of these steps are "easy" and which of them usually take more time and effort.
+\begin{answer}
+  \todo{Can we answer this one? Would be good to say something.}
+\end{answer}
 
 Even though you don't find any bugs in the C code it would be useful for the reader if you could describe the kinds of bugs you would have found. For example, there is a history of carry propagation bugs in X25519 code (both in C and in assembly). You could illustrate one of these bugs and show how the VST/Coq proof would be able to find it.
+\begin{answer}
+  See below (answer to the first requested change).
+\end{answer}
 
 On page 23, you say "Constant-timeness is not a property verifiable with VST. This is not verifiable with our framework." Please say this prominently in Section 1. When readers sees your montgomery ladder, and sees the constant-time CSWAP function, they may well assume that you are verifying constant-timeness for the implementation. Stating that this is not the case early will help avoid misunderstanding. I recommend that you also cite other (complementary) tools that could be used just to verify constant-timeness for the code. It may be even better if you were to demonstrate the use of some such tool on the TweetNaCl code.
 \begin{answer}
@@ -71,7 +81,7 @@ On page 23, you say "Constant-timeness is not a property verifiable with VST. Th
 
 I enjoyed Section 5 and I believe it is one of the more important (and reusable) parts of this work. However, the way it is presented reads like a long list of Lemmas and Theorems with hardly any explanation or motivation in between. By the end of this section, the reader has read 20 lemmas and definitions in a mixture of mathematical and Coq syntax. I recommend that the authors pick and choose 5 key lemmas and explain them, leaving the rest to an appendix. The high-level structure of the proof and some examples of "interesting" or "tricky" cases is the best they can hope to communicate in the body of the paper.
 \begin{answer}
-  We reduced the amount of technical details in Section 5.
+  We reduced the amount of technical details in Section 5 and focused on the aspects that we consider particularly interesting.
 \end{answer}
 
 
