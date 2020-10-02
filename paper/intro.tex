@@ -57,10 +57,10 @@ As a consequence, the result of this paper can readily be used in mechanized pro
 arguing about the security of cryptographic constructions on the more abstract
 level of operations in groups and related problems, like the elliptic-curve
 discrete-logarithm (ECDLP) or elliptic-curve Diffie-Hellman (ECDH) problem.
-\todo{Add examples of such mechanized proofs?}
+%\todo{Add examples of such mechanized proofs?}
 Also, connecting our formalization of the RFC to the mathematical definition
 significantly increases trust into the correctness of the formalization and
-reduces the effort of manual auditing of that formalization.
+reduces the effort of manually auditing the formalization.
 
 \subheading{The bigger picture of high-assurance crypto.}
 This work fits into the bigger area of \emph{high-assurance} cryptography,
@@ -77,7 +77,8 @@ of cryptographic software:
     through computer-checked reductions from some assumed-to-be-hard mathematical problem.\label{hacs:secure}
 \end{enumerate}
 A recent addition to this triplet (or rather an extension of implementation security)
-is security also against speculative attacks. See, e.g.,~\cite{XXX}.
+is security also against attacks expoiting speculative execution. 
+See, e.g.,~\cite{DBLP:conf/pldi/CauligiDGTSRB20}.
 This paper targets only the first point and attempts to make results
 immediately usable for verification efforts of cryptographic security.
 
@@ -85,8 +86,8 @@ Verification of implementation security is probably equally important as
 verification of correctness, but working on the C language level as we do
 in this paper is not helpful. To obtain guarantees of security against 
 timing-attack we recommend verifying \emph{compiled} code on LLVM level with, 
-e.g., ct-verif~\cite{XXX}, 
-or even better on binary level with, e.g., BinSec/Rel~\cite{XXX}.
+e.g., ct-verif~\cite{ABB+16}, 
+or even better on binary level with, e.g., \textsc{Binsec/Rel}~\cite{DBR20}.
 
 \subheading{Related work.}
 The field of computer-aided cryptography, i.e., using computer-verified proofs
