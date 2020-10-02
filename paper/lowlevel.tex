@@ -184,8 +184,9 @@ This solution does not cover all the possible cases of aliasing over 3 pointers
 \subheading{Improving verification speed.}
 To make the verification the smoothest, the Coq formal definition of the function
 should be as close as possible to the C implementation.
-Optimizations of such definitions are often counter-productive as they increase the
-amount of proofs required for \eg bounds checking, loop invariants.
+Attempting to write definitions more ``elegantly'', for example through the extensive
+use of recursion, is often counter-productive because such definitions increase the
+amount of proofs required for, \eg bounds checking or loop invariants.
 
 In order to further speed-up the verification process, to prove the specification
 \TNaCle{crypto_scalarmult}, we only need the specification of the subsequently

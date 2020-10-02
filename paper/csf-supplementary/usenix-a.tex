@@ -94,7 +94,7 @@ Such a paper is difficult to write. The authors have visibly devoted great effor
   \item Skimming through the development convinces me that this is a consequent work. But the paper does not help evaluating this effort. It is always difficult to find relevant metrics to evaluate such things, but it would be great to get a sense of the aspects of the work that turned out difficult, and the extent of these difficulties.
 \end{itemize}
 \begin{answer}
-  \todo{We should say something regarding these two points.}
+  We extended the discussion in the conclusion and in particular added a paragraph on lessons learned.
 \end{answer}
 
 
@@ -205,8 +205,7 @@ Here are a few linear comments:
         Specification: I think explaining the structure of a VST statement would be necessary to help an unfamiliar reader understand this specification.
 \end{itemize}
 \begin{answer}
-  We rephrased this paragraph to avoid misleading the reader on the translations done.\\
-  \todo{add some more text before "In this specification we state preconditions like:" ?}
+  We rephrased this paragraph and in particular do no not say ``same code'' anymore.
 \end{answer}
 
 \begin{itemize}
@@ -220,9 +219,10 @@ Here are a few linear comments:
 \begin{answer}
   \begin{itemize}
     \item[$-$] We added a description of "Ews" in the precondition paragraph, this should clarify the global memory share name.
-    \item[$-$] We clarified that we improve the speed of the verification effort. ``Optimization of such definition'' refers to the will of some developers to use for example a fancy recursive definition of a function.
-    \item[$-$] In order to verify a file, Coq need the compiled proof of dependencies. However in the case of VST it is possible to split the specification from the proof, as a result the proof of the full scalar multiplication does not require the proof of the the multiplication in \F{p}, only its specification.
-    \item[$-$] We reminded the reader that "gf" is a C type.
+    \item[$-$] We clarified that we improve the speed of the verification effort; we also clarified what we mean by ``optimizing the
+      definitions''.
+    \item[$-$] In order to verify a file, Coq needs the compiled proof of dependencies. However in the case of VST it is possible to split the specification from the proof. As a result the proof of the full scalar multiplication does not require the proof of the the multiplication in \F{p}, only its specification.
+    \item[$-$] We reminded the reader that "gf" is a type defined through a C \texttt{typedef} in TweetNaCl.
   \end{itemize}
 \end{answer}
 
@@ -265,7 +265,16 @@ Here are a few linear comments:
 \end{itemize}
 
 \begin{answer}
-  \todo{Freek : which version of ISO.}
+  \begin{itemize}
+    \item[$-$] Sentence about other compilers (like GCC or Clang) is rephrased.
+    \item[$-$] Added some context to explain the relation between \texttt{clightgen} and VST.
+    \item[$-$] ``Other NaCl implementations'': It is not exactly clear to us what the reviewer means. 
+      There are other cryptographic primitives in TweetNaCl and of course also in NaCl. 
+      Large parts of our proof would be re-usable for a proof of Ed25519 signatures in
+      TweetNaCl (which we mention). Correctness proofs of other cryptographic primitives like
+      Salsa20 or SHA-512 would not be able to re-use much from our proof; verification
+      of optimized (assembly) implementations in NaCl would need a different approach.
+  \end{itemize}
 \end{answer}
 
 \begin{center}

@@ -27,13 +27,14 @@ Lemma f_ext: forall (A B:Type),
 
   \item \textbf{CompCert}. When compiling with CompCert we only need to trust
         CompCert's {assembly} semantics, as the compilation chain has been formally proven correct.
-        However, when compiling with other C compilers like Clang or GCC, we need to
-        trust that the CompCert's Clight semantics matches the C17 standard.
+        However, when compiling with other C compilers like Clang or GCC, the
+        whole code base of these compilers becomes part of the TCB.
 
-  \item \textbf{\texttt{clightgen}}. The tool making the translation from {C} to
+  \item \textbf{\texttt{clightgen}}. The tool translating from {C} to
           {Clight}, the first step of the CompCert compilation.
-        VST does not support the direct verification of \texttt{o[i] = a[i] + b[i]}.
-        This needs to be rewritten into:
+          This compilation step is not covered by the proofs of CompCert
+          and VST requires Clight input. For example, VST does not support the direct verification of 
+          \texttt{o[i] = a[i] + b[i]}, which \texttt{clightgen} translates to
         \begin{lstlisting}[language=Ctweetnacl,stepnumber=0,belowskip=-0.5 \baselineskip]
 aux1 = a[i]; aux2 = b[i];
 o[i] = aux1 + aux2;
@@ -56,7 +57,7 @@ Indeed indexes 17 to 79 of the \TNaCle{i64 x[80]} intermediate variable of
 \TNaCle{crypto_scalarmult} were adding unnecessary complexity to the code,
 we removed them.
 
-Peter Wu and Jason A. Donenfeld brought to our attention that the original
+Wu and Donenfeld brought to our attention that the original
 \TNaCle{car25519} function carried a risk of undefined behavior if \texttt{c}
 is a negative number.
 \begin{lstlisting}[language=Ctweetnacl,stepnumber=0]
@@ -121,7 +122,9 @@ as $p=2^{255}-19$ is hard-coded in order to speed up some proofs.
 With respect to the C code verification (\sref{sec:C-Coq}), the extension of
 the verification effort to Ed25519 would make directly use of the low-level
 arithmetic. The ladder steps formula being different this would require a high
-level verification similar to \tref{thm:montgomery-ladder-correct}.
+level verification similar to \tref{thm:montgomery-ladder-correct};
+also, a full correctness verification of Ed25519 signatures would require
+verifying correctness of SHA-512.
 
 The verification of \eg X448~\cite{cryptoeprint:2015:625,rfc7748} in C would
 require the adaptation of most of the low-level arithmetic (mainly the
