@@ -51,9 +51,9 @@ We define the operation:
                      & ((X_{2 \cdot P}:Z_{2 \cdot P}), (X_{P + Q}:Z_{P + Q}))
 \end{align*}
 
-A pseudocode description of the Montgomery ladder 
+A pseudocode description of the Montgomery ladder
 is given in Algorithm~\ref{alg:montgomery-ladder}.
-The main loop iterates over the bits of the scalar $n$. 
+The main loop iterates over the bits of the scalar $n$.
 The $k^{\text{th}}$ iteration conditionally swaps
 the arguments $P$ and $Q$ of \texttt{xDBL\&ADD}
 depending on the value of the $k^{\text{th}}$ bit of $n$.
@@ -64,6 +64,8 @@ $(P_b, P_{1-b})$.
 
 By using the differential addition and doubling operations we define the Montgomery ladder
 computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}).
+
+% \setlength{\textfloatsep}{1em}
 \begin{algorithm}
   \caption{Montgomery ladder for scalar mult.}
   \label{alg:montgomery-ladder}
@@ -82,7 +84,6 @@ computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}
     \RETURN $X_Q/Z_Q$
   \end{algorithmic}
 \end{algorithm}
-
 
 \subsection{The X25519 key exchange}
 \label{subsec:X25519-key-exchange}

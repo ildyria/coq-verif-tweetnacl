@@ -119,7 +119,7 @@ Fixpoint ZofList {n:Z} (a:list Z) : Z :=
   | h :: q => h + 2^n * ZofList q
   end.
 \end{lstlisting}
-The encoding from integers to bytes is defined in a similar way:
+The encoding from integers to bytes is defined in a similar way.
 \begin{dfn}
   Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
   $n$ and $a$ returns $a$'s little-endian encoding as a list with radix $2^n$.

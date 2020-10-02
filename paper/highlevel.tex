@@ -37,7 +37,8 @@ with it in the proofs (\ref{subsec:curvep2}).
 correctness. The white tiles are definitions, the orange ones are hypothesis and
 the green tiles represent major lemmas and theorems.
 
-The plan is as follows.
+% The plan is as follows.
+% (This is part of the description of the picture).
 We consider the field $\K$ and formalize the Montgomery curves ($M_{a,b}(\K)$).
 Then, by using the equivalent Weierstra{\ss} form ($E_{a',b'}(\K)$) from the library of Bartzia and Strub,
 we prove that $M_{a,b}(\K)$ forms an commutative group.
@@ -50,6 +51,9 @@ $a^2 - 4$ is not a square in $\K$, we prove the correctness of the ladder (\tref
   \caption{Overview of the proof of Montgomery ladder's correctness}
   \label{tikz:ProofHighLevel1}
 \end{figure}
+
+% this is for the flow of the text otherwise someone will again complain of a definition poping out of nowhere.
+We now turn our attention to the details of the proof of the ladder's correctness.
 
 \begin{dfn}
   Given a field $\K$,
@@ -79,8 +83,8 @@ Then, this equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
 represents the points on a specific curve. It is parameterized by
-a \texttt{K : ecuFieldType}, the type of fields whose characteristic is neither 2 nor 3,
-and \texttt{E : ecuType}, a record that packs the curve parameters $a$ and $b$
+a \texttt{K : ecuFieldType} ---the type of fields whose characteristic is neither 2 nor 3---
+and \texttt{E : ecuType} ---a record that packs the curve parameters $a$ and $b$---
 along with the proof that $\Delta(a,b) \neq 0$.
 \begin{lstlisting}[language=Coq]
 Inductive point := EC_Inf | EC_In of K * K.
@@ -96,16 +100,12 @@ Definition oncurve (p : point) :=
 Inductive ec : Type := EC p of oncurve p.
 \end{lstlisting}
 
-Points on an elliptic curve form an commutative group when equipped with the following structure.
+Points on an elliptic curve form an abelian group when equipped with the following structure.%
 \begin{itemize}
   \item The negation of a point $P = (x,y)$ is defined by reflection over the $x$-axis, \ie $-P = (x, -y)$.
-  \item The addition of two points $P, Q \in E_{a,b}(\K) \setminus \{\Oinf\}$ with $P \neq Q$ and $P \neq -Q$
-      is defined as the negation of the third intersection point of the line through $P$ and $Q$.
-      In case $P = Q$, we either use the line tangent to $P$ if $P$ is not an inflection point,
-        and define $P + Q = -P = -Q$ otherwise.
-      In case $P = -Q$, we define $P + Q = \Oinf$.
-  \item The point $\Oinf$ acts as the neutral element. Hence, we define $-\Oinf = \Oinf$,
-      $P + \Oinf = P$ and $\Oinf + P = P$.
+  \item The addition of two points $P$ and $Q$ is defined as the negation of the third intersection point
+        of the line passing through $P$ and $Q$, or tangent to $P$ if $P = Q$.
+  \item $\Oinf$ is the neutral element under this law: if 3 points are collinear, their sum is equal to $\Oinf$
 \end{itemize}
 These operations are defined in Coq as follows (where we omit the code for the tangent case):
 \begin{lstlisting}[language=Coq]
@@ -147,8 +147,8 @@ than the Weierstra{\ss} form. We consider the Montgomery form \cite{MontgomerySp
 Similar to the definition of \texttt{ec}, we define the parametric type \texttt{mc} which
 represents the points on a specific Montgomery curve.
 It is parameterized by
-a \texttt{K : ecuFieldType}, the type of fields whose characteristic is neither
-2 nor 3, and \texttt{M : mcuType}, a record that packs the curve
+a \texttt{K : ecuFieldType} ---the type of fields whose characteristic is neither
+2 nor 3--- and \texttt{M : mcuType} ---a record that packs the curve
 parameters $a$ and $b$ along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
 \begin{lstlisting}[language=Coq,belowskip=-0.1 \baselineskip]
 Record mcuType :=
@@ -177,7 +177,7 @@ Definition add (p1 p2 : point K) :=
           (| xs, - s * (xs - x1) - y1 |)
     end.
 \end{lstlisting}
-And again we prove the result is on the curve: % (again with coercion):
+And again we prove the result is on the curve:
 \begin{lstlisting}[language=Coq]
 Lemma addO (p q : mc) : oncurve (add p q).
 
@@ -185,21 +185,19 @@ Definition addmc (p1 p2 : mc) : mc :=
   MC p1 p2 (addO p1 p2)
 \end{lstlisting}
 
-Remarkably, of all the group properties, associativity is the hardest one to prove for elliptic curves.
-Instead of reproving this property for Montgomery curves, we transfer it from the Weierstra{\ss} curves
-with a trick.
 We define a bijection between a Montgomery curve and its short Weierstra{\ss} form
-(as in \lref{lemma:bij-ecc})
-and prove that it respects the addition as defined on the respective curves.
-It is then easy to verify all the group laws for Montgomery curves from the Weierstra{\ss} ones.
+(\lref{lemma:bij-ecc}) and prove that it respects the addition as defined on the
+respective curves. In this way we get all the group laws for Montgomery curves from the Weierstra{\ss} ones.
 
-After we have verified the group properties, it follows that the bijection is a group isomorphism.
+After having verified the group properties, it follows that the bijection is a group isomorphism.
 \begin{lemma}
   \label{lemma:bij-ecc}
   Let $M_{a,b}$ be a Montgomery curve, define
+  \vspace{-0.3em}
   $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
-    then $E_{a',b'}$ is a Weierstra{\ss} curve, and the mapping
-  $\varphi : M_{a,b} \to E_{a',b'}$ defined as:
+  then $E_{a',b'}$ is a Weierstra{\ss} curve, and the mapping
+  $\varphi : M_{a,b} \mapsto E_{a',b'}$ defined as:
+  \vspace{-0.5em}
   \begin{align*}
     \varphi(\Oinf_M)   & = \Oinf_E                                                 \\
     \varphi( (x , y) ) & = \left( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} \right)
@@ -226,13 +224,13 @@ After we have verified the group properties, it follows that the bijection is a 
 \label{subsec:ECC-projective}
 
 In a projective plane, points are represented by the triples $(X:Y:Z)$ excluding $(0:0:0)$.
-Scalar multiples of triples are identified with eachother, \ie
+Scalar multiples of triples are identified with each other, \ie
 for all $\lambda \neq 0$, the triples $(X:Y:Z)$ and $(\lambda X:\lambda Y:\lambda Z)$ represent
 the same point in the projective plane.
 For $Z\neq 0$, the point $(X:Y:Z)$ corresponds to the
 point $(X/Z,Y/Z)$ in the affine plane.
 Likewise, the point $(X,Y)$ in the affine plane corresponds to $(X:Y:1)$ in the projective plane.
-The points $(X : Y : 0)$ can be considered as points at infinity.
+% The points $(X : Y : 0)$ can be considered as points at infinity.
 
 Using fractions as coordinates, the equation for a Montgomery curve $M_{a,b}$
 becomes
@@ -256,11 +254,12 @@ Hypothesis mcu_no_square :
 
 We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
 \begin{dfn}
-    Let $\chi : M_{a,b}(\K) \to \K \cup \{\infty\}$ and $\chi_0 : M_{a,b}(\K) \to \K$ such that
-    \begin{align*}
-        \chi((x,y)) &= x, & \chi(\Oinf) &= \infty, &&\text{and} \\
-        \chi_0((x,y)) &= x, & \chi_0(\Oinf) &= 0.
-    \end{align*}
+  Let $\chi : M_{a,b}(\K) \mapsto \K \cup \{\infty\}$ and $\chi_0 : M_{a,b}(\K) \mapsto \K$ such that
+  \vspace{-0.5em}
+  \begin{align*}
+    \chi((x,y))   & = x, & \chi(\Oinf)   & = \infty, &  & \text{and} \\[-0.5ex]
+    \chi_0((x,y)) & = x, & \chi_0(\Oinf) & = 0.
+  \end{align*}
 \end{dfn}
 
 Using projective coordinates we prove the formula for differential addition.% (\lref{lemma:xADD}).
@@ -270,9 +269,10 @@ Using projective coordinates we prove the formula for differential addition.% (\
   let $X_1, Z_1, X_2, Z_2, X_4, Z_4 \in \K$, such that $(X_1,Z_1) \neq (0,0)$,
   $(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
   Define
+  \vspace{-0.5em}
   \begin{align*}
-    X_3 & = Z_4((X_1 - Z_1)(X_2+Z_2) + (X_1+Z_1)(X_2-Z_2))^2  \\
-    Z_3 & = X_4((X_1 - Z_1)(X_2+Z_2) - (X_1+Z_1)(X_2-Z_2))^2,
+    X_3 & = Z_4((X_1 - Z_1)(X_2+Z_2) + (X_1+Z_1)(X_2-Z_2))^2 \\[-0.5ex]
+    Z_3 & = X_4((X_1 - Z_1)(X_2+Z_2) - (X_1+Z_1)(X_2-Z_2))^2
   \end{align*}
   then for any point $P_1$ and $P_2$ in $M_{a,b}(\K)$ such that
   $X_1/Z_1 = \chi(P_1), X_2/Z_2 = \chi(P_2)$, and $X_4/Z_4 = \chi(P_1 - P_2)$,
@@ -550,8 +550,7 @@ We now study the case of the scalar multiplication and show similar proofs.
           such that $\varphi((x,y)) = ((x,0), (y,0))$.
     \item[--] $\varphi_t: M_{486662,2}(\F{p}) \mapsto M_{486662,1}(\F{p^2})$\\
           such that $\varphi((x,y)) = ((x,0), (0,y))$.
-    \item[--] $\psi: \F{p^2} \mapsto \F{p}$\\
-          such that $\psi(x,y) = x$.
+    \item[--] $\psi: \F{p^2} \mapsto \F{p}$ such that $\psi(x,y) = x$.
   \end{itemize}
 \end{dfn}
 
@@ -559,15 +558,17 @@ We now study the case of the scalar multiplication and show similar proofs.
   \label{lemma:proj}
   For all $n \in \N$, for all point $P\in\F{p}\times\F{p}$ on the curve
   $M_{486662,1}(\F{p})$ (respectively on the quadratic twist $M_{486662,2}(\F{p})$), we have
+  \vspace{-0.3em}
   \begin{align*}
-      P &\in M_{486662,1}(\F{p}) & \implies \varphi_c(n \cdot P) &= n \cdot \varphi_c(P), &&\text{and} \\
-      P &\in M_{486662,2}(\F{p}) & \implies \varphi_t(n \cdot P) &= n \cdot \varphi_t(P).
+    P & \in M_{486662,1}(\F{p}) & \implies \varphi_c(n \cdot P) & = n \cdot \varphi_c(P), &  & \text{and} \\
+    P & \in M_{486662,2}(\F{p}) & \implies \varphi_t(n \cdot P) & = n \cdot \varphi_t(P).
   \end{align*}
 \end{lemma}
 Notice that
+\vspace{-0.5em}
 \begin{align*}
-    \forall P \in M_{486662,1}(\F{p}), &&\psi(\chi_0(\varphi_c(P))) &= \chi_0(P), &&\text{and} \\
-    \forall P \in M_{486662,2}(\F{p}), &&\psi(\chi_0(\varphi_t(P))) &= \chi_0(P).
+  \forall P \in M_{486662,1}(\F{p}), &  & \psi(\chi_0(\varphi_c(P))) & = \chi_0(P), &  & \text{and} \\
+  \forall P \in M_{486662,2}(\F{p}), &  & \psi(\chi_0(\varphi_t(P))) & = \chi_0(P).
 \end{align*}
 
 In summary, for all $n \in \N$, $n < 2^{255}$, for any point $P\in\F{p}\times\F{p}$

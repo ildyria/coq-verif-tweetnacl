@@ -244,7 +244,7 @@ the same time.
 \label{subsec:num-repr-rfc}
 
 As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf}
-(typedef of an array of 16 \TNaCle{long long}) are represented
+(array of 16 \TNaCle{long long}) are represented
 in $2^{16}$ and we use a direct mapping to represent that array as a list
 integers in Coq. However, in order to show the correctness of the basic operations,
 we need to convert this number to an integer.
@@ -273,8 +273,7 @@ Lemma mult_GF_Zlength :
   forall (a:list Z) (b:list Z),
   Zlength a = 16 ->
   Zlength b = 16 ->
-   (Z16.lst (Low.M a b)) :GF =
-   (Z16.lst a * Z16.lst b) :GF.
+   (Z16.lst (Low.M a b)):GF = (Z16.lst a * Z16.lst b):GF.
 \end{lstlisting}
 
 However for our purpose, simple functional correctness is not enough.
