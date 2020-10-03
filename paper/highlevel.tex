@@ -193,11 +193,11 @@ After having verified the group properties, it follows that the bijection is a g
 \begin{lemma}
   \label{lemma:bij-ecc}
   Let $M_{a,b}$ be a Montgomery curve, define
-  \vspace{-0.3em}
+  %\vspace{-0.3em}
   $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
   then $E_{a',b'}$ is a Weierstra{\ss} curve, and the mapping
   $\varphi : M_{a,b} \mapsto E_{a',b'}$ defined as:
-  \vspace{-0.5em}
+  %\vspace{-0.5em}
   \begin{align*}
     \varphi(\Oinf_M)   & = \Oinf_E                                                 \\
     \varphi( (x , y) ) & = \left( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} \right)
@@ -255,7 +255,7 @@ Hypothesis mcu_no_square :
 We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
 \begin{dfn}
   Let $\chi : M_{a,b}(\K) \mapsto \K \cup \{\infty\}$ and $\chi_0 : M_{a,b}(\K) \mapsto \K$ such that
-  \vspace{-0.5em}
+  %\vspace{-0.5em}
   \begin{align*}
     \chi((x,y))   & = x, & \chi(\Oinf)   & = \infty, &  & \text{and} \\[-0.5ex]
     \chi_0((x,y)) & = x, & \chi_0(\Oinf) & = 0.
@@ -269,7 +269,7 @@ Using projective coordinates we prove the formula for differential addition.% (\
   let $X_1, Z_1, X_2, Z_2, X_4, Z_4 \in \K$, such that $(X_1,Z_1) \neq (0,0)$,
   $(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
   Define
-  \vspace{-0.5em}
+  %\vspace{-0.5em}
   \begin{align*}
     X_3 & = Z_4((X_1 - Z_1)(X_2+Z_2) + (X_1+Z_1)(X_2-Z_2))^2 \\[-0.5ex]
     Z_3 & = X_4((X_1 - Z_1)(X_2+Z_2) - (X_1+Z_1)(X_2-Z_2))^2
@@ -558,14 +558,14 @@ We now study the case of the scalar multiplication and show similar proofs.
   \label{lemma:proj}
   For all $n \in \N$, for all point $P\in\F{p}\times\F{p}$ on the curve
   $M_{486662,1}(\F{p})$ (respectively on the quadratic twist $M_{486662,2}(\F{p})$), we have
-  \vspace{-0.3em}
+  %\vspace{-0.3em}
   \begin{align*}
     P & \in M_{486662,1}(\F{p}) & \implies \varphi_c(n \cdot P) & = n \cdot \varphi_c(P), &  & \text{and} \\
     P & \in M_{486662,2}(\F{p}) & \implies \varphi_t(n \cdot P) & = n \cdot \varphi_t(P).
   \end{align*}
 \end{lemma}
 Notice that
-\vspace{-0.5em}
+%\vspace{-0.5em}
 \begin{align*}
   \forall P \in M_{486662,1}(\F{p}), &  & \psi(\chi_0(\varphi_c(P))) & = \chi_0(P), &  & \text{and} \\
   \forall P \in M_{486662,2}(\F{p}), &  & \psi(\chi_0(\varphi_t(P))) & = \chi_0(P).
