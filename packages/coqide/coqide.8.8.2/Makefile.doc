@@ -1,0 +1,369 @@
+##########################################################################
+##         #   The Coq Proof Assistant / The Coq Development Team       ##
+##  v      #   INRIA, CNRS and contributors - Copyright 1999-2018       ##
+## <O___,, #       (see CREDITS file for the list of authors)           ##
+##   \VV/  ###############################################################
+##    //   #    This file is distributed under the terms of the         ##
+##         #     GNU Lesser General Public License Version 2.1          ##
+##         #     (see LICENSE file for the text of the license)         ##
+##########################################################################
+
+# Makefile for the Coq documentation
+
+# To compile documentation, you need the following tools:
+# Dvi: latex (latex2e), bibtex, makeindex
+# Pdf: pdflatex
+# Html: hevea (http://hevea.inria.fr) >= 1.05
+
+# The main entry point :
+
+documentation: doc-$(WITHDOC)  ## see $(WITHDOC) in config/Makefile
+doc-all: doc
+doc-no:
+
+.PHONY: documentation doc-all doc-no
+
+######################################################################
+### Variables
+######################################################################
+
+LATEX:=latex
+BIBTEX:=BIBINPUTS=.: bibtex -min-crossrefs=10
+MAKEINDEX:=makeindex
+PDFLATEX:=pdflatex
+DVIPS:=dvips
+HEVEA:=hevea
+HEVEAOPTS:=-fix -exec xxdate.exe
+HEVEALIB:=/usr/local/lib/hevea:/usr/lib/hevea
+HTMLSTYLE:=coqremote
+export TEXINPUTS:=$(HEVEALIB):
+ifdef COQDOC_NOBOOT
+COQTEXOPTS:=-n 72 -sl -small
+else
+COQTEXOPTS:=-boot -n 72 -sl -small
+endif
+
+# Sphinx-related variables
+SPHINXOPTS= -j4
+SPHINXBUILD= sphinx-build
+SPHINXBUILDDIR= doc/sphinx/_build
+
+# Internal variables.
+ALLSPHINXOPTS= -d $(SPHINXBUILDDIR)/doctrees $(SPHINXOPTS)
+
+DOCCOMMON:=doc/common/version.tex doc/common/title.tex doc/common/macros.tex
+
+######################################################################
+### General rules
+######################################################################
+
+.PHONY: doc doc-html doc-pdf doc-ps
+.PHONY: stdlib full-stdlib sphinx
+.PHONY: tutorial rectutorial
+
+doc: refman tutorial rectutorial stdlib
+
+ifndef QUICK
+SPHINX_DEPS := coq
+endif
+
+# refman-html and refman-latex
+refman-%: coq
+	$(SHOW)'SPHINXBUILD doc/sphinx ($*)'
+	$(HIDE)COQBIN="$(abspath bin)" $(SPHINXBUILD) -b $* \
+		$(ALLSPHINXOPTS) doc/sphinx $(SPHINXBUILDDIR)/$*
+
+refman-pdf: refman-latex
+	+$(MAKE) -C $(SPHINXBUILDDIR)/latex
+
+refman: coq
+	+$(MAKE) refman-html
+	+$(MAKE) refman-pdf
+
+# compatibility alias
+sphinx: refman-html
+
+doc-html:\
+  doc/tutorial/Tutorial.v.html doc/stdlib/html/index.html \
+  doc/RecTutorial/RecTutorial.html refman-html
+
+doc-pdf:\
+  doc/tutorial/Tutorial.v.pdf doc/stdlib/Library.pdf \
+  doc/RecTutorial/RecTutorial.pdf refman-pdf
+
+doc-ps:\
+  doc/tutorial/Tutorial.v.ps \
+  doc/stdlib/Library.ps doc/RecTutorial/RecTutorial.ps
+
+tutorial: \
+  doc/tutorial/Tutorial.v.html doc/tutorial/Tutorial.v.ps doc/tutorial/Tutorial.v.pdf
+
+stdlib: \
+  doc/stdlib/html/index.html doc/stdlib/Library.ps doc/stdlib/Library.pdf
+
+full-stdlib: \
+  doc/stdlib/html/index.html doc/stdlib/FullLibrary.ps doc/stdlib/FullLibrary.pdf
+
+rectutorial: doc/RecTutorial/RecTutorial.html \
+  doc/RecTutorial/RecTutorial.ps doc/RecTutorial/RecTutorial.pdf
+
+######################################################################
+### Implicit rules
+######################################################################
+
+ifdef QUICK
+%.v.tex: %.tex
+	$(COQTEX) $(COQTEXOPTS) $<
+else
+%.v.tex: %.tex $(COQTEX) $(COQTOPEXE) $(ALLVO)
+	$(COQTEX) $(COQTEXOPTS) $<
+endif
+
+%.ps: %.dvi
+	(cd `dirname $<`; $(DVIPS) -q -o `basename $@` `basename $<`)
+
+######################################################################
+# Macros for filtering outputs
+######################################################################
+
+HIDEBIBTEXINFO=| grep -v "^A level-1 auxiliary file"
+SHOWMAKEINDEXERROR=egrep '^!! Input index error|^\*\* Input style error|^   --'
+
+######################################################################
+# Common
+######################################################################
+
+### Version
+
+doc/common/version.tex: config/Makefile
+	printf '\\newcommand{\\coqversion}{$(VERSION)}' > doc/common/version.tex
+
+######################################################################
+# Tutorial
+######################################################################
+
+doc/tutorial/Tutorial.v.dvi: $(DOCCOMMON) doc/tutorial/Tutorial.v.tex
+	(cd doc/tutorial;\
+	$(LATEX) -interaction=batchmode Tutorial.v;\
+	../tools/show_latex_messages Tutorial.v.log)
+
+doc/tutorial/Tutorial.v.pdf: $(DOCCOMMON) doc/tutorial/Tutorial.v.tex
+	(cd doc/tutorial;\
+	$(PDFLATEX) -interaction=batchmode Tutorial.v.tex;\
+	../tools/show_latex_messages Tutorial.v.log)
+
+doc/tutorial/Tutorial.v.html: $(DOCCOMMON) doc/tutorial/Tutorial.v.tex
+	(cd doc/tutorial; $(HEVEA) $(HEVEAOPTS) Tutorial.v)
+
+######################################################################
+# Standard library
+######################################################################
+
+### Standard library (browsable html format)
+
+ifdef QUICK
+doc/stdlib/html/genindex.html:
+else
+doc/stdlib/html/genindex.html: | $(COQDOC) $(ALLVO)
+endif
+	- rm -rf doc/stdlib/html
+	$(MKDIR) doc/stdlib/html
+	$(COQDOC) -q -d doc/stdlib/html --with-header doc/common/styles/html/$(HTMLSTYLE)/header.html --with-footer doc/common/styles/html/$(HTMLSTYLE)/footer.html --multi-index --html -g \
+	  -R theories Coq -R plugins Coq $(VFILES)
+	mv doc/stdlib/html/index.html doc/stdlib/html/genindex.html
+
+doc/stdlib/index-list.html: doc/stdlib/index-list.html.template doc/stdlib/make-library-index
+	./doc/stdlib/make-library-index doc/stdlib/index-list.html doc/stdlib/hidden-files
+
+doc/stdlib/html/index.html: doc/stdlib/html/genindex.html doc/stdlib/index-list.html
+	cat doc/common/styles/html/$(HTMLSTYLE)/header.html doc/stdlib/index-list.html > $@
+	cat doc/common/styles/html/$(HTMLSTYLE)/footer.html >> $@
+
+### Standard library (light version, full version is definitely too big)
+
+ifdef QUICK
+doc/stdlib/Library.coqdoc.tex:
+else
+doc/stdlib/Library.coqdoc.tex: | $(COQDOC) $(THEORIESLIGHTVO)
+endif
+	$(COQDOC) -q -boot --gallina --body-only --latex --stdout \
+            -R theories Coq $(THEORIESLIGHTVO:.vo=.v) >> $@
+
+doc/stdlib/Library.dvi: $(DOCCOMMON) doc/stdlib/Library.coqdoc.tex doc/stdlib/Library.tex
+	(cd doc/stdlib;\
+	$(LATEX) -interaction=batchmode Library;\
+	$(LATEX) -interaction=batchmode Library > /dev/null;\
+	../tools/show_latex_messages -no-overfull Library.log)
+
+doc/stdlib/Library.pdf: $(DOCCOMMON) doc/stdlib/Library.coqdoc.tex doc/stdlib/Library.dvi
+	(cd doc/stdlib;\
+	$(PDFLATEX) -interaction=batchmode Library;\
+	../tools/show_latex_messages -no-overfull Library.log)
+
+### Standard library (full version if you're crazy enouth to try)
+
+doc/stdlib/FullLibrary.tex: doc/stdlib/Library.tex
+	sed -e 's/Library.coqdoc/FullLibrary.coqdoc/g;s/\\begin{document}/\\newcommand{\\textlambda}{\\ensuremath{\\lambda}}\\newcommand{\\textPi}{\\ensuremath{\\Pi}}\\begin{document}/' $< > $@
+
+ifdef QUICK
+doc/stdlib/FullLibrary.coqdoc.tex:
+	$(COQDOC) -q -boot --gallina --body-only --latex --stdout --utf8 \
+            -R theories Coq -R plugins Coq $(VFILES) > $@
+	sed -i.tmp -e 's///g' $@ && rm $@.tmp
+else
+doc/stdlib/FullLibrary.coqdoc.tex: $(COQDOC) $(ALLVO)
+	$(COQDOC) -q -boot --gallina --body-only --latex --stdout --utf8 \
+            -R theories Coq -R plugins Coq $(VFILES) > $@
+	sed -i.tmp -e 's///g' $@ && rm $@.tmp
+endif
+
+doc/stdlib/FullLibrary.dvi: $(DOCCOMMON) doc/stdlib/FullLibrary.coqdoc.tex doc/stdlib/FullLibrary.tex
+	(cd doc/stdlib;\
+	$(LATEX) -interaction=batchmode FullLibrary;\
+	$(LATEX) -interaction=batchmode FullLibrary > /dev/null;\
+	../tools/show_latex_messages -no-overfull FullLibrary.log)
+
+doc/stdlib/FullLibrary.pdf: $(DOCCOMMON) doc/stdlib/FullLibrary.coqdoc.tex doc/stdlib/FullLibrary.dvi
+	(cd doc/stdlib;\
+	$(PDFLATEX) -interaction=batchmode FullLibrary;\
+	../tools/show_latex_messages -no-overfull FullLibrary.log)
+
+######################################################################
+# Tutorial on inductive types
+######################################################################
+
+doc/RecTutorial/RecTutorial.dvi: doc/common/version.tex doc/common/title.tex doc/RecTutorial/RecTutorial.tex
+	(cd doc/RecTutorial;\
+	$(LATEX) -interaction=batchmode RecTutorial;\
+	$(BIBTEX) -terse RecTutorial;\
+	$(LATEX) -interaction=batchmode RecTutorial > /dev/null;\
+	$(LATEX) -interaction=batchmode RecTutorial > /dev/null;\
+	../tools/show_latex_messages RecTutorial.log)
+
+doc/RecTutorial/RecTutorial.pdf: doc/common/version.tex doc/common/title.tex doc/RecTutorial/RecTutorial.dvi
+	(cd doc/RecTutorial;\
+	$(PDFLATEX) -interaction=batchmode RecTutorial.tex;\
+	../tools/show_latex_messages RecTutorial.log)
+
+doc/RecTutorial/RecTutorial.html: doc/RecTutorial/RecTutorial.tex
+	(cd doc/RecTutorial; $(HEVEA) $(HEVEAOPTS) RecTutorial)
+
+######################################################################
+# Install all documentation files
+######################################################################
+
+.PHONY: install-doc install-doc-meta install-doc-html install-doc-printable \
+	install-doc-index-urls install-doc-sphinx
+
+install-doc: install-doc-meta install-doc-html install-doc-printable \
+	install-doc-index-urls install-doc-sphinx
+
+install-doc-meta:
+	$(MKDIR) $(FULLDOCDIR)
+	$(INSTALLLIB) doc/LICENSE $(FULLDOCDIR)/LICENSE.doc
+
+install-doc-html: install-doc-stdlib-html install-doc-sphinx
+
+install-doc-stdlib-html:
+	$(MKDIR) $(FULLDOCDIR)/html/stdlib
+	$(INSTALLLIB) doc/stdlib/html/* $(FULLDOCDIR)/html/stdlib
+	$(INSTALLLIB) doc/RecTutorial/RecTutorial.html $(FULLDOCDIR)/html/RecTutorial.html
+	$(INSTALLLIB) doc/tutorial/Tutorial.v.html $(FULLDOCDIR)/html/Tutorial.html
+
+install-doc-printable: 
+	$(MKDIR) $(FULLDOCDIR)/ps $(FULLDOCDIR)/pdf
+	$(INSTALLLIB) doc/stdlib/Library.pdf $(FULLDOCDIR)/pdf
+	$(INSTALLLIB) doc/stdlib/Library.ps $(FULLDOCDIR)/ps
+	$(INSTALLLIB) doc/tutorial/Tutorial.v.pdf $(FULLDOCDIR)/pdf/Tutorial.pdf
+	$(INSTALLLIB) doc/RecTutorial/RecTutorial.pdf $(FULLDOCDIR)/pdf/RecTutorial.pdf
+	$(INSTALLLIB) doc/tutorial/Tutorial.v.ps $(FULLDOCDIR)/ps/Tutorial.ps
+	$(INSTALLLIB) doc/RecTutorial/RecTutorial.ps $(FULLDOCDIR)/ps/RecTutorial.ps
+
+install-doc-sphinx:
+	$(MKDIR) $(FULLDOCDIR)/sphinx
+	(for f in `cd doc/sphinx/_build; find . -type f`; do \
+		$(MKDIR) $$(dirname $(FULLDOCDIR)/sphinx/$$f);\
+		$(INSTALLLIB) doc/sphinx/_build/$$f $(FULLDOCDIR)/sphinx/$$f;\
+	done)
+
+###########################################################################
+# Documentation of the source code (using ocamldoc)
+###########################################################################
+
+OCAMLDOCDIR=dev/ocamldoc
+
+DOCMLLIBS= $(CORECMA:.cma=_MLLIB_DEPENDENCIES) $(PLUGINSCMO:.cmo=_MLPACK_DEPENDENCIES)
+DOCMLS=$(foreach lib,$(DOCMLLIBS),$(addsuffix .ml, $($(lib))))
+
+DOCMLIS=$(wildcard $(addsuffix /*.mli, $(SRCDIRS)))
+
+# Defining options to generate dependencies graphs
+DOT=dot
+ODOCDOTOPTS=-dot -dot-reduce
+
+.PHONY: source-doc mli-doc ml-doc
+
+source-doc: mli-doc $(OCAMLDOCDIR)/coq.pdf
+
+$(OCAMLDOCDIR)/coq.tex: $(DOCMLIS:.mli=.cmi)
+	$(SHOW)'OCAMLDOC -latex -o $@'
+	$(HIDE)$(OCAMLFIND) ocamldoc -latex -rectypes -I $(MYCAMLP5LIB) $(MLINCLUDES)\
+	$(DOCMLIS) -noheader -t "Coq mlis documentation" \
+	-intro $(OCAMLDOCDIR)/docintro -o $@.tmp
+	$(SHOW)'OCAMLDOC utf8 fix'
+	$(HIDE)$(OCAMLDOCDIR)/fix-ocamldoc-utf8 $@.tmp
+	$(HIDE)cat $(OCAMLDOCDIR)/header.tex $@.tmp > $@
+	rm $@.tmp
+
+mli-doc: $(DOCMLIS:.mli=.cmi)
+	$(SHOW)'OCAMLDOC -html'
+	$(HIDE)$(OCAMLFIND) ocamldoc -charset utf-8 -html -rectypes -I +threads -I $(MYCAMLP5LIB) $(MLINCLUDES) \
+	$(DOCMLIS) -d $(OCAMLDOCDIR)/html -colorize-code \
+	-t "Coq mlis documentation" -intro $(OCAMLDOCDIR)/docintro \
+	-css-style style.css
+
+ml-dot: $(MLFILES)
+	$(OCAMLFIND) ocamldoc -dot -dot-reduce -rectypes -I +threads -I $(CAMLLIB) -I $(MYCAMLP5LIB) $(MLINCLUDES) \
+	$(filter $(addsuffix /%.ml,$(CORESRCDIRS)),$(MLFILES)) -o $(OCAMLDOCDIR)/coq.dot
+
+%_dep.png: %.dot
+	$(DOT) -Tpng $< -o $@
+
+%_types.dot: %.mli
+	$(OCAMLFIND) ocamldoc -rectypes $(MLINCLUDES) $(ODOCDOTOPTS) -dot-types -o $@ $<
+
+OCAMLDOC_MLLIBD = $(OCAMLFIND) ocamldoc -rectypes $(MLINCLUDES) $(ODOCDOTOPTS) -o $@ \
+  $(foreach lib,$(|:.mllib.d=_MLLIB_DEPENDENCIES),$(addsuffix .ml,$($(lib))))
+
+%.dot: | %.mllib.d
+	$(OCAMLDOC_MLLIBD)
+
+ml-doc:
+	$(SHOW)'OCAMLDOC -html'
+	$(HIDE)mkdir -p $(OCAMLDOCDIR)/html/implementation
+	$(HIDE)$(OCAMLFIND) ocamldoc -charset utf-8 -html -rectypes -I +threads $(MLINCLUDES) $(COQIDEFLAGS) \
+	$(DOCMLS) -d $(OCAMLDOCDIR)/html/implementation -colorize-code \
+	-t "Coq mls documentation" \
+	-css-style ../style.css
+
+parsing/parsing.dot : | parsing/parsing.mllib.d
+	$(OCAMLDOC_MLLIBD)
+
+grammar/grammar.dot : | grammar/grammar.mllib.d
+	$(OCAMLDOC_MLLIBD)
+
+tactics/tactics.dot: | tactics/tactics.mllib.d ltac/ltac.mllib.d
+	$(OCAMLDOC_MLLIBD)
+
+%.dot: %.mli
+	$(OCAMLFIND) ocamldoc -rectypes $(MLINCLUDES) $(ODOCDOTOPTS) -o $@ $<
+
+$(OCAMLDOCDIR)/%.pdf: $(OCAMLDOCDIR)/%.tex
+	$(SHOW)'PDFLATEX $*.tex'
+	$(HIDE)(cd $(OCAMLDOCDIR) ; pdflatex -interaction=batchmode $*.tex && pdflatex -interaction=batchmode $*.tex)
+	$(HIDE)(cd doc/tools/; ./show_latex_messages -no-overfull ../../$(OCAMLDOCDIR)/$*.log)
+
+# For emacs:
+# Local Variables:
+# mode: makefile
+# End:

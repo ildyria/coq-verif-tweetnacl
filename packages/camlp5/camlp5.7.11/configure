@@ -1,0 +1,315 @@
+#!/bin/sh
+# configure,v
+
+prefix=''
+bindir=''
+libdir=''
+mandir=''
+mode=S
+camlp5n=camlp5
+ocamln=ocaml
+noopt=0
+oversion=''
+
+if [ -f myconfig ]; then
+  . ./myconfig
+fi
+
+# a local which command for sh
+which () {
+IFS=":" # set words separator in PATH to be ':' (it allows spaces in dirnames)
+for i in $PATH; do
+  if test -z "$i"; then $i=.; fi
+  if [ -f "$i/$1" ] ; then
+	IFS=" "
+        echo $i/$1
+	break
+  fi
+done
+}
+
+# Parse command-line arguments
+
+while : ; do
+  case "$1" in
+    "") break;;
+    -prefix|--prefix)
+        prefix=$2; shift;;
+    -bindir|--bindir)
+        bindir=$2; shift;;
+    -libdir|--libdir)
+        libdir=$2; shift;;
+    -mandir|--mandir)
+        mandir=$2; shift;;
+    -no-opt|--no-opt)
+        noopt=1;;
+    -oversion|--oversion)
+        oversion=$2; shift;;
+    -transitional|--transitional)
+        mode=T;;
+    -strict|--strict)
+        mode=S;;
+    -oname|--oname)
+        ocamln=$2; shift;;
+    -name|--name)
+        camlp5n=$2; shift;;
+    -help|--help)
+        echo "Usage: configure [options]"
+        echo "Options:"
+        echo "  -bindir <dir>, --bindir <dir>"
+        echo "        Directory where the binaries will be installed"
+        echo "        Default: same than command ocamlc"
+        echo "  -libdir <dir>, --libdir <dir>"
+        echo "        Directory where the camlp5 directory will be installed"
+        echo "        Default: same than 'ocamlc -where'"
+        echo "  -mandir <dir>, --mandir <dir>"
+        echo "        Directory where the manual pages will be installed"
+        echo "        Default: <bindir>/../man"
+        echo "  -prefix <dir>, --prefix <dir>"
+        echo "        Set bindir, libdir and mandir respectively to"
+        echo "        <dir>/bin, <dir>/lib/ocaml, <dir>/man."
+        echo "  -no-opt, --no-opt"
+        echo "        do not use .opt versions of ocaml compilers"
+        echo "  -oversion <name>"
+        echo "        specify an OCaml version on ocaml_stuff directory"
+        echo "  -transitional, --transitional"
+        echo "        compile in transitional mode"
+        echo "  -strict, --strict"
+        echo "        compile in strict mode"
+        echo "  -oname <name>, --oname <name>"
+        echo "        OCaml name (default: ocaml)"
+        echo "  -name <name>, --name <name>"
+        echo "        Camlp5 name (default: camlp5)"
+        echo "  -help, --help"
+        echo "        this message"
+       exit 0;;
+    *) echo "Unknown option \"$1\"." 1>&2; exit 2;;
+  esac
+  shift
+done
+
+if [ "$mode" = "T" -o "$mode" = "S" ]; then
+  :
+else
+  echo 1>&2
+  echo "Launch \"configure\" with the mode you want:" 1>&2
+  echo "   --transitional" 1>&2
+  echo "   --strict" 1>&2
+  echo 1>&2
+  exit 2
+fi
+
+echo "mode=$mode" > myconfig
+
+# Sanity checks
+
+case "$prefix" in
+  /*) ;;
+  "") ;;
+   *) echo "The -prefix directory must be absolute." 1>&2; exit 2;;
+esac
+case "$bindir" in
+  /*) ;;
+  "") ;;
+   *) echo "The -bindir directory must be absolute." 1>&2; exit 2;;
+esac
+case "$libdir" in
+  /*) ;;
+  "") ;;
+   *) echo "The -libdir directory must be absolute." 1>&2; exit 2;;
+esac
+case "$mandir" in
+  /*) ;;
+  "") ;;
+   *) echo "The -mandir directory must be absolute." 1>&2; exit 2;;
+esac
+case "$camlp5n" in
+  /*) ;;
+  "") echo "Camlp5 name must not be empty." 1>&2; exit 2;;
+   *) ;;
+esac
+
+# Check Ocaml
+
+ocamlc=${ocamln}c
+ocamlopt=${ocamln}opt
+ocamlrun=${ocamln}run
+
+if ${ocamln}c -v >/dev/null 2>&1; then :
+else
+    echo "You need the command" ${ocamln}c "accessible in the path!"
+    echo "Configuration script failed!"
+    exit 1
+fi
+
+# Check versions
+
+if [ "$oversion" = "" ]; then
+  oversion=$(${ocamln}c -v | head -1 | sed 's/^.*version //; s/ .*$//')
+fi
+OVERSION=$(echo "$oversion" | sed -e 's/[ +].*$//')
+
+verspfx=
+if [ "$ocamln" != "ocaml" ]; then verspfx=/$ocamln; fi
+
+if [ -d "ocaml_stuff$verspfx/$OVERSION" -a \
+     -f "ocaml_src/lib/versdep$verspfx/$OVERSION.ml" ]
+then :
+else
+  echo
+  echo "Sorry: the compatibility with ocaml version \"$oversion\""
+  echo "is not yet implemented. Please report."
+  echo
+  if [ -d "ocaml_stuff$verspfx/$OVERSION" ]; then
+    echo "Information: file ocaml_src/lib/versdep$verspfx/$OVERSION.ml is missing."
+  else
+    echo "Information: directory ocaml_stuff$verspfx/$OVERSION is missing."
+  fi
+  echo
+  echo "Configuration failed."
+  # to give the ability to do "make steal":
+  echo "OVERSION=$OVERSION" > config/Makefile
+  echo "OCAMLN=$ocamln" >> config/Makefile
+  echo "VERSDIR=$verspfx" >> config/Makefile
+  exit 2
+fi
+
+# Evaluate installation directories
+
+ocamlc_where=$($ocamlc -where 2>/dev/null)
+if [ "$?" != "0" ]; then
+  ocamlc_where=$($ocamlc -v | tail -1 | sed -e 's/^.*: //')
+fi
+
+x=$ocamlc_where
+y=$(echo $x | sed -e 's|\\\\|/|g')
+x="$(echo 'Sys.os_type;;' | ocaml | egrep 'Win32|Cygwin')"
+if test "$x" = ""; then win=false; else win=true; fi
+x="$(echo 'Sys.os_type;;' | ocaml | grep 'Win32')"
+if test "$x" = ""; then win32=false; else win32=true; fi
+OLIBDIR="$y"
+if [ "$OVERSION" "<" "4.00" ]; then
+  OCLIBDIR="."
+else
+  OCLIBDIR="+compiler-libs"
+fi
+
+if test "$win" = "true"; then
+    EXE=.exe
+else
+    EXE=
+fi
+
+if test "$win32" = "true"; then
+    EXT_OBJ=.obj
+    EXT_LIB=.lib
+else
+    EXT_OBJ=.o
+    EXT_LIB=.a
+fi
+
+if test "$bindir" != ""; then
+    BINDIR=$bindir
+elif test "$prefix" != ""; then
+    BINDIR='$(PREFIX)/bin'
+else
+    BINDIR=$(dirname "$(which $ocamlc)")
+fi
+if test "$libdir" != ""; then
+    LIBDIR=$libdir
+elif test "$prefix" != ""; then
+    LIBDIR='$(PREFIX)/lib/ocaml'
+else
+    LIBDIR=$ocamlc_where
+fi
+if test "$mandir" != ""; then
+    MANDIR=$mandir
+elif test "$prefix" != ""; then
+    MANDIR='$(PREFIX)/man'
+else
+    MANDIR=$(dirname "$BINDIR")/man
+fi
+
+OPT=
+if [ "$noopt" = "0" ] && $ocamlc.opt > /dev/null 2>&1 &&
+   $ocamlopt.opt > /dev/null 2>&1
+then
+    oversion_opt=$($ocamlopt.opt -v | head -1 | sed 's/^.*version //; s/ .*$//')
+    if [ "$oversion" = "$oversion_opt" ]; then
+      OPT=.opt
+    fi
+fi
+
+if [ "$(ocamlc -w y 2>&1)" = "" ]; then
+  OCAMLC_W_Y="-w y"
+else
+  OCAMLC_W_Y=""
+fi
+
+if [ "$($ocamlc -warn-error A 2>&1)" = "" ]; then
+  WARNERR="-warn-error A"
+else
+  WARNERR=""
+fi
+
+if make -f config/Makefile.check --no-print-directory >/dev/null 2>&1; then
+  NO_PR_DIR=--no-print-directory
+else
+  NO_PR_DIR=
+fi
+
+VERSION="$(grep "value version =" main/pcaml.ml | sed -e 's/^[^"]*"\([^"]*\).*$/\1/')"
+
+(
+echo MODE=$mode
+echo EXE=$EXE
+echo OPT=$OPT
+echo EXT_OBJ=$EXT_OBJ
+echo EXT_LIB=$EXT_LIB
+echo OVERSION=$OVERSION
+echo VERSION=$VERSION
+echo VERSDIR=$verspfx
+echo OCAMLC_W_Y=\"$OCAMLC_W_Y\"
+echo WARNERR=\"$WARNERR\"
+echo NO_PR_DIR=$NO_PR_DIR
+echo OLIBDIR=$OLIBDIR
+echo OCLIBDIR=$OCLIBDIR
+if test "$prefix" != ""; then
+  echo PREFIX=$prefix
+fi
+if test "$OVERSION" "<" "4.00.0"; then
+  echo "OTOPP=\$(TOP)/ocaml_stuff$verspfx/$OVERSION/parsing"
+  echo "OTOPW=\$(TOP)/ocaml_stuff$verspfx/$OVERSION/utils"
+else
+  echo "OTOPP=$OCLIBDIR"
+  echo "OTOPW=$OCLIBDIR"
+fi
+echo "OTOPU=\$(TOP)/ocaml_stuff$verspfx/$OVERSION/utils"
+echo BINDIR=$BINDIR
+echo LIBDIR=$LIBDIR
+echo MANDIR=$MANDIR
+echo OCAMLN=$ocamln
+echo CAMLP5N=$camlp5n
+) > config/Makefile.cnf
+
+rm -f config/Makefile
+cat config/Makefile.tpl > config/Makefile
+echo >> config/Makefile
+cat config/Makefile.cnf >> config/Makefile
+
+cd ocaml_src/lib
+cp "versdep$verspfx/$OVERSION.ml" versdep.ml
+cd ../..
+
+echo
+echo "Resulting configuration file (config/Makefile.cnf):"
+echo
+cat config/Makefile.cnf
+
+echo
+if [ "$mode" = "T" ]; then
+  echo "=== transitional mode ==="
+else
+  echo "=== strict mode ==="
+fi
+echo

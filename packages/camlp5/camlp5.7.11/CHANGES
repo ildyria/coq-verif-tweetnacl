@@ -1,0 +1,788 @@
+Camlp5 Version 7.11:
+--------------------
+
+* [29 Oct 19] Added compatibility with ocaml version 4.08.2.
+* [29 Oct 19] Added compatibility with ocaml version 4.09.1.
+* [03 Feb 20] Added compatibility with ocaml version 4.10+beta2.
+
+* This release supports blank module-names in binders as well as
+  generative functors.
+
+Camlp5 Version 7.10:
+--------------------
+
+* [24 Aug 19] Fixed problem of compatibility with ocaml versions less
+  than 4.08, lost after camlp5 version 7.08, making compilation of
+  camlp5 impossible. Due to dynamic loading.
+
+Camlp5 Version 7.09:
+--------------------
+
+Camlp5 Version 7.08:
+--------------------
+
+* [02 Aug 19] Updated for (incoming) ocaml version 4.10.0.
+* [02 Aug 19] Updated for ocaml version 4.09.0.
+* [27 Jun 19] Updated for ocaml version 4.08.1.
+* [27 Jun 19] Updated for ocaml version 4.08.0 (by github user madroach).
+* [27 Jun 19] Added raw string syntax (by Check Murthy).
+* [21 Dec 18] Fixed bug: in printer pr_o.cmo, comment did not get passed
+  through after "let in".
+
+Camlp5 Version 7.07:
+--------------------
+
+* [10 Oct 18] Changed '/bin/rm' into 'rm' in Makefiles. Can be changed by
+  user by 'make RM=...'.
+* [08 Oct 18] Updated for ocaml version 4.07.2.
+* [19 Sep 18] Updated for ocaml upcomming version 4.08.0.
+* [18 Sep 18] Fixed bug: using camlp5 in ocaml toplevel, the errors locations
+  in files (with #use) where not displayed.
+* [30 Aug 18] Updated for ocaml version 4.07.1 and upcomming version 4.08.0.
+
+Camlp5 Version 7.06:
+--------------------
+
+* [17 Jul 18] Support nonrec type declaration (Kakadu).
+* [27 Jun 18] Updated for ocaml upcomming version 4.08.0.
+* [19 Jun 18] Add support for OCaml 4.07.0
+* [19 Jun 18] Fix OPAM file [in particular avoid the filesystem deletion bug]
+* [06 Apr 18] Safe API for grammar extension (Pierre-Marie Pedrot).
+
+Camlp5 Version 7.05:
+--------------------
+
+* [22 Feb 18] Fixed compilation failure when compiled with ocaml
+  versions 3.08.0 to 4.02.4 due to the time when the constructor
+  Pconst_integer was created (at ocaml version 4.03.0 actually).
+* [22 Feb 18] Added compatibility with (old) ocaml version 4.03.3.
+* [20 Feb 18] Changed "make install" and "make uninstall" so that they
+  do nothing if "configure" had failed.
+
+Camlp5 Version 7.04:
+--------------------
+
+* [19 Feb 18] Updated for ocaml version 4.06.1 and 4.06.2.
+* [02 Jan 18] Fixed missing treatment of native, 32 and 64 integers.
+
+Camlp5 Version 7.03:
+--------------------
+
+* [20 Oct 17] Updated (again) for ocaml version 4.06.0.
+
+Camlp5 Version 7.02:
+--------------------
+
+* [07 Oct 17] Updated for ocaml version 4.06.0.
+* [22 Jul 17] Now "a.[i] := b" generates a call to Bytes.set instead
+  of String.set, as from ocaml version 4.02.0.
+* [18 Jul 17] Updated for ocaml future version 4.05.1.
+* [13 Jul 17] Compilation from OCaml version 4.00.0 now using parsetree
+  distributed with OCaml (-I +compiler-libs), no more the one copied from
+  OCaml sources (on ocaml_stuff directory). Set at "configure" time. (Not
+  fully implemented: the magic numbers are still read in ocaml_stuff
+  directory.) Is going to simplify Camlp5 update when new version of
+  OCaml is released.
+* [11 Jul 17] Fixed problem of associativity in backtracking grammars,
+  preventing Coq to compile with CAMLP5PARAM=f or b.
+
+Camlp5 Version 7.01:
+--------------------
+
+* [26 Jun 17] Fixed bug in associativity of entry levels in extensible
+  grammars; was introduced by an old experiment, resulting a failure
+  in Coq test-suite/success/rewrite_strat.v.
+* [26 Jun 17] Fixed bug: compilation failed while using OCaml versions
+  between 3.05 and 4.01.1, and jocaml versions.
+
+Camlp5 Version 7.00:
+--------------------
+
+* [26 Jun 17] Release number is 7.00 instead of 6.18 because of big
+  improvements on extensible grammars which can use now limited and
+  full backtracking algorithms on demand.
+* [16 Jun 17] Entry.parse_token has been renamed Entry.parse_token_stream.
+* [04 Jun 17] Added limited backtracking (functional streams) to extensible
+  grammars. Can be set with "Grammar.parse_algorithm Functional" or by
+  setting the environment variable CAMLP5PARAM=f.
+* [01 Jun 17] Backtrack parsing seems to work well now. Camlp5 and Coq can
+  be compiled using it by setting CAMLP5PARAM=b.
+* [31 May 17] Fixed bug: Entry.parse_token did not accept backtrack parsing.
+* [31 May 17] Fixed ocaml parsing for case of record {foo () with ...}.
+* [31 May 17] Fixed bug backtrack parsing for function Entry.of_parser.
+* [28 Apr 17] Updated for ocaml 4.04.2 which was missing.
+* [07 Apr 17] Updated for ocaml trunk 4.06.0
+* [19 Feb 17] Fixed bug: locations of all identifiers were missing
+  resulting of error messages giving "<none>" as source file name
+  and no line and column number in the source.
+* [04 Jan 17] Updated for ocaml trunk 4.05.0
+* [09 Dec 16] Fixed bug: was not compatible with ocaml compiled with
+  option -safe-string.
+* [09 Dec 16] Fixed bug: make uninstall did not take DESTDIR into account.
+* [07 Dec 16] Fixed bug virtual methods in signatures generated syntax
+  tree of virtual val. Bug notified by Kakadu.
+  Ex: "class foo : object method virtual bar : bool end"
+* [07 Dec 16] Fixed bug not separated idents were not allowed in
+  'let open' constructs. Bug notified by Kakadu.
+  Ex: "let open Mod1.Mod2.Mod3 in ..."
+* [06 Dec 16] Fixed bug dumping module definitions with constraints.
+  Bug notified by Kakadu.
+  Ex:
+    module type Item = sig type t end
+    module type Sig = sig type t module Node : Item end
+    module Make (S : Sig) : Sig with module Node = S.Node and type t = S.t
+* [06 Dec 16] Fixed bug extra option word during pr_dump for optional args.
+  Bug notified by Kakadu.
+  Ex: "class t : ?name:string -> object end"
+* [05 Dec 16] Fixed bug dumping of open object types. Bug notified by Kakadu.
+  Ex: "type t = <f:int; .. >"
+* [05 Dec 16] Fixed bug dump parsetree without throughing away module type
+  annotation. Bug notified by Kakadu.
+  Ex: "module rec A : sig end = struct end"
+
+Camlp5 Version 6.17:
+--------------------
+
+* [09 Sep 16] Added pretty print of type [< ... ] when ended with "> `ident".
+* [24 Jul 16] Added compatibility with ocaml 4.04.0 and 4.04.1.
+* [24 Jul 16] Added compatibility with ocaml 4.03.1.
+
+Camlp5 Version 6.16:
+--------------------
+
+* [28 Apr 16] Fixed problems of compatibility with previous versions of
+  ocaml.
+
+Camlp5 Version 6.15:
+--------------------
+
+* [23 Jan 16] Fixed bug on optional types (ocaml 4.02).
+* [15 Jan 16] Fixed bug on methods wrongly interpreted as vals.
+* [05 Jan 16] Updated for ocaml trunk 4.03.0
+  (git version be2a7e2f830911b331657b8cfa462f5219dfec5b)
+* [26 Nov 15] Updated again for ocaml trunk current version (4.03.0).
+* [23 Sep 15] Updated for ocaml trunk current version (4.03.0).
+
+Camlp5 Version 6.14:
+--------------------
+
+* [30 Jul 15] Updated for ocaml version 4.02.3 and 4.02.4
+
+Camlp5 Version 6.13:
+--------------------
+
+* [20 Apr 15] Accept 'fun/try' case list like the change of 22nd Apr 13
+  on 'match' in revised syntax, allowing them to write "|" .. "end" or
+  "[" .. "]", both being accepted.
+* [12 May 15] Updated for ocaml version 4.02.2
+
+Camlp5 Version 6.12:
+--------------------
+
+* [17 Apr 14] Updated for ocaml trunk (4.02.0) svn rev 14621.
+* [14 Apr 14] Updated for ocaml version 4.01.1.
+* [19 Dec 13] Dummy line numbers are now 1 instead of -1 to prevent
+  errors that sometimes happen later at assembling phase.
+* [19 Dec 13] Fixed problem in top/Makefile when OCLIBDIR contains spaces.
+* [06 Sep 13] Added flag Grammar.utf8_print to print grammars entries
+  (with Grammar.Entry.print) displaying strings in utf-8 (default: True).
+  Usefull e.g. for Coq in command 'Print Grammar constr' when using utf8.
+* [27 Aug 13] Fixed bug in normal syntax: "let f { x } = ...", "{ x }"
+  and "let open ..." were refused.
+
+Camlp5 Version 6.11:
+--------------------
+
+* [22 Jul 13] Updated for ocaml version 4.01.0
+* [02 Jul 13] Added 'MLast.loc_of_with_constr'.
+* [02 Jul 13] Fixed bug toplevel with revised syntax; "= 'a" was missing
+  in output in that example:
+    # module type A = sig module type S = 'a; end;
+    module type A = sig module type S; end
+* [02 Jul 13] Now accept lowercase ident for module types, like ocaml does.
+  Accepted also in revised syntax.
+
+Camlp5 Version 6.10:
+--------------------
+
+* [19 Jun 13] Updated for ocaml version 4.01.0
+* [14 Jun 13] (experimental) Now, in revised syntax, a "." followed by
+  a newline is interpreted as a ";", allowing to end phrases with ".".
+  Drawback: will syntax error when writing a record/module access in two
+  lines ending the first one with "." like:
+     foo.
+     bar
+
+Camlp5 Version 6.09:
+--------------------
+
+* [22 Apr 13] Accept now "match with | | ... end" in revised syntax, with
+  a required "|" in the first case, as alternative syntax for match.
+* [19 Apr 13] Added function 'Pcaml.value greek_ascii_equiv' giving
+  an ascii equivalent to a greek (utf8) letter representing a type
+  parameter. E.g. 'a' for 'α', 'b' for 'β', and so on.
+* [19 Mar 13] Fixed bug no locations built in some cases of constructors.
+* [15 Mar 13] Updated for ocaml version 4.00.2.
+* [13 Mar 13] Fixed bug: in toplevel, the highlighting of errors did not
+  work.
+* [13 Mar 13] Added option '-dquot' to specify the default quotation name.
+  and the ability to use "#option" directive with two parameters. Therefore,
+  we can use either (e.g.):
+      -dquot "expr"
+  in the command line of camlp5 or
+      #option "-dquot" "expr"
+  inside a file.
+
+Camlp5 Version 6.08:
+--------------------
+
+* [06 Mar 13] Now 'make' displays a message how to compile, instead
+  of doing 'make out'. Old behaviour of 'make' must be now 'make out'.
+* [28 Feb 13] Now accept identifiers starting with a greek letter as
+  variable names.
+* [28 Jan 13] Fixed bug: DEFINE FOO=32 while using pa_macro.cmo did not work
+  due to a bad order in grammar insertion.
+* [08 Oct 12] Fixed bug: parsing greek letters as type variable in
+  constructor declaration did not work when building Camlp5.
+
+Camlp5 Version 6.07:
+--------------------
+
+* [12 Sep 12] Added compatibility with OCaml 4.00.1.
+* [06 Jun 12] Fixed bug: open record patterns {a=b;c=d;_} did not work.
+
+Camlp5 Version 6.06:
+--------------------
+
+* [01 Jun 12] Added compatibility with OCaml 4.00.0 and (incoming) 4.01.0.
+* [18 Mar 12] Fixed bug in pr_o: [(let module M = ... in x); y] was
+  displayed without parentheses.
+* [14 Mar 12] Added compatibility with OCaml 3.12.2.
+* [02 Mar 12] Added compatibility with JoCaml 3.12.0 and 3.12.1.
+* [02 Mar 12] Completed with all JoCaml statements in ocaml syntax.
+  Todo: pretty print.
+
+Camlp5 Version 6.05:
+--------------------
+
+* [02 Mar 12] Added compatibility with JoCaml trunk.
+* [02 Mar 12] Added option -oname in configure to change ocaml
+  command name. The bytecode compiler, native compiler and bytecode
+  runtime are respectively <oname>c, <oname>opt and <oname>run.
+  The default is 'ocaml', implying that the executables are ocamlc,
+  ocamlopt and ocamlrun. Setting it to 'jocaml', fo example, use
+  jocamlc, jocamlopt and jocamlrun.
+
+Camlp5 Version 6.04:
+--------------------
+
+* [01 Mar 12] Added option -name in configure to change command name
+  useful to have transitional and strict versions installed with
+  different names. Default: camlp5.
+* [01 Mar 12] The default mode at configuration time is now 'strict'.
+
+Camlp5 Version 6.03:
+--------------------
+
+* [09 Jan 12] Updated compatibility with OCaml trunk version (3.13.0).
+
+Camlp5 Version 6.02.3:
+----------------------
+
+* [20 Oct 11] Updated compatibility with OCaml current version 3.13.0.
+* [20 Sep 11] Added missing syntax "_" in ending patt records (rev: "_ = _").
+* [20 Sep 11] Fixed bug pattern -1L was refused in normal syntax.
+* [21 May 11] Fixed bug impacting files using q_ast.cmo extension (bad ast).
+* [03 May 11] Fixed bug: lexeme errors in revised syntax + utf8.
+* [24 Mar 11] Fixed bug: M.(a+b) was refused in normal syntax.
+* [16 Mar 11] Fixed bug: incorrect compilation of label patterns of the
+  form ~a:b (or ~{a = b} in revised syntax) in class declarations.
+* [16 Mar 11] Fixed bug: error while printing label patterns ~a:b with
+  pr_o.cmo (error message "labels not pretty printed (in patt)").
+
+Camlp5 Version 6.02.2:
+----------------------
+
+* [15 Mar 11] Fixed bug: bad AST generated for class identifier prefixed
+  by a module.
+* [15 Mar 11] Fixed differences of locations between OCaml and camlp5o (e.g.
+  in .annot files)
+* [17 Feb 11] Pretty module now considers strings as utf8 encoded (impacts
+  computation of strings lengths).
+* [04 Feb 11] Revised syntax: completed syntax multi labels, ~{x=y; z=t}
+  (equivalent to ~{x=y} ~{z=t}) in patterns (in 6.02.1 was implemented
+  only in expressions).
+* [28 Jan 11] Added installed module 'Reloc': relocations and equalities
+  over syntax trees.
+* [26 Jan 11] Fixed bug in camlp5o.opt: did not accept '$' as token.
+* [18 Jan 11] Fixed bug: private flags in type manifest were not correctly
+  treated.
+* [06 Dec 10] Fixed bug in pr_o.cmo: label expressions were not correctly
+  pretty printed: f ~a gave f a.
+
+Camlp5 Version 6.02.1:
+----------------------
+
+* [05 Dec 10] In module Grammar.Entry.print, added extra parameter ppf
+  to print in other formatter than (the default) stdout.
+* [21 Nov 10] Revised syntax: added syntax multi labels, ~{x=y; z=t}
+  equivalent to ~{x=y} ~{z=t}
+* [16 Nov 10] Updated compatibility with OCaml version 3.13.0-gadt.
+
+Camlp5 Version 6.02.0:
+----------------------
+
+* [16 Nov 10] Fixed bug in pa_o.ml: !foo.(bar) was interpreted as !(foo.(bar))
+  instead of (!foo).(bar). Fixed compilation bug in pa_o.ml in transitional
+  mode.
+* [16 Nov 10] Added parsing and printing utf8 greek letters and arrow in
+  revised syntax.
+
+Camlp5 Version 6.02:
+--------------------
+
+* [12 Nov 10] Added compatibility with OCaml GADT version.
+* [12 Nov 10] pa_macro: added ability to use ELSIFDEF in match cases (the
+  ending ELSE part being still optional).
+* [08 Nov 10] Fixed bugs 1/ in pa_o: !Foo.bar was interpreted as (!Foo).bar
+  instead of !(Foo.bar) 2/ in top/camlp5_top.cma: the file ast2pt.cmo was
+  missing.
+
+Camlp5 Version 6.01:
+--------------------
+
+* [03 Nov 10] Added in revised syntax for labels ~{lab x = y} as shortcut
+  for ~{lab = fun x -> y}.
+* [30 Oct 10] Fixed bug in 'configure': option -libdir did not work.
+
+Camlp5 Version 6.00:
+--------------------
+
+* [28 Oct 10] Updated compatibility with OCaml trunk version (3.13.0).
+* [01 Oct 10] Make compilation with "make -j" (parallel make) work.
+* [29 Sep 10] Fixed bug when using constructors named 'True' and 'False'.
+* [24 Sep 10] Fixed many bugs of parsing comments (typically about quotes).
+* [23 Sep 10] Fixed bug in pretty printing comments containing '"'.
+* [22 Sep 10] Fixed bug bad result of unary minus functions.
+* [22 Sep 10] Fixed bug in printing parameters of types of 'with constraint'.
+* [22 Sep 10] Fixed bug in revised syntax for class_types. Now application.
+  does not need parenthesis any more (like for other entries of that kind).
+* [19 Sep 10] In grammars, added list with separator with optional ending
+  separator (LIST0 .. SEP OPT_SEP and LIST1 .. SEP OPT_SEP).
+* [19 Sep 10] Completed missing statements in particular in objects,
+  classes, and first class modules.
+* [08 Sep 10] Added option '-flag O' of pr_r.cmo and pr_o.cmo which
+  add location comments in the output.
+* [08 Sep 10] Added new chapters in the documentation:
+     - Directives
+     - Redefining OCaml syntax
+* [08 Sep 10] Fixed option '-flag E' (equilibrate cases) of pr_r.cmo and
+  pr_o.cmo which did not work.
+* [06 Sep 10] Changed revised syntax of 'inherit something [params]'
+  into 'inherit [params] something' (like in normal syntax).
+* [06 Sep 10] Added missing statements:
+    - 'module type of' as module type,
+    - '(module ... : ...)' as expression,
+    - '(val ...)' ('value' in revised syntax) as module expression.
+* [02 Sep 10] Added directive "#option" (in files, not in toplevel).
+* [02 Sep 10] pa_macro.cmo: phrases inside IFDEF statements now are
+  implementation or interface items, which means:
+    - ability to use directives which are, therefore, conditional.
+    - in revised syntax must end with semicolon (incompatibility with
+      previous versions of Camlp5 where these semicolons are syntax
+      errors).
+    - in revised syntax, ability to put several phrases without having
+      to use "declare .. end".
+* [30 Aug 10] pa_macro.cmo: added ability to use ELSIFDEF and ELSIFNDEF
+  in expressions, structure items and signature items.
+* [27 Aug 10] Fixed bug in pa_macro.cmo A AND B computed B AND B.
+* [26 Aug 10] Fixed wrong behaviour: char '"' was printed '\"'.
+* [25 Aug 10] Added option -no-opt in configure, not to use .opt versions
+  of OCaml compilers.
+* [20 Aug 10] Added compatibility for OCaml version 3.11.3.
+* [18 Aug 10] Added function "get" in library module "Ploc", and a
+  statement "lprintf" similar to "pprintf" added by the syntax
+  extension kit "pa_pprintf.cmo".
+
+Camlp5 Version 5.15:
+--------------------
+
+* [09 Aug 10] Updated compatibility for OCaml current version 3.12.1.
+* [09 Aug 10] Upgraded compatibility for OCaml released version 3.12.0.
+* [29 Jul 10] Added ability to write AST quotations with a colon before
+  the '<' (e.g. "<:expr:< foo >>") which, in pattern position, generates
+  a binding of the variable "loc" at the top node:
+    1/ normal usage (still working):
+         "fun [ <:expr< x >> -> 0 ]"
+       which is equivalent to:
+         "fun [ MLast.ExLid _ (Ploc.VaVal "x") -> 0 ]
+    2/ new usage:
+         "fun [ <:expr:< x >> -> 0 ]"
+       which is equivalent to:
+        "fun [ MLast.ExLid loc (Ploc.VaVal "x") -> 0 ]
+* [21 Jun 10] Added compatibility for OCaml trunk version 3.13.0.
+* [29 Apr 10] Fixed bug in pr_depend.cmo: a.B.c did not add module B.
+
+Camlp5 Version 5.14:
+--------------------
+
+* [28 Apr 10] Updated compatibility for OCaml current version 3.12.0.
+* [31 Mar 10] Fixed bug in pr_o.cmo: error message when using "#use"
+
+
+Camlp5 Version 5.13:
+--------------------
+
+* [02 Nov 09] Added compatibility with OCaml 3.11.2.
+* [02 Nov 09] Updated compatibility with OCaml 3.12.0.
+* [30 Jul 09] Added 'lazy' patterns (added in OCaml version 3.11).
+* [09 Jun 09] Fixed bug in pr_r.cmo: did not always break after "in" (in
+  "let..in" statements) even with -flag l.
+* [08 Jun 09] Fixed bug in pr_r.cmo: missing case "#use" for structure and
+  signature items.
+
+Camlp5 Version 5.12:
+--------------------
+
+* [23 May 09] Added compatibility with OCaml 3.11.1.
+* [31 Dec 08] In macros (pa_macro.cmo):
+  - added ability to use IFDEF and IFNDEF for record labels declarations.
+
+Camlp5 Version 5.11:
+--------------------
+
+* [19 Dec 08] Added compatibility with OCaml 3.12.0.
+
+Camlp5 Version 5.10:
+--------------------
+
+* [16 Oct 08] Added compatibility with OCaml 3.11.0.
+* [01 Aug 08] Added flag "Plexer.utf8_lexing" to specify that the lexers
+  built by "Plexer.gmake ()" must consider the input as utf-8 encoded.
+
+Camlp5 Version 5.09:
+--------------------
+
+* [05 Jun 08] Changed all '#!/bin/bash" in shells scripts into '#!/bin/sh'
+  and changed all $(...) into `...` because there are compatibilities
+  problems according to Unix versions.
+* [31 Mar 08] Fixed bug: "let f ~_x () = ()" generated syntax error.
+* [31 Mar 08] Fixed bug: "x $ y" generated syntax error (normal syntax).
+* [02 Jan 08] Added compatibility with OCaml 3.10.3.
+
+Camlp5 Version 5.08:
+--------------------
+
+* [08 Feb 08] Fixed bug in normal syntax: a.{x,y} (access to big array) was
+  interpreted as a.{(x,y)}.
+* [22 Jan 08] Added missing cases in printers pr_o and pr_r which displayed
+  the message "unable to print ...".
+* [02 Jan 08] Added compatibility with OCaml 3.09.4 and 3.10.2.
+* [21 Jan 08] Fixed bug under windows: the file META could not be build
+  if the library path name contained colons.
+* [13 Jan 08] Added missing man page for camlp5sch (link to the same man
+  page as camlp5).
+* [05 Jan 08] Added "pr_extprint.cmo", printer rebuilding EXTEND_PRINTER
+  statements in their original syntax.
+* [05 Jan 08] Fixed bug in EXTEND_PRINTER statement: the match cases with
+  "when" did not work.
+
+Camlp5 Version 5.07:
+--------------------
+
+* [02 Jan 08] Added "pprintf" statement to use the Camlp5 pretty print
+  system more easily and shortly.
+* [27 Dec 07] Added function [Grammar.Entry.parse_all] returning the
+  list of all solutions when using the parsing algorithm [Backtracking].
+
+Camlp5 Version 5.06:
+--------------------
+
+* [19 Dec 07] Upgraded to add compatibilitly with OCaml version 3.10.1.
+
+Camlp5 Version 5.05:
+--------------------
+
+* [17 Dec 07] Added function [Pcaml.quotation_location] returning the
+  location of the quotation in the source in the context of a quotation
+  expander.
+* [04 Dec 07] Added generation of file META for ocamlfind in directory
+  etc (built but not installed).
+* [28 Nov 07] Upgraded to reflect changes done in parse tree in current
+  OCaml (version 3.11+dev6).
+* [27 Nov 07] Fixed bug in installation. Some files where installed in
+  the bin directory instead of lib directory.
+* [27 Nov 07] Fixed bug in parsing comments: comments containing '\' where
+  incorrectly parsed.
+
+Camlp5 Version 5.04:
+--------------------
+
+* [24 Nov 07] Fixed bug in install under MSVC Windows: object and library
+  files were not installed (using wrong extensions).
+* [24 Nov 07] Fixed bug under Windows: line numbers in error messages were
+  wrong (twice the normal value).
+* [24 Nov 07] Added ability to change the parsing algorithm of extensible
+  grammars, with the function "Grammar.set_algorithm" whose parameter can
+  be "predictive" or "backtracking".
+* [22 Nov 07] Added backtracking parsers. Functions defined in the module
+  Fstream (already containing functional streams and parsers). Syntax
+  added in pa_fstream.cmo (already containing syntax for functinal streams
+  and parsers). The new syntax uses "bparser" instead of "fparser" and
+  a backtracking parser returns, together with its result and its
+  remaining stream, the continuation to compute the next solution.
+
+Camlp5 Version 5.03:
+--------------------
+
+* [20 Nov 07] Added commands mkcamlp5 and mkcamlp5.opt to build camlp5
+  executables with predefined loaded modules. Added installation of ocpp
+  with name ocpp5, instead of just ocpp.
+* [19 Nov 07] Added more installed cmx and cmxa files to allow building
+  native code linking of all combinations of Camlp5.
+* [14 Nov 07] Fixed bug in pr_o.cmo: failed with printing "{a.(i) with ...}".
+* [14 Nov 07] Fixed bug under Windows for the printers (pr_o.cmo, pr_r.cmo
+  and pr_scheme.cmo): extra return character '\r' was added at end of
+  lines.
+* [09 Nov 07] Fixed bug in camlp5o.opt in strict mode: did not parse
+  correctly, in particular type expression (the version "camlp5o" without
+  ".opt" however worked).
+* [29 Oct 07] Added [Pcaml.inter_phrases], a way to set, by program,
+  the value of the "-sep" option of the printers kits.
+* [28 Oct 07] Fixed bug in pa_fstream.cmo (functional parsers): the
+  keyword after "match with" was "parser" instead of "fparser" and
+  its code was wrong.
+* [27 Oct 07] Added a default lexing buffer (in module [Plexing]) for
+  pa_lexer.cmo: then, the programmer does not need to write it any
+  more.
+
+Camlp5 Version 5.02:
+--------------------
+
+* [14 Oct 07] Changed 'pa_lex.cmo' into 'pa_lexer.cmo' with a different
+  syntax (see the documentation).
+* [14 Oct 07] In the EXTEND statement, added "LIKE s" as possible
+  level position to specify a level containing a rule containing "s"
+  in its keywords or tokens.
+* [11 Oct 07] Rewritten parsers and printers in Scheme syntax. Deleted
+  old module Spretty.
+
+Camlp5 Version 5.01:
+--------------------
+
+* [06 Oct 07] Fixed bug in grammars: there was a parsing confusion with
+  entries with qualified names with same final identifier, resulting
+  bad results. Example: (qualified names "Prim.ident" and "Constr.ident"
+  have the same final identifier "ident").
+    EXTEND
+      Prim.ident: [ [ ... ] ];
+      Constr.ident: [ [ ... ] ];
+    END;
+* [05 Oct 07] In Scheme syntax (pa_scheme.cmo), added "type*" (symmetric
+  to "define*") and "exceptionrebind".
+* [04 Oct 07] Added flag C in pr_r.cmo and pr_o.cmo to add comments inside
+  phrases (default = True).
+* [01 Oct 07] Added flag E in pr_r.cmo and pr_o.cmo to ask to equilibrate
+  cases in 'match', 'if', 'parse', 'EXTEND' statements, i.e if one case does
+  not fit on the line, all cases must be cut (default = False).
+* [01 Oct 07] Added module "Diff" in the library (general comparison of
+  two arrays). Implemented with the same algorithm as the Unix 'diff'
+  command.
+* [01 Oct 07] Fixed bug in pa_o.cmo (normal syntax) introduced in version
+  5.00. The example: "function Atom atext as cur :: tl' -> 0" did not
+  parse, printing the error "incorrect alias pattern".
+
+Camlp5 Version 5.00:
+--------------------
+
+* In Camlp5 compiled distributions, there are now two modes. If one wants
+  to compile Camlp5, the 'configure' script can select the mode:
+
+  The two modes are:
+
+  - transitional mode: the syntax tree is compatible with the previous
+    version; users don't have to change their programs, but in the
+    syntax tree quotations introduced by the new parsing kit
+    'q_ast.cmo', the antiquotations are not available.
+
+  - strict mode: the syntax tree is not compatible with the previous
+    version. The user programs may compile without change, but may
+    not.  It depends on the fact that these programs use the syntax
+    tree with their constructors forms instead of their quotation
+    forms. There is a new feature: the syntax tree quotations in user
+    syntax, introduced by the new parsing kit 'q_ast.cmo".
+
+* [25 Sep 07] Fixed bug: if parsing error at end of file, the error
+  message printed a bad line number.
+* [17 Sep 07] Added [Ploc.call_with], a pervasive function.
+* [15 Sep 07] Added 'q_ast.cmo': this is the syntax tree quotations in
+  the current syntax, including the possible user syntax extensions.
+  The antiquotations work only in 'strict' mode, not in 'transitional'
+  mode.
+* [15 Sep 07] In module Pcaml, added grammar entries 'ipatt', 'match_case',
+  'constructor_declaration', 'with_constr', 'poly_variant'.
+* [09 Sep 07] In macros (pa_macro.cmo):
+  - changed parameters syntax: now in curried form instead of parentheses,
+  - added ability to define macro type expressions in signatures, e.g.:
+       DEFINE V t = t -> t
+  - added ability to use IFDEF and IFNDEF for constructors declarations and
+    matchs cases.
+* [08 Sep 07] Fixed bug in normal syntax (pa_o.cmo):
+     class foo : ?foo:unit -> bar
+     type foo = ?bar: unit -> unit;;
+  were accepted but not with space(s) after the colon:
+     class foo : ?foo: unit -> bar
+     type foo = ?bar : unit -> unit;;
+* [06 Sep 07] Fixed problem of bad errors locations in Lisp and Scheme
+  syntaxes.
+* [01 Sep 07] Renamed modules Stdpp into Ploc and Token into Plexing.
+  Changed the names of some of their definitions. Backward compatibility
+  assumed.
+* [31 Aug 07] For packagers: added DESTDIR in Makefiles to allow installation
+  in fake root directories. Usage: make install DESTDIR=fake-root-dir
+
+Camlp5 Version 4.08:
+--------------------
+
+* [] Updated documentation.
+* [30 Aug 07] Added IFDEF macros for signatures (.mli files).
+* [26 Aug 07] Added left factorization for consecutive rules of parsers
+  (and lexers).
+* [21 Aug 07] Added equality functions over syntax trees in module Pcaml.
+* [21 Aug 07] Improved compiled version (camlp5o.opt) to add the fact
+  that the grammar is LL(n) for rules starting with n terminals.
+* [20 Aug 07] Updated library interface comments.
+* [19 Aug 07] Added option -define with 'pa_macro.cmo' which prints the
+  predefined macros and exit.
+* [16 Aug 07] Added pa_extprint.cmo, a new syntax for extensible pretty
+  printers adding a statement EXTEND_PRINTER (cf files pr_r.cmo and pr_o.ml
+  as examples). Added library module Eprinter. Changes (simplifications) in
+  interfaces of Pcaml for the printers.
+
+Camlp5 Version 4.07:
+--------------------
+
+* [02 Aug 07] Fixed bug: option -o did not work for pr_r.cmo and pr_o.cmo
+  (was always stdout).
+* [01 Aug 07] In EXTEND statement, added symbol FLAG: like OPT but return
+  a boolean value. The antiquotation kind "flag" must be used in this case,
+  but the "opt" still works by compatibility.
+* [30 Jul 07] Fixed bug in normal syntax: let C x = C 1 was not accepted.
+* [30 Jul 07] Changed pretty printing *normal* syntax: let C x = .. printed
+  like that, *not* transformed into let x = match .. with C x -> x.
+
+Camlp5 Version 4.06:
+--------------------
+
+* [25 Jul 07] Fixed bug: in normal syntax, the declaration of a constructor
+  named "True" or "False" did not work.
+* [25 Jul 07] While expanding stream parsers, transform unused bound
+  variables into wildcards to prevent compiler warnings.
+* [21 Jul 07] Fixed bug in normal syntax and printing of normal syntax:
+  "poly type" was accepted with revised syntax, i.e. with "!" at beginning
+  and displayed like it. Fixed also the printing of abstract module type
+  which was not implemented. Added printing syntax of fun binding fof class
+  parameters.
+* [20 Jul 07] Added revised syntax for bigarrays (same than normal syntax)
+  and pretty print them in their initial syntax.
+* [18 Jul 07] In Grammar.Entry.print, local entries are displayed with
+  a star character "*".
+* [18 Jul 07] In Grammar module, added type 'parsable', functions 'parsable'
+  and 'Entry.parse_parsable' like for the functorial interface.
+
+Camlp5 Version 4.05:
+--------------------
+
+* [16 Jul 07] Fixed bug in normal syntax: optional semicolon was no more
+  accepted at end of stream patterns.
+* [16 Jul 07] Fixed syntax problems with "~id:" and "~id :" (with a space).
+
+Camlp5 Version 4.04:
+--------------------
+
+* [11 Jul 07] Renamed application as "camlp5".
+* [11 Jul 07] Fixed compilation problems with ocaml version 3.08.1.
+
+Camlp4s Version 4.03:
+---------------------
+
+* [10 Jul 07] Added argument "-name" in "configure" to specify another name
+  of commands and libraries (default = camlp4). E.g. "configure -name camlp5"
+  will build "camlp5", "camlp5r", "camlp5o", "camlp5.1", and so on, and
+  the library directory will be installed in ocaml library directory as
+  name "camlp5".
+* [10 Jul 07] Deleted command "mkcamlp4" which seems not to work any more.
+  This will be fixed in a future version.
+
+Camlp4s Version 4.02:
+---------------------
+
+* [08 Jul 07] Added missing compatibility with ocaml 3.10.0
+* [05 Jul 07] Rebuilt pretty printers with new pretty printer module
+* [27 Jun 07] Added private flag in type declarations and with constraints
+* [21 Jun 07] Added "let..in" in parsers
+* [14 Jun 07] Added html documentation for:
+  - the "extfun" statement
+  - the "fparser" statement
+  - the "lexer" statement
+  - the "parser" statement
+  - the "#pragma" directive
+  - the module Pretty
+  - the new pretty print in Camlp4 (using Pretty and "extfun")
+* [14 Jun 07] Library module Sformat renamed Pretty. The first parameter
+  of the function horiz_vertic is now a function of type "unit -> 'a".
+* [31 May 07] Quotation "row_field" renamed "poly_variant".
+* [03 May 07] Fixed bug in pr_o: did not print "let f ?a = ()".
+
+Camlp4s Version 4.01:
+---------------------
+
+* [27 Apr 07] Added compatibility with ocaml 3.11
+
+Camlp4s Version 4.00:
+---------------------
+
+* [31 Jan 07] Added a new syntax, "lexer", to write parsers of characters
+  in a shorter way. New syntax extension "pa_lex.cmo".
+
+* [26 Jan 07] Deleted "LOCATE" lexing token kind and associated parsing
+  stuff. Seems to be an old thing never used.
+
+* [20 Jan 07] Added "lookahead" stream pattern component kind.
+          syntax ::= "?=" list lookhd_patt sep_by "|"
+     lookhd_patt ::= "[" list pattern sep_by ";" "]"
+  Checks the first stream elements against the pattern, without removing
+  them from the stream (but possibly unfreezing them), continues the stream
+  pattern if ok, fails (Stream.Failure or Stream.Error depending on the
+  position of the component) if not. If there are more than one lookahead
+  pattern, they must be of the same length. Examples in lib/plexer.ml.
+
+* [31 Dec 06] Added the ability to add "!" (in Revised syntax) or "?!"
+  (in normal syntax) after a stream parser component to hint the preprocessor
+  that the called parser cannot fail (which must be true, but not checked)
+  which allows shorter code. E.g.
+     parser [: x = f; y = g ! :] -> (x, y)
+  This example is equivalent to:
+     parser [: x = f; s :] -> let y = g s in (x, y)
+
+* [19 Dec 06] Added "pa_pragma.cmo" adding the directive "#pragma <expr>"
+  which executes <expr> in the context of the preprocessor.
+
+* [16 Dec 06] Added ability to add directives: "Pcaml.add_directive".
+
+* [05 Dec 06] Fixed old bug: "camlp4 foo/bar.cmo" now searchs from the
+  current directory (i.e in its subdirectory "foo"), instead of searching
+  in the path. Before, we had to write "camlp4 ./foo/bar.cmo".
+
+* [01 Dec 06] In "pa_macro.cmo", the expression after IFDEF can use
+  the infix operators OR and AND, the prefix one NOT and expressions
+  between parentheses.
+
+* [01 Dec 06] The same distribution can compile with several versions
+  of OCaml. After "./configure", the good version of OCaml interfaces
+  are selected.
+
+* [01 Dec 06] The type "location" is now abstract. Defined in stdpp.mli.
+
+* [01 Dec 06] First distributed version; started from old camlp4
+  version 3.06 and updated.

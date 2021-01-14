@@ -1,32 +1,28 @@
 opam-version: "2.0"
+synopsis:
+  "A Formal Library about Elliptic Curves for the Mathematical Components Library."
 maintainer: "pierre-yves@strub.nu"
+authors: ["Evmorfia-Iro Bartzia" "Pierre-Yves Strub"]
+license: "CeCILL-B"
 homepage: "https://github.com/strub/elliptic-curves-ssr"
 bug-reports: "https://github.com/strub/elliptic-curves-ssr/issues"
-dev-repo: "git+https://github.com/strub/elliptic-curves-ssr.git"
-license: "CeCILL-B"
-authors: [
-  "Evmorfia-Iro Bartzia"
-  "Pierre-Yves Strub"
+depends: [
+  "ocaml"
+  "coq" {>= "8.7" & < "8.9"}
+  "coq-mathcomp-ssreflect" {>= "1.6" & < "1.8"}
+  "coq-mathcomp-algebra"
+  "coq-mathcomp-field"
+  "coq-mathcomp-multinomials" {= "1.1"}
 ]
+flags: light-uninstall
 build: [
   [make "config"]
   [make "-j%{jobs}%"]
 ]
-install: [
-  [make "install"]
-]
+install: [make "install"]
 remove: ["rm" "-R" "%{lib}%/coq/user-contrib/SsrEllipticCurves"]
-depends: [
-  "ocaml"
-  "coq" {>= "8.7" & < "8.9"}
-  "coq-mathcomp-ssreflect"  {>= "1.6" & < "1.8"}
-  "coq-mathcomp-algebra"
-  "coq-mathcomp-field"
-  "coq-mathcomp-multinomials"  {= "1.1"}
-]
-synopsis:
-  "A Formal Library about Elliptic Curves for the Mathematical Components Library."
-flags: light-uninstall
+dev-repo: "git+https://github.com/strub/elliptic-curves-ssr.git"
 url {
-  src: "git+https://github.com/strub/elliptic-curves-ssr.git#981ac368cddef9719e188101ae5068720771dd40"
+  src:
+    "git+https://github.com/strub/elliptic-curves-ssr.git#981ac368cddef9719e188101ae5068720771dd40"
 }

@@ -1,0 +1,6 @@
+*.a
+*.cm[oiax]
+*.cmxa
+*.lib
+odyl
+odyl_config.ml

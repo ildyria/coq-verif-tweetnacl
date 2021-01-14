@@ -1,0 +1,206 @@
+##########################################################################
+##         #   The Coq Proof Assistant / The Coq Development Team       ##
+##  v      #   INRIA, CNRS and contributors - Copyright 1999-2018       ##
+## <O___,, #       (see CREDITS file for the list of authors)           ##
+##   \VV/  ###############################################################
+##    //   #    This file is distributed under the terms of the         ##
+##         #     GNU Lesser General Public License Version 2.1          ##
+##         #     (see LICENSE file for the text of the license)         ##
+##########################################################################
+
+-include config/Makefile
+
+###########################################################################
+# Executables
+###########################################################################
+
+COQTOPBYTE:=bin/coqtop.byte$(EXE)
+COQTOPEXE:=bin/coqtop$(EXE)
+
+COQDEP:=bin/coqdep$(EXE)
+COQMAKEFILE:=bin/coq_makefile$(EXE)
+GALLINA:=bin/gallina$(EXE)
+COQTEX:=bin/coq-tex$(EXE)
+COQWC:=bin/coqwc$(EXE)
+COQDOC:=bin/coqdoc$(EXE)
+COQC:=bin/coqc$(EXE)
+COQWORKMGR:=bin/coqworkmgr$(EXE)
+COQMAKE_ONE_TIME_FILE:=tools/make-one-time-file.py
+COQTIME_FILE_MAKER:=tools/TimeFileMaker.py
+COQMAKE_BOTH_TIME_FILES:=tools/make-both-time-files.py
+COQMAKE_BOTH_SINGLE_TIMING_FILES:=tools/make-both-single-timing-files.py
+
+TOOLS:=$(COQDEP) $(COQMAKEFILE) $(GALLINA) $(COQTEX) $(COQWC) $(COQDOC) $(COQC)\
+	$(COQWORKMGR)
+TOOLS_HELPERS:=tools/CoqMakefile.in $(COQMAKE_ONE_TIME_FILE) $(COQTIME_FILE_MAKER)\
+	$(COQMAKE_BOTH_TIME_FILES) $(COQMAKE_BOTH_SINGLE_TIMING_FILES)
+
+COQDEPBOOT:=bin/coqdep_boot$(EXE)
+OCAMLLIBDEP:=bin/ocamllibdep$(EXE)
+FAKEIDE:=bin/fake_ide$(EXE)
+
+PRIVATEBINARIES:=$(FAKEIDE) $(OCAMLLIBDEP) $(COQDEPBOOT)
+
+CSDPCERT:=plugins/micromega/csdpcert$(EXE)
+
+###########################################################################
+# Object and Source files
+###########################################################################
+
+ifeq ($(HASNATDYNLINK)-$(BEST),false-opt)
+ # static link of plugins, do not mention them in .v.d
+ DYNDEP:=-dyndep no
+else
+ DYNDEP:=-dyndep var
+endif
+
+# Which coqtop do we use to build .vo file ? The best ;-)
+# Note: $(BEST) could be overridden by the user if a byte build is desired
+# Note: coqdep -dyndep var will use $(DYNOBJ) and $(DYNLIB) extensions
+# for Declare ML Module files.
+
+ifeq ($(BEST),opt)
+COQTOPBEST:=$(COQTOPEXE)
+DYNOBJ:=.cmxs
+DYNLIB:=.cmxs
+else
+COQTOPBEST:=$(COQTOPBYTE)
+DYNOBJ:=.cmo
+DYNLIB:=.cma
+endif
+
+INSTALLBIN:=install
+INSTALLLIB:=install -m 644
+INSTALLSH:=./install.sh
+MKDIR:=install -d
+
+CORESRCDIRS:=\
+  config 	clib 		lib		kernel	intf	kernel/byterun	library \
+  engine 	pretyping	interp	proofs	parsing 	printing \
+  tactics 	vernac		stm		toplevel
+
+PLUGINDIRS:=\
+  omega		romega 		micromega 	quote \
+  setoid_ring 	extraction 	fourier \
+  cc 		funind 		firstorder 	derive \
+  rtauto 	nsatz           syntax          btauto \
+  ssrmatching	ltac		ssr
+
+SRCDIRS:=\
+  $(CORESRCDIRS)  \
+  tools 	tools/coqdoc	\
+  $(addprefix plugins/, $(PLUGINDIRS))
+
+COQRUN := coqrun
+LIBCOQRUN:=kernel/byterun/lib$(COQRUN).a
+DLLCOQRUN:=$(dir $(LIBCOQRUN))dll$(COQRUN)$(DLLEXT)
+
+BYTERUN:=$(addprefix kernel/byterun/, \
+  coq_fix_code.o coq_memory.o coq_values.o coq_interp.o )
+
+# LINK ORDER:
+# respecting this order is useful for developers that want to load or link
+# the libraries directly
+
+CORECMA:=clib/clib.cma lib/lib.cma kernel/kernel.cma intf/intf.cma library/library.cma \
+        engine/engine.cma pretyping/pretyping.cma interp/interp.cma proofs/proofs.cma \
+        parsing/parsing.cma printing/printing.cma tactics/tactics.cma vernac/vernac.cma \
+	stm/stm.cma toplevel/toplevel.cma
+
+TOPLOOPCMA:=stm/proofworkertop.cma stm/tacworkertop.cma stm/queryworkertop.cma
+
+GRAMMARCMA:=grammar/grammar.cma
+
+# modules known by the toplevel of Coq
+
+OBJSMOD:=$(shell cat $(CORECMA:.cma=.mllib))
+
+###########################################################################
+# plugins object files
+###########################################################################
+
+OMEGACMO:=plugins/omega/omega_plugin.cmo
+ROMEGACMO:=plugins/romega/romega_plugin.cmo
+MICROMEGACMO:=plugins/micromega/micromega_plugin.cmo
+QUOTECMO:=plugins/quote/quote_plugin.cmo
+RINGCMO:=plugins/setoid_ring/newring_plugin.cmo
+NSATZCMO:=plugins/nsatz/nsatz_plugin.cmo
+FOURIERCMO:=plugins/fourier/fourier_plugin.cmo
+EXTRACTIONCMO:=plugins/extraction/extraction_plugin.cmo
+FUNINDCMO:=plugins/funind/recdef_plugin.cmo
+FOCMO:=plugins/firstorder/ground_plugin.cmo
+CCCMO:=plugins/cc/cc_plugin.cmo
+BTAUTOCMO:=plugins/btauto/btauto_plugin.cmo
+RTAUTOCMO:=plugins/rtauto/rtauto_plugin.cmo
+NATSYNTAXCMO:=plugins/syntax/nat_syntax_plugin.cmo
+OTHERSYNTAXCMO:=$(addprefix plugins/syntax/, \
+        z_syntax_plugin.cmo \
+        r_syntax_plugin.cmo \
+	int31_syntax_plugin.cmo \
+	ascii_syntax_plugin.cmo \
+        string_syntax_plugin.cmo )
+DERIVECMO:=plugins/derive/derive_plugin.cmo
+LTACCMO:=plugins/ltac/ltac_plugin.cmo plugins/ltac/tauto_plugin.cmo
+SSRMATCHINGCMO:=plugins/ssrmatching/ssrmatching_plugin.cmo
+SSRCMO:=plugins/ssr/ssreflect_plugin.cmo
+
+PLUGINSCMO:=$(LTACCMO) $(OMEGACMO) $(ROMEGACMO) $(MICROMEGACMO) \
+        $(QUOTECMO) $(RINGCMO) \
+        $(FOURIERCMO) $(EXTRACTIONCMO) \
+        $(CCCMO)  $(FOCMO) $(RTAUTOCMO) $(BTAUTOCMO) \
+        $(FUNINDCMO) $(NSATZCMO) $(NATSYNTAXCMO) $(OTHERSYNTAXCMO) \
+	$(DERIVECMO) $(SSRMATCHINGCMO) $(SSRCMO)
+
+ifeq ($(HASNATDYNLINK)-$(BEST),false-opt)
+ STATICPLUGINS:=$(PLUGINSCMO)
+ PLUGINS:=
+else
+ STATICPLUGINS:=
+ PLUGINS:=$(PLUGINSCMO)
+endif
+PLUGINSOPT:=$(PLUGINSCMO:.cmo=.cmxs)
+
+LINKCMO:=$(CORECMA) $(STATICPLUGINS)
+LINKCMX:=$(CORECMA:.cma=.cmxa) $(STATICPLUGINS:.cmo=.cmx)
+
+###########################################################################
+# vo files
+###########################################################################
+
+THEORIESVO := $(patsubst %.v,%.vo,$(shell find theories -type f -name "*.v"))
+PLUGINSVO := $(patsubst %.v,%.vo,$(shell find plugins -type f -name "*.v"))
+ALLVO := $(THEORIESVO) $(PLUGINSVO)
+VFILES := $(ALLVO:.vo=.v)
+
+## More specific targets
+
+THEORIESLIGHTVO:= \
+ $(filter theories/Init/% theories/Logic/% theories/Unicode/% theories/Arith/%, $(THEORIESVO))
+
+ALLSTDLIB := test-suite/misc/universes/all_stdlib
+
+# convert a (stdlib) filename into a module name:
+# remove .vo, replace theories and plugins by Coq, and replace slashes by dots
+vo_to_mod = $(subst /,.,$(patsubst theories/%,Coq.%,$(patsubst plugins/%,Coq.%,$(1:.vo=))))
+
+ALLMODS:=$(call vo_to_mod,$(ALLVO))
+
+
+# Converting a stdlib filename into native compiler filenames
+# Used for install targets
+vo_to_cm = $(foreach vo,$(1),$(dir $(vo)).coq-native/$(subst /,_,$(patsubst theories/%,NCoq_%,$(patsubst plugins/%,NCoq_%,$(vo:.vo=.cm*)))))
+
+vo_to_obj = $(foreach vo,$(1),$(dir $(vo)).coq-native/$(subst /,_,$(patsubst theories/%,NCoq_%,$(patsubst plugins/%,NCoq_%,$(vo:.vo=.o)))))
+
+GLOBFILES:=$(ALLVO:.vo=.glob)
+ifdef NATIVECOMPUTE
+NATIVEFILES := $(call vo_to_cm,$(ALLVO)) $(call vo_to_obj,$(ALLVO))
+else
+NATIVEFILES :=
+endif
+LIBFILES:=$(ALLVO) $(NATIVEFILES) $(VFILES) $(GLOBFILES)
+
+# For emacs:
+# Local Variables:
+# mode: makefile
+# End:

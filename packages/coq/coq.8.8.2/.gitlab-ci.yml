@@ -1,0 +1,352 @@
+image: "$IMAGE"
+
+stages:
+  - docker
+  - build
+  - test
+
+# some default values
+variables:
+  # Format: $IMAGE-V$DATE [Cache is not used as of today but kept here
+  # for reference]
+  CACHEKEY: "bionic_coq-v8.8-V2018-09-20"
+  IMAGE: "$CI_REGISTRY_IMAGE:$CACHEKEY"
+  # By default, jobs run in the base switch; override to select another switch
+  OPAM_SWITCH: "base"
+  # Used to select special compiler switches such as flambda, 32bits, etc...
+  OPAM_VARIANT: ""
+
+docker-boot:
+  stage: docker
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script: []
+  script:
+    - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
+    - cd dev/ci/docker/bionic_coq/
+    - if docker pull "$IMAGE"; then echo "Image prebuilt!"; exit 0; fi
+    - docker build -t "$IMAGE" .
+    - docker push "$IMAGE"
+  except:
+    variables:
+      - $SKIP_DOCKER == "true"
+  tags:
+    - docker
+
+before_script:
+  - cat /proc/{cpu,mem}info || true
+  - ls -a # figure out if artifacts are around
+  - printenv | sort
+  - declare -A switch_table
+  - switch_table=( ["base"]="$COMPILER" ["edge"]="$COMPILER_EDGE" )
+  - opam switch -y "${switch_table[$OPAM_SWITCH]}$OPAM_VARIANT"
+  - eval $(opam config env)
+  - opam list
+  - opam config list
+
+after_script:
+  - echo "The build completed normally (not a runner failure)."
+
+################ GITLAB CACHING ######################
+# - use artifacts between jobs                       #
+######################################################
+
+# TODO figure out how to build doc for installed Coq
+.build-template: &build-template
+  stage: build
+  artifacts:
+    name: "$CI_JOB_NAME"
+    paths:
+      - _install_ci
+      - config/Makefile
+      - test-suite/misc/universes/all_stdlib.v
+    expire_in: 1 week
+  script:
+    - set -e
+
+    - echo 'start:coq.config'
+    - ./configure -warn-error yes -prefix "$(pwd)/_install_ci" ${COQ_EXTRA_CONF}"$COQ_EXTRA_CONF_QUOTE"
+    - echo 'end:coq.config'
+
+    - echo 'start:coq.build'
+    - make -j "$NJOBS" byte
+    - make -j "$NJOBS"
+    - make test-suite/misc/universes/all_stdlib.v
+    - echo 'end:coq:build'
+
+    - echo 'start:coq.install'
+    - make install
+    - make install-byte
+    - cp bin/fake_ide _install_ci/bin/
+    - echo 'end:coq.install'
+
+    - set +e
+
+# every non build job must set dependencies otherwise all build
+# artifacts are used together and we may get some random Coq. To that
+# purpose, we add a spurious dependency `not-a-real-job` that must be
+# overridden otherwise the CI will fail.
+
+# set dependencies when using
+.test-suite-template: &test-suite-template
+  stage: test
+  dependencies:
+    - not-a-real-job
+  script:
+    - cd test-suite
+    - make clean
+    # careful with the ending /
+    - BIN=$(readlink -f ../_install_ci/bin)/
+    - LIB=$(readlink -f ../_install_ci/lib/coq)/
+    - make -j "$NJOBS" BIN="$BIN" LIB="$LIB" all
+  artifacts:
+    name: "$CI_JOB_NAME.logs"
+    when: on_failure
+    paths:
+      - test-suite/logs
+
+# set dependencies when using
+.validate-template: &validate-template
+  stage: test
+  dependencies:
+    - not-a-real-job
+  script:
+    - cd _install_ci
+    - find lib/coq/ -name '*.vo' -print0 > vofiles
+    - for regexp in 's/.vo//' 's:lib/coq/plugins:Coq:' 's:lib/coq/theories:Coq:' 's:/:.:g'; do sed -z -i "$regexp" vofiles; done
+    - xargs -0 --arg-file=vofiles bin/coqchk -boot -silent -o -m -coqlib lib/coq/
+
+.ci-template: &ci-template
+  stage: test
+  script:
+    - set -e
+    - echo 'start:coq.test'
+    - make -f Makefile.ci -j "$NJOBS" ${TEST_TARGET}
+    - echo 'end:coq.test'
+    - set +e
+  dependencies:
+    - build:base
+  variables: &ci-template-vars
+    TEST_TARGET: "$CI_JOB_NAME"
+
+.ci-template-flambda: &ci-template-flambda
+  <<: *ci-template
+  dependencies:
+    - build:edge+flambda
+  variables:
+    <<: *ci-template-vars
+    OPAM_SWITCH: "edge"
+    OPAM_VARIANT: "+flambda"
+
+.windows-template: &windows-template
+  stage: test
+  artifacts:
+    name: "%CI_JOB_NAME%"
+    paths:
+      - artifacts
+    when: always
+    expire_in: 1 week
+  dependencies: []
+  tags:
+    - windows
+  before_script: []
+  script:
+    - call dev/ci/gitlab.bat
+  only:
+    variables:
+      - $WINDOWS == "enabled"
+
+build:base:
+  <<: *build-template
+  variables:
+    COQ_EXTRA_CONF: "-native-compiler yes -coqide opt -with-doc yes"
+
+# no coqide for 32bit: libgtk installation problems
+build:base+32bit:
+  <<: *build-template
+  variables:
+    OPAM_VARIANT: "+32bit"
+    COQ_EXTRA_CONF: "-native-compiler yes"
+
+build:edge:
+  <<: *build-template
+  variables:
+    OPAM_SWITCH: edge
+    COQ_EXTRA_CONF: "-native-compiler yes -coqide opt"
+
+build:edge+flambda:
+  <<: *build-template
+  variables:
+    OPAM_SWITCH: edge
+    OPAM_VARIANT: "+flambda"
+    COQ_EXTRA_CONF: "-native-compiler yes -coqide opt -flambda-opts "
+    COQ_EXTRA_CONF_QUOTE: "-O3 -unbox-closures"
+
+windows64:
+  <<: *windows-template
+  variables:
+    ARCH: "64"
+
+windows32:
+  <<: *windows-template
+  variables:
+    ARCH: "32"
+  except:
+    - /^pr-.*$/
+
+
+pkg:nix:
+  image: nixorg/nix:latest # Minimal NixOS image which doesn't even contain git
+  stage: test
+  variables:
+    # By default we use coq.cachix.org as an extra substituter but this can be overridden
+    EXTRA_SUBSTITUTERS: https://coq.cachix.org
+    EXTRA_PUBLIC_KEYS: coq.cachix.org-1:Jgt0DwGAUo+wpxCM52k2V+E0hLoOzFPzvg94F65agtI=
+    # The following variables should not be overridden
+    GIT_STRATEGY: none
+    CACHIX_PUBLIC_KEY: cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=
+    NIXOS_PUBLIC_KEY: cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+
+  dependencies: [] # We don't need to download build artifacts
+  before_script: [] # We don't want to use the shared 'before_script'
+  script:
+    # Use current worktree as tmpdir to allow exporting artifacts in case of failure
+    - export TMPDIR=$PWD
+    # Install Cachix as documented at https://github.com/cachix/cachix
+    - nix-env -if https://github.com/cachix/cachix/tarball/master --substituters https://cachix.cachix.org --trusted-public-keys "$CACHIX_PUBLIC_KEY"
+    # We build an expression rather than a direct URL to not be dependent on
+    # the URL location; we are forced to put the public key of cache.nixos.org
+    # because there is no --extra-trusted-public-key option.
+    - nix-build -E "import (fetchTarball $CI_PROJECT_URL/-/archive/$CI_COMMIT_SHA.tar.gz) {}" -K --extra-substituters "$EXTRA_SUBSTITUTERS" --trusted-public-keys "$NIXOS_PUBLIC_KEY $EXTRA_PUBLIC_KEYS" | if [ ! -z "$CACHIX_SIGNING_KEY" ]; then cachix push coq; fi
+  artifacts:
+    name: "$CI_JOB_NAME.logs"
+    when: on_failure
+    paths:
+      - nix-build-coq.drv-0/*/test-suite/logs
+
+test-suite:base:
+  <<: *test-suite-template
+  dependencies:
+    - build:base
+
+test-suite:base+32bit:
+  <<: *test-suite-template
+  dependencies:
+    - build:base+32bit
+  variables:
+    OPAM_VARIANT: "+32bit"
+
+test-suite:edge:
+  <<: *test-suite-template
+  dependencies:
+    - build:edge
+  variables:
+    OPAM_SWITCH: edge
+
+test-suite:edge+flambda:
+  <<: *test-suite-template
+  dependencies:
+    - build:edge+flambda
+  variables:
+    OPAM_SWITCH: edge
+    OPAM_VARIANT: "+flambda"
+
+validate:base:
+  <<: *validate-template
+  dependencies:
+    - build:base
+
+validate:base+32bit:
+  <<: *validate-template
+  dependencies:
+    - build:base+32bit
+  variables:
+    OPAM_VARIANT: "+32bit"
+
+validate:edge:
+  <<: *validate-template
+  dependencies:
+    - build:edge
+  variables:
+    OPAM_SWITCH: edge
+
+validate:edge+flambda:
+  <<: *validate-template
+  dependencies:
+    - build:edge+flambda
+  variables:
+    OPAM_SWITCH: edge
+    OPAM_VARIANT: "+flambda"
+
+ci-bedrock2:
+  <<: *ci-template
+
+ci-bignums:
+  <<: *ci-template
+
+ci-color:
+  <<: *ci-template-flambda
+
+ci-compcert:
+  <<: *ci-template-flambda
+
+ci-coq-dpdgraph:
+  <<: *ci-template
+
+ci-coquelicot:
+  <<: *ci-template
+
+ci-elpi:
+  <<: *ci-template
+
+ci-equations:
+  <<: *ci-template
+
+ci-fcsl-pcm:
+  <<: *ci-template
+
+ci-fiat-crypto:
+  <<: *ci-template-flambda
+
+ci-fiat-crypto-legacy:
+  <<: *ci-template-flambda
+
+ci-fiat-parsers:
+  <<: *ci-template
+
+ci-flocq:
+  <<: *ci-template
+
+ci-formal-topology:
+  <<: *ci-template-flambda
+
+ci-geocoq:
+  <<: *ci-template-flambda
+
+ci-hott:
+  <<: *ci-template
+
+ci-iris-lambda-rust:
+  <<: *ci-template-flambda
+
+ci-ltac2:
+  <<: *ci-template
+
+ci-math-comp:
+  <<: *ci-template-flambda
+
+ci-quickchick:
+  <<: *ci-template-flambda
+
+ci-mtac2:
+  <<: *ci-template
+
+ci-sf:
+  <<: *ci-template
+
+ci-unimath:
+  <<: *ci-template-flambda
+
+ci-vst:
+  <<: *ci-template-flambda

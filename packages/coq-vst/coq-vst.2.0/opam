@@ -1,26 +1,17 @@
 opam-version: "2.0"
+synopsis: ""
+description: """
+Verified Software Toolchain
+
+The software toolchain includes static analyzers to check assertions about your program;
+optimizing compilers to translate your program to machine language;
+operating systems and libraries to supply context for your program.
+The Verified Software Toolchain project assures with machine-checked
+proofs that the assertions claimed at the top of the toolchain really
+hold in the machine-language program, running in the operating-system context."""
 maintainer: "VST team"
-homepage: "http://vst.cs.princeton.edu/"
-license: "https://raw.githubusercontent.com/PrincetonUniversity/VST/master/LICENSE"
-build: [
-	[make "-j%{jobs}%" "COMPCERT=%{lib}%/coq/user-contrib/compcert" "version.vo" "msl" "veric" "floyd"]
-	]
-install: [
-	["mkdir" "-p" "%{lib}%/coq/user-contrib/VST"]
-	["cp" "-r" "msl" "%{lib}%/coq/user-contrib/VST/"]
-	["cp" "-r" "veric" "%{lib}%/coq/user-contrib/VST/"]
-	["cp" "-r" "floyd" "%{lib}%/coq/user-contrib/VST/"]
-	["cp" "-r" "sepcomp" "%{lib}%/coq/user-contrib/VST/"]
-	]
-remove: [
-	["rm" "-fr" "%{lib}%/coq/user-contrib/VST"]
-	]
-depends: [
-  "coq" {>= "8.7.0" & < "8.9"}
-  "coq-compcert" {>= "3.2" & < "3.3"}
-]
-tags: []
-authors: ["Andrew W. Appel"
+authors: [
+  "Andrew W. Appel"
   "Lennart Beringer"
   "Sandrine Blazy"
   "Qinxiang Cao"
@@ -31,17 +22,31 @@ authors: ["Andrew W. Appel"
   "Samuel Gruetter"
   "Aquinas Hobor"
   "Jean-Marie Madiot"
-  ]
-description: """
-Verified Software Toolchain
-
-The software toolchain includes static analyzers to check assertions about your program;
-optimizing compilers to translate your program to machine language;
-operating systems and libraries to supply context for your program.
-The Verified Software Toolchain project assures with machine-checked
-proofs that the assertions claimed at the top of the toolchain really
-hold in the machine-language program, running in the operating-system context.
-"""
+]
+license:
+  "https://raw.githubusercontent.com/PrincetonUniversity/VST/master/LICENSE"
+homepage: "http://vst.cs.princeton.edu/"
+depends: [
+  "coq" {>= "8.7.0" & < "8.9"}
+  "coq-compcert" {>= "3.2" & < "3.3"}
+]
+build: [
+  make
+  "-j%{jobs}%"
+  "COMPCERT=%{lib}%/coq/user-contrib/compcert"
+  "version.vo"
+  "msl"
+  "veric"
+  "floyd"
+]
+install: [
+  ["mkdir" "-p" "%{lib}%/coq/user-contrib/VST"]
+  ["cp" "-r" "msl" "%{lib}%/coq/user-contrib/VST/"]
+  ["cp" "-r" "veric" "%{lib}%/coq/user-contrib/VST/"]
+  ["cp" "-r" "floyd" "%{lib}%/coq/user-contrib/VST/"]
+  ["cp" "-r" "sepcomp" "%{lib}%/coq/user-contrib/VST/"]
+]
+remove: ["rm" "-fr" "%{lib}%/coq/user-contrib/VST"]
 url {
   src: "git+https://github.com/ildyria/VST.git#v2.0_ssReflect_notation"
 }

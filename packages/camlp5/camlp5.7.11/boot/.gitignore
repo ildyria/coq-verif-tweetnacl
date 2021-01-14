@@ -1,0 +1,5 @@
+*.cm[oia]
+camlp5
+camlp5o
+camlp5r
+SAVED

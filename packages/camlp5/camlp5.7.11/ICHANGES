@@ -1,0 +1,117 @@
+Internal, very small, undocumented, or invisible changes
+********************************************************
+
+Camlp5 Version 6.12:
+--------------------
+* [20 Jan 14] Removed W3C icon image (in documentation) that should
+  not be in Camlp5 distribution (violates Debian guidelines, in
+  particular).
+
+Camlp5 Version 6.02.1:
+----------------------
+
+* [05 Dec 01] Fixed pb in 'make bootstrap_sources': failed if it was
+  not a CVS working directory.
+
+Camlp5 Version 6.02:
+--------------------
+
+* [12 Nov 10] In 'make steal' (resp. 'make compare_stolen'), build
+  (resp. compare) now 'config.ml' with 'utils/config.mlp' instead of
+  'utils/config.ml' (this file not being existent any more after
+  a 'make clean' in the OCaml sources).
+
+Camlp5 Version 6.01:
+--------------------
+
+Camlp5 Version 6.00:
+--------------------
+
+* [02 Sep 10] Added compatibility for OCaml versions 3.06, 3.05, 3.04,
+  3.03, 3.02, 3.01, 3.00, 2.99, 2.04, 2.03, 2.02, 2.01, 2.00 and 1.07
+  (but do not work on 64 bits architectures due to OCaml bug about
+  input_value/output_value of that time: these versions can be used
+  only on 32 bits architectures). Sometimes (but not always), some of
+  the very old versions of OCaml (1.07, 2.00, 2.01) do not work, typically
+  by raising Stack_overflow in the compiler or failing with segmentation
+  faults in camlp5.
+* [28 Aug 10] Re-added module Ast2pt (file main/ast2pt.ml). Created file
+  lib/versdep.ml and directory ocaml_src/lib/versdep for ocaml versions
+  dependance.
+* [24 Aug 10] Added Makefile.withnew in directory etc for compilations
+  that must be done with the new created camlp5.
+* [23 Aug 10] Changed variable 'NAME' into 'camlp5' in Makefiles and scripts.
+* [20 Aug 10] Added compatibility for OCaml version 3.07.
+* [18 Aug 10] Removed option "-qmod" (internal usage) from q_MLast.cmo.
+* [18 Aug 10] Changed sources to put '#load' instead of normalized comments.
+* [12 Aug 10] Added option "-ignloaddir" in "pa_r.ml".
+
+Camlp5 Version 5.14:
+---------------------
+
+* [28 Apr 10] Fixed bug in "make boostrap_all_ast2pt".
+
+Camlp5 Version 5.13:
+---------------------
+
+* [02 Nov 09] Moved all files ocaml_src/main/ast2pt.ml_<version> into new
+  subdirectory ocaml_src/main/ast2p as "<version>.ml".
+* [2009] Returned repository to CVS (was SVN).
+
+Camlp5 Version 5.08:
+---------------------
+
+* [04 Jan 08] Converted "pr_extend.ml", "pr_extfun.ml" and "q_phony.ml" into
+  usage of "pprintf".
+
+Camlp5 Version 5.07:
+---------------------
+
+* [21 Dec 07] Changed all calls to "make" into "$(MAKE)" in Makefiles.
+  (Some were missing.)
+
+Camlp5 Version 5.06:
+---------------------
+
+Camlp5 Version 5.05:
+---------------------
+
+* [28 Nov 07] Small change in interface Fstream for backtracking parsers.
+
+Camlp5 Version 5.04:
+---------------------
+
+* [26 Nov 07] Added chapter titles in header of documentation in latex.
+* [22 Nov 07] Fixed small bug in "make install", displayed an error
+  while testing the presence of cmx files.
+
+Camlp5 Version 5.03:
+---------------------
+
+* [29 Oct 07] Replaced the exception [Grammar.SkipItem] (designed
+  to make IFDEF in constructor declarations and pattern matching
+  cases work) by the function [Grammar.skip_item].
+
+Camlp5 Version 5.01:
+---------------------
+
+* [06 Oct 2007] Added Prtools.vlistf, Prtools.plistf and Prtools.plistbf,
+  same as their version without 'f', i.e. resp. Prtools.vlist, Prtools.plist
+  and Prtools.plistb, but with the list being a list of functions returning
+  a string allowing to use list of values of heterogen types.
+* [03 Oct 2007] Fixed bug in Prtools.plistb: if printing at least two
+  elements, with the first one fitting in the line, a space was missing.
+  E.g. using pr_r.cmo with "module M (N : P) (Q : R) = struct end".
+* [30 Sep 2007] Cleaned up and simplified q_MLast.ml pa_extend.ml pa_r.ml
+  while keeping compatibility.
+
+Camlp5 Version 4.07:
+---------------------
+
+* [30 Jul 2007] Removed type "Pcaml.err_ctx" and exception "Pcaml.Qerror"
+  from the interface, since only used in the implementation.
+* [28 Jul 2007] Re-added option "-no_slist" of pr_extend.cmo which had
+  disappeared after rewritting the pretty printing system.
+* [28 Jul 2007] Fixed name of symbol in case of use of FOLD0, FOLD0SEP, etc.
+  and changed "simple_expr" in these syntax into 'expr LEVEL "simple"'.
+

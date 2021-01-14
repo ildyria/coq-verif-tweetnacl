@@ -1,0 +1,6 @@
+*.a
+*.cm[oiax]
+*.cmxa
+*.lib
+crc.tmp
+camlp5
