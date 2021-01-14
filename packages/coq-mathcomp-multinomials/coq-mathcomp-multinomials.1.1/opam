@@ -29,3 +29,6 @@ tags: [
   "date:2016"
   "logpath:SsrMultinomials"
 ]
+url {
+  src: "packages/coq-mathcomp-multinomials/coq-mathcomp-multinomials.1.1"
+}

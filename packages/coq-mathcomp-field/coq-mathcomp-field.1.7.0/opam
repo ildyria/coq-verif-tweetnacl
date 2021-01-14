@@ -37,6 +37,5 @@ install: [make "-C" "mathcomp/field" "install"]
 remove: ["sh" "-c" "rm -rf '%{lib}%/coq/user-contrib/mathcomp/field'"]
 dev-repo: "git+https://github.com/math-comp/math-comp.git"
 url {
-  src: "http://github.com/math-comp/math-comp/archive/mathcomp-1.7.0.tar.gz"
-  checksum: "md5=e1bde60e67844e692f88c5d64a44004e"
+  src: "packages/coq-mathcomp"
 }

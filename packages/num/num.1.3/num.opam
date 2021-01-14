@@ -25,3 +25,6 @@ depends: [
 conflicts: [ "base-num" ]
 synopsis:
   "The legacy Num library for arbitrary-precision integer and rational arithmetic"
+url {
+  src: "packages/num/num.1.3"
+}

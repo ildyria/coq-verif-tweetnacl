@@ -12,3 +12,6 @@ remove: ["rm" "-rf" "%{lib}%/coq/user-contrib/stdpp"]
 depends: [
   "coq" { (>= "8.6" & < "8.8~") | (= "dev") }
 ]
+url {
+  src: "packages/coq-stdpp/coq-stdpp.1.1.0"
+}

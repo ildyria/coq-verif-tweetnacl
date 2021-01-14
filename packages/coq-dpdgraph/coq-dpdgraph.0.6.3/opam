@@ -39,5 +39,5 @@ yellow box : module
 objects that are not in a yellow box are Coq objects.
 """
 url {
-  src: "https://github.com/Karmaki/coq-dpdgraph/archive/v0.6.3.zip"
+  src: "packages/coq-dpdgraph/coq-dpdgraph.0.6.3"
 }

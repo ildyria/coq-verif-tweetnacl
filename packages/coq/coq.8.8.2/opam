@@ -70,5 +70,4 @@ remove: [
 extra-files: ["coq.install" "md5=6e8ff2905b5508b143a8acb16e3b5150"]
 url {
   src: "packages/coq/coq.8.8.2"
-  checksum: "md5=5d693cd1953a0dd74920b43d183bc26c"
 }

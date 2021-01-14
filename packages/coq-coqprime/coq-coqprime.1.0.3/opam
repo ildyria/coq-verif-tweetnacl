@@ -21,6 +21,5 @@ depends: [
 synopsis: "Certifying prime numbers in Coq"
 flags: light-uninstall
 url {
-  src: "."
-  checksum: "md5=3430856778d10abe378fbdd385ac834d"
+  src: "coq-coqprime/coq-coqprime.1.0.3"
 }

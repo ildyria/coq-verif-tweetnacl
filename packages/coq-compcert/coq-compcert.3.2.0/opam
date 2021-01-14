@@ -22,7 +22,7 @@ remove: [
   ["rm" "-R" "%{lib}%/coq/user-contrib/compcert"]
 ]
 url {
-  src: "."
+  src: "packages/coq-compcert/coq-compcert.3.2.0"
 }
 synopsis: ""
 description: "The CompCert C compiler."

@@ -44,6 +44,5 @@ remove: [
 ]
 dev-repo: "git+https://gitlab.inria.fr/fpottier/menhir.git"
 url {
-  src: "http://gallium.inria.fr/~fpottier/menhir/menhir-20180528.tar.gz"
-  checksum: "md5=55dc9651a95f582b3534c438353809a2"
+  src: "packages/menhir/menhir.20180528"
 }

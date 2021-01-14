@@ -48,5 +48,5 @@ install: [
 ]
 remove: ["rm" "-fr" "%{lib}%/coq/user-contrib/VST"]
 url {
-  src: "git+https://github.com/ildyria/VST.git#v2.0_ssReflect_notation"
+  src: "packages/coq-vst/coq-vst.2.0"
 }

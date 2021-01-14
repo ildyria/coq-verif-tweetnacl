@@ -46,6 +46,5 @@ remove: ["rm" "-rf" "%{lib}%/coq/ide" "%{doc}%/FAQ-CoqIde"]
 dev-repo: "git+https://github.com/coq/coq.git"
 extra-files: ["coqide.install" "md5=d005cda8cb7888fbea94c5416dcb31bc"]
 url {
-  src: "https://github.com/coq/coq/archive/V8.8.2.tar.gz"
-  checksum: "md5=5d693cd1953a0dd74920b43d183bc26c"
+  src: "packages/coq/coq.8.8.2"
 }

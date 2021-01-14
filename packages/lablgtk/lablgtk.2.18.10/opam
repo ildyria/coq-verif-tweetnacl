@@ -38,6 +38,5 @@ extra-files: [
   ["lablgldir.patch" "md5=8cf5f3efbcb7bb8294424c30f77ea81f"]
 ]
 url {
-  src: "https://github.com/garrigue/lablgtk/archive/2.18.10.tar.gz"
-  checksum: "md5=81866ecd41ffb3dda2fde2fbca6bfd66"
+  src: "packages/lablgtk/lablgtk.2.18.10"
 }

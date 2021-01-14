@@ -23,6 +23,5 @@ install: [make "install"]
 remove: ["rm" "-R" "%{lib}%/coq/user-contrib/SsrEllipticCurves"]
 dev-repo: "git+https://github.com/strub/elliptic-curves-ssr.git"
 url {
-  src:
-    "git+https://github.com/strub/elliptic-curves-ssr.git#981ac368cddef9719e188101ae5068720771dd40"
+  src: "packages/coq-ssr-elliptic-curves/coq-ssr-elliptic-curves.dev"
 }
