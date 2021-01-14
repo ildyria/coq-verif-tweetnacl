@@ -67,9 +67,8 @@ remove: [
     "%{share}%/emacs/site-lisp/gallina-syntax.el"
   ]
 ]
-dev-repo: "git+https://github.com/coq/coq.git"
 extra-files: ["coq.install" "md5=6e8ff2905b5508b143a8acb16e3b5150"]
 url {
-  src: "https://github.com/coq/coq/archive/V8.8.2.tar.gz"
+  src: "."
   checksum: "md5=5d693cd1953a0dd74920b43d183bc26c"
 }

@@ -22,7 +22,7 @@ remove: [
   ["rm" "-R" "%{lib}%/coq/user-contrib/compcert"]
 ]
 url {
-  src: "git+https://github.com/ildyria/CompCert.git#v3.2WithVO"
+  src: "."
 }
 synopsis: ""
 description: "The CompCert C compiler."
