@@ -17,6 +17,7 @@
 .depend
 .loadpath
 _CoqProject
+!packages/**/_CoqProject
 *.cache
 *~
 *#
