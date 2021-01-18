@@ -4,6 +4,7 @@ SOURCES= code-tweetnacl.tex collection.bib conclusion.tex coq.tex highlevel.tex 
 PREVIOUS= csf-supplementary/previous.tex csf-supplementary/usenix-*.tex csf-supplementary/tweetverif-USENIX.pdf csf-supplementary/tweetverif-SP.pdf
 
 tweetverif.pdf: $(SOURCES)
+	latex
 	pdflatex tweetverif.tex
 	bibtex tweetverif
 	pdflatex tweetverif.tex
