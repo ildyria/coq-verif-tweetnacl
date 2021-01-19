@@ -1,53 +1,47 @@
 # TweetNaCl verification
 -------------------------------
 
-## Setting up your environment
-
-### 1. download & install GCC and OPAM.
+## dependencies: GCC and OPAM.
 
 [Install OPAM][1], e.g. for Debian:
 
 ```bash
 sudo apt-get install gcc opam
-opam init
-eval $(opam env)
 ```
 
 **Verify that you are using OPAM 2.x.**
 
 ```bash
 opam --version
-# 2.0.3
+# 2.0.5
 ```
 
-### 2. Set OPAM for Tweetnacl so it does not pollute other projects.
+## Setting up your environment
+
+### 1. Set OPAM for Tweetnacl so it does not pollute other projects.
 
 Because we use Coq 8.8.2, we are forced to use Ocaml 4.06.1.
 
 ```bash
+opam init
+eval $(opam env)
 opam switch create Tweetnacl 4.06.1
 eval $(opam env)
 ```
 
-### 3. Set up general dependencies (coq 8.8.2, coqide, ssreflect, stdpp, coqprime, VST 2.0)
+### 2. Set up general dependencies (coq 8.8.2, coqide, ssreflect, stdpp, coqprime, VST 2.0)
 
 Add the repository general dependencies:
-```bash
-opam repo add coq-released https://coq.inria.fr/opam/released
-opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
-```
-
-### 4. Set up project related dependencies (dependencies at specific commit number.)
-
 ```bash
 cd coq-verif-tweetnacl
 opam repo add tweetnacl .
 ```
 
-### 5. update and install dependencies.
+### 3. update and install dependencies.
 
 ```bash
 opam update
+opam install coq.8.8.2
 # if you want coqide (may require additional dependencies)
 opam install coqide.8.8.2
 ```
@@ -60,7 +54,7 @@ opam install --deps-only coq-verif-tweetnacl
 ```
 
 
-### 6. Install the full Verification
+### 4. Install the full Verification
 
 Everything is compiled the following command:
 
@@ -70,7 +64,7 @@ opam install coq-verif-tweetnacl
 
 However if you want to compile each part you can follow these steps:
 
-##### 6.1 Install TweetNacl Mathematical Model and Specification
+##### 4.1 Install TweetNacl Mathematical Model and Specification
 
 To compile manually:
 ```bash
@@ -91,7 +85,7 @@ cd proofs/spec/
 opam pin add -y coq-tweetnacl-spec .
 ```
 
-##### 6.2 Install TweetNacl Verification
+##### 4.2 Install TweetNacl Verification
 
 To compile manually:
 ```bash
