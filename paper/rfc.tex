@@ -112,38 +112,38 @@ We define the little-endian projection to integers as follows.
   Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
   a function given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
 \end{dfn}
-\begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
-Fixpoint ZofList {n:Z} (a:list Z) : Z :=
-  match a with
-  | [] => 0
-  | h :: q => h + 2^n * ZofList q
-  end.
-\end{lstlisting}
-The encoding from integers to bytes is defined in a similar way.
+% \begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
+% Fixpoint ZofList {n:Z} (a:list Z) : Z :=
+%   match a with
+%   | [] => 0
+%   | h :: q => h + 2^n * ZofList q
+%   end.
+% \end{lstlisting}
+Similarly, we define the encoding from integers to bytes.
 \begin{dfn}
   Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
   $n$ and $a$ returns $a$'s little-endian encoding as a list with radix $2^n$.
   %XXX-Peter: Again I'm confused... why are there two \rightarrows?
   %XXX-Benoit it is the functional view of arguments and partial functions. It is called Currying.
 \end{dfn}
-\begin{lstlisting}[language=Coq,aboveskip=1pt,belowskip=1pt]
-Fixpoint ListofZn_fp {n:Z} (a:Z) (f:nat) : list Z :=
-match f with
-  | 0%nat => []
-  | S fuel => (a mod 2^n) :: ListofZn_fp (a/2^n) fuel
-end.
+% \begin{lstlisting}[language=Coq,aboveskip=1pt,belowskip=1pt]
+% Fixpoint ListofZn_fp {n:Z} (a:Z) (f:nat) : list Z :=
+% match f with
+%   | 0%nat => []
+%   | S fuel => (a mod 2^n) :: ListofZn_fp (a/2^n) fuel
+% end.
 
-Definition ListofZ32 {n:Z} (a:Z) : list Z :=
-  ListofZn_fp n a 32.
-\end{lstlisting}
-In order to increase the trust in our formalization, we prove that
-\Coqe{ListofZ32} and \Coqe{ZofList} are inverse to each other.
-\begin{lstlisting}[language=Coq,aboveskip=1pt,belowskip=1pt]
-Lemma ListofZ32_ZofList_Zlength: forall (l:list Z),
-  Forall (fun x => 0 <= x < 2^n) l ->
-  Zlength l = 32 ->
-  ListofZ32 n (ZofList n l) = l.
-\end{lstlisting}
+% Definition ListofZ32 {n:Z} (a:Z) : list Z :=
+%   ListofZn_fp n a 32.
+% \end{lstlisting}
+% In order to increase the trust in our formalization, we prove that
+% \Coqe{ListofZ32} and \Coqe{ZofList} are inverse to each other.
+% \begin{lstlisting}[language=Coq,aboveskip=1pt,belowskip=1pt]
+% Lemma ListofZ32_ZofList_Zlength: forall (l:list Z),
+%   Forall (fun x => 0 <= x < 2^n) l ->
+%   Zlength l = 32 ->
+%   ListofZ32 n (ZofList n l) = l.
+% \end{lstlisting}
 
 With those tools at hand, we formally define the decoding and encoding as
 specified in the RFC.

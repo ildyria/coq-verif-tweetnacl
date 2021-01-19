@@ -92,8 +92,7 @@ Inductive point := EC_Inf | EC_In of K * K.
 Notation "(| x, y |)" := (EC_In x y).
 Notation "\infty" := (EC_Inf).
 
-Record ecuType :=
-  { A : K; B : K; _ : 4 * A^3 + 27 * B^2 != 0}.
+Record ecuType := { A : K; B : K; _: 4 * A^3 + 27 * B^2 != 0}.
 Definition oncurve (p : point) :=
   if p is (| x, y |)
     then y^2 == x^3 + A * x + B
@@ -152,8 +151,7 @@ a \texttt{K : ecuFieldType} ---the type of fields whose characteristic is neithe
 2 nor 3--- and \texttt{M : mcuType} ---a record that packs the curve
 parameters $a$ and $b$ along with the proofs that $b \neq 0$ and $a^2 \neq 4$.
 \begin{lstlisting}[language=Coq,belowskip=-0.1 \baselineskip]
-Record mcuType :=
-  { cA : K; cB : K; _ : cB != 0; _ : cA^2 != 4}.
+Record mcuType := { cA : K; cB : K; _: cB != 0; _: cA^2 != 4}.
 Definition oncurve (p : point K) :=
 if p is (| x, y |)
   then cB * y^+2 == x^+3 + cA * x^+2 + x
@@ -249,8 +247,7 @@ we ensure that $(0,0)$ is the only point with a $y$-coordinate of $0$.
   The number $a^2-4$ is not a square in \K.
 \end{hypothesis}
 \begin{lstlisting}[language=Coq]
-Hypothesis mcu_no_square :
-  forall x : K, x^+2 != (M#a)^+2 - 4%:R.
+Hypothesis mcu_no_square : forall x : K, x^+2 != (M#a)^+2 - 4%:R.
 \end{lstlisting}
 
 We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
@@ -401,15 +398,15 @@ elements ($0, 1$) and prove \lref{lemma:Zmodp_field}.
 \end{lemma}
 For $a = 486662$, by using the Legendre symbol we prove that
 $a^2 - 4$ and $2$ are not squares in $\F{p}$.
-\begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
-Fact a_not_square : forall x: Zmodp.type,
-  x^+2 != (Zmodp.pi 486662)^+2 - 4%:R.
-\end{lstlisting}
-\begin{lstlisting}[language=Coq,label=two_not_square,belowskip=-0.1 \baselineskip]
-Fact two_not_square : forall x: Zmodp.type,
-  x^+2 != 2%:R.
-\end{lstlisting}
-We now consider $M_{486662,1}(\F{p})$ and $M_{486662,2}(\F{p})$, one of its quadratic twists.
+% \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
+% Fact a_not_square : forall x: Zmodp.type,
+%   x^+2 != (Zmodp.pi 486662)^+2 - 4%:R.
+% \end{lstlisting}
+% \begin{lstlisting}[language=Coq,label=two_not_square,belowskip=-0.1 \baselineskip]
+% Fact two_not_square : forall x: Zmodp.type,
+%   x^+2 != 2%:R.
+% \end{lstlisting}
+This allows us to study $M_{486662,1}(\F{p})$ and $M_{486662,2}(\F{p})$, one of its quadratic twists.
 % \begin{dfn}Let the following instantiations of \aref{alg:montgomery-double-add}:\\
 \begin{dfn}
   %Let the following instantiations of \aref{alg:montgomery-ladder}:\\
@@ -434,10 +431,10 @@ With \tref{thm:montgomery-ladder-correct} we derive the following two lemmas:
 As the Montgomery ladder does not depend on $b$, it is trivial to
 see that the computations done for points in $M_{486662,1}(\F{p})$ and in
 $M_{486662,2}(\F{p})$ are the same.
-\begin{lstlisting}[language=Coq]
-Theorem curve_twist_eq: forall n x,
-  curve25519_Fp_ladder n x = twist25519_Fp_ladder n x.
-\end{lstlisting}
+% \begin{lstlisting}[language=Coq]
+% Theorem curve_twist_eq: forall n x,
+%   curve25519_Fp_ladder n x = twist25519_Fp_ladder n x.
+% \end{lstlisting}
 
 Because $2$ is not a square in $\F{p}$, it allows us split $\F{p}$ into two sets.
 \begin{lemma}
