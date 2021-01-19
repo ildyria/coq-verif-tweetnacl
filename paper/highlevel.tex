@@ -48,6 +48,7 @@ $a^2 - 4$ is not a square in $\K$, we prove the correctness of the ladder (\tref
 \begin{figure}[h]
   \centering
   \include{tikz/highlevel1}
+  \vspace{-0.5cm}
   \caption{Overview of the proof of Montgomery ladder's correctness}
   \label{tikz:ProofHighLevel1}
 \end{figure}
@@ -193,13 +194,13 @@ After having verified the group properties, it follows that the bijection is a g
 \begin{lemma}
   \label{lemma:bij-ecc}
   Let $M_{a,b}$ be a Montgomery curve, define
-  %\vspace{-0.3em}
+  \vspace{-0.3em}
   $$a' = \frac{3-a^2}{3b^2} \text{\ \ \ \ and\ \ \ \ } b' = \frac{2a^3 - 9a}{27b^3}.$$
   then $E_{a',b'}$ is a Weierstra{\ss} curve, and the mapping
   $\varphi : M_{a,b} \mapsto E_{a',b'}$ defined as:
-  %\vspace{-0.5em}
+  \vspace{-0.5em}
   \begin{align*}
-    \varphi(\Oinf_M)   & = \Oinf_E                                                 \\
+    \varphi(\Oinf_M)   & = \Oinf_E                                                 \\[-0.5ex]
     \varphi( (x , y) ) & = \left( \frac{x}{b} + \frac{a}{3b} , \frac{y}{b} \right)
   \end{align*}
   is a group isomorphism between elliptic curves.
@@ -255,7 +256,7 @@ Hypothesis mcu_no_square :
 We define $\chi$ and $\chi_0$ to return the \xcoord of points on a curve.
 \begin{dfn}
   Let $\chi : M_{a,b}(\K) \mapsto \K \cup \{\infty\}$ and $\chi_0 : M_{a,b}(\K) \mapsto \K$ such that
-  %\vspace{-0.5em}
+  \vspace{-0.5em}
   \begin{align*}
     \chi((x,y))   & = x, & \chi(\Oinf)   & = \infty, &  & \text{and} \\[-0.5ex]
     \chi_0((x,y)) & = x, & \chi_0(\Oinf) & = 0.
@@ -269,7 +270,7 @@ Using projective coordinates we prove the formula for differential addition.% (\
   let $X_1, Z_1, X_2, Z_2, X_4, Z_4 \in \K$, such that $(X_1,Z_1) \neq (0,0)$,
   $(X_2,Z_2) \neq (0,0)$, $X_4 \neq 0$ and $Z_4 \neq 0$.
   Define
-  %\vspace{-0.5em}
+  \vspace{-0.5em}
   \begin{align*}
     X_3 & = Z_4((X_1 - Z_1)(X_2+Z_2) + (X_1+Z_1)(X_2-Z_2))^2 \\[-0.5ex]
     Z_3 & = X_4((X_1 - Z_1)(X_2+Z_2) - (X_1+Z_1)(X_2-Z_2))^2
@@ -287,8 +288,8 @@ Similarly, we also prove the formula for point doubling.% (\lref{lemma:xDBL}).
   Let $M_{a,b}$ be a Montgomery curve such that $a^2-4$ is not a square in \K, and
   let $X_1, Z_1 \in \K$, such that $(X_1,Z_1) \neq (0,0)$. Define
   \begin{align*}
-    c   & = (X_1 + Z_1)^2 - (X_1 - Z_1)^2                   \\
-    X_3 & = (X_1 + Z_1)^2(X_1-Z_1)^2                        \\
+    c   & = (X_1 + Z_1)^2 - (X_1 - Z_1)^2                   \\[-0.5ex]
+    X_3 & = (X_1 + Z_1)^2(X_1-Z_1)^2                        \\[-0.5ex]
     Z_3 & = c\Big((X_1 + Z_1)^2+\frac{a-2}{4}\times c\Big),
   \end{align*}
   then for any point $P_1$ in $M_{a,b}(\K)$ such that $X_1/Z_1 = \chi(P_1)$,
@@ -355,6 +356,7 @@ The white tiles are definitions while green tiles are important lemmas and theor
 \begin{figure}[h]
   \centering
   \include{tikz/highlevel2}
+  \vspace{-0.5cm}
   \caption{Proof dependencies for the correctness of X25519.}
   \label{tikz:ProofHighLevel2}
 \end{figure}
@@ -514,12 +516,12 @@ We then specialize the basic operations in order to speed up the verification
 of formulas by using rewrite rules:
 \begin{equation*}
   \begin{split}
-    (a,0) + (b,0) &= (a+b, 0)\\
+    (a,0) + (b,0) &= (a+b, 0)\\[-0.5ex]
     (a, 0)^{-1} &= (a^{-1}, 0)
   \end{split}
   \qquad
   \begin{split}
-    (a,0) \cdot   (b,0) &= (a \cdot b, 0)\\
+    (a,0) \cdot   (b,0) &= (a \cdot b, 0)\\[-0.5ex]
     (0,a)^{-1} &= (0,(2\cdot a)^{-1})
   \end{split}
 \end{equation*}
@@ -558,16 +560,16 @@ We now study the case of the scalar multiplication and show similar proofs.
   \label{lemma:proj}
   For all $n \in \N$, for all point $P\in\F{p}\times\F{p}$ on the curve
   $M_{486662,1}(\F{p})$ (respectively on the quadratic twist $M_{486662,2}(\F{p})$), we have
-  %\vspace{-0.3em}
+  \vspace{-0.3em}
   \begin{align*}
-    P & \in M_{486662,1}(\F{p}) & \implies \varphi_c(n \cdot P) & = n \cdot \varphi_c(P), &  & \text{and} \\
+    P & \in M_{486662,1}(\F{p}) & \implies \varphi_c(n \cdot P) & = n \cdot \varphi_c(P), &  & \text{and} \\[-0.5ex]
     P & \in M_{486662,2}(\F{p}) & \implies \varphi_t(n \cdot P) & = n \cdot \varphi_t(P).
   \end{align*}
 \end{lemma}
 Notice that
-%\vspace{-0.5em}
+\vspace{-0.5em}
 \begin{align*}
-  \forall P \in M_{486662,1}(\F{p}), &  & \psi(\chi_0(\varphi_c(P))) & = \chi_0(P), &  & \text{and} \\
+  \forall P \in M_{486662,1}(\F{p}), &  & \psi(\chi_0(\varphi_c(P))) & = \chi_0(P), &  & \text{and} \\[-0.5ex]
   \forall P \in M_{486662,2}(\F{p}), &  & \psi(\chi_0(\varphi_t(P))) & = \chi_0(P).
 \end{align*}
 

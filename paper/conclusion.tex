@@ -15,11 +15,11 @@ In our case we rely on:
             used by Coq must be consistent in order to trust the proofs. As an axiom,
             we assume that the functional extensionality is also consistent with that logic.
             $$\forall x, f(x) = g(x) \implies f = g$$
-            \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
-Lemma f_ext: forall (A B:Type),
-  forall (f g: A -> B),
-  (forall x, f(x) = g(x)) -> f = g.
-\end{lstlisting}
+%             \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
+% Lemma f_ext: forall (A B:Type),
+%   forall (f g: A -> B),
+%   (forall x, f(x) = g(x)) -> f = g.
+% \end{lstlisting}
 
       \item \textbf{Verifiable Software Toolchain}. This framework developed at
             Princeton allows a user to prove that a Clight code matches pure Coq
@@ -165,3 +165,4 @@ mathematical definitions as given in~\cite[Sec.~2]{Ber06}.
 Therefore in addition to proving the mathematical correctness of TweetNaCl,
 we also increases the trust of other works such as
 \cite{zinzindohoue2017hacl,Erbsen2016SystematicSO} which rely on RFC~7748.
+\vspace{-0.3cm}

@@ -35,6 +35,6 @@ As follow, we provide the explanations of the above changes to TweetNaCl's code.
   \item lines 79-82: VST does not support \TNaCle{for} loops over \TNaCle{i64}, we convert it into an \TNaCle{int}.\\
   In the function calls of \TNaCle{sel25519}, the specifications requires the use of \TNaCle{int}, the value of \TNaCle{r} being either \TNaCle{0} or \TNaCle{1}, we consider this change safe.
 
-  \item Lines 90-101: The \TNaCle{for} loop does not add any benefits to the code. By removing it we simplify the source and the verification steps as we do not need to deal with pointer arithmetic. As a result, \TNaCle{x} can be limited to only 16 \TNaCle{i64}, \ie \TNaCle{gf}.
+  \item Lines 90-101: The \TNaCle{for} loop does not add any benefits to the code. By removing it we simplify the source and the verification steps as we do not need to deal with pointer arithmetic. Thus, \TNaCle{x} is limited to only 16 \TNaCle{i64}, \ie \TNaCle{gf}.
 
 \end{itemize}

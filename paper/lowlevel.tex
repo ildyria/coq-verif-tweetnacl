@@ -162,7 +162,8 @@ are consumed and VST will expect a third memory section (\texttt{a}) which does 
 Examples of such cases are illustrated in \fref{tikz:MemSame}.
 \begin{figure}[h]%
       \centering%
-      \include{tikz/memory_same_sh}%
+	  \include{tikz/memory_same_sh}%
+	  \vspace{-0.5cm}
       \caption{Aliasing and Separation Logic}%
       \label{tikz:MemSame}%
 \end{figure}
@@ -181,19 +182,19 @@ In the proof of our specification, we do a case analysis over $k$ when needed.
 This solution does not cover all the possible cases of aliasing over 3 pointers
 (\eg \texttt{o} = \texttt{a} = \texttt{b}) but it is enough to satisfy our needs.
 
-\subheading{Improving verification speed.}
-To make the verification the smoothest, the Coq formal definition of the function
-should be as close as possible to the C implementation.
-Attempting to write definitions more ``elegantly'', for example through the extensive
-use of recursion, is often counter-productive because such definitions increase the
-amount of proofs required for, \eg bounds checking or loop invariants.
+% \subheading{Improving verification speed.}
+% To make the verification the smoothest, the Coq formal definition of the function
+% should be as close as possible to the C implementation.
+% Attempting to write definitions more ``elegantly'', for example through the extensive
+% use of recursion, is often counter-productive because such definitions increase the
+% amount of proofs required for, \eg bounds checking or loop invariants.
 
-In order to further speed-up the verification process, to prove the specification
-\TNaCle{crypto_scalarmult}, we only need the specification of the subsequently
-called functions (\eg \TNaCle{M}).
-This provide with multiple advantages: the verification by Coq can be
-done in parallel and multiple users can work on proving different functions at
-the same time.
+% In order to further speed-up the verification process, to prove the specification
+% \TNaCle{crypto_scalarmult}, we only need the specification of the subsequently
+% called functions (\eg \TNaCle{M}).
+% This provide with multiple advantages: the verification by Coq can be
+% done in parallel and multiple users can work on proving different functions at
+% the same time.
 % We proved all intermediate functions.
 
 

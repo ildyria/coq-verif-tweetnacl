@@ -126,7 +126,7 @@ The encoding from integers to bytes is defined in a similar way.
   %XXX-Peter: Again I'm confused... why are there two \rightarrows?
   %XXX-Benoit it is the functional view of arguments and partial functions. It is called Currying.
 \end{dfn}
-\begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
+\begin{lstlisting}[language=Coq,aboveskip=1pt,belowskip=1pt]
 Fixpoint ListofZn_fp {n:Z} (a:Z) (f:nat) : list Z :=
 match f with
   | 0%nat => []
@@ -138,7 +138,7 @@ Definition ListofZ32 {n:Z} (a:Z) : list Z :=
 \end{lstlisting}
 In order to increase the trust in our formalization, we prove that
 \Coqe{ListofZ32} and \Coqe{ZofList} are inverse to each other.
-\begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
+\begin{lstlisting}[language=Coq,aboveskip=1pt,belowskip=1pt]
 Lemma ListofZ32_ZofList_Zlength: forall (l:list Z),
   Forall (fun x => 0 <= x < 2^n) l ->
   Zlength l = 32 ->

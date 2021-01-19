@@ -17,15 +17,14 @@ The actual proofs can be found in the \textbf{\texttt{proofs}} folder in which
 the reader will find the directories \textbf{\texttt{spec}} and \textbf{\texttt{vst}}.
 
 \subheading{\texttt{packages/}}
-This folder makes sure that we are using the correct version of
-Verifiable Software Toolchain (version 2.0) and CompCert (version 3.2).
-Additionally it pins the version of the elliptic curves library by Bartzia and Strub
-and allows us to use the theorem of quadratic reciprocity.
+This folder provides all the required Coq dependencies: ssreflect (1.7), 
+VST (2.0), CompCert (3.2), the elliptic curves library by Bartzia \& Strub,
+and the theorem of quadratic reciprocity.
 
 \subheading{\texttt{proofs/spec/}}
 In this folder the reader will find multiple levels of implementation of X25519.
 \begin{itemize}
-  \item \textbf{\texttt{Libs/}} contains basic libraries and tools to help use
+  \item \textbf{\texttt{Libs/}} contains basic libraries and tools to help
         reason with lists and decidable procedures.
   \item \textbf{\texttt{ListsOp/}} defines operators on list such as
         \Coqe{ZofList} and related lemmas using \eg \VSTe{Forall}.
