@@ -110,16 +110,16 @@ We now turn our attention to the decoding and encoding of the byte arrays.
 We define the little-endian projection to integers as follows.
 \begin{dfn}
   Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
-  a function given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
+  a function which given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
 \end{dfn}
-% \begin{lstlisting}[language=Coq,aboveskip=0pt,belowskip=1pt]
+% \begin{lstlisting}[language=Coq,belowskip=1pt]
 % Fixpoint ZofList {n:Z} (a:list Z) : Z :=
 %   match a with
 %   | [] => 0
 %   | h :: q => h + 2^n * ZofList q
 %   end.
 % \end{lstlisting}
-Similarly, we define the encoding from integers to bytes.
+Similarly, we define the projection from an integers to a little-endian list.
 \begin{dfn}
   Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
   $n$ and $a$ returns $a$'s little-endian encoding as a list with radix $2^n$.
