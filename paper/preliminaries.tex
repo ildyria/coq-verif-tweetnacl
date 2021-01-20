@@ -32,7 +32,7 @@ are isomorphic via $(x,y) \mapsto (x, \sqrt{b/b'} \cdot y)$.
   a curve that is isomorphic over $\F{p^2}$~\cite{cryptoeprint:2017:212}.
 \end{dfn}
 
-Points in $M_{a,b}(\K)$ can be equipped with a structure of an commutative group
+Points in $M_{a,b}(\K)$ can be equipped with a structure of a commutative group
 with the addition operation $+$ and with neutral element the point at infinity $\Oinf$.
 For a point $P \in M_{a,b}(\K)$ and a positive integer $n$ we obtain the scalar product
 $$n\cdot P = \underbrace{P + \cdots + P}_{n\text{ times}}.$$
@@ -51,7 +51,7 @@ We define the operation:
                      & ((X_{2 \cdot P}:Z_{2 \cdot P}), (X_{P + Q}:Z_{P + Q}))
 \end{align*}
 
-A pseudocode description of the Montgomery ladder
+A pseudocode description of the Montgomery ladder using this \texttt{xDBL\&ADD} routine
 is given in Algorithm~\ref{alg:montgomery-ladder}.
 The main loop iterates over the bits of the scalar $n$.
 The $k^{\text{th}}$ iteration conditionally swaps
@@ -61,9 +61,6 @@ We use a conditional swap \texttt{CSWAP} to change the arguments of the above
 function while keeping the same body of the loop. \label{cswap}
 Given a pair $(P_0, P_1)$ and a bit $b$, \texttt{CSWAP} returns the pair
 $(P_b, P_{1-b})$.
-
-By using the differential addition and doubling operations we define the Montgomery ladder
-computing a \xcoord-only scalar multiplication (see \aref{alg:montgomery-ladder}).
 
 % \setlength{\textfloatsep}{1em}
 \begin{algorithm}
@@ -98,13 +95,13 @@ The core of the X25519 key-exchange protocol is a scalar\hyp{}multiplication
 function, which we will also refer to as X25519.
 This function receives as input two arrays of $32$ bytes each.
 One of them is interpreted as the little-endian encoding of a
-non-negative 256-bit integer $n$ (see \ref{sec:Coq-RFC}).
+non-negative 256-bit integer $n$ (see Section~\ref{sec:Coq-RFC}).
 The other is interpreted as the little-endian encoding of
 the \xcoord $x_P \in \F{p}$ of a point in $E(\F{p^2})$,
 using the standard mapping of integers modulo $p$ to elements in $\F{p}$.
 
 The X25519 function first computes a scalar $n'$ from $n$ by setting
-bits at position 0, 1, 2 and 255 to \texttt{0}; and at position 254
+bits at positions 0, 1, 2 and 255 to \texttt{0}; and at position 254
 to \texttt{1}.
 This operation is often called ``clamping'' of the scalar $n$.
 Note that $n' \in 2^{254} + 8\{0,1,\ldots,2^{251}-1\}$.
@@ -171,7 +168,7 @@ and squaring (\TNaCle{S}). After a multiplication, limbs of the result
 \texttt{o} are too large to be used again as input. Two calls to
 \TNaCle{car25519} at the end of \TNaCle{M} takes care of the carry propagation.
 
-Inverses in $\Ffield$ are computed with \TNaCle{inv25519}.
+Inverses in $\Ffield$ are computed in \TNaCle{inv25519}.
 This function uses exponentiation by $p - 2 = 2^{255}-21$,
 computed with the square-and-multiply algorithm.
 
@@ -188,8 +185,8 @@ This function is considerably more complex as it needs to convert
 to a \emph{unique} representation, i.e., also fully reduce modulo
 $p$ and remove the redundancy of the radix-$2^{16}$ representation.
 
-The C definitions of those functions are available in
-Appendix \ref{verified-C-and-diff}.
+The C definitions of all these functions are available in
+Appendix~\ref{verified-C-and-diff}.
 
 \subheading{The Montgomery ladder.}
 With these low-level arithmetic and helper functions defined,
@@ -247,8 +244,9 @@ int crypto_scalarmult(u8 *q,
 }
 \end{lstlisting}
 
-Note that lines 10 \& 11 represent the ``clamping'' operation.
-
+Note that lines 10 \& 11 represent the ``clamping'' operation;
+the sequence of arithmetic operations in lines 22 through 39 implement the 
+\texttt{xDBL\&ADD} routine.
 
 \subsection{Coq, separation logic, and VST}
 \label{subsec:Coq-VST}
@@ -280,8 +278,10 @@ For example, here is the rule for sequential composition:
   \BinaryInfC{$\{P\}C_1;C_2\{R\}$}
 \end{prooftree}
 Separation logic is an extension of Hoare logic which allows reasoning about
-pointers and memory manipulation. This logic enforces strict conditions on the
-memory shared such as being disjoint.
+pointers and memory manipulation. 
+%This logic enforces strict conditions on the memory shared such as being disjoint.
+%Separation logic requires memory regions of different function arguments to be disjoint.
+Reasoning in separation logic assumes that certain memory regions are non-overlapping
 We discuss this limitation further in \sref{subsec:with-VST}.
 
 The Verified Software Toolchain (VST)~\cite{cao2018vst-floyd} is a framework
@@ -289,8 +289,8 @@ which uses separation logic (proven correct with respect to CompCert semantics)
 to prove the functional correctness of C programs.
 The first step consists of translating the source code into Clight,
 an intermediate representation used by CompCert.
-For such purpose one uses the parser of CompCert called \texttt{clightgen}.
+For this purpose we use the parser of CompCert called \texttt{clightgen}.
 In a second step one defines the Hoare triple representing the specification of
-the piece of software one wants to prove. Then using VST, one uses a strongest
-postcondition approach to prove the correctness of the triple.
+the piece of software one wants to prove. With the help of VST 
+we then use the strongest-postcondition approach to prove the correctness of the triple.
 This can be seen as a forward symbolic execution of the program.

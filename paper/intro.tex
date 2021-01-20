@@ -15,7 +15,7 @@ prove correctness of any of the primitives implemented by the library.
 One core component of TweetNaCl (and NaCl) is the key-exchange protocol X25519 presented
 by Bernstein in~\cite{Ber06}.
 This protocol is standardized in RFC~7748 and used by a wide variety of applications~\cite{things-that-use-curve25519}
-such as SSH, Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
+such as SSH, the Signal Protocol, Tor, Zcash, and TLS to establish a shared secret over
 an insecure channel.
 The X25519 key-exchange protocol is an \xcoord-only
 elliptic-curve Diffie--Hellman key exchange using the Montgomery
@@ -25,7 +25,7 @@ but Bernstein suggested to rename the protocol to X25519 and to use the name
 Curve25519 for the underlying elliptic curve~\cite{Ber14}.
 We use this updated terminology in this paper.
 
-\subheading{Contribution of this paper.}
+\subheading{Contributions of this paper.}
 In short, in this paper we provide a computer-verified proof that the
 X25519 implementation in TweetNaCl matches the mathematical definition
 of the function given in~\cite[Sec.~2]{Ber06}.
@@ -113,7 +113,7 @@ In~\cite{Zinzindohoue2016AVE}, Zinzindohou{\'{e}}, Bartzia, and Bhargavan
 describe a verified extensible library of elliptic curves~ in F*~\cite{DBLP:journals/corr/BhargavanDFHPRR17}.
 This served as ground work for the cryptographic library HACL*~\cite{zinzindohoue2017hacl}
 used in the NSS suite from Mozilla. The approach they use is a combination
-of proving and synthesising: A fairly low-level implementation written in
+of proving and synthesizing: A fairly low-level implementation written in
 Low$^*$ is proven to be equivalent to a high-level specification in F$^*$.
 The Low$^*$ code is then compiled to C using an unverified and thus trusted
 compiler called Kremlin.
@@ -148,7 +148,7 @@ structure of finite field and elliptic curves the actual proofs are quite differ
 \subheading{Reproducing the proofs.}
 To maximize reusability of our results we place the code of our formal proof
 presented in this paper into the public domain.
-It is available at \url{http://doi.org/10.5281/zenodo.4439686}
+It is available at \url{https://doi.org/10.5281/zenodo.4439686}
 with instructions of how to compile and verify our proof.
 A description of the content of the code archive is provided in
 Appendix~\ref{appendix:proof-folders}.
@@ -157,10 +157,10 @@ Appendix~\ref{appendix:proof-folders}.
 \sref{sec:preliminaries} gives the necessary background on Curve25519 and X25519
 implementations and a brief explanation of how formal verification works.
 \sref{sec:Coq-RFC} provides our Coq formalization of X25519 as specified in RFC~7748~\cite{rfc7748}.
-\sref{sec:C-Coq} provides the specifications of X25519 in TweetNaCl and some of the
+\sref{sec:C-Coq} details the specifications of X25519 in TweetNaCl and some of the
 proof techniques used to show the correctness with respect to RFC~7748~\cite{rfc7748}.
 \sref{sec:maths} describes our extension of the formal library by Bartzia
-and Strub and the correctness of X25519 implementation with respect to Bernstein's
+and Strub and the proof of correctness of the X25519 implementation with respect to Bernstein's
 specifications~\cite{Ber14}.
 Finally in \sref{sec:Conclusion} we discuss the trusted code base of our proofs
 and conclude with some lessons learned about TweetNaCl and with sketching the
@@ -170,12 +170,12 @@ effort required to extend our work to other elliptic-curve software.
 C source files are represented by {\color{doc@lstfunctions}.C} while
   {\color{doc@lstfunctions}.V} corresponds to Coq files.
 In a nutshell, we formalize X25519 into a Coq function \texttt{RFC},
-and we write a specification in Separation logic with VST.
-The first step of CompCert compilation (clightgen) is used to translates
+and we write a specification in separation logic with VST.
+The first step of CompCert compilation (clightgen) is used to translate
 the C source code into a DSL in Coq (CLight). By using VST,
 we step through the translated instructions and verify that the program satisfies the specifications.
 Additionally we formally define the scalar multiplication over elliptic curves and show that,
-under the same preconditions as used in the specification, \texttt{RFC} computes the desired results
+under the same preconditions as used in the specification, \texttt{RFC} computes the desired results.
 
 \begin{figure}[h]
   \centering
