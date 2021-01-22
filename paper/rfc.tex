@@ -84,15 +84,15 @@ match m with
 end.
 \end{lstlisting}
 
-The comments in the ladder represent the text from the RFC which
+The comments in the ladder represent the text from the RFC, which
 our formalization matches perfectly. In order to optimize the
 number of calls to \texttt{CSWAP} (defined in \sref{cswap})
 the RFC uses an additional variable to decide whether a conditional swap
 is required or not.
 
 Later in our proof we use a simpler description of the ladder
-(\coqe{montgomery_rec}) which follows strictly \aref{alg:montgomery-ladder}
-and prove those ladder equivalent.
+(\coqe{montgomery_rec}), which strictly follows \aref{alg:montgomery-ladder},
+and prove those ladders equivalent.
 
 RFC 7748 describes the calculations done in X25519 as follows:
 \emph{``To implement the X25519(k, u) [...] functions (where k is
@@ -102,7 +102,7 @@ RFC 7748 describes the calculations done in X25519 as follows:
   in GF(p), i.e., they are performed modulo p.''}~\cite{rfc7748}
 
 Operations used in the Montgomery ladder of \coqe{RFC} are performed on
-integers (See Appendix~\ref{subsubsec:RFC-Coq}).
+integers (see Appendix~\ref{subsubsec:RFC-Coq}).
 The reduction modulo $\p$ is deferred to the very end as part of the
 \coqe{ZPack25519} operation.
 
@@ -110,7 +110,7 @@ We now turn our attention to the decoding and encoding of the byte arrays.
 We define the little-endian projection to integers as follows.
 \begin{dfn}
   Let \Coqe{ZofList} : $\Z \rightarrow \texttt{list}~\Z \rightarrow \Z$,
-  a function which given $n$ and a list $l$ returns its little endian decoding with radix $2^n$.
+  a function which given $n$ and a list $l$ returns its little-endian decoding with radix $2^n$.
 \end{dfn}
 % \begin{lstlisting}[language=Coq,belowskip=1pt]
 % Fixpoint ZofList {n:Z} (a:list Z) : Z :=
@@ -119,7 +119,7 @@ We define the little-endian projection to integers as follows.
 %   | h :: q => h + 2^n * ZofList q
 %   end.
 % \end{lstlisting}
-Similarly, we define the projection from an integers to a little-endian list.
+Similarly, we define the projection from integers to little-endian lists.
 \begin{dfn}
   Let \Coqe{ListofZ32} : $\Z \rightarrow \Z \rightarrow \texttt{list}~\Z$, given
   $n$ and $a$ returns $a$'s little-endian encoding as a list with radix $2^n$.

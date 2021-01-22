@@ -34,14 +34,14 @@ with it in the proofs (\ref{subsec:curvep2}).
 \label{subsec:ECC}
 
 \fref{tikz:ProofHighLevel1} presents the structure of the proof of the ladder's
-correctness. The white tiles are definitions, the orange ones are hypothesis and
+correctness. The white tiles are definitions, the orange ones are hypotheses and
 the green tiles represent major lemmas and theorems.
 
 % The plan is as follows.
 % (This is part of the description of the picture).
 We consider the field $\K$ and formalize the Montgomery curves ($M_{a,b}(\K)$).
 Then, by using the equivalent Weierstra{\ss} form ($E_{a',b'}(\K)$) from the library of Bartzia and Strub,
-we prove that $M_{a,b}(\K)$ forms an commutative group.
+we prove that $M_{a,b}(\K)$ forms a commutative group.
 Under the hypothesis that
 $a^2 - 4$ is not a square in $\K$, we prove the correctness of the ladder (\tref{thm:montgomery-ladder-correct}).
 
@@ -49,7 +49,7 @@ $a^2 - 4$ is not a square in $\K$, we prove the correctness of the ladder (\tref
   \centering
   \include{tikz/highlevel1}
   % \vspace{-0.5cm}
-  \caption{Overview of the proof of Montgomery ladder's correctness}
+  \caption{Overview of the proof of Montgomery ladder's correctness.}
   \label{tikz:ProofHighLevel1}
 \end{figure}
 
@@ -79,7 +79,7 @@ Then, this equation $E(x,y)$ can be reduced into its short Weierstra{\ss} form.
   The \textit{elliptic curve} $E_{a,b}$ is defined by the equation
   $$y^2 = x^3 + ax + b.$$
   $E_{a,b}(\K)$ is the set of all points $(x,y) \in \K^2$ satisfying the $E_{a,b}$
-  along with an additional formal point $\Oinf$, ``at infinity''. Such a curve does not have any singularity.
+  along with an additional formal point $\Oinf$, ``at infinity''. Such a curve does not have any singularities.
 \end{dfn}
 
 In this setting, Bartzia and Strub defined the parametric type \texttt{ec} which
