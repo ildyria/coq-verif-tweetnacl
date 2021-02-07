@@ -83,13 +83,13 @@ SEP  (sh [{ v_q }] <<(uch32)-- mVI (RFC n p);
       Ews [{ c121665 }] <<(lg16)-- mVI64 c_121665
 \end{lstlisting}
 
-In this specification we state preconditions like:
+In this specification we state preconditions as follows:
 \begin{itemize}
       \item[] \VSTe{PRE}: \VSTe{_p OF (tptr tuchar)}\\
             The function \TNaCle{crypto_scalarmult} takes as input three pointers to
             arrays of unsigned bytes (\VSTe{tptr tuchar}) \VSTe{_p}, \VSTe{_q} and \VSTe{_n}.
       \item[] \VSTe{LOCAL}: \VSTe{temp _p v_p}\\
-            Each pointer represent an address \VSTe{v_p},
+            Each pointer represents an address \VSTe{v_p},
             \VSTe{v_q} and \VSTe{v_n}.
       \item[] \VSTe{SEP}: \VSTe{sh [{ v_p $\!\!\}\!\!]\!\!\!$ <<(uch32)-- mVI p}\\
             In the memory share \texttt{sh}, the address \VSTe{v_p} points
@@ -106,7 +106,7 @@ In this specification we state preconditions like:
             complete representation of \TNaCle{u8[32]}.
 \end{itemize}
 
-As postcondition we have conditions like:
+As postcondition we have conditions as follows:
 \begin{itemize}
       \item[] \VSTe{POST}: \VSTe{tint}\\
             The function \TNaCle{crypto_scalarmult} returns an integer.
@@ -169,7 +169,7 @@ Examples of such cases are illustrated in \fref{tikz:MemSame}.
 \end{figure}
 As a result, a function must either have multiple specifications or specify which
 aliasing case is being used.
-The first option would require us to do very similar proofs multiple times for a same function.
+The first option would require us to do very similar proofs multiple times for the same function.
 We chose the second approach: for functions with 3 arguments, named hereafter \texttt{o, a, b},
 we define an additional parameter $k$ with values in $\{0,1,2,3\}$:
 \begin{itemize}
@@ -247,11 +247,11 @@ This solution does not cover all the possible cases of aliasing over 3 pointers
 As described in \sref{subsec:Number-TweetNaCl}, numbers in \TNaCle{gf}
 (array of 16 \TNaCle{long long}) are represented
 in base $2^{16}$ and we use a direct mapping to represent that array as a list
-integers in Coq. However, in order to show the correctness of the basic operations,
+of integers in Coq. However, in order to show the correctness of the basic operations,
 we need to convert this number to an integer.
 We reuse the mapping
 $\text{\coqe{ZofList}} : \Z \rightarrow \texttt{list}~\Z \rightarrow \Z$ from \sref{sec:Coq-RFC}
-and define a notation where $n$ is $16$, placing us with a radix of $2^{16}$.
+and define a notation where $n$ is $16$, to fix a a radix of $2^{16}$.
 \begin{lstlisting}[language=Coq]
 Notation "Z16.lst A" := (ZofList 16 A).
 \end{lstlisting}
@@ -266,9 +266,9 @@ Using these two definitions, we prove intermediate lemmas such as the correctnes
 multiplication \Coqe{Low.M} where \Coqe{Low.M} replicates the computations and steps done in C.
 \begin{lemma}
       \label{lemma:mult_correct}
-      \Coqe{Low.M} correctly implements the multiplication over $\Zfield$.
+      \Coqe{Low.M} correctly implements the multiplication in $\Zfield$.
 \end{lemma}
-And specified in Coq as follows:
+This is specified in Coq as follows:
 \begin{lstlisting}[language=Coq]
 Lemma mult_GF_Zlength :
   forall (a:list Z) (b:list Z),
@@ -277,16 +277,16 @@ Lemma mult_GF_Zlength :
    (Z16.lst (Low.M a b)):GF = (Z16.lst a * Z16.lst b):GF.
 \end{lstlisting}
 
-However for our purpose, simple functional correctness is not enough.
+However, for our purpose, simple functional correctness is not enough.
 We also need to define the bounds under which the operation is correct,
-allowing us to chain them, guaranteeing us the absence of overflow.
+allowing us to chain them, guaranteeing the absence of overflows.
 
 \begin{lemma}
       \label{lemma:mult_bounded}
       if all the values of the input arrays are constrained between $-2^{26}$ and $2^{26}$,
       then the output of \coqe{Low.M} will be constrained between $-38$ and $2^{16} + 38$.
 \end{lemma}
-And seen in Coq as follows:
+This is seen in Coq as follows:
 \begin{lstlisting}[language=Coq]
 Lemma M_bound_Zlength :
   forall (a:list Z) (b:list Z),
@@ -311,7 +311,7 @@ Lemma M_bound_Zlength :
       By using each function \coqe{Low.M}; \coqe{Low.A}; \coqe{Low.Sq}; \coqe{Low.Zub};
       \coqe{Unpack25519}; \coqe{clamp}; \coqe{Pack25519}; \coqe{Inv25519}; \coqe{car25519};
       \coqe{montgomery_rec}, we defined \coqe{Crypto_Scalarmult} in Coq and with VST
-      proved it matches the exact behavior of X25519 in TweetNaCl.
+      proved that it matches the exact behavior of X25519 in TweetNaCl.
 \end{sloppypar}
 
 \begin{sloppypar}
@@ -333,9 +333,9 @@ Lemma Crypto_Scalarmult_RFC_eq :
   Crypto_Scalarmult n p = RFC n p.
 \end{lstlisting}
 
-Using this equality, we can directly replace \coqe{Crypto_Scalarmult} in our
+Using this equality, we can direct replace \coqe{Crypto_Scalarmult} in our
 specification by \coqe{RFC}, proving that TweetNaCl's X25519 implementation
-respect RFC~7748.
+respects RFC~7748.
 
 
 

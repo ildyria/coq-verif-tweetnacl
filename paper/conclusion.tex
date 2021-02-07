@@ -5,7 +5,7 @@ Any formal system relies on a trusted base. In this section we describe our
 chain of trust.
 
 \subheading{Trusted Code Base of the proof.}
-Our proof relies on a trusted base, i.e. a foundation of definitions that must be
+Our proof relies on a trusted base, i.e., a foundation of definitions that must be
 correct. One should not be able to prove a false statement in that system, \eg by
 proving an inconsistency.
 
@@ -13,8 +13,8 @@ In our case we rely on:
 \begin{itemize}
       \item \textbf{Calculus of Inductive Constructions}. The intuitionistic logic
             used by Coq must be consistent in order to trust the proofs. As an axiom,
-            we assume that the functional extensionality is also consistent with that logic.
-            $$\forall x, f(x) = g(x) \implies f = g$$
+            we assume that the functional extensionality is also consistent with that logic:
+            $$\forall x, f(x) = g(x) \implies f = g.$$
 %             \begin{lstlisting}[language=Coq,belowskip=-0.25 \baselineskip]
 % Lemma f_ext: forall (A B:Type),
 %   forall (f g: A -> B),
@@ -22,7 +22,7 @@ In our case we rely on:
 % \end{lstlisting}
 
       \item \textbf{Verifiable Software Toolchain}. This framework developed at
-            Princeton allows a user to prove that a Clight code matches pure Coq
+            Princeton allows a user to prove that a Clight code matches a pure Coq
             specification.
 
       \item \textbf{CompCert}. When compiling with CompCert we only need to trust
@@ -48,7 +48,7 @@ o[i] = aux1 + aux2;
       \item Finally, we must trust the \textbf{Coq kernel} and its
             associated libraries; the \textbf{Ocaml compiler} on which we compiled Coq;
             the \textbf{Ocaml Runtime} and the \textbf{CPU}. Those are common to all proofs
-            done with this architecture \cite{2015-Appel,coq-faq}.
+            done with this architecture~\cite{2015-Appel,coq-faq}.
 \end{itemize}
 
 \subheading{Corrections in TweetNaCl.}
@@ -70,7 +70,7 @@ and thus solved this problem.
 o[i]&=0xffff;
 \end{lstlisting}
 
-Aside from this modifications, all subsequent alterations to the TweetNaCl code%
+Aside from these modifications, all subsequent alterations to the TweetNaCl code%
 ---such as the type change of loop indexes (\TNaCle{int} instead of \TNaCle{i64})---%
 were required for VST to step through the code properly. We believe that those
 adjustments do not impact the trust of our proof.
@@ -101,7 +101,7 @@ written in a not particularly verification-friendly language
 using a set of tools (VST and Coq) whose development we are not
 actively involved in.
 
-TweeNaCl comes with a claim of verifiability, but it became clear
+TweetNaCl comes with a claim of verifiability, but it became clear
 rather quickly that this claim is only based on the overall simplicity
 of the library and not supported by code written carefully such that it can
 efficiently be verified with existing tools. The difference between
@@ -109,10 +109,10 @@ our verified version of TweetNaCl and the original TweetNaCl in
 Appendix~\ref{verified-C-and-diff} gives an idea of some minimal
 changes we had to apply to work with VST; many more small changes
 would have made the proof much easier and more elegant. As one
-example, in \TNaCle{pack25519} the substraction of $p$ and the carry
+example, in \TNaCle{pack25519} the subtraction of $p$ and the carry
 propagation are done in a single \TNaCle{for} loop;
-had they been splitted into two loops, the final result would have been the same with a
-verification effort significantly lessen.
+had they been split into two loops, the final result would have been the same 
+but with a much smaller verification effort.
 
 There were many positive lessons to be learned from this verification effort;
 most importantly that it is possible to prove ``legacy'' cryptographic
@@ -127,7 +127,7 @@ At least in the VST versions we worked with,
 this approach did not quite work and at various stages in
 the proofs we had to look into the underlying lemmas.
 This was due to the provided tactics not terminating,
-for example in the last few steps \coqe{pack25519}'s VST proof.
+for example in the last few steps of \coqe{pack25519}'s VST proof.
 Some struggle with VST also taught us another very pleasant lesson,
 namely that the VST development team is very responsive and helpful.
 Various of our issues were sorted out with their help and we hope
@@ -135,19 +135,19 @@ that some of the experience we brought in also helped improve VST.
 
 \subheading{Extending our work.}
 The high-level definition (\sref{sec:maths}) can easily be ported to any
-other Montgomery curves and with it the proof of the ladder's correctness
+other Montgomery curve and with it the proof of the ladder's correctness
 assuming the same formulas are used.
 In addition to the curve equation, the field \F{p} would need to be redefined
 as $p=2^{255}-19$ is hard-coded in order to speed up some proofs.
 
 With respect to the C code verification (\sref{sec:C-Coq}), the extension of
-the verification effort to Ed25519 would make directly use of the low-level
-arithmetic. The ladder steps formula being different this would require a high
+the verification effort to Ed25519 would make direct use of the low-level
+arithmetic. As the ladder-steps formula is different, this would require a high
 level verification similar to \tref{thm:montgomery-ladder-correct};
 also, a full correctness verification of Ed25519 signatures would require
 verifying correctness of SHA-512.
 
-The verification of \eg X448~\cite{cryptoeprint:2015:625,rfc7748} in C would
+The verification of, \eg X448~\cite{cryptoeprint:2015:625,rfc7748} in C would
 require the adaptation of most of the low-level arithmetic (mainly the
 multiplication, carry propagation and reduction).
 Once the correctness and bounds of the basic operations are established,
@@ -160,9 +160,9 @@ We first formalized X25519 from RFC~7748~\cite{rfc7748} in Coq.
 We then proved that TweetNaCl's implementation of X25519 matches our formalization.
 In a second step we extended the Coq library for elliptic curves \cite{BartziaS14}
 by Bartzia and Strub to support Montgomery curves.
-Using this extension we proved that the X25519 from the RFC matches the
+Using this extension we proved that the the X25519 specification from the RFC matches the
 mathematical definitions as given in~\cite[Sec.~2]{Ber06}.
 Therefore in addition to proving the mathematical correctness of TweetNaCl,
-we also increases the trust of other works such as
-\cite{zinzindohoue2017hacl,Erbsen2016SystematicSO} which rely on RFC~7748.
+we also increase the trust of other works such as
+\cite{zinzindohoue2017hacl,Erbsen2016SystematicSO}, which rely on RFC~7748.
 \vspace{-0.3cm}
