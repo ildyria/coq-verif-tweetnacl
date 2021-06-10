@@ -1,6 +1,5 @@
 \begin{tikzpicture}[textstyle/.style={black, anchor= south west, align=center, minimum height=0.45cm, text centered, font=\scriptsize}]
 
-
 	% adapt line thickness and line width, if needed
 
 	% \path [thick, dashed] (2.5,0) edge +(0,-5.25);
@@ -10,6 +9,17 @@
 	% \draw (8.5,-5.75) node[anchor=north east] {\sref{sec:maths}};
 
 	% SECTION III
+	\draw (-1cm,-0.75cm) node[anchor=east] {\includegraphics[width=2cm]{MontgomeryG.png}};
+	\draw (-3.25cm,-0.75cm) node[textstyle,anchor=east] {\texttt{tweetnacl.c}};
+	\draw (-0.5cm,-0.75cm) node[] {$\implies$};
+
+	\draw (-1cm,-3.5cm) node[anchor=east] {\includegraphics[width=2cm]{rfcG.png}};
+	\draw (-3.25cm,-3.5cm) node[textstyle,anchor=east] {RFC~7748};
+	\draw (-0.5cm,-3.5cm) node[] {$\implies$};
+
+	\draw (-1cm,-7.75cm) node[anchor=south east] {\includegraphics[width=2cm]{curvePaperG.png}};
+	\draw (-3.25cm,-7cm) node[textstyle,anchor=east] {Maths};
+	\draw (-0.5cm,-7cm) node[] {$\implies$};
 
 	% Definition of RFC
 	\begin{scope}[yshift=-3 cm,xshift=0 cm]
@@ -92,7 +102,7 @@
 		\draw (0,0) -- (0.4, 0.4) -- (2.5,0.4) -- (2.5,0) -- cycle;
 		\draw (0,0) -- (2.5,0) -- (2.5,-1.5) -- (0, -1.5) -- cycle;
 		\draw (0.3,-0.05) node[textstyle] {Proof};
-		\draw (1.25,-0.75) node[textstyle, anchor=center] {{\color{doc@lstnumbers}\textbf{Pre}} $\implies$\\$\text{\texttt{RFC}}(n,P) = n \cdot P$};
+		\draw (1.25,-0.75) node[textstyle, anchor=center] {{\color{doc@lstnumbers}\textbf{Pre}} $\Rightarrow$\\$\text{\texttt{RFC}}(n,P) = n \cdot P$};
 		\draw (2.5,0) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{\checkmark}};
 		\draw (2.5,-1.5) node[textstyle, anchor = south east] {\color{doc@lstfunctions}{.V}};
 	\end{scope}

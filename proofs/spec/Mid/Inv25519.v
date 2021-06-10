@@ -36,17 +36,17 @@ Inductive expr_inv :=
 Inductive formula_inv := 
   | Eq_inv : expr_inv -> expr_inv -> formula_inv.
 
-Fixpoint expr_inv_denote v env (m : expr_inv) : Z :=
+Fixpoint expr_inv_denote env (m : expr_inv) : Z :=
   match m with
-  | R_inv     => term_denote env v
-  | M_inv x y => (expr_inv_denote v env x) * (expr_inv_denote v env y)
-  | S_inv x => (expr_inv_denote v env x) * (expr_inv_denote v env x)
-  | P_inv x p => Z.pow (expr_inv_denote v env x) (Z.pos p)
+  | R_inv     => vars env 1
+  | M_inv x y => (expr_inv_denote env x) * (expr_inv_denote env y)
+  | S_inv x => (expr_inv_denote env x) * (expr_inv_denote env x)
+  | P_inv x p => Z.pow (expr_inv_denote env x) (Z.pos p)
   end.
 
-Definition formula_inv_denote v env (t : formula_inv) : Prop :=
+Definition formula_inv_denote env (t : formula_inv) : Prop :=
   match t with
-  | Eq_inv x y     => expr_inv_denote v env x = expr_inv_denote v env y
+  | Eq_inv x y     => expr_inv_denote env x = expr_inv_denote env y
   end.
 
 (*****************************************************************************************
@@ -74,8 +74,8 @@ Proof. intros ; simpl.
 assert(H := compute_pow_expr_inv_pos l) ; omega.
 Qed.
 
-Lemma compute_pow_expr_inv_denote: forall env v l,
-  expr_inv_denote v env l = Z.pow (term_denote env v) (compute_pow_expr_inv l).
+Lemma compute_pow_expr_inv_denote: forall env l,
+  expr_inv_denote env l = Z.pow (vars env 1) (compute_pow_expr_inv l).
 Proof.
   induction l.
   simpl ; ring.
@@ -100,9 +100,9 @@ Lemma decide_expr_inv_eq_refl_impl : forall l1 l2,
 Proof. move=> l1 l2; rewrite Z.eqb_eq //. Qed.
 
 Lemma decide_expr_inv_eq_impl:
-  forall v env l l', 
+  forall env l l', 
   decide_expr_inv_eq l l' = true ->
-  expr_inv_denote v env l = expr_inv_denote v env l'.
+  expr_inv_denote env l = expr_inv_denote env l'.
 Proof.
 intros; rewrite ?compute_pow_expr_inv_denote; f_equal.
 gen l'; induction l ; destruct l' ; auto => H;
@@ -113,8 +113,8 @@ Definition decide_formula_inv (f : formula_inv) : bool := match f with
   | Eq_inv x y => decide_expr_inv_eq x y
   end.
 
-Lemma decide_formula_inv_impl : forall v env f, decide_formula_inv f = true -> formula_inv_denote v env f.
-Proof. move=> v env [? ?]. by apply decide_expr_inv_eq_impl. Qed.
+Lemma decide_formula_inv_impl : forall env f, decide_formula_inv f = true -> formula_inv_denote env f.
+Proof. move=> env [? ?]. by apply decide_expr_inv_eq_impl. Qed.
 
 (* Weaponize our expression so we can translate functions *)
 
@@ -122,8 +122,8 @@ Proof. move=> v env [? ?]. by apply decide_expr_inv_eq_impl. Qed.
 Definition step_inv a c g : expr_inv := 
   let c0 := (S_inv c) in if negb (Nat.eqb a 2) && negb (Nat.eqb a 4) then M_inv c0 g else c0.
 
-Lemma step_inv_step_pow_eq : forall v env a c g,
-  expr_inv_denote v env (step_inv (Z.to_nat a) c g) =  step_pow_Z a (expr_inv_denote v env c) (expr_inv_denote v env g).
+Lemma step_inv_step_pow_eq : forall env a c g,
+  expr_inv_denote env (step_inv (Z.to_nat a) c g) =  step_pow_Z a (expr_inv_denote env c) (expr_inv_denote env g).
 Proof.
   intros.
   rewrite /step_inv /step_pow_Z.
@@ -173,8 +173,8 @@ Fixpoint pow_inv (a b : nat) (c g: expr_inv) : expr_inv := match a with
 
 Open Scope Z.
 
-Lemma pow_inv_pow_fn_rev_eq : forall v env a b c g,
-  expr_inv_denote v env (pow_inv (Z.to_nat a) (Z.to_nat b) c g) =  pow_fn_rev_Z a b (expr_inv_denote v env c) (expr_inv_denote v env g).
+Lemma pow_inv_pow_fn_rev_eq : forall env a b c g,
+  expr_inv_denote env (pow_inv (Z.to_nat a) (Z.to_nat b) c g) =  pow_fn_rev_Z a b (expr_inv_denote env c) (expr_inv_denote env g).
 Proof.
   intros.
   destruct a; intros ; [ go | | go ].
@@ -184,8 +184,8 @@ Proof.
   gen b c g.
   gen a.
   apply (natlike_ind (fun a => forall (b : ℤ) (c g : expr_inv),
-    expr_inv_denote v env (pow_inv (Z.to_nat a) (Z.to_nat b) c g) =
-    pow_fn_rev_Z a b (expr_inv_denote v env c) (expr_inv_denote v env g))) => //.
+    expr_inv_denote env (pow_inv (Z.to_nat a) (Z.to_nat b) c g) =
+    pow_fn_rev_Z a b (expr_inv_denote env c) (expr_inv_denote env g))) => //.
   intros a Ha IHa b c g.
   orewrite pow_fn_rev_Z_n.
   oreplace (Z.succ a - 1) a.
@@ -254,7 +254,8 @@ Ltac functionalize xs :=
     end in
   loop (1%positive) xs.
 
-(**************************************************************************
+(* Eval compute in 
+(************************************************************************** *)
  * User interface tactics
  *)
 
@@ -262,7 +263,18 @@ Open Scope Z.
 (* 
 Eval compute in Z.pow 2 255 - 21.
 Z.pow 2 255 - 21 = 57896044618658097711785492504343953926634992332820282019728792003956564819947
+
+Variable x:Z.
+Definition env0 := {| vars := fun _ : positive => x |} : environment.
+Goal formula_inv_denote env0
+ (Eq_inv (M_inv R_inv (S_inv R_inv))
+         (P_inv R_inv 3))
+  = (x * x^2 = x^3).
+simpl.
+f_equal.
+ring.
 *)
+
 
 Theorem Inv25519_Z_correct : forall x, Inv25519_Z x = ZInv25519 x.
 (* Z.pow x 57896044618658097711785492504343953926634992332820282019728792003956564819947. *)
@@ -281,7 +293,7 @@ intros.
     end.
     (* in theory we would use change, but here we need to proceed slightly differently *)
     assert (
-      formula_inv_denote (Var 1) {| vars := env |} reif ->
+      formula_inv_denote {| vars := env |} reif ->
       pow_fn_rev_Z 254 254 x x =
       x ^ 57896044618658097711785492504343953926634992332820282019728792003956564819947).
     {
